@@ -1,0 +1,32 @@
+body {
+  background-color: #FFFBB3;
+}
+
+button {
+  outline: none;
+  cursor: pointer;
+}
+
+.bg-beige {
+  background-color: #FFFBB3;
+}
+
+.bg-light-blue {
+  background-color: #26AAE1;
+}
+
+.bg-seed-pod {
+  background: linear-gradient(90deg, #78C143, #78C143 50%, #71af44 51%, #71af44);
+}
+
+.bg-light-orange {
+  background-color: #FFA000;
+}
+
+.bg-dark-brown {
+  background-color: #3A2315;
+}
+
+.bg-light-brown {
+  background-color: #A77B52;
+}
