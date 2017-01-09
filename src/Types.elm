@@ -1,18 +1,26 @@
 module Types exposing (..)
 
 
+type alias Coord =
+    ( Int, Int )
+
+
 type alias Tile =
     { value : Int
-    , x : Int
-    , y : Int
+    , coord : Coord
     }
 
 
 type alias Model =
     { tiles : List (List Tile)
+    , currentTile : Maybe Tile
+    , isDragging : Bool
     }
 
 
 type Msg
     = RandomTiles (List (List Int))
     | ShuffleTiles
+    | StopDrag
+    | CheckTile Tile
+    | StartMove Tile
