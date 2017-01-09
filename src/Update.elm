@@ -48,7 +48,7 @@ update msg model =
         ShuffleTiles ->
             ( model, generateRawTiles )
 
-        StopDrag ->
+        StopMove ->
             ( { model | isDragging = False, currentTile = Nothing, currentMove = [] }, Cmd.none )
 
         StartMove tile ->

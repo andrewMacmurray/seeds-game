@@ -12,7 +12,7 @@ import StyleLinks
 
 view : Model -> Html Msg
 view model =
-    div [ onMouseUp StopDrag ]
+    div [ onMouseUp StopMove ]
         [ StyleLinks.tachyons
         , StyleLinks.mainStyle
         , div [ class "tc ma6" ]
@@ -40,7 +40,7 @@ renderTile currentMove tile =
         [ class ("br-100 w2 h2 dib mv1 mh2 full-scale transition-300 " ++ (tileBackground tile.value) ++ " " ++ (renderDragging tile currentMove))
         , onMouseDown (StartMove tile)
         , onMouseEnter (CheckTile tile)
-        , onMouseUp StopDrag
+        , onMouseUp StopMove
         ]
         []
 

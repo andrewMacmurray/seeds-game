@@ -22,6 +22,6 @@ type alias Model =
 type Msg
     = RandomTiles (List (List Int))
     | ShuffleTiles
-    | StopDrag
+    | StopMove
     | CheckTile Tile
     | StartMove Tile
