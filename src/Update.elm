@@ -2,10 +2,29 @@ module Update exposing (..)
 
 import Types exposing (..)
 import Random exposing (..)
+import Directions exposing (validMove)
 
 
-mapProbabilities : Int -> Int
-mapProbabilities x =
+-- INIT
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( Model [ [] ] Nothing False, generateRawTiles )
+
+
+generateRawTiles : Cmd Msg
+generateRawTiles =
+    generate RandomTiles (list 8 (list 8 numberGenerator))
+
+
+numberGenerator : Generator Int
+numberGenerator =
+    map percentToTileValue (int 1 100)
+
+
+percentToTileValue : Int -> Int
+percentToTileValue x =
     if x > 80 then
         4
     else if x > 20 then
@@ -16,21 +35,33 @@ mapProbabilities x =
         1
 
 
-numberGenerator : Generator Int
-numberGenerator =
-    map mapProbabilities (int 1 100)
+
+-- UPDATE
 
 
-generateRawTiles : Cmd Msg
-generateRawTiles =
-    generate RandomTiles (list 8 (list 8 numberGenerator))
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        RandomTiles tiles ->
+            ( { model | tiles = makeBoard tiles }, Cmd.none )
+
+        ShuffleTiles ->
+            ( model, generateRawTiles )
+
+        StopDrag ->
+            ( { model | isDragging = False, currentTile = Nothing }, Cmd.none )
+
+        StartMove tile ->
+            ( { model | isDragging = True, currentTile = Just tile }, Cmd.none )
+
+        CheckTile tile ->
+            ( { model | currentTile = (handleNextTile model tile) }, Cmd.none )
 
 
 makeTile : Int -> Int -> Int -> Tile
 makeTile i j x =
     { value = x
-    , y = i
-    , x = j
+    , coord = ( j, i )
     }
 
 
@@ -44,16 +75,24 @@ makeBoard board =
     List.indexedMap makeTileRow board
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( Model [ [] ], generateRawTiles )
+handleNextTile : Model -> Tile -> Maybe Tile
+handleNextTile model next =
+    case model.currentTile of
+        Just current ->
+            let
+                newTile =
+                    if (validMove next current) then
+                        next
+                    else
+                        current
+            in
+                if model.isDragging then
+                    Just newTile
+                else
+                    Nothing
 
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        RandomTiles tiles ->
-            ( { model | tiles = makeBoard tiles }, Cmd.none )
-
-        ShuffleTiles ->
-            ( model, generateRawTiles )
+        Nothing ->
+            if model.isDragging then
+                Just next
+            else
+                Nothing
