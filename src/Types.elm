@@ -14,6 +14,7 @@ type alias Tile =
 type alias Model =
     { tiles : List (List Tile)
     , currentTile : Maybe Tile
+    , currentMove : List Tile
     , isDragging : Bool
     }
 

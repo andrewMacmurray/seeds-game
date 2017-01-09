@@ -17,26 +17,27 @@ view model =
         , StyleLinks.mainStyle
         , div [ class "tc ma6" ]
             [ p [] [ text (toString model.currentTile) ]
+            , p [] [ text (toString (List.map .coord model.currentMove)) ]
             , button [ onClick ShuffleTiles, class "mb5 br1 bn pv2 ph3 bg-light-blue dark-blue" ] [ text "shuffle" ]
-            , (renderBoard model.tiles)
+            , (renderBoard model.currentMove model.tiles)
             ]
         ]
 
 
-renderBoard : List (List Tile) -> Html Msg
-renderBoard tiles =
-    div [] (List.map renderRow tiles)
+renderBoard : List Tile -> List (List Tile) -> Html Msg
+renderBoard currentMove tiles =
+    div [] (List.map (renderRow currentMove) tiles)
 
 
-renderRow : List Tile -> Html Msg
-renderRow row =
-    div [] (List.map renderTile row)
+renderRow : List Tile -> List Tile -> Html Msg
+renderRow currentMove row =
+    div [] (List.map (renderTile currentMove) row)
 
 
-renderTile : Tile -> Html Msg
-renderTile tile =
+renderTile : List Tile -> Tile -> Html Msg
+renderTile currentMove tile =
     div
-        [ class ("br-100 w2 h2 dib mv1 mh2 " ++ (tileBackground tile.value))
+        [ class ("br-100 w2 h2 dib mv1 mh2 full-scale transition-300 " ++ (tileBackground tile.value) ++ " " ++ (renderDragging tile currentMove))
         , onMouseDown (StartMove tile)
         , onMouseEnter (CheckTile tile)
         , onMouseUp StopDrag
@@ -57,7 +58,15 @@ tileBackground tile =
             "bg-seed-pod"
 
         4 ->
-            "bg-light-brown"
+            "bg-seed"
 
         _ ->
             ""
+
+
+renderDragging : Tile -> List Tile -> String
+renderDragging tile currentMove =
+    if (List.member tile currentMove) then
+        "half-scale"
+    else
+        ""
