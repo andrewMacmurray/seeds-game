@@ -10,7 +10,7 @@ import Directions exposing (validMove)
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [ [] ] Nothing False, generateRawTiles )
+    ( Model [ [] ] Nothing [] False, generateRawTiles )
 
 
 generateRawTiles : Cmd Msg
@@ -49,13 +49,13 @@ update msg model =
             ( model, generateRawTiles )
 
         StopDrag ->
-            ( { model | isDragging = False, currentTile = Nothing }, Cmd.none )
+            ( { model | isDragging = False, currentTile = Nothing, currentMove = [] }, Cmd.none )
 
         StartMove tile ->
-            ( { model | isDragging = True, currentTile = Just tile }, Cmd.none )
+            ( { model | isDragging = True, currentTile = Just tile, currentMove = [ tile ] }, Cmd.none )
 
         CheckTile tile ->
-            ( { model | currentTile = (handleNextTile model tile) }, Cmd.none )
+            ( { model | currentTile = (handleNextTile model tile), currentMove = (addToCurrentMove model tile) }, Cmd.none )
 
 
 makeTile : Int -> Int -> Int -> Tile
@@ -73,6 +73,16 @@ makeTileRow i row =
 makeBoard : List (List Int) -> List (List Tile)
 makeBoard board =
     List.indexedMap makeTileRow board
+
+
+addToCurrentMove : Model -> Tile -> List Tile
+addToCurrentMove model tile =
+    case (handleNextTile model tile) of
+        Just next ->
+            model.currentMove ++ [ next ]
+
+        Nothing ->
+            model.currentMove
 
 
 handleNextTile : Model -> Tile -> Maybe Tile

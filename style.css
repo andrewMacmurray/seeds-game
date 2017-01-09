@@ -23,10 +23,25 @@ button {
   background-color: #FFA000;
 }
 
-.bg-dark-brown {
-  background-color: #3A2315;
+.bg-seed {
+  background: url(sunflower.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .bg-light-brown {
   background-color: #A77B52;
+}
+
+.full-scale {
+  transform: scale(1);
+}
+
+.half-scale {
+  transform: scale(0.5);
+}
+
+.transition-300 {
+  transition: transform 0.3s ease;
 }
