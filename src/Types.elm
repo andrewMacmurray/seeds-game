@@ -11,10 +11,16 @@ type alias Tile =
     }
 
 
+type Move
+    = Empty
+    | OneTile Tile
+    | Full (List Tile)
+
+
 type alias Model =
     { tiles : List (List Tile)
     , currentTile : Maybe Tile
-    , currentMove : List Tile
+    , currentMove : Move
     , isDragging : Bool
     }
 

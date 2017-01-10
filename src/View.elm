@@ -17,16 +17,37 @@ view model =
         , StyleLinks.mainStyle
         , div [ class "tc ma6" ]
             [ p [] [ text (toString model.currentTile) ]
-            , p [] [ text (toString (List.map .coord model.currentMove)) ]
+            , p [] [ text (showMove model.currentMove) ]
             , button [ onClick ShuffleTiles, class "mb5 br1 bn pv2 ph3 bg-light-blue dark-blue" ] [ text "shuffle" ]
             , (renderBoard model.currentMove model.tiles)
             ]
         ]
 
 
-renderBoard : List Tile -> List (List Tile) -> Html Msg
+showMove : Move -> String
+showMove move =
+    case move of
+        Empty ->
+            "No Move"
+
+        OneTile tile ->
+            ("One [" ++ toString tile.coord ++ "]")
+
+        Full tiles ->
+            "Full " ++ (toString (List.map .coord tiles))
+
+
+renderBoard : Move -> List (List Tile) -> Html Msg
 renderBoard currentMove tiles =
-    div [] (List.map (renderRow currentMove) tiles)
+    case currentMove of
+        Empty ->
+            div [] (List.map (renderRow []) tiles)
+
+        OneTile tile ->
+            div [] (List.map (renderRow [ tile ]) tiles)
+
+        Full moves ->
+            div [] (List.map (renderRow moves) tiles)
 
 
 renderRow : List Tile -> List Tile -> Html Msg

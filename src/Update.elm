@@ -10,7 +10,7 @@ import Directions exposing (validMove)
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [ [] ] Nothing [] False, generateRawTiles )
+    ( Model [ [] ] Nothing Empty False, generateRawTiles )
 
 
 generateRawTiles : Cmd Msg
@@ -52,7 +52,7 @@ update msg model =
             ( { model
                 | isDragging = False
                 , currentTile = Nothing
-                , currentMove = []
+                , currentMove = Empty
               }
             , Cmd.none
             )
@@ -61,18 +61,22 @@ update msg model =
             ( { model
                 | isDragging = True
                 , currentTile = Just tile
-                , currentMove = [ tile ]
+                , currentMove = OneTile tile
               }
             , Cmd.none
             )
 
         CheckTile tile ->
-            ( { model
-                | currentTile = (handleNextTile model tile)
-                , currentMove = (addToCurrentMove model tile)
-              }
-            , Cmd.none
-            )
+            let
+                ( currentTile, currentMove ) =
+                    handleMove model tile
+            in
+                ( { model
+                    | currentTile = currentTile
+                    , currentMove = currentMove
+                  }
+                , Cmd.none
+                )
 
 
 makeBoard : List (List Int) -> List (List Tile)
@@ -92,14 +96,36 @@ makeTile i j x =
     }
 
 
-addToCurrentMove : Model -> Tile -> List Tile
-addToCurrentMove model tile =
-    case (handleNextTile model tile) of
-        Just next ->
-            model.currentMove ++ [ next ]
+handleMove : Model -> Tile -> ( Maybe Tile, Move )
+handleMove model tile =
+    if model.isDragging then
+        ( (handleNextTile model tile), (addToCurrentMove model tile) )
+    else
+        ( model.currentTile, model.currentMove )
 
-        Nothing ->
-            model.currentMove
+
+addToCurrentMove : Model -> Tile -> Move
+addToCurrentMove model tile =
+    case model.currentMove of
+        Empty ->
+            OneTile tile
+
+        OneTile prevTile ->
+            if (validMove tile prevTile) then
+                Full [ prevTile, tile ]
+            else
+                model.currentMove
+
+        Full tiles ->
+            case model.currentTile of
+                Just prevTile ->
+                    if (validMove tile prevTile) then
+                        Full (tiles ++ [ tile ])
+                    else
+                        Full tiles
+
+                Nothing ->
+                    model.currentMove
 
 
 handleNextTile : Model -> Tile -> Maybe Tile
@@ -113,13 +139,7 @@ handleNextTile model next =
                     else
                         current
             in
-                if model.isDragging then
-                    Just nextTile
-                else
-                    Nothing
+                Just nextTile
 
         Nothing ->
-            if model.isDragging then
-                Just next
-            else
-                Nothing
+            Just next
