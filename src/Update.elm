@@ -132,14 +132,10 @@ handleNextTile : Model -> Tile -> Maybe Tile
 handleNextTile model next =
     case model.currentTile of
         Just current ->
-            let
-                nextTile =
-                    if (validMove next current) then
-                        next
-                    else
-                        current
-            in
-                Just nextTile
+            if (validMove next current) then
+                Just next
+            else
+                Just current
 
         Nothing ->
             Just next
