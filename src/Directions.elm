@@ -72,11 +72,11 @@ check a b fn =
 
 
 validDirection : Coord -> Coord -> Bool
-validDirection c1 c2 =
-    List.map (check c1 c2) directionsToCheck
+validDirection c2 c1 =
+    List.map (check c2 c1) directionsToCheck
         |> anyTrue
 
 
 validMove : Tile -> Tile -> Bool
-validMove t1 t2 =
-    sameValue t1 t2 && validDirection t1.coord t2.coord
+validMove t2 t1 =
+    sameValue t2 t1 && validDirection t2.coord t1.coord

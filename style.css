@@ -45,3 +45,7 @@ button {
 .transition-300 {
   transition: transform 0.3s ease;
 }
+
+.pointer {
+  cursor: pointer;
+}

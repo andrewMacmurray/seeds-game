@@ -20,7 +20,7 @@ type alias Model =
 
 
 type Msg
-    = RandomTiles (List (List Int))
+    = RawTiles (List (List Int))
     | ShuffleTiles
     | StopMove
     | CheckTile Tile

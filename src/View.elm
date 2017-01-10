@@ -37,12 +37,21 @@ renderRow currentMove row =
 renderTile : List Tile -> Tile -> Html Msg
 renderTile currentMove tile =
     div
-        [ class ("br-100 w2 h2 dib mv1 mh2 full-scale transition-300 " ++ (tileBackground tile.value) ++ " " ++ (renderDragging tile currentMove))
+        [ class "pv1 ph2 dib pointer"
         , onMouseDown (StartMove tile)
         , onMouseEnter (CheckTile tile)
         , onMouseUp StopMove
         ]
-        []
+        [ div
+            [ class
+                ("br-100 w2 h2 dib full-scale transition-300 "
+                    ++ (tileBackground tile.value)
+                    ++ " "
+                    ++ (renderDragging tile currentMove)
+                )
+            ]
+            []
+        ]
 
 
 tileBackground : Int -> String

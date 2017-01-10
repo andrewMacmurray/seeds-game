@@ -15,16 +15,16 @@ init =
 
 generateRawTiles : Cmd Msg
 generateRawTiles =
-    generate RandomTiles (list 8 (list 8 numberGenerator))
+    generate RawTiles (list 8 (list 8 numberGenerator))
 
 
 numberGenerator : Generator Int
 numberGenerator =
-    map percentToTileValue (int 1 100)
+    map probabilityToTileValue (int 1 100)
 
 
-percentToTileValue : Int -> Int
-percentToTileValue x =
+probabilityToTileValue : Int -> Int
+probabilityToTileValue x =
     if x > 80 then
         4
     else if x > 20 then
@@ -42,20 +42,47 @@ percentToTileValue x =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        RandomTiles tiles ->
-            ( { model | tiles = makeBoard tiles }, Cmd.none )
+        RawTiles tileValues ->
+            ( { model | tiles = makeBoard tileValues }, Cmd.none )
 
         ShuffleTiles ->
             ( model, generateRawTiles )
 
         StopMove ->
-            ( { model | isDragging = False, currentTile = Nothing, currentMove = [] }, Cmd.none )
+            ( { model
+                | isDragging = False
+                , currentTile = Nothing
+                , currentMove = []
+              }
+            , Cmd.none
+            )
 
         StartMove tile ->
-            ( { model | isDragging = True, currentTile = Just tile, currentMove = [ tile ] }, Cmd.none )
+            ( { model
+                | isDragging = True
+                , currentTile = Just tile
+                , currentMove = [ tile ]
+              }
+            , Cmd.none
+            )
 
         CheckTile tile ->
-            ( { model | currentTile = (handleNextTile model tile), currentMove = (addToCurrentMove model tile) }, Cmd.none )
+            ( { model
+                | currentTile = (handleNextTile model tile)
+                , currentMove = (addToCurrentMove model tile)
+              }
+            , Cmd.none
+            )
+
+
+makeBoard : List (List Int) -> List (List Tile)
+makeBoard board =
+    List.indexedMap makeRow board
+
+
+makeRow : Int -> List Int -> List Tile
+makeRow i row =
+    List.indexedMap (makeTile i) row
 
 
 makeTile : Int -> Int -> Int -> Tile
@@ -63,16 +90,6 @@ makeTile i j x =
     { value = x
     , coord = ( j, i )
     }
-
-
-makeTileRow : Int -> List Int -> List Tile
-makeTileRow i row =
-    List.indexedMap (makeTile i) row
-
-
-makeBoard : List (List Int) -> List (List Tile)
-makeBoard board =
-    List.indexedMap makeTileRow board
 
 
 addToCurrentMove : Model -> Tile -> List Tile
@@ -90,14 +107,14 @@ handleNextTile model next =
     case model.currentTile of
         Just current ->
             let
-                newTile =
+                nextTile =
                     if (validMove next current) then
                         next
                     else
                         current
             in
                 if model.isDragging then
-                    Just newTile
+                    Just nextTile
                 else
                     Nothing
 
