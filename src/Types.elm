@@ -14,6 +14,7 @@ type alias Tile =
 type Move
     = Empty
     | OneTile Tile
+    | Pair ( Tile, Tile )
     | Full (List Tile)
 
 

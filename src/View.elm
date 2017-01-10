@@ -33,21 +33,31 @@ showMove move =
         OneTile tile ->
             ("One [" ++ toString tile.coord ++ "]")
 
+        Pair ( t1, t2 ) ->
+            ("Pair [" ++ toString [ t1, t2 ] ++ "]")
+
         Full tiles ->
             "Full " ++ (toString (List.map .coord tiles))
 
 
 renderBoard : Move -> List (List Tile) -> Html Msg
 renderBoard currentMove tiles =
-    case currentMove of
-        Empty ->
-            div [] (List.map (renderRow []) tiles)
+    let
+        render xs =
+            List.map (renderRow xs) tiles
+    in
+        case currentMove of
+            Empty ->
+                div [] (render [])
 
-        OneTile tile ->
-            div [] (List.map (renderRow [ tile ]) tiles)
+            OneTile tile ->
+                div [] (render [ tile ])
 
-        Full moves ->
-            div [] (List.map (renderRow moves) tiles)
+            Pair ( t1, t2 ) ->
+                div [] (render [ t1, t2 ])
+
+            Full moves ->
+                div [] (render moves)
 
 
 renderRow : List Tile -> List Tile -> Html Msg

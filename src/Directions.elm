@@ -77,6 +77,23 @@ validDirection c2 c1 =
         |> anyTrue
 
 
-validMove : Tile -> Tile -> Bool
-validMove t2 t1 =
-    sameValue t2 t1 && validDirection t2.coord t1.coord
+checkCurrentMove : Tile -> Move -> Bool
+checkCurrentMove tile currentMove =
+    case currentMove of
+        Full moves ->
+            let
+                allButLast2 =
+                    List.take ((List.length moves) - 2) moves
+            in
+                List.member tile allButLast2
+                    |> not
+
+        _ ->
+            True
+
+
+validMove : Tile -> Tile -> Move -> Bool
+validMove t2 t1 currentMove =
+    sameValue t2 t1
+        && validDirection t2.coord t1.coord
+        && checkCurrentMove t2 currentMove

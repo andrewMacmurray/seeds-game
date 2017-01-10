@@ -3,6 +3,7 @@ module Update exposing (..)
 import Types exposing (..)
 import Random exposing (..)
 import Directions exposing (validMove)
+import List.Extra exposing (getAt)
 
 
 -- INIT
@@ -111,28 +112,65 @@ addToCurrentMove model tile =
             OneTile tile
 
         OneTile prevTile ->
-            if (validMove tile prevTile) then
-                Full [ prevTile, tile ]
+            if (validMove tile prevTile model.currentMove) then
+                Pair ( prevTile, tile )
+            else
+                model.currentMove
+
+        Pair ( t1, t2 ) ->
+            if (validMove tile t2 model.currentMove) then
+                handleRemove model tile
             else
                 model.currentMove
 
         Full tiles ->
             case model.currentTile of
                 Just prevTile ->
-                    if (validMove tile prevTile) then
-                        Full (tiles ++ [ tile ])
+                    if (validMove tile prevTile model.currentMove) then
+                        handleRemove model tile
                     else
-                        Full tiles
+                        model.currentMove
 
                 Nothing ->
                     model.currentMove
+
+
+handleRemove : Model -> Tile -> Move
+handleRemove model tile =
+    case model.currentMove of
+        Pair ( t1, t2 ) ->
+            if tile == t1 then
+                OneTile t1
+            else
+                Full [ t1, t2, tile ]
+
+        Full tiles ->
+            let
+                moveLength =
+                    List.length tiles
+
+                lastButTwo =
+                    getAt (moveLength - 2) tiles
+            in
+                case lastButTwo of
+                    Just t2 ->
+                        if tile == t2 then
+                            Full (List.take (moveLength - 1) tiles)
+                        else
+                            Full (tiles ++ [ tile ])
+
+                    Nothing ->
+                        model.currentMove
+
+        _ ->
+            model.currentMove
 
 
 handleNextTile : Model -> Tile -> Maybe Tile
 handleNextTile model next =
     case model.currentTile of
         Just current ->
-            if (validMove next current) then
+            if (validMove next current model.currentMove) then
                 Just next
             else
                 Just current
