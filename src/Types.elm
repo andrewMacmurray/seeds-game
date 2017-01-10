@@ -11,17 +11,24 @@ type alias Tile =
     }
 
 
+type Move
+    = Empty
+    | OneTile Tile
+    | Pair ( Tile, Tile )
+    | Full (List Tile)
+
+
 type alias Model =
     { tiles : List (List Tile)
     , currentTile : Maybe Tile
-    , currentMove : List Tile
+    , currentMove : Move
     , isDragging : Bool
     }
 
 
 type Msg
-    = RandomTiles (List (List Int))
+    = RawTiles (List (List Int))
     | ShuffleTiles
-    | StopDrag
+    | StopMove
     | CheckTile Tile
     | StartMove Tile

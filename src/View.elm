@@ -12,21 +12,52 @@ import StyleLinks
 
 view : Model -> Html Msg
 view model =
-    div [ onMouseUp StopDrag ]
+    div [ onMouseUp StopMove ]
         [ StyleLinks.tachyons
         , StyleLinks.mainStyle
         , div [ class "tc ma6" ]
             [ p [] [ text (toString model.currentTile) ]
-            , p [] [ text (toString (List.map .coord model.currentMove)) ]
+            , p [] [ text (showMove model.currentMove) ]
             , button [ onClick ShuffleTiles, class "mb5 br1 bn pv2 ph3 bg-light-blue dark-blue" ] [ text "shuffle" ]
             , (renderBoard model.currentMove model.tiles)
             ]
         ]
 
 
-renderBoard : List Tile -> List (List Tile) -> Html Msg
+showMove : Move -> String
+showMove move =
+    case move of
+        Empty ->
+            "No Move"
+
+        OneTile tile ->
+            ("One [" ++ toString tile.coord ++ "]")
+
+        Pair ( t1, t2 ) ->
+            ("Pair [" ++ toString [ t1, t2 ] ++ "]")
+
+        Full tiles ->
+            "Full " ++ (toString (List.map .coord tiles))
+
+
+renderBoard : Move -> List (List Tile) -> Html Msg
 renderBoard currentMove tiles =
-    div [] (List.map (renderRow currentMove) tiles)
+    let
+        render xs =
+            List.map (renderRow xs) tiles
+    in
+        case currentMove of
+            Empty ->
+                div [] (render [])
+
+            OneTile tile ->
+                div [] (render [ tile ])
+
+            Pair ( t1, t2 ) ->
+                div [] (render [ t1, t2 ])
+
+            Full moves ->
+                div [] (render moves)
 
 
 renderRow : List Tile -> List Tile -> Html Msg
@@ -37,12 +68,21 @@ renderRow currentMove row =
 renderTile : List Tile -> Tile -> Html Msg
 renderTile currentMove tile =
     div
-        [ class ("br-100 w2 h2 dib mv1 mh2 full-scale transition-300 " ++ (tileBackground tile.value) ++ " " ++ (renderDragging tile currentMove))
+        [ class "pv1 ph2 dib pointer"
         , onMouseDown (StartMove tile)
         , onMouseEnter (CheckTile tile)
-        , onMouseUp StopDrag
+        , onMouseUp StopMove
         ]
-        []
+        [ div
+            [ class
+                ("br-100 w2 h2 dib full-scale transition-300 "
+                    ++ (tileBackground tile.value)
+                    ++ " "
+                    ++ (renderDragging tile currentMove)
+                )
+            ]
+            []
+        ]
 
 
 tileBackground : Int -> String
