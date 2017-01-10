@@ -92,8 +92,28 @@ checkCurrentMove tile currentMove =
             True
 
 
-validMove : Tile -> Tile -> Move -> Bool
-validMove t2 t1 currentMove =
-    sameValue t2 t1
-        && validDirection t2.coord t1.coord
-        && checkCurrentMove t2 currentMove
+validMove : Model -> Tile -> Bool
+validMove { currentMove, currentTile } t2 =
+    let
+        checkAll t2 t1 currentMove =
+            sameValue t2 t1
+                && validDirection t2.coord t1.coord
+                && checkCurrentMove t2 currentMove
+    in
+        case currentMove of
+            Empty ->
+                True
+
+            OneTile t1 ->
+                checkAll t2 t1 currentMove
+
+            Pair ( _, t1 ) ->
+                checkAll t2 t1 currentMove
+
+            Full tiles ->
+                case currentTile of
+                    Just t1 ->
+                        checkAll t2 t1 currentMove
+
+                    Nothing ->
+                        False

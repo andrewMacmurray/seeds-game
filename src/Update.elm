@@ -107,31 +107,24 @@ handleMove model tile =
 
 addToCurrentMove : Model -> Tile -> Move
 addToCurrentMove model tile =
-    case model.currentMove of
-        Empty ->
-            OneTile tile
+    let
+        valid =
+            validMove model tile
+    in
+        case model.currentMove of
+            Empty ->
+                OneTile tile
 
-        OneTile prevTile ->
-            if (validMove tile prevTile model.currentMove) then
-                Pair ( prevTile, tile )
-            else
-                model.currentMove
+            OneTile prevTile ->
+                if (valid) then
+                    Pair ( prevTile, tile )
+                else
+                    model.currentMove
 
-        Pair ( t1, t2 ) ->
-            if (validMove tile t2 model.currentMove) then
-                handleRemove model tile
-            else
-                model.currentMove
-
-        Full tiles ->
-            case model.currentTile of
-                Just prevTile ->
-                    if (validMove tile prevTile model.currentMove) then
-                        handleRemove model tile
-                    else
-                        model.currentMove
-
-                Nothing ->
+            _ ->
+                if (valid) then
+                    handleRemove model tile
+                else
                     model.currentMove
 
 
@@ -145,32 +138,37 @@ handleRemove model tile =
                 Full [ t1, t2, tile ]
 
         Full tiles ->
-            let
-                moveLength =
-                    List.length tiles
-
-                lastButTwo =
-                    getAt (moveLength - 2) tiles
-            in
-                case lastButTwo of
-                    Just t2 ->
-                        if tile == t2 then
-                            Full (List.take (moveLength - 1) tiles)
-                        else
-                            Full (tiles ++ [ tile ])
-
-                    Nothing ->
-                        model.currentMove
+            handleFullRemove tile tiles model
 
         _ ->
             model.currentMove
+
+
+handleFullRemove : Tile -> List Tile -> Model -> Move
+handleFullRemove tile moveTiles model =
+    let
+        moveLength =
+            List.length moveTiles
+
+        lastButTwo =
+            getAt (moveLength - 2) moveTiles
+    in
+        case lastButTwo of
+            Just t2 ->
+                if tile == t2 then
+                    Full (List.take (moveLength - 1) moveTiles)
+                else
+                    Full (moveTiles ++ [ tile ])
+
+            Nothing ->
+                model.currentMove
 
 
 handleNextTile : Model -> Tile -> Maybe Tile
 handleNextTile model next =
     case model.currentTile of
         Just current ->
-            if (validMove next current model.currentMove) then
+            if (validMove model next) then
                 Just next
             else
                 Just current
