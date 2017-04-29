@@ -21,3 +21,23 @@ body {
 .pointer {
   cursor: pointer;
 }
+
+.all {
+  transition-property: all;
+}
+
+.ease {
+  transition-timing-function: ease;
+}
+
+.t3 {
+  transition-duration: 0.3s;
+}
+
+.scale-half {
+  transform: scale(0.5);
+}
+
+.scale-full {
+  transform: scale(1);
+}

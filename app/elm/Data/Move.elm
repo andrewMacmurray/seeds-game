@@ -29,27 +29,41 @@ handleCheckMove move model =
 
 
 addToMove : ( Coord, Tile ) -> Maybe Move -> Maybe Move
-addToMove current move =
+addToMove next move =
     let
         valid =
-            checkMove current move
+            checkMove next move
     in
         if valid then
-            move |> Maybe.map ((::) current)
+            move |> Maybe.map (\xs -> next :: xs)
         else
             move
 
 
 checkMove : ( Coord, Tile ) -> Maybe Move -> Bool
-checkMove ( c2, t2 ) move =
+checkMove (( c2, t2 ) as next) move =
     currentMove move
-        |> Maybe.map (\( c1, t1 ) -> validDirection c1 c2 && isSameType t1 t2)
+        |> Maybe.map (checkDirectionAndType next)
+        |> Maybe.map ((&&) (isUniqueMove next move))
         |> Maybe.withDefault False
 
 
-isSameType : Tile -> Tile -> Bool
-isSameType t1 t2 =
-    t1 == t2
+checkDirectionAndType : ( Coord, Tile ) -> ( Coord, Tile ) -> Bool
+checkDirectionAndType ( c2, t2 ) ( c1, t1 ) =
+    validDirection c1 c2 && t1 == t2
+
+
+isUniqueMove : ( Coord, Tile ) -> Maybe Move -> Bool
+isUniqueMove next move =
+    isInCurrentMove next move
+        |> not
+
+
+isInCurrentMove : ( Coord, Tile ) -> Maybe Move -> Bool
+isInCurrentMove next move =
+    move
+        |> Maybe.map (List.member next)
+        |> Maybe.withDefault False
 
 
 currentMove : Maybe Move -> Maybe ( Coord, Tile )

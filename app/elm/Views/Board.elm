@@ -1,5 +1,6 @@
 module Views.Board exposing (..)
 
+import Data.Move exposing (isInCurrentMove)
 import Data.Tiles exposing (tilePaddingMap, tileToCssClass)
 import Dict
 import Helpers.Style exposing (px)
@@ -39,11 +40,19 @@ renderTile model (( coord, tile ) as move) =
         , onMouseEnter <| CheckMove move
         ]
         [ div
-            [ class <| "br-100 absolute " ++ tileToCssClass tile
+            [ class <| "br-100 absolute all ease t3 " ++ tileToCssClass tile ++ " " ++ draggingClasses model move
             , style [ ( "padding", tilePaddingMap tile ) ]
             ]
             []
         ]
+
+
+draggingClasses : Model -> ( Coord, Tile ) -> String
+draggingClasses model coord =
+    if isInCurrentMove coord model.currentMove then
+        "scale-half"
+    else
+        "scale-full"
 
 
 baseTileStyles : Model -> List ( String, String )
