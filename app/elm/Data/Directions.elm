@@ -1,6 +1,6 @@
-module Data.Directions exposing (..)
+module Data.Directions exposing (validDirection)
 
-import Types exposing (..)
+import Model exposing (..)
 
 
 isLeft : Coord -> Coord -> Bool

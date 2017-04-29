@@ -1,6 +1,6 @@
 module Data.Tiles exposing (..)
 
-import Types exposing (..)
+import Model exposing (..)
 
 
 evenTiles : Int -> Tile

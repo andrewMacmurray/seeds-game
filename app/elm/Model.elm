@@ -1,13 +1,19 @@
-module Types exposing (..)
+module Model exposing (..)
 
 import Dict exposing (..)
 
 
 type alias Model =
     { board : Board
+    , isDragging : Bool
+    , currentMove : Maybe Move
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
     }
+
+
+type alias Move =
+    List ( Coord, Tile )
 
 
 type alias TileSettings =
@@ -17,8 +23,8 @@ type alias TileSettings =
 
 
 type alias BoardSettings =
-    { sizeX : Int
-    , sizeY : Int
+    { sizeY : Int
+    , sizeX : Int
     }
 
 
@@ -40,3 +46,6 @@ type Tile
 
 type Msg
     = RandomTiles (List Tile)
+    | StopMove
+    | StartMove ( Coord, Tile )
+    | CheckMove ( Coord, Tile )

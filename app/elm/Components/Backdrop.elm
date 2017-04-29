@@ -1,6 +1,6 @@
 module Components.Backdrop exposing (backdrop)
 
-import Types exposing (..)
+import Model exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 

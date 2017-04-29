@@ -5,7 +5,8 @@ import Dict
 import Helpers.Style exposing (px)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Types exposing (Coord, Model, Msg, Tile)
+import Html.Events exposing (onMouseDown, onMouseEnter)
+import Model exposing (..)
 
 
 renderBoard : Model -> Html Msg
@@ -30,10 +31,12 @@ boardWidth { tileSettings, boardSettings } =
 
 
 renderTile : Model -> ( Coord, Tile ) -> Html Msg
-renderTile model ( ( x, y ), tile ) =
+renderTile model (( coord, tile ) as move) =
     div
         [ style <| baseTileStyles model
         , class "dib flex items-center justify-center relative"
+        , onMouseDown <| StartMove move
+        , onMouseEnter <| CheckMove move
         ]
         [ div
             [ class <| "br-100 absolute " ++ tileToCssClass tile
