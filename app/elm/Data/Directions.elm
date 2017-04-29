@@ -1,11 +1,6 @@
-module Directions exposing (..)
+module Data.Directions exposing (..)
 
 import Types exposing (..)
-
-
-sameValue : Tile -> Tile -> Bool
-sameValue t1 t2 =
-    t1.value == t2.value
 
 
 isLeft : Coord -> Coord -> Bool
@@ -75,45 +70,3 @@ validDirection : Coord -> Coord -> Bool
 validDirection c2 c1 =
     List.map (check c2 c1) directionsToCheck
         |> anyTrue
-
-
-checkCurrentMove : Tile -> Move -> Bool
-checkCurrentMove tile currentMove =
-    case currentMove of
-        Full moves ->
-            let
-                allButLast2 =
-                    List.take ((List.length moves) - 2) moves
-            in
-                List.member tile allButLast2
-                    |> not
-
-        _ ->
-            True
-
-
-validMove : Model -> Tile -> Bool
-validMove { currentMove, currentTile } t2 =
-    let
-        checkAll t2 t1 currentMove =
-            sameValue t2 t1
-                && validDirection t2.coord t1.coord
-                && checkCurrentMove t2 currentMove
-    in
-        case currentMove of
-            Empty ->
-                True
-
-            OneTile t1 ->
-                checkAll t2 t1 currentMove
-
-            Pair ( _, t1 ) ->
-                checkAll t2 t1 currentMove
-
-            Full tiles ->
-                case currentTile of
-                    Just t1 ->
-                        checkAll t2 t1 currentMove
-
-                    Nothing ->
-                        False

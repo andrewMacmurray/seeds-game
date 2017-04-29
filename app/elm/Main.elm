@@ -1,16 +1,16 @@
 module Main exposing (..)
 
-import Html exposing (..)
 import Update exposing (..)
-import View exposing (..)
 import Types exposing (..)
+import View exposing (..)
+import Html exposing (..)
 
 
 main : Program Never Model Msg
 main =
     program
-        { view = view
-        , init = init
+        { init = init
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , view = view
+        , subscriptions = always Sub.none
         }
