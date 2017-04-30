@@ -66,7 +66,7 @@ check a b fn =
     fn a b
 
 
-validDirection : Coord -> Coord -> Bool
-validDirection c2 c1 =
+validDirection : Move -> Move -> Bool
+validDirection ( c2, _ ) ( c1, _ ) =
     List.map (check c2 c1) directionsToCheck
         |> anyTrue

@@ -1,13 +1,13 @@
 module Views.Board exposing (..)
 
-import Data.Move exposing (isInCurrentMove)
-import Data.Tiles exposing (tilePaddingMap, tileToCssClass)
-import Dict
-import Helpers.Style exposing (px)
+import Model exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter)
-import Model exposing (..)
+import Data.Moves exposing (isInCurrentMove)
+import Data.Tiles exposing (tilePaddingMap, tileColorMap)
+import Helpers.Style exposing (px, classes)
+import Dict
 
 
 renderBoard : Model -> Html Msg
@@ -31,23 +31,35 @@ boardWidth { tileSettings, boardSettings } =
     tileSettings.sizeX * boardSettings.sizeX
 
 
-renderTile : Model -> ( Coord, Tile ) -> Html Msg
+renderTile : Model -> Move -> Html Msg
 renderTile model (( coord, tile ) as move) =
     div
-        [ style <| baseTileStyles model
-        , class "dib flex items-center justify-center relative"
-        , onMouseDown <| StartMove move
-        , onMouseEnter <| CheckMove move
+        [ style (baseTileStyles model)
+        , class "dib flex items-center justify-center relative pointer"
+        , onMouseDown (StartMove move)
+        , onMouseEnter (CheckMove move)
         ]
-        [ div
-            [ class <| "br-100 absolute all ease t3 " ++ tileToCssClass tile ++ " " ++ draggingClasses model move
+        [ innerTile model move ]
+
+
+innerTile : Model -> Move -> Html Msg
+innerTile model (( _, tile ) as move) =
+    let
+        innerTileClasses =
+            classes
+                [ "br-100 absolute all ease t3"
+                , tileColorMap tile
+                , draggingClasses model move
+                ]
+    in
+        div
+            [ class innerTileClasses
             , style [ ( "padding", tilePaddingMap tile ) ]
             ]
             []
-        ]
 
 
-draggingClasses : Model -> ( Coord, Tile ) -> String
+draggingClasses : Model -> Move -> String
 draggingClasses model coord =
     if isInCurrentMove coord model.currentMove then
         "scale-half"

@@ -1,4 +1,4 @@
-# elmSeed
+# Elm Seed
 
 An implementation of [seeds](https://github.com/andrewMacmurray/seeds) in elm
 

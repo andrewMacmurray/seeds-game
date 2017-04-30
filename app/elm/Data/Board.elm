@@ -1,8 +1,8 @@
 module Data.Board exposing (..)
 
+import Model exposing (..)
 import Data.Tiles exposing (evenTiles)
 import Random exposing (..)
-import Model exposing (..)
 import Dict
 
 

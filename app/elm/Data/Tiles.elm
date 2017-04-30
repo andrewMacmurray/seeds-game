@@ -15,8 +15,8 @@ evenTiles n =
         Sun
 
 
-tileToCssClass : Tile -> String
-tileToCssClass tile =
+tileColorMap : Tile -> String
+tileColorMap tile =
     case tile of
         Rain ->
             "bg-light-blue"
