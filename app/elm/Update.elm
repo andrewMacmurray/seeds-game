@@ -1,9 +1,9 @@
 module Update exposing (..)
 
-import Data.Board exposing (generateTiles, handleGenerateTiles, handleMakeBoard)
-import Data.Move exposing (addToMove, handleCheckMove, handleStartMove, handleStopMove)
-import Dict
 import Model exposing (..)
+import Data.Board exposing (handleGenerateTiles, handleMakeBoard)
+import Data.Moves exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Dict
 
 
 init : ( Model, Cmd Msg )
@@ -15,7 +15,7 @@ initialState : Model
 initialState =
     { board = Dict.empty
     , isDragging = False
-    , currentMove = Nothing
+    , currentMove = []
     , boardSettings =
         { sizeY = 8
         , sizeX = 8
