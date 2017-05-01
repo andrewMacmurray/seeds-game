@@ -1,4 +1,4 @@
-module Data.Moves exposing (..)
+module Data.Moves.Check exposing (..)
 
 import Model exposing (..)
 import Data.Directions exposing (validDirection)

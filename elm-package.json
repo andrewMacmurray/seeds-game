@@ -1,13 +1,14 @@
 {
     "version": "1.0.0",
     "summary": "A connect the dots game with seeds",
-    "repository": "https://github.com/andrewMacmurray/elmseed.git",
+    "repository": "https://github.com/andrewMacmurray/elm-seed.git",
     "license": "MIT",
     "source-directories": [
         "app/elm"
     ],
     "exposed-modules": [],
     "dependencies": {
+        "elm-community/list-extra": "6.1.0 <= v < 7.0.0",
         "elm-lang/core": "5.1.1 <= v < 6.0.0",
         "elm-lang/html": "2.0.0 <= v < 3.0.0"
     },
