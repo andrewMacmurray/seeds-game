@@ -13,8 +13,8 @@ type alias Model =
 
 
 type alias TileSettings =
-    { sizeY : Int
-    , sizeX : Int
+    { sizeY : Float
+    , sizeX : Float
     }
 
 

@@ -4,7 +4,7 @@
   "description": "A connect the dots game with seeds",
   "scripts": {
     "watch": "npm run live & npm run css",
-    "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --pushstate",
+    "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --open --debug --pushstate",
     "css": "postcss --watch --config ./postcss-config.js"
   },
   "repository": {

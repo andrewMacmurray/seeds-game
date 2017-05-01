@@ -26,9 +26,9 @@ renderContainer model =
         ]
 
 
-boardWidth : Model -> Int
+boardWidth : Model -> Float
 boardWidth { tileSettings, boardSettings } =
-    tileSettings.sizeX * boardSettings.sizeX
+    tileSettings.sizeX * toFloat (boardSettings.sizeX)
 
 
 renderTile : Model -> Move -> Html Msg
@@ -36,10 +36,17 @@ renderTile model (( coord, tile ) as move) =
     div
         [ style (baseTileStyles model)
         , class "dib flex items-center justify-center relative pointer"
-        , onMouseDown (StartMove move)
-        , onMouseEnter (CheckMove move)
+        , hanldeMoveEvents model move
         ]
         [ innerTile model move ]
+
+
+hanldeMoveEvents : Model -> Move -> Attribute Msg
+hanldeMoveEvents model move =
+    if model.isDragging then
+        onMouseEnter (CheckMove move)
+    else
+        onMouseDown (StartMove move)
 
 
 innerTile : Model -> Move -> Html Msg

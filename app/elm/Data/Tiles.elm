@@ -5,11 +5,11 @@ import Model exposing (..)
 
 evenTiles : Int -> Tile
 evenTiles n =
-    if n > 80 then
+    if n > 90 then
         Seed
-    else if n > 20 then
+    else if n > 30 then
         SeedPod
-    else if n > 10 then
+    else if n > 20 then
         Rain
     else
         Sun
@@ -47,7 +47,7 @@ tilePaddingMap tile =
             "13px"
 
         Seed ->
-            "15px"
+            "17px"
 
         Blank ->
             ""

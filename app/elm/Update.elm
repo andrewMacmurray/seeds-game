@@ -16,14 +16,8 @@ initialState =
     { board = Dict.empty
     , isDragging = False
     , currentMove = []
-    , boardSettings =
-        { sizeY = 8
-        , sizeX = 8
-        }
-    , tileSettings =
-        { sizeY = 47
-        , sizeX = 52
-        }
+    , boardSettings = { sizeY = 8, sizeX = 8 }
+    , tileSettings = { sizeY = 51, sizeX = 55 }
     }
 
 
