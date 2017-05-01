@@ -3,10 +3,10 @@ module Views.Board exposing (..)
 import Model exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onMouseDown, onMouseEnter)
-import Data.Moves exposing (isInCurrentMove)
-import Data.Tiles exposing (tilePaddingMap, tileColorMap)
-import Helpers.Style exposing (px, classes)
+import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
+import Data.Moves.Check exposing (isInCurrentMove)
+import Data.Tiles exposing (tileColorMap, tilePaddingMap)
+import Helpers.Style exposing (classes, px)
 import Dict
 
 
@@ -26,9 +26,9 @@ renderContainer model =
         ]
 
 
-boardWidth : Model -> Int
+boardWidth : Model -> Float
 boardWidth { tileSettings, boardSettings } =
-    tileSettings.sizeX * boardSettings.sizeX
+    tileSettings.sizeX * toFloat (boardSettings.sizeX)
 
 
 renderTile : Model -> Move -> Html Msg
@@ -36,18 +36,33 @@ renderTile model (( coord, tile ) as move) =
     div
         [ style (baseTileStyles model)
         , class "dib flex items-center justify-center relative pointer"
-        , onMouseDown (StartMove move)
-        , onMouseEnter (CheckMove move)
+        , hanldeMoveEvents model move
         ]
         [ innerTile model move ]
 
 
+handleStop : Model -> List (Attribute Msg)
+handleStop model =
+    if model.isDragging then
+        [ onMouseUp StopMove ]
+    else
+        []
+
+
+hanldeMoveEvents : Model -> Move -> Attribute Msg
+hanldeMoveEvents model move =
+    if model.isDragging then
+        onMouseEnter (CheckMove move)
+    else
+        onMouseDown (StartMove move)
+
+
 innerTile : Model -> Move -> Html Msg
-innerTile model (( _, tile ) as move) =
+innerTile model (( coord, tile ) as move) =
     let
         innerTileClasses =
             classes
-                [ "br-100 absolute all ease t3"
+                [ "br-100 absolute"
                 , tileColorMap tile
                 , draggingClasses model move
                 ]
@@ -62,7 +77,7 @@ innerTile model (( _, tile ) as move) =
 draggingClasses : Model -> Move -> String
 draggingClasses model coord =
     if isInCurrentMove coord model.currentMove then
-        "scale-half"
+        "scale-half t3 ease"
     else
         "scale-full"
 

@@ -1,4 +1,4 @@
-module Data.Board exposing (..)
+module Data.Board.Make exposing (..)
 
 import Model exposing (..)
 import Data.Tiles exposing (evenTiles)
@@ -11,29 +11,28 @@ handleMakeBoard tileList ({ boardSettings } as model) =
     { model
         | board =
             makeBoard
-                boardSettings.sizeX
                 boardSettings.sizeY
+                boardSettings.sizeX
                 tileList
     }
 
 
 makeBoard : Int -> Int -> List Tile -> Board
-makeBoard x y tiles =
+makeBoard y x tiles =
     tiles
-        |> List.map2 (,) (makeCoords x y)
+        |> List.map2 (,) (makeCoords y x)
         |> Dict.fromList
 
 
 makeCoords : Int -> Int -> List Coord
-makeCoords x y =
-    List.map (rangeToCoord x) (makeRange y)
-        |> List.concat
+makeCoords y x =
+    List.concatMap (rangeToCoord y) (makeRange x)
 
 
 rangeToCoord : Int -> Int -> List Coord
-rangeToCoord x y =
-    makeRange x
-        |> List.map (\x -> ( x, y ))
+rangeToCoord y x =
+    makeRange y
+        |> List.map (\y -> ( x, y ))
 
 
 makeRange : Int -> List Int

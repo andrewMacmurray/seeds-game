@@ -4,19 +4,20 @@
   "description": "A connect the dots game with seeds",
   "scripts": {
     "watch": "npm run live & npm run css",
-    "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --pushstate",
-    "css": "postcss --watch --config ./postcss-config.js"
+    "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --open --debug --pushstate",
+    "css": "postcss --watch --config ./postcss-config.js",
+    "test": "cd ./test && elm-test Main.elm"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andrewMacmurray/elmSeed.git"
+    "url": "git+https://github.com/andrewMacmurray/elm-seed.git"
   },
   "author": "Andrew MacMurray",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andrewMacmurray/elmSeed/issues"
+    "url": "https://github.com/andrewMacmurray/elm-seed/issues"
   },
-  "homepage": "https://github.com/andrewMacmurray/elmSeed#readme",
+  "homepage": "https://github.com/andrewMacmurray/elm-seed#readme",
   "dependencies": {
     "elm": "^0.18.0",
     "tachyons-custom": "^4.5.4"

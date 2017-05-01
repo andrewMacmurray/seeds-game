@@ -13,8 +13,8 @@ type alias Model =
 
 
 type alias TileSettings =
-    { sizeY : Int
-    , sizeX : Int
+    { sizeY : Float
+    , sizeX : Float
     }
 
 
@@ -29,7 +29,15 @@ type alias Move =
 
 
 type alias Coord =
-    ( Int, Int )
+    ( Y, X )
+
+
+type alias Y =
+    Int
+
+
+type alias X =
+    Int
 
 
 type alias Board =

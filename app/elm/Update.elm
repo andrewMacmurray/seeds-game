@@ -1,8 +1,9 @@
 module Update exposing (..)
 
 import Model exposing (..)
-import Data.Board exposing (handleGenerateTiles, handleMakeBoard)
-import Data.Moves exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
+import Data.Board.Shift exposing (handleShiftBoard)
+import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Dict
 
 
@@ -16,14 +17,8 @@ initialState =
     { board = Dict.empty
     , isDragging = False
     , currentMove = []
-    , boardSettings =
-        { sizeY = 8
-        , sizeX = 8
-        }
-    , tileSettings =
-        { sizeY = 47
-        , sizeX = 52
-        }
+    , boardSettings = { sizeY = 8, sizeX = 8 }
+    , tileSettings = { sizeY = 51, sizeX = 55 }
     }
 
 
@@ -34,7 +29,7 @@ update msg model =
             (model |> handleMakeBoard tiles) ! []
 
         StopMove ->
-            (handleStopMove model) ! []
+            (model |> handleShiftBoard |> handleStopMove) ! []
 
         StartMove move ->
             (model |> handleStartMove move) ! []
