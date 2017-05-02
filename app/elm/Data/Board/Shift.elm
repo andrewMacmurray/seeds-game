@@ -34,6 +34,28 @@ shiftRow row =
         |> shiftTiles
 
 
+shiftTiles : ( List Coord, List Tile ) -> List Move
+shiftTiles ( coords, tiles ) =
+    tiles
+        |> sortByBlank
+        |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
+
+
+sortByBlank : List Tile -> List Tile
+sortByBlank tiles =
+    tiles
+        |> List.partition (\x -> x == Blank)
+        |> (\( a, b ) -> a ++ b)
+
+
+getXfromRow : List Coord -> Int
+getXfromRow coords =
+    coords
+        |> List.head
+        |> Maybe.map Tuple.second
+        |> Maybe.withDefault 0
+
+
 sameColumn : Move -> Move -> Bool
 sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
     x1 == x2
@@ -49,26 +71,9 @@ xCoord ( ( _, x ), _ ) =
     x
 
 
-shiftTiles : ( List Coord, List Tile ) -> List Move
-shiftTiles ( coords, tiles ) =
-    let
-        sorted =
-            tiles
-                |> List.partition ((==) Blank)
-                |> (\( a, b ) -> a ++ b)
-
-        x =
-            List.head coords
-                |> Maybe.map Tuple.second
-                |> Maybe.withDefault 0
-    in
-        List.indexedMap (\i tile -> ( ( i, x ), tile )) sorted
-
-
 removeTiles : List Move -> Board -> Board
 removeTiles moves board =
-    board
-        |> Dict.map (convertToBlank moves)
+    board |> Dict.map (convertToBlank moves)
 
 
 convertToBlank : List Move -> Coord -> Tile -> Tile
