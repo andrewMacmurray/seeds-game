@@ -11,7 +11,7 @@ expectedShiftedBoard =
 
 shiftedTileList : List (List Tile)
 shiftedTileList =
-    [ [ Blank, Blank, Blank, SeedPod ]
+    [ [ Empty, Empty, Empty, SeedPod ]
     , [ SeedPod, SeedPod, SeedPod, SeedPod ]
     , [ SeedPod, SeedPod, Sun, Sun ]
     , [ SeedPod, Rain, SeedPod, SeedPod ]
@@ -26,16 +26,16 @@ dummyValidMove1 =
     in
         validCoords
             |> List.map (\coord -> Dict.get coord dummyBoard)
-            |> List.map (Maybe.withDefault Blank)
+            |> List.map (Maybe.withDefault Empty)
             |> List.map2 (,) validCoords
 
 
 boardAfterMove1 : Board
 boardAfterMove1 =
     dummyBoard
-        |> Dict.insert ( 3, 0 ) Blank
-        |> Dict.insert ( 3, 1 ) Blank
-        |> Dict.insert ( 3, 2 ) Blank
+        |> Dict.insert ( 3, 0 ) Empty
+        |> Dict.insert ( 3, 1 ) Empty
+        |> Dict.insert ( 3, 2 ) Empty
 
 
 dummyBoard : Board

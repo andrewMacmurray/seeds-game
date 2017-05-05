@@ -20,6 +20,7 @@ handleMakeBoard tileList ({ boardSettings } as model) =
 makeBoard : Int -> Int -> List Tile -> Board
 makeBoard y x tiles =
     tiles
+        |> List.map Static
         |> List.map2 (,) (makeCoords y x)
         |> Dict.fromList
 

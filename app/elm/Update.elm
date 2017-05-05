@@ -1,10 +1,10 @@
 module Update exposing (..)
 
-import Model exposing (..)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
-import Data.Board.Shift exposing (handleShiftBoard)
+import Data.Board.Shift exposing (handleLeavingTiles)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Dict
+import Model exposing (..)
 
 
 init : ( Model, Cmd Msg )
@@ -29,7 +29,7 @@ update msg model =
             (model |> handleMakeBoard tiles) ! []
 
         StopMove ->
-            (model |> handleShiftBoard |> handleStopMove) ! []
+            (model |> handleLeavingTiles |> handleStopMove) ! []
 
         StartMove move ->
             (model |> handleStartMove move) ! []

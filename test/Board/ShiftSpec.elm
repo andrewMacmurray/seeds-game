@@ -11,7 +11,7 @@ all : Test
 all =
     describe "shiftSpec suite"
         [ removeTilesSpec
-        , convertToBlankSpec
+        , convertToEmptySpec
         ]
 
 
@@ -35,15 +35,15 @@ removeTilesSpec =
         ]
 
 
-convertToBlankSpec : Test
-convertToBlankSpec =
-    describe "convertToBlank"
+convertToEmptySpec : Test
+convertToEmptySpec =
+    describe "convertToEmpty"
         [ test "if coord is in the current move turns tile blank" <|
             \() ->
-                convertToBlank dummyValidMove1 ( 3, 0 ) Sun
-                    |> Expect.equal Blank
+                convertToEmpty dummyValidMove1 ( 3, 0 ) Sun
+                    |> Expect.equal Empty
         , test "returns original tile if coord is not in move" <|
             \() ->
-                convertToBlank dummyValidMove1 ( 1, 3 ) Rain
+                convertToEmpty dummyValidMove1 ( 1, 3 ) Rain
                     |> Expect.equal Rain
         ]

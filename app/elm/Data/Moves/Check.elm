@@ -71,4 +71,4 @@ currentMove currentMoves =
 
 emptyMove : Move
 emptyMove =
-    ( ( 0, 0 ), Blank )
+    ( ( 0, 0 ), Empty )

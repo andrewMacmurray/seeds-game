@@ -1,17 +1,17 @@
 module Data.Board.Shift exposing (..)
 
-import Model exposing (..)
-import List.Extra exposing (groupWhile)
+import Data.Tiles exposing (isLeaving, setToLeaving)
 import Dict
+import List.Extra exposing (elemIndex, groupWhile)
+import Model exposing (..)
 
 
-handleShiftBoard : Model -> Model
-handleShiftBoard model =
+handleLeavingTiles : Model -> Model
+handleLeavingTiles model =
     let
         newBoard =
             model.board
-                |> removeTiles model.currentMove
-                |> shiftBoard
+                |> setLeavingTiles model.currentMove
     in
         { model | board = newBoard }
 
@@ -31,20 +31,20 @@ shiftRow row =
     row
         |> List.sortBy yCoord
         |> List.unzip
-        |> shiftTiles
+        |> shiftLeavingTiles
 
 
-shiftTiles : ( List Coord, List Tile ) -> List Move
-shiftTiles ( coords, tiles ) =
+shiftLeavingTiles : ( List Coord, List TileState ) -> List Move
+shiftLeavingTiles ( coords, tiles ) =
     tiles
-        |> sortByBlank
+        |> sortByLeaving
         |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
 
 
-sortByBlank : List Tile -> List Tile
-sortByBlank tiles =
+sortByLeaving : List TileState -> List TileState
+sortByLeaving tiles =
     tiles
-        |> List.partition (\x -> x == Blank)
+        |> List.partition isLeaving
         |> (\( a, b ) -> a ++ b)
 
 
@@ -61,27 +61,29 @@ sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
     x1 == x2
 
 
-yCoord : ( Coord, Tile ) -> Int
+yCoord : ( Coord, TileState ) -> Int
 yCoord ( ( y, _ ), _ ) =
     y
 
 
-xCoord : ( Coord, Tile ) -> Int
+xCoord : ( Coord, TileState ) -> Int
 xCoord ( ( _, x ), _ ) =
     x
 
 
-removeTiles : List Move -> Board -> Board
-removeTiles moves board =
-    board |> Dict.map (convertToBlank moves)
+setLeavingTiles : List Move -> Board -> Board
+setLeavingTiles moves board =
+    board |> Dict.map (setTileToLeaving moves)
 
 
-convertToBlank : List Move -> Coord -> Tile -> Tile
-convertToBlank moves coordToCheck tile =
-    if List.member coordToCheck (coordsList moves) then
-        Blank
-    else
-        tile
+setTileToLeaving : List Move -> Coord -> TileState -> TileState
+setTileToLeaving moves coordToCheck tile =
+    case elemIndex coordToCheck (coordsList moves) of
+        Just i ->
+            setToLeaving i tile
+
+        Nothing ->
+            tile
 
 
 coordsList : List Move -> List Coord

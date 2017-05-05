@@ -15,8 +15,51 @@ evenTiles n =
         Sun
 
 
-tileColorMap : Tile -> String
-tileColorMap tile =
+leavingOrder : TileState -> Int
+leavingOrder tileState =
+    case tileState of
+        Leaving _ order ->
+            order
+
+        _ ->
+            0
+
+
+isLeaving : TileState -> Bool
+isLeaving tileState =
+    case tileState of
+        Leaving _ _ ->
+            True
+
+        _ ->
+            False
+
+
+setToLeaving : Int -> TileState -> TileState
+setToLeaving order tileState =
+    case tileState of
+        Static tile ->
+            Leaving tile order
+
+        x ->
+            x
+
+
+tileColorMap : TileState -> String
+tileColorMap tileState =
+    case tileState of
+        Static tile ->
+            tileColors tile
+
+        Leaving tile _ ->
+            tileColors tile
+
+        _ ->
+            ""
+
+
+tileColors : Tile -> String
+tileColors tile =
     case tile of
         Rain ->
             "bg-light-blue"
@@ -30,12 +73,22 @@ tileColorMap tile =
         Seed ->
             "bg-seed"
 
-        Blank ->
+
+tilePaddingMap : TileState -> String
+tilePaddingMap tileState =
+    case tileState of
+        Static tile ->
+            tilePadding tile
+
+        Leaving tile _ ->
+            tilePadding tile
+
+        _ ->
             ""
 
 
-tilePaddingMap : Tile -> String
-tilePaddingMap tile =
+tilePadding : Tile -> String
+tilePadding tile =
     case tile of
         Rain ->
             "9px"
@@ -48,6 +101,3 @@ tilePaddingMap tile =
 
         Seed ->
             "17px"
-
-        Blank ->
-            ""

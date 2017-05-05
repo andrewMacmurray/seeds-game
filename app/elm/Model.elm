@@ -25,7 +25,7 @@ type alias BoardSettings =
 
 
 type alias Move =
-    ( Coord, Tile )
+    ( Coord, TileState )
 
 
 type alias Coord =
@@ -40,8 +40,18 @@ type alias X =
     Int
 
 
+type alias LeavingOrder =
+    Int
+
+
 type alias Board =
-    Dict Coord Tile
+    Dict Coord TileState
+
+
+type TileState
+    = Static Tile
+    | Leaving Tile LeavingOrder
+    | Empty
 
 
 type Tile
@@ -49,7 +59,6 @@ type Tile
     | Sun
     | SeedPod
     | Seed
-    | Blank
 
 
 type Msg
