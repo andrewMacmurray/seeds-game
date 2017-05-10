@@ -44,6 +44,14 @@ type alias LeavingOrder =
     Int
 
 
+type alias FallingDistance =
+    Int
+
+
+type alias GrowingOrder =
+    Int
+
+
 type alias Board =
     Dict Coord TileState
 
@@ -51,6 +59,8 @@ type alias Board =
 type TileState
     = Static Tile
     | Leaving Tile LeavingOrder
+    | Falling Tile FallingDistance
+    | Growing Tile GrowingOrder
     | Empty
 
 
@@ -64,5 +74,10 @@ type Tile
 type Msg
     = RandomTiles (List Tile)
     | StopMove
+    | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
     | CheckMove Move
+    | SetLeavingTiles
+    | SetFallingTiles
+    | ShiftBoard
+    | ResetMove

@@ -1,29 +1,30 @@
 module Data.Board.Shift exposing (..)
 
-import Data.Tiles exposing (isLeaving, setToLeaving)
+import Data.Tiles exposing (isLeaving)
 import Dict
-import List.Extra exposing (elemIndex, groupWhile)
+import List.Extra exposing (groupWhile)
 import Model exposing (..)
 
 
-handleLeavingTiles : Model -> Model
-handleLeavingTiles model =
-    let
-        newBoard =
-            model.board
-                |> setLeavingTiles model.currentMove
-    in
-        { model | board = newBoard }
+handleShiftBoard : Model -> Model
+handleShiftBoard model =
+    { model | board = shiftBoard model.board }
 
 
 shiftBoard : Board -> Board
 shiftBoard board =
     board
+        |> groupBoardByColumn
+        |> List.concatMap shiftRow
+        |> Dict.fromList
+
+
+groupBoardByColumn : Board -> List (List Move)
+groupBoardByColumn board =
+    board
         |> Dict.toList
         |> List.sortBy xCoord
         |> groupWhile sameColumn
-        |> List.concatMap shiftRow
-        |> Dict.fromList
 
 
 shiftRow : List Move -> List Move
@@ -31,11 +32,11 @@ shiftRow row =
     row
         |> List.sortBy yCoord
         |> List.unzip
-        |> shiftLeavingTiles
+        |> shiftRemainingTiles
 
 
-shiftLeavingTiles : ( List Coord, List TileState ) -> List Move
-shiftLeavingTiles ( coords, tiles ) =
+shiftRemainingTiles : ( List Coord, List TileState ) -> List Move
+shiftRemainingTiles ( coords, tiles ) =
     tiles
         |> sortByLeaving
         |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
@@ -69,23 +70,3 @@ yCoord ( ( y, _ ), _ ) =
 xCoord : ( Coord, TileState ) -> Int
 xCoord ( ( _, x ), _ ) =
     x
-
-
-setLeavingTiles : List Move -> Board -> Board
-setLeavingTiles moves board =
-    board |> Dict.map (setTileToLeaving moves)
-
-
-setTileToLeaving : List Move -> Coord -> TileState -> TileState
-setTileToLeaving moves coordToCheck tile =
-    case elemIndex coordToCheck (coordsList moves) of
-        Just i ->
-            setToLeaving i tile
-
-        Nothing ->
-            tile
-
-
-coordsList : List Move -> List Coord
-coordsList moves =
-    moves |> List.map Tuple.first

@@ -4,7 +4,8 @@
     "repository": "https://github.com/andrewMacmurray/elm-seed.git",
     "license": "MIT",
     "source-directories": [
-        "app/elm"
+        "app/elm",
+        "../elm-delay/src"
     ],
     "exposed-modules": [],
     "dependencies": {

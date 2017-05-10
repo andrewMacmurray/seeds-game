@@ -21,7 +21,7 @@ renderBoard model =
 renderContainer : Model -> List (Html Msg) -> Html Msg
 renderContainer model =
     div
-        [ class "relative z-3 center mt5 flex flex-wrap"
+        [ class "relative z-3 center mt6 flex flex-wrap"
         , style [ ( "width", px <| boardWidth model ) ]
         ]
 
@@ -37,8 +37,9 @@ renderTile model (( coord, tile ) as move) =
         [ style <|
             styles
                 [ baseTileStyles model
-                , tileCoordsStyles model coord
-                , leavingStyles move
+                , [ tileCoordsStyles model coord ]
+                , leavingStyles model move
+                , fallingStyles model move
                 ]
         , class "dib flex items-center justify-center absolute pointer"
         , hanldeMoveEvents model move
@@ -46,13 +47,13 @@ renderTile model (( coord, tile ) as move) =
         [ innerTile model move ]
 
 
-tileCoordsStyles : Model -> Coord -> List ( String, String )
+tileCoordsStyles : Model -> Coord -> ( String, String )
 tileCoordsStyles model coord =
     let
         ( y, x ) =
             tilePosition model coord
     in
-        [ ( "transform", translate x y ) ]
+        ( "transform", translate x y )
 
 
 tilePosition : Model -> Coord -> ( Float, Float )
@@ -95,15 +96,65 @@ innerTile model (( coord, tile ) as move) =
             []
 
 
-leavingStyles : Move -> List ( String, String )
-leavingStyles ( ( y, x ), tile ) =
+fallingStyles : Model -> Move -> List ( String, String )
+fallingStyles model ( coord, tile ) =
+    let
+        ( y, x ) =
+            tilePosition model coord
+    in
+        case tile of
+            Falling tile distance ->
+                [ ( "transform", translate x (y + (model.tileSettings.sizeY * (toFloat distance))) )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            _ ->
+                []
+
+
+leavingStyles : Model -> Move -> List ( String, String )
+leavingStyles model (( ( y, x ), tile ) as move) =
     if isLeaving tile then
-        [ ( "transform", translate x ((-8 + y) * 10) )
+        [ handleExitDirection move model
         , ( "transition", "0.8s ease" )
         , ( "transition-delay", (toString ((leavingOrder tile) * 80)) ++ "ms" )
         ]
     else
         []
+
+
+handleExitDirection : Move -> Model -> ( String, String )
+handleExitDirection ( coord, tile ) model =
+    case tile of
+        Leaving Rain _ ->
+            ( "transform", exitLeft )
+
+        Leaving Sun _ ->
+            ( "transform", exitRight model )
+
+        Leaving Seed _ ->
+            ( "transform", exitTop model )
+
+        Growing SeedPod _ ->
+            ( "transform", "scale(4)" )
+
+        _ ->
+            tileCoordsStyles model coord
+
+
+exitRight : Model -> String
+exitRight model =
+    translate (model.tileSettings.sizeX * (toFloat (model.boardSettings.sizeX - 1))) -80
+
+
+exitTop : Model -> String
+exitTop model =
+    translate ((model.tileSettings.sizeX * 4) - (model.tileSettings.sizeX / 2)) -80
+
+
+exitLeft : String
+exitLeft =
+    translate 0 -80
 
 
 draggingClasses : Model -> Move -> String

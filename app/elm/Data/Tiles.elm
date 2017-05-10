@@ -35,11 +35,47 @@ isLeaving tileState =
             False
 
 
+setToFalling : Int -> TileState -> TileState
+setToFalling fallingDistance tileState =
+    case tileState of
+        Static tile ->
+            Falling tile fallingDistance
+
+        x ->
+            x
+
+
+setLeavingToEmpty : TileState -> TileState
+setLeavingToEmpty tileState =
+    case tileState of
+        Leaving _ _ ->
+            Empty
+
+        x ->
+            x
+
+
+setToGrowing : Int -> TileState -> TileState
+setToGrowing order tileState =
+    case tileState of
+        Static SeedPod ->
+            Growing SeedPod order
+
+        x ->
+            x
+
+
 setToLeaving : Int -> TileState -> TileState
 setToLeaving order tileState =
     case tileState of
-        Static tile ->
-            Leaving tile order
+        Static Rain ->
+            Leaving Rain order
+
+        Static Sun ->
+            Leaving Sun order
+
+        Static Seed ->
+            Leaving Seed order
 
         x ->
             x
@@ -53,6 +89,31 @@ tileColorMap tileState =
 
         Leaving tile _ ->
             tileColors tile
+
+        Falling tile _ ->
+            tileColors tile
+
+        Growing tile _ ->
+            tileColors tile
+
+        _ ->
+            ""
+
+
+tilePaddingMap : TileState -> String
+tilePaddingMap tileState =
+    case tileState of
+        Static tile ->
+            tilePadding tile
+
+        Leaving tile _ ->
+            tilePadding tile
+
+        Falling tile _ ->
+            tilePadding tile
+
+        Growing tile _ ->
+            tilePadding tile
 
         _ ->
             ""
@@ -72,19 +133,6 @@ tileColors tile =
 
         Seed ->
             "bg-seed"
-
-
-tilePaddingMap : TileState -> String
-tilePaddingMap tileState =
-    case tileState of
-        Static tile ->
-            tilePadding tile
-
-        Leaving tile _ ->
-            tilePadding tile
-
-        _ ->
-            ""
 
 
 tilePadding : Tile -> String

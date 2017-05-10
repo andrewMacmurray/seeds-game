@@ -1,8 +1,11 @@
 module Update exposing (..)
 
+import Data.Board.Falling exposing (handleFallingTiles)
+import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
-import Data.Board.Shift exposing (handleLeavingTiles)
+import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Delay
 import Dict
 import Model exposing (..)
 
@@ -29,7 +32,29 @@ update msg model =
             (model |> handleMakeBoard tiles) ! []
 
         StopMove ->
-            (model |> handleLeavingTiles |> handleStopMove) ! []
+            model
+                ! [ Delay.start StopMoveSequence
+                        [ ( 0, SetLeavingTiles )
+                        , ( 500, SetFallingTiles )
+                        , ( 500, ShiftBoard )
+                        , ( 500, ResetMove )
+                        ]
+                  ]
+
+        SetLeavingTiles ->
+            (model |> handleLeavingTiles) ! []
+
+        SetFallingTiles ->
+            (model |> handleFallingTiles) ! []
+
+        ShiftBoard ->
+            (model |> handleRemoveLeavingTiles |> handleShiftBoard) ! []
+
+        ResetMove ->
+            (model |> handleStopMove) ! []
+
+        StopMoveSequence msgs ->
+            Delay.handleSequence StopMoveSequence msgs update model
 
         StartMove move ->
             (model |> handleStartMove move) ! []
