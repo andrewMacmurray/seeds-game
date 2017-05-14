@@ -2,10 +2,12 @@ module Update exposing (..)
 
 import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
 import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
+import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Moves.Type exposing (currentMoveType)
 import Delay
 import Dict
 import Model exposing (..)
@@ -36,16 +38,28 @@ update msg model =
             (model |> handleAddNewTiles tiles) ! []
 
         StopMove ->
-            model
-                ! [ Delay.start StopMoveSequence
-                        [ ( 0, SetLeavingTiles )
-                        , ( 0, ResetMove )
-                        , ( 500, SetFallingTiles )
-                        , ( 500, ShiftBoard )
-                        , ( 500, MakeNewTiles )
-                        , ( 500, ResetEntering )
-                        ]
-                  ]
+            case currentMoveType model.currentMove of
+                SeedPod ->
+                    model
+                        ! [ Delay.start StopMoveSequence
+                                [ ( 0, SetGrowingSeedPods )
+                                , ( 0, ResetMove )
+                                , ( 800, GrowPodsToSeeds )
+                                , ( 500, ResetGrowingSeeds )
+                                ]
+                          ]
+
+                _ ->
+                    model
+                        ! [ Delay.start StopMoveSequence
+                                [ ( 0, SetLeavingTiles )
+                                , ( 0, ResetMove )
+                                , ( 500, SetFallingTiles )
+                                , ( 500, ShiftBoard )
+                                , ( 500, MakeNewTiles )
+                                , ( 500, ResetEntering )
+                                ]
+                          ]
 
         SetLeavingTiles ->
             (model |> handleLeavingTiles) ! []
@@ -60,6 +74,15 @@ update msg model =
                 |> handleRemoveLeavingTiles
             )
                 ! []
+
+        SetGrowingSeedPods ->
+            (model |> handleSetGrowingSeedPods) ! []
+
+        GrowPodsToSeeds ->
+            (model |> handleGrowSeedPods) ! []
+
+        ResetGrowingSeeds ->
+            (model |> handleResetGrowing) ! []
 
         MakeNewTiles ->
             model ! [ makeNewTiles model.board ]

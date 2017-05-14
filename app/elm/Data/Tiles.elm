@@ -5,7 +5,7 @@ import Model exposing (..)
 
 evenTiles : Int -> Tile
 evenTiles n =
-    if n > 95 then
+    if n > 65 then
         SeedPod
     else if n > 30 then
         Seed
@@ -13,6 +13,16 @@ evenTiles n =
         Rain
     else
         Sun
+
+
+growingOrder : TileState -> Int
+growingOrder tileState =
+    case tileState of
+        Growing _ order ->
+            order
+
+        _ ->
+            0
 
 
 leavingOrder : TileState -> Int
@@ -33,6 +43,26 @@ isLeaving tileState =
 
         _ ->
             False
+
+
+setGrowingToStatic : TileState -> TileState
+setGrowingToStatic tileState =
+    case tileState of
+        Growing Seed _ ->
+            Static Seed
+
+        x ->
+            x
+
+
+growSeedPod : TileState -> TileState
+growSeedPod tileState =
+    case tileState of
+        Growing SeedPod n ->
+            Growing Seed n
+
+        x ->
+            x
 
 
 setToFalling : Int -> TileState -> TileState

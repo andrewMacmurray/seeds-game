@@ -1,7 +1,7 @@
 module Views.Board exposing (..)
 
 import Data.Moves.Check exposing (isInCurrentMove)
-import Data.Tiles exposing (isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
+import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
 import Helpers.Style exposing (classes, px, styles, translate)
 import Html exposing (..)
@@ -40,6 +40,7 @@ renderTile model (( coord, tile ) as move) =
                 , [ tileCoordsStyles model coord ]
                 , leavingStyles model move
                 , fallingStyles model move
+                , growingStyles model move
                 , enteringStyles model move
                 ]
         , class "dib flex items-center justify-center absolute pointer"
@@ -125,6 +126,38 @@ enteringStyles model ( coord, tile ) =
                 []
 
 
+growingStyles : Model -> Move -> List ( String, String )
+growingStyles model ( coord, tile ) =
+    let
+        ( y, x ) =
+            tilePosition model coord
+
+        transitionDelay =
+            growingOrder tile
+                |> (\x -> x % 5)
+                |> (*) 70
+                |> toString
+                |> (\x -> x ++ "ms")
+    in
+        case tile of
+            Growing SeedPod _ ->
+                [ ( "transform", (translate x y) ++ " scale(4)" )
+                , ( "opacity", "0" )
+                , ( "transition", "0.4s ease" )
+                , ( "transition-delay", transitionDelay )
+                ]
+
+            Growing Seed _ ->
+                [ ( "transform", (translate x y) ++ " scale(1)" )
+                , ( "opacity", "1" )
+                , ( "transition", "0.4s ease" )
+                , ( "transition-delay", transitionDelay )
+                ]
+
+            _ ->
+                []
+
+
 fallingStyles : Model -> Move -> List ( String, String )
 fallingStyles model ( coord, tile ) =
     let
@@ -164,21 +197,18 @@ handleExitDirection ( coord, tile ) model =
         Leaving Seed _ ->
             ( "transform", exitTop model )
 
-        Growing SeedPod _ ->
-            ( "transform", "scale(4)" )
-
         _ ->
             tileCoordsStyles model coord
 
 
 exitRight : Model -> String
 exitRight model =
-    translate (model.tileSettings.sizeX * (toFloat (model.boardSettings.sizeX - 1))) -80
+    translate (model.tileSettings.sizeY * (toFloat (model.boardSettings.sizeY - 1))) -80
 
 
 exitTop : Model -> String
 exitTop model =
-    translate ((model.tileSettings.sizeX * 4) - (model.tileSettings.sizeX / 2)) -80
+    translate ((model.tileSettings.sizeY * ((toFloat model.boardSettings.sizeY) / 2)) - (model.tileSettings.sizeX / 2)) -80
 
 
 exitLeft : String

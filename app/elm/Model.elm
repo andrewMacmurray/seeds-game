@@ -81,6 +81,9 @@ type Msg
     | CheckMove Move
     | SetLeavingTiles
     | SetFallingTiles
+    | SetGrowingSeedPods
+    | GrowPodsToSeeds
+    | ResetGrowingSeeds
     | MakeNewTiles
     | ResetEntering
     | ShiftBoard

@@ -1,6 +1,7 @@
 module Data.Board.Leaving exposing (..)
 
-import Data.Tiles exposing (setLeavingToEmpty, setToGrowing, setToLeaving)
+import Data.Moves.Check exposing (coordsList)
+import Data.Tiles exposing (setLeavingToEmpty, setToLeaving)
 import Dict
 import List.Extra exposing (elemIndex)
 import Model exposing (..)
@@ -34,12 +35,7 @@ setTileToLeaving : List Move -> Coord -> TileState -> TileState
 setTileToLeaving moves coordToCheck tile =
     case elemIndex coordToCheck (coordsList moves) of
         Just i ->
-            setToLeaving i tile |> setToGrowing i
+            setToLeaving i tile
 
         Nothing ->
             tile
-
-
-coordsList : List Move -> List Coord
-coordsList moves =
-    moves |> List.map Tuple.first
