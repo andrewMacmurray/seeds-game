@@ -37,7 +37,7 @@ renderTile model (( coord, tile ) as move) =
         [ style <|
             styles
                 [ baseTileStyles model
-                , [ tileCoordsStyles model coord ]
+                , tileCoordsStyles model coord
                 , leavingStyles model move
                 , fallingStyles model move
                 , growingStyles model move
@@ -51,13 +51,13 @@ renderTile model (( coord, tile ) as move) =
         [ innerTile model move ]
 
 
-tileCoordsStyles : Model -> Coord -> ( String, String )
+tileCoordsStyles : Model -> Coord -> List ( String, String )
 tileCoordsStyles model coord =
     let
         ( y, x ) =
             tilePosition model coord
     in
-        ( "transform", translate x y )
+        [ ( "transform", translate x y ) ]
 
 
 tilePosition : Model -> Coord -> ( Float, Float )
@@ -177,25 +177,26 @@ fallingStyles model ( coord, tile ) =
 leavingStyles : Model -> Move -> List ( String, String )
 leavingStyles model (( ( y, x ), tile ) as move) =
     if isLeaving tile then
-        [ handleExitDirection move model
-        , ( "transition", "0.8s ease" )
-        , ( "transition-delay", (toString (((leavingOrder tile) % 5) * 80)) ++ "ms" )
-        ]
+        handleExitDirection move model
+            |> (++)
+                [ ( "transition", "0.8s ease" )
+                , ( "transition-delay", (toString (((leavingOrder tile) % 5) * 80)) ++ "ms" )
+                ]
     else
         []
 
 
-handleExitDirection : Move -> Model -> ( String, String )
+handleExitDirection : Move -> Model -> List ( String, String )
 handleExitDirection ( coord, tile ) model =
     case tile of
         Leaving Rain _ ->
-            ( "transform", exitLeft )
+            [ ( "transform", exitLeft ) ]
 
         Leaving Sun _ ->
-            ( "transform", exitRight model )
+            [ ( "transform", exitRight model ) ]
 
         Leaving Seed _ ->
-            ( "transform", exitTop model )
+            [ ( "transform", exitTop model ) ]
 
         _ ->
             tileCoordsStyles model coord
