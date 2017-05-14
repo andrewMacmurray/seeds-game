@@ -69,6 +69,11 @@ currentMove currentMoves =
         |> Maybe.withDefault emptyMove
 
 
+coordsList : List Move -> List Coord
+coordsList moves =
+    moves |> List.map Tuple.first
+
+
 emptyMove : Move
 emptyMove =
-    ( ( 0, 0 ), Blank )
+    ( ( 0, 0 ), Empty )

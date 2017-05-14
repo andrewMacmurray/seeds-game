@@ -20,6 +20,7 @@ handleMakeBoard tileList ({ boardSettings } as model) =
 makeBoard : Int -> Int -> List Tile -> Board
 makeBoard y x tiles =
     tiles
+        |> List.map Static
         |> List.map2 (,) (makeCoords y x)
         |> Dict.fromList
 
@@ -50,7 +51,7 @@ handleGenerateTiles { boardSettings } =
 generateTiles : Int -> Int -> Cmd Msg
 generateTiles x y =
     Random.list (x * y) tileGenerator
-        |> Random.generate RandomTiles
+        |> Random.generate InitTiles
 
 
 tileGenerator : Generator Tile

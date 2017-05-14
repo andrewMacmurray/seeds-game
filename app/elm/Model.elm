@@ -25,7 +25,7 @@ type alias BoardSettings =
 
 
 type alias Move =
-    ( Coord, Tile )
+    ( Coord, TileState )
 
 
 type alias Coord =
@@ -40,8 +40,29 @@ type alias X =
     Int
 
 
+type alias LeavingOrder =
+    Int
+
+
+type alias FallingDistance =
+    Int
+
+
+type alias GrowingOrder =
+    Int
+
+
 type alias Board =
-    Dict Coord Tile
+    Dict Coord TileState
+
+
+type TileState
+    = Static Tile
+    | Leaving Tile LeavingOrder
+    | Falling Tile FallingDistance
+    | Entering Tile
+    | Growing Tile GrowingOrder
+    | Empty
 
 
 type Tile
@@ -49,11 +70,21 @@ type Tile
     | Sun
     | SeedPod
     | Seed
-    | Blank
 
 
 type Msg
-    = RandomTiles (List Tile)
+    = InitTiles (List Tile)
+    | AddTiles (List Tile)
     | StopMove
+    | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
     | CheckMove Move
+    | SetLeavingTiles
+    | SetFallingTiles
+    | SetGrowingSeedPods
+    | GrowPodsToSeeds
+    | ResetGrowingSeeds
+    | MakeNewTiles
+    | ResetEntering
+    | ShiftBoard
+    | ResetMove

@@ -1,29 +1,30 @@
 module Data.Board.Shift exposing (..)
 
-import Model exposing (..)
-import List.Extra exposing (groupWhile)
+import Data.Tiles exposing (isLeaving)
 import Dict
+import List.Extra exposing (groupWhile)
+import Model exposing (..)
 
 
 handleShiftBoard : Model -> Model
 handleShiftBoard model =
-    let
-        newBoard =
-            model.board
-                |> removeTiles model.currentMove
-                |> shiftBoard
-    in
-        { model | board = newBoard }
+    { model | board = shiftBoard model.board }
 
 
 shiftBoard : Board -> Board
 shiftBoard board =
     board
+        |> groupBoardByColumn
+        |> List.concatMap shiftRow
+        |> Dict.fromList
+
+
+groupBoardByColumn : Board -> List (List Move)
+groupBoardByColumn board =
+    board
         |> Dict.toList
         |> List.sortBy xCoord
         |> groupWhile sameColumn
-        |> List.concatMap shiftRow
-        |> Dict.fromList
 
 
 shiftRow : List Move -> List Move
@@ -31,20 +32,20 @@ shiftRow row =
     row
         |> List.sortBy yCoord
         |> List.unzip
-        |> shiftTiles
+        |> shiftRemainingTiles
 
 
-shiftTiles : ( List Coord, List Tile ) -> List Move
-shiftTiles ( coords, tiles ) =
+shiftRemainingTiles : ( List Coord, List TileState ) -> List Move
+shiftRemainingTiles ( coords, tiles ) =
     tiles
-        |> sortByBlank
+        |> sortByLeaving
         |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
 
 
-sortByBlank : List Tile -> List Tile
-sortByBlank tiles =
+sortByLeaving : List TileState -> List TileState
+sortByLeaving tiles =
     tiles
-        |> List.partition (\x -> x == Blank)
+        |> List.partition isLeaving
         |> (\( a, b ) -> a ++ b)
 
 
@@ -61,29 +62,11 @@ sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
     x1 == x2
 
 
-yCoord : ( Coord, Tile ) -> Int
+yCoord : ( Coord, TileState ) -> Int
 yCoord ( ( y, _ ), _ ) =
     y
 
 
-xCoord : ( Coord, Tile ) -> Int
+xCoord : ( Coord, TileState ) -> Int
 xCoord ( ( _, x ), _ ) =
     x
-
-
-removeTiles : List Move -> Board -> Board
-removeTiles moves board =
-    board |> Dict.map (convertToBlank moves)
-
-
-convertToBlank : List Move -> Coord -> Tile -> Tile
-convertToBlank moves coordToCheck tile =
-    if List.member coordToCheck (coordsList moves) then
-        Blank
-    else
-        tile
-
-
-coordsList : List Move -> List Coord
-coordsList moves =
-    moves |> List.map Tuple.first

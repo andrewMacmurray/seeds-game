@@ -1,10 +1,16 @@
 module Update exposing (..)
 
-import Model exposing (..)
+import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
+import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
+import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
+import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
-import Data.Board.Shift exposing (handleShiftBoard)
+import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Moves.Type exposing (currentMoveType)
+import Delay
 import Dict
+import Model exposing (..)
 
 
 init : ( Model, Cmd Msg )
@@ -25,11 +31,70 @@ initialState =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        RandomTiles tiles ->
+        InitTiles tiles ->
             (model |> handleMakeBoard tiles) ! []
 
+        AddTiles tiles ->
+            (model |> handleAddNewTiles tiles) ! []
+
         StopMove ->
-            (model |> handleShiftBoard |> handleStopMove) ! []
+            case currentMoveType model.currentMove of
+                SeedPod ->
+                    model
+                        ! [ Delay.start StopMoveSequence
+                                [ ( 0, SetGrowingSeedPods )
+                                , ( 0, ResetMove )
+                                , ( 800, GrowPodsToSeeds )
+                                , ( 600, ResetGrowingSeeds )
+                                ]
+                          ]
+
+                _ ->
+                    model
+                        ! [ Delay.start StopMoveSequence
+                                [ ( 0, SetLeavingTiles )
+                                , ( 0, ResetMove )
+                                , ( 500, SetFallingTiles )
+                                , ( 500, ShiftBoard )
+                                , ( 500, MakeNewTiles )
+                                , ( 500, ResetEntering )
+                                ]
+                          ]
+
+        SetLeavingTiles ->
+            (model |> handleLeavingTiles) ! []
+
+        SetFallingTiles ->
+            (model |> handleFallingTiles) ! []
+
+        ShiftBoard ->
+            (model
+                |> handleShiftBoard
+                |> handleResetFallingTiles
+                |> handleRemoveLeavingTiles
+            )
+                ! []
+
+        SetGrowingSeedPods ->
+            (model |> handleSetGrowingSeedPods) ! []
+
+        GrowPodsToSeeds ->
+            (model |> handleGrowSeedPods) ! []
+
+        ResetGrowingSeeds ->
+            (model |> handleResetGrowing) ! []
+
+        MakeNewTiles ->
+            model ! [ makeNewTiles model.board ]
+
+        ResetEntering ->
+            (model |> handleResetEntering) ! []
+
+        ResetMove ->
+            (model |> handleStopMove) ! []
+
+        StopMoveSequence msgs ->
+            Delay.handleSequence StopMoveSequence msgs update model
 
         StartMove move ->
             (model |> handleStartMove move) ! []
