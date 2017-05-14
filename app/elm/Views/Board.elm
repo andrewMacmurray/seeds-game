@@ -40,9 +40,12 @@ renderTile model (( coord, tile ) as move) =
                 , [ tileCoordsStyles model coord ]
                 , leavingStyles model move
                 , fallingStyles model move
+                , enteringStyles model move
                 ]
         , class "dib flex items-center justify-center absolute pointer"
         , hanldeMoveEvents model move
+          -- debug id
+        , id <| toString coord
         ]
         [ innerTile model move ]
 
@@ -93,7 +96,33 @@ innerTile model (( coord, tile ) as move) =
             [ class innerTileClasses
             , style [ ( "padding", tilePaddingMap tile ) ]
             ]
-            []
+            [ debugTile coord ]
+
+
+debugTile : Coord -> Html Msg
+debugTile coord =
+    p [ class "absolute left-0 right-0 f6 no-select mid-gray dn" ] [ text <| toString coord ]
+
+
+enteringStyles : Model -> Move -> List ( String, String )
+enteringStyles model ( coord, tile ) =
+    let
+        ( y, x ) =
+            tilePosition model coord
+    in
+        case tile of
+            Empty ->
+                [ ( "transform", translate x -1000 )
+                , ( "transition", "0.5s ease" )
+                ]
+
+            Entering tile ->
+                [ ( "transform", translate x y )
+                , ( "transition", "0.5s ease" )
+                ]
+
+            _ ->
+                []
 
 
 fallingStyles : Model -> Move -> List ( String, String )
@@ -117,7 +146,7 @@ leavingStyles model (( ( y, x ), tile ) as move) =
     if isLeaving tile then
         [ handleExitDirection move model
         , ( "transition", "0.8s ease" )
-        , ( "transition-delay", (toString ((leavingOrder tile) * 80)) ++ "ms" )
+        , ( "transition-delay", (toString (((leavingOrder tile) % 5) * 80)) ++ "ms" )
         ]
     else
         []

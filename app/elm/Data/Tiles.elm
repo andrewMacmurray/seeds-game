@@ -5,10 +5,10 @@ import Model exposing (..)
 
 evenTiles : Int -> Tile
 evenTiles n =
-    if n > 90 then
-        Seed
-    else if n > 30 then
+    if n > 95 then
         SeedPod
+    else if n > 30 then
+        Seed
     else if n > 20 then
         Rain
     else
@@ -40,6 +40,26 @@ setToFalling fallingDistance tileState =
     case tileState of
         Static tile ->
             Falling tile fallingDistance
+
+        x ->
+            x
+
+
+setEnteringToStatic : TileState -> TileState
+setEnteringToStatic tileState =
+    case tileState of
+        Entering tile ->
+            Static tile
+
+        x ->
+            x
+
+
+setFallingToStatic : TileState -> TileState
+setFallingToStatic tileState =
+    case tileState of
+        Falling tile _ ->
+            Static tile
 
         x ->
             x
@@ -93,6 +113,9 @@ tileColorMap tileState =
         Falling tile _ ->
             tileColors tile
 
+        Entering tile ->
+            tileColors tile
+
         Growing tile _ ->
             tileColors tile
 
@@ -110,6 +133,9 @@ tilePaddingMap tileState =
             tilePadding tile
 
         Falling tile _ ->
+            tilePadding tile
+
+        Entering tile ->
             tilePadding tile
 
         Growing tile _ ->

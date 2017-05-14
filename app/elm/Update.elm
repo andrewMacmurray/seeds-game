@@ -1,6 +1,7 @@
 module Update exposing (..)
 
-import Data.Board.Falling exposing (handleFallingTiles)
+import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
+import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
@@ -28,16 +29,21 @@ initialState =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        RandomTiles tiles ->
+        InitTiles tiles ->
             (model |> handleMakeBoard tiles) ! []
+
+        AddTiles tiles ->
+            (model |> handleAddNewTiles tiles) ! []
 
         StopMove ->
             model
                 ! [ Delay.start StopMoveSequence
                         [ ( 0, SetLeavingTiles )
+                        , ( 0, ResetMove )
                         , ( 500, SetFallingTiles )
                         , ( 500, ShiftBoard )
-                        , ( 500, ResetMove )
+                        , ( 500, MakeNewTiles )
+                        , ( 500, ResetEntering )
                         ]
                   ]
 
@@ -48,7 +54,18 @@ update msg model =
             (model |> handleFallingTiles) ! []
 
         ShiftBoard ->
-            (model |> handleRemoveLeavingTiles |> handleShiftBoard) ! []
+            (model
+                |> handleShiftBoard
+                |> handleResetFallingTiles
+                |> handleRemoveLeavingTiles
+            )
+                ! []
+
+        MakeNewTiles ->
+            model ! [ makeNewTiles model.board ]
+
+        ResetEntering ->
+            (model |> handleResetEntering) ! []
 
         ResetMove ->
             (model |> handleStopMove) ! []

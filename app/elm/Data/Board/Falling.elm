@@ -1,13 +1,23 @@
 module Data.Board.Falling exposing (..)
 
-import Data.Tiles exposing (isLeaving, setToFalling)
+import Data.Tiles exposing (isLeaving, setFallingToStatic, setToFalling)
 import Dict
 import Model exposing (..)
+
+
+handleResetFallingTiles : Model -> Model
+handleResetFallingTiles model =
+    { model | board = resetFallingTiles model.board }
 
 
 handleFallingTiles : Model -> Model
 handleFallingTiles model =
     { model | board = markFallingTiles model.board }
+
+
+resetFallingTiles : Board -> Board
+resetFallingTiles board =
+    board |> Dict.map (\_ tile -> setFallingToStatic tile)
 
 
 markFallingTiles : Board -> Board

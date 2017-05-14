@@ -51,7 +51,7 @@ handleGenerateTiles { boardSettings } =
 generateTiles : Int -> Int -> Cmd Msg
 generateTiles x y =
     Random.list (x * y) tileGenerator
-        |> Random.generate RandomTiles
+        |> Random.generate InitTiles
 
 
 tileGenerator : Generator Tile

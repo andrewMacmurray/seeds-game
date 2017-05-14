@@ -60,6 +60,7 @@ type TileState
     = Static Tile
     | Leaving Tile LeavingOrder
     | Falling Tile FallingDistance
+    | Entering Tile
     | Growing Tile GrowingOrder
     | Empty
 
@@ -72,12 +73,15 @@ type Tile
 
 
 type Msg
-    = RandomTiles (List Tile)
+    = InitTiles (List Tile)
+    | AddTiles (List Tile)
     | StopMove
     | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
     | CheckMove Move
     | SetLeavingTiles
     | SetFallingTiles
+    | MakeNewTiles
+    | ResetEntering
     | ShiftBoard
     | ResetMove
