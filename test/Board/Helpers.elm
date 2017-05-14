@@ -1,60 +1,66 @@
 module Board.Helpers exposing (..)
 
-import Model exposing (..)
 import Dict
+import Model exposing (..)
 
 
-expectedShiftedBoard : Board
-expectedShiftedBoard =
-    makeDummyBoard shiftedTileList
-
-
-shiftedTileList : List (List Tile)
-shiftedTileList =
-    [ [ Empty, Empty, Empty, SeedPod ]
-    , [ SeedPod, SeedPod, SeedPod, SeedPod ]
-    , [ SeedPod, SeedPod, Sun, Sun ]
-    , [ SeedPod, Rain, SeedPod, SeedPod ]
+boardAfter : Board
+boardAfter =
+    [ tileRow1 |> addCoords 0
+    , tileRow2 |> addCoords 1
+    , shiftedTileRow3 |> addCoords 2
     ]
-
-
-dummyValidMove1 : List Move
-dummyValidMove1 =
-    let
-        validCoords =
-            [ ( 3, 0 ), ( 3, 1 ), ( 3, 2 ) ]
-    in
-        validCoords
-            |> List.map (\coord -> Dict.get coord dummyBoard)
-            |> List.map (Maybe.withDefault Empty)
-            |> List.map2 (,) validCoords
-
-
-boardAfterMove1 : Board
-boardAfterMove1 =
-    dummyBoard
-        |> Dict.insert ( 3, 0 ) Empty
-        |> Dict.insert ( 3, 1 ) Empty
-        |> Dict.insert ( 3, 2 ) Empty
-
-
-dummyBoard : Board
-dummyBoard =
-    makeDummyBoard dummyTileList
-
-
-makeDummyBoard : List (List Tile) -> Board
-makeDummyBoard tileList =
-    tileList
-        |> List.indexedMap (\y row -> List.indexedMap (\x tile -> ( ( y, x ), tile )) row)
         |> List.concat
         |> Dict.fromList
 
 
-dummyTileList : List (List Tile)
-dummyTileList =
-    [ [ SeedPod, SeedPod, SeedPod, SeedPod ]
-    , [ SeedPod, SeedPod, Sun, SeedPod ]
-    , [ SeedPod, Rain, SeedPod, SeedPod, Sun ]
-    , [ SeedPod, SeedPod, SeedPod, SeedPod ]
+boardBefore : Board
+boardBefore =
+    [ tileRow1 |> addCoords 0
+    , tileRow2 |> addCoords 1
+    , tileRow3 |> addCoords 2
     ]
+        |> List.concat
+        |> Dict.fromList
+
+
+tileRow1 : List TileState
+tileRow1 =
+    [ Static SeedPod
+    , Static SeedPod
+    , Static SeedPod
+    ]
+
+
+tileRow2 : List TileState
+tileRow2 =
+    [ Static SeedPod
+    , Static Sun
+    , Static SeedPod
+    ]
+
+
+shiftedTileRow3 : List TileState
+shiftedTileRow3 =
+    [ Leaving Sun 0
+    , Leaving Sun 1
+    , Static Rain
+    ]
+
+
+tileRow3 : List TileState
+tileRow3 =
+    [ Static Rain
+    , Leaving Sun 0
+    , Leaving Sun 1
+    ]
+
+
+addCoords : Int -> List TileState -> List Move
+addCoords rowIndex tiles =
+    tiles |> List.indexedMap (addCoord rowIndex)
+
+
+addCoord : Int -> Int -> TileState -> Move
+addCoord x y tile =
+    ( ( y, x ), tile )

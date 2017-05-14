@@ -1,49 +1,62 @@
 module Board.ShiftSpec exposing (..)
 
-import Expect
-import Test exposing (..)
 import Board.Helpers exposing (..)
-import Model exposing (..)
 import Data.Board.Shift exposing (..)
+import Expect
+import List.Extra exposing (getAt)
+import Model exposing (..)
+import Test exposing (..)
 
 
 all : Test
 all =
     describe "shiftSpec suite"
-        [ removeTilesSpec
-        , convertToEmptySpec
+        [ shiftBoardSpec
+        , shiftRowSpec
+        , sortByLeavingSpec
         ]
 
 
 shiftBoardSpec : Test
 shiftBoardSpec =
     describe "shiftBoard"
-        [ test "shifts tiles to bottom and blanks to top" <|
+        [ test "shifts leaving tiles correctly in board" <|
             \() ->
-                shiftBoard boardAfterMove1
-                    |> Expect.equal expectedShiftedBoard
+                shiftBoard boardBefore
+                    |> Expect.equal boardAfter
         ]
 
 
-removeTilesSpec : Test
-removeTilesSpec =
-    describe "removeTiles"
-        [ test "turns move tiles on board blank" <|
+shiftRowSpec : Test
+shiftRowSpec =
+    describe "shiftRow"
+        [ test "moves the tiles to the beginning of the list but keeps coords same" <|
             \() ->
-                removeTiles dummyValidMove1 dummyBoard
-                    |> Expect.equal boardAfterMove1
+                shiftRow (tileRow3 |> addCoords 0)
+                    |> List.head
+                    |> Expect.equal (Just ( ( 0, 0 ), Leaving Sun 0 ))
+        , test "moves the tiles to the beginning of the list but keeps coords same" <|
+            \() ->
+                shiftRow (tileRow3 |> addCoords 0)
+                    |> (getAt 1)
+                    |> Expect.equal (Just ( ( 1, 0 ), Leaving Sun 1 ))
+        , test "leaves row as is if no leaving tiles" <|
+            \() ->
+                shiftRow (tileRow2 |> addCoords 0)
+                    |> Expect.equal (tileRow2 |> addCoords 0)
         ]
 
 
-convertToEmptySpec : Test
-convertToEmptySpec =
-    describe "convertToEmpty"
-        [ test "if coord is in the current move turns tile blank" <|
+sortByLeavingSpec : Test
+sortByLeavingSpec =
+    describe "sortByLeaving"
+        [ test "moves leaving tiles to the beginning of a list" <|
             \() ->
-                convertToEmpty dummyValidMove1 ( 3, 0 ) Sun
-                    |> Expect.equal Empty
-        , test "returns original tile if coord is not in move" <|
+                sortByLeaving tileRow3
+                    |> List.head
+                    |> Expect.equal (Just (Leaving Sun 0))
+        , test "leaves row as is if no leaving tiles" <|
             \() ->
-                convertToEmpty dummyValidMove1 ( 1, 3 ) Rain
-                    |> Expect.equal Rain
+                sortByLeaving tileRow2
+                    |> Expect.equal tileRow2
         ]
