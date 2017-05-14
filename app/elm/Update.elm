@@ -45,7 +45,7 @@ update msg model =
                                 [ ( 0, SetGrowingSeedPods )
                                 , ( 0, ResetMove )
                                 , ( 800, GrowPodsToSeeds )
-                                , ( 500, ResetGrowingSeeds )
+                                , ( 600, ResetGrowingSeeds )
                                 ]
                           ]
 
