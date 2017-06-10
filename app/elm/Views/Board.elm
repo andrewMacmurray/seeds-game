@@ -40,8 +40,6 @@ renderTile model (( coord, tile ) as move) =
                 , tileCoordsStyles model coord
                 , leavingStyles model move
                 , fallingStyles model move
-                , growingStyles model move
-                , enteringStyles model move
                 ]
         , class "dib flex items-center justify-center absolute pointer"
         , hanldeMoveEvents model move
@@ -95,7 +93,12 @@ innerTile model (( coord, tile ) as move) =
     in
         div
             [ class innerTileClasses
-            , style [ ( "padding", tilePaddingMap tile ) ]
+            , style <|
+                styles
+                    [ [ ( "padding", tilePaddingMap tile ) ]
+                    , growingStyles model move
+                    , enteringStyles model move
+                    ]
             ]
             [ debugTile coord ]
 
@@ -112,14 +115,8 @@ enteringStyles model ( coord, tile ) =
             tilePosition model coord
     in
         case tile of
-            Empty ->
-                [ ( "transform", translate x -1000 )
-                , ( "transition", "0.5s ease" )
-                ]
-
             Entering tile ->
-                [ ( "transform", translate x y )
-                , ( "transition", "0.5s ease" )
+                [ ( "animation", "bounce 0.5s ease" )
                 ]
 
             _ ->
@@ -141,17 +138,15 @@ growingStyles model ( coord, tile ) =
     in
         case tile of
             Growing SeedPod _ ->
-                [ ( "transform", (translate x y) ++ " scale(4)" )
+                [ ( "transform", "scale(4)" )
                 , ( "opacity", "0" )
                 , ( "transition", "0.4s ease" )
                 , ( "transition-delay", transitionDelay )
+                , ( "pointer-events", "none" )
                 ]
 
             Growing Seed _ ->
-                [ ( "transform", (translate x y) ++ " scale(1)" )
-                , ( "opacity", "1" )
-                , ( "transition", "0.4s ease" )
-                , ( "transition-delay", transitionDelay )
+                [ ( "animation", "bulge 0.5s ease" )
                 ]
 
             _ ->

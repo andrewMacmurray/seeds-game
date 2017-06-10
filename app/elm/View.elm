@@ -1,9 +1,9 @@
 module View exposing (..)
 
-import Model exposing (..)
-import Html exposing (..)
 import Components.Backdrop exposing (backdrop)
-import Views.Board exposing (renderBoard, handleStop)
+import Html exposing (..)
+import Model exposing (..)
+import Views.Board exposing (handleStop, renderBoard)
 
 
 view : Model -> Html Msg

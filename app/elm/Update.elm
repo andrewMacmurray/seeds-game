@@ -8,14 +8,16 @@ import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Data.Moves.Type exposing (currentMoveType)
+import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
+import Helpers.Animation exposing (bulge, bounces)
 import Model exposing (..)
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialState ! [ handleGenerateTiles initialState ]
+    initialState ! [ handleGenerateTiles initialState, addCssAnimations <| String.join " " [ bounces, bulge ] ]
 
 
 initialState : Model
@@ -56,7 +58,7 @@ update msg model =
                                 , ( 0, ResetMove )
                                 , ( 500, SetFallingTiles )
                                 , ( 500, ShiftBoard )
-                                , ( 500, MakeNewTiles )
+                                , ( 0, MakeNewTiles )
                                 , ( 500, ResetEntering )
                                 ]
                           ]
