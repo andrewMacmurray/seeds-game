@@ -21,7 +21,7 @@ init : ( Model, Cmd Msg )
 init =
     initialState
         ! [ handleGenerateTiles initialState
-          , addCssAnimations <| String.join " " [ bounces, bulge, fall ]
+          , addCssAnimations [ bounces, bulge, fall ]
           , getWindowSize
           ]
 

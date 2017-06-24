@@ -1,4 +1,11 @@
 port module Data.Ports exposing (..)
 
 
-port addCssAnimations : String -> Cmd msg
+addCssAnimations : List String -> Cmd msg
+addCssAnimations animations =
+    animations
+        |> String.join " "
+        |> addCssAnimations_
+
+
+port addCssAnimations_ : String -> Cmd msg

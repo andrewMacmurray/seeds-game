@@ -15,7 +15,7 @@
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
 
-    app.ports.addCssAnimations.subscribe(function (animations) {
+    app.ports.addCssAnimations_.subscribe(function (animations) {
       var style = document.createElement('style')
       style.textContent = animations
       document.body.appendChild(style)
