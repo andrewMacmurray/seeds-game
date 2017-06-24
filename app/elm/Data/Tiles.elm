@@ -153,7 +153,7 @@ tileColorMap tileState =
             ""
 
 
-tilePaddingMap : TileState -> String
+tilePaddingMap : TileState -> ( String, String )
 tilePaddingMap tileState =
     case tileState of
         Static tile ->
@@ -172,7 +172,7 @@ tilePaddingMap tileState =
             tilePadding tile
 
         _ ->
-            ""
+            ( "", "" )
 
 
 tileColors : Tile -> String
@@ -191,17 +191,17 @@ tileColors tile =
             "bg-seed"
 
 
-tilePadding : Tile -> String
+tilePadding : Tile -> ( String, String )
 tilePadding tile =
     case tile of
         Rain ->
-            "9px"
+            ( "padding", "9px" )
 
         Sun ->
-            "9px"
+            ( "padding", "9px" )
 
         SeedPod ->
-            "13px"
+            ( "padding", "13px" )
 
         Seed ->
-            "17px"
+            ( "padding", "17px" )

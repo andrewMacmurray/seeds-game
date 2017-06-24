@@ -11,7 +11,7 @@ import Data.Moves.Type exposing (currentMoveType)
 import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
-import Utils.Animation exposing (bounces, bulge, fall)
+import Styles.Animations exposing (bounces, bulge, fall)
 import Utils.Window exposing (getWindowSize)
 import Model exposing (..)
 import Window exposing (resizes)
