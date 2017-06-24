@@ -3,11 +3,12 @@ module Views.Board exposing (..)
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
-import Helpers.Style exposing (classes, px, styles, translate)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
+import Utils.Style exposing (classes, px, styles, translate)
+import Utils.Window exposing (boardOffsetTop)
 
 
 renderBoard : Model -> Html Msg
@@ -21,8 +22,11 @@ renderBoard model =
 renderContainer : Model -> List (Html Msg) -> Html Msg
 renderContainer model =
     div
-        [ class "relative z-3 center mt6 flex flex-wrap"
-        , style [ ( "width", px <| boardWidth model ) ]
+        [ class "relative z-3 center flex flex-wrap"
+        , style
+            [ ( "width", px <| boardWidth model )
+            , boardOffsetTop model
+            ]
         ]
 
 
@@ -39,7 +43,6 @@ renderTile model (( coord, tile ) as move) =
                 [ baseTileStyles model
                 , tileCoordsStyles model coord
                 , leavingStyles model move
-                , fallingStyles model move
                 ]
         , class "dib flex items-center justify-center absolute pointer"
         , hanldeMoveEvents model move
@@ -98,6 +101,7 @@ innerTile model (( coord, tile ) as move) =
                     [ [ ( "padding", tilePaddingMap tile ) ]
                     , growingStyles model move
                     , enteringStyles model move
+                    , fallingStyles model move
                     ]
             ]
             [ debugTile coord ]
@@ -161,9 +165,13 @@ fallingStyles model ( coord, tile ) =
     in
         case tile of
             Falling tile distance ->
-                [ ( "transform", translate x (y + (model.tileSettings.sizeY * (toFloat distance))) )
-                , ( "transition", "0.3s ease" )
-                ]
+                let
+                    _ =
+                        Debug.log "" (distance)
+                in
+                    [ ( "animation", "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease" )
+                    , ( "animation-fill-mode", "forwards" )
+                    ]
 
             _ ->
                 []
@@ -199,12 +207,20 @@ handleExitDirection ( coord, tile ) model =
 
 exitRight : Model -> String
 exitRight model =
-    translate (model.tileSettings.sizeY * (toFloat (model.boardSettings.sizeY - 1))) -80
+    let
+        x =
+            model.tileSettings.sizeX * (toFloat (model.boardSettings.sizeX - 1))
+    in
+        (translate x -80) ++ " scale(0.5)"
 
 
 exitTop : Model -> String
 exitTop model =
-    translate ((model.tileSettings.sizeY * ((toFloat model.boardSettings.sizeY) / 2)) - (model.tileSettings.sizeX / 2)) -80
+    let
+        x =
+            model.tileSettings.sizeX * ((toFloat model.boardSettings.sizeX) / 2) - (model.tileSettings.sizeX / 2)
+    in
+        (translate x -80) ++ " scale(0.6)"
 
 
 exitLeft : String
@@ -217,7 +233,7 @@ draggingClasses model coord =
     if isInCurrentMove coord model.currentMove then
         "scale-half t3 ease"
     else
-        "scale-full"
+        ""
 
 
 baseTileStyles : Model -> List ( String, String )

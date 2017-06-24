@@ -11,13 +11,19 @@ import Data.Moves.Type exposing (currentMoveType)
 import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
-import Helpers.Animation exposing (bulge, bounces)
+import Utils.Animation exposing (bounces, bulge, fall)
+import Utils.Window exposing (getWindowSize)
 import Model exposing (..)
+import Window exposing (resizes)
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialState ! [ handleGenerateTiles initialState, addCssAnimations <| String.join " " [ bounces, bulge ] ]
+    initialState
+        ! [ handleGenerateTiles initialState
+          , addCssAnimations <| String.join " " [ bounces, bulge, fall ]
+          , getWindowSize
+          ]
 
 
 initialState : Model
@@ -27,6 +33,7 @@ initialState =
     , currentMove = []
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
+    , window = { height = 0, width = 0 }
     }
 
 
@@ -103,3 +110,11 @@ update msg model =
 
         CheckMove move ->
             (model |> handleCheckMove move) ! []
+
+        WindowSize size ->
+            { model | window = size } ! []
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    resizes WindowSize

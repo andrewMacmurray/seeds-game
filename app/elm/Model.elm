@@ -1,6 +1,7 @@
 module Model exposing (..)
 
 import Dict exposing (..)
+import Window
 
 
 type alias Model =
@@ -9,6 +10,7 @@ type alias Model =
     , currentMove : List Move
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
+    , window : Window.Size
     }
 
 
@@ -88,3 +90,4 @@ type Msg
     | ResetEntering
     | ShiftBoard
     | ResetMove
+    | WindowSize Window.Size
