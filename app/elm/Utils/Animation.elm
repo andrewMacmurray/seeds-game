@@ -1,17 +1,19 @@
 module Utils.Animation exposing (..)
 
 import Formatting exposing (..)
-import Utils.Style exposing (scale_, translateY_)
+import Utils.Style exposing (scale_, transform_, translateY_)
 
 
+fall : String
 fall =
     List.range 1 8
-        |> List.map (\magnitude -> List.map (\( step, y ) -> print translateYStep step y) (fallsteps magnitude))
+        |> List.map (\magnitude -> List.map (\( step, y ) -> stepTranslateY step y) (fallsteps magnitude))
         |> List.map (String.join " ")
-        |> List.indexedMap (\i steps -> print animation ("fall-" ++ (toString i)) steps)
+        |> List.indexedMap (\i steps -> animation ("fall-" ++ (toString i)) steps)
         |> String.join " "
 
 
+fallsteps : Int -> List ( number, Float )
 fallsteps x =
     let
         floatX =
@@ -23,16 +25,18 @@ fallsteps x =
         ]
 
 
+bulge : String
 bulge =
     [ ( 0, 0.5 )
     , ( 50, 1.3 )
     , ( 100, 1 )
     ]
-        |> List.map (\( step, scale ) -> bulgeStep step scale)
+        |> List.map (\( step, scale ) -> stepScale step scale)
         |> String.join " "
-        |> print animation "bulge"
+        |> animation "bulge"
 
 
+bounces : String
 bounces =
     [ ( 0, -1000 )
     , ( 60, 25 )
@@ -40,26 +44,35 @@ bounces =
     , ( 90, 5 )
     , ( 100, 0 )
     ]
-        |> List.map (\( step, y ) -> print translateYStep step y)
+        |> List.map (\( step, y ) -> stepTranslateY step y)
         |> String.join " "
-        |> print animation "bounce"
+        |> animation "bounce"
 
 
-bulgeStep =
-    print scaleStep
+stepScale : Int -> number -> String
+stepScale =
+    transform_ scale_
+        |> step_
+        |> print
 
 
-bounceStep =
-    print translateYStep
+stepTranslateY : Int -> number -> String
+stepTranslateY =
+    transform_ translateY_
+        |> step_
+        |> print
 
 
+animation : String -> String -> String
 animation =
+    print animation_
+
+
+animation_ : Format r (String -> String -> r)
+animation_ =
     s "@keyframes " <> string <> s " { " <> string <> s " }"
 
 
-scaleStep =
-    int <> s "% { transform: " <> scale_ <> s "; }"
-
-
-translateYStep =
-    int <> s "% { transform: " <> translateY_ <> s "; }"
+step_ : Format r a -> Format r (Int -> a)
+step_ formatter =
+    int <> s "% { " <> formatter <> s "; }"

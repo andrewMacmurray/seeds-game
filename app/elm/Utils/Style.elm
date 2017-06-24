@@ -23,6 +23,10 @@ px_ =
     number <> s "px"
 
 
+transform_ formatter =
+    s "transform: " <> formatter <> s ";"
+
+
 translateY : number -> String
 translateY =
     print translateY_
