@@ -1,14 +1,13 @@
 module Views.Board exposing (..)
 
 import Components.DebugTile exposing (debugTile)
-import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Styles.Board exposing (baseTileStyles, enteringStyles, fallingStyles, growingStyles, leavingStyles, tileCoordsStyles)
+import Styles.Board exposing (baseTileStyles, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, tileCoordsStyles)
 import Utils.Style exposing (classes, px, styles, translate)
 import Utils.Window exposing (boardOffsetTop)
 
@@ -88,20 +87,3 @@ innerTile model (( coord, tile ) as move) =
                 ]
         ]
         [ debugTile coord ]
-
-
-innerTileClasses : Model -> Move -> String
-innerTileClasses model (( coord, tile ) as move) =
-    classes
-        [ "br-100 absolute"
-        , tileColorMap tile
-        , draggingClasses model move
-        ]
-
-
-draggingClasses : Model -> Move -> String
-draggingClasses model coord =
-    if isInCurrentMove coord model.currentMove then
-        "scale-half t3 ease"
-    else
-        ""

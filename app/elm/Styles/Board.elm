@@ -1,8 +1,9 @@
 module Styles.Board exposing (..)
 
-import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder)
+import Data.Moves.Check exposing (isInCurrentMove)
+import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap)
 import Model exposing (..)
-import Utils.Style exposing (px, translate)
+import Utils.Style exposing (classes, px, translate)
 
 
 tileCoordsStyles : Model -> Coord -> List ( String, String )
@@ -135,6 +136,23 @@ exitTop model =
 exitLeft : String
 exitLeft =
     translate 0 -80
+
+
+innerTileClasses : Model -> Move -> String
+innerTileClasses model (( coord, tile ) as move) =
+    classes
+        [ "br-100 absolute"
+        , tileColorMap tile
+        , draggingClasses model move
+        ]
+
+
+draggingClasses : Model -> Move -> String
+draggingClasses model coord =
+    if isInCurrentMove coord model.currentMove then
+        "scale-half t3 ease"
+    else
+        ""
 
 
 baseTileStyles : Model -> List ( String, String )
