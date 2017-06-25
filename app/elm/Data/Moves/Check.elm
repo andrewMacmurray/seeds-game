@@ -1,7 +1,10 @@
 module Data.Moves.Check exposing (..)
 
-import Model exposing (..)
 import Data.Directions exposing (validDirection)
+import Data.Moves.Square exposing (isSquare)
+import Data.Moves.Type exposing (sameTileType, emptyMove)
+import Delay
+import Model exposing (..)
 
 
 handleStopMove : Model -> Model
@@ -20,6 +23,14 @@ handleStartMove move model =
     }
 
 
+triggerMoveIfSquare : Model -> Cmd Msg
+triggerMoveIfSquare model =
+    if isSquare model.currentMove then
+        Delay.after 0 SquareMove
+    else
+        Cmd.none
+
+
 handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
@@ -30,7 +41,7 @@ handleCheckMove move model =
 
 addToMove : Move -> List Move -> List Move
 addToMove next currentMoves =
-    if isValidMove next currentMoves then
+    if isValidMove next currentMoves || isSquare (next :: currentMoves) then
         next :: currentMoves
     else
         currentMoves
@@ -45,11 +56,6 @@ isValidMove next currentMoves =
         validDirection next curr
             && sameTileType next curr
             && isUniqueMove next currentMoves
-
-
-sameTileType : Move -> Move -> Bool
-sameTileType ( _, t2 ) ( _, t1 ) =
-    t1 == t2
 
 
 isUniqueMove : Move -> List Move -> Bool
@@ -72,8 +78,3 @@ currentMove currentMoves =
 coordsList : List Move -> List Coord
 coordsList moves =
     moves |> List.map Tuple.first
-
-
-emptyMove : Move
-emptyMove =
-    ( ( 0, 0 ), Empty )

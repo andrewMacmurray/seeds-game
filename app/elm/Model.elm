@@ -77,6 +77,7 @@ type TileType
 type Msg
     = InitTiles (List TileType)
     | AddTiles (List TileType)
+    | SquareMove
     | StopMove
     | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
