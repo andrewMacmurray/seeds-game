@@ -6,7 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Styles.Board exposing (baseTileStyles, boardOffsetTop, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, tileCoordsStyles)
+import Styles.Board exposing (baseTileStyles, boardOffsetTop, draggingClasses, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, moveTracerStyles, tileCoordsStyles)
 import Styles.Utils exposing (classes, px, styles, translate)
 
 
@@ -48,12 +48,16 @@ renderTile model (( coord, tile ) as move) =
                 , tileCoordsStyles model coord
                 , leavingStyles model move
                 ]
-        , class "dib flex items-center justify-center absolute pointer"
+        , class <|
+            classes
+                [ draggingClasses model move
+                , "dib flex items-center justify-center absolute pointer"
+                ]
         , hanldeMoveEvents model move
-          -- id for debugging
-        , id <| toString coord
         ]
-        [ innerTile model move ]
+        [ innerTile model move
+        , tracer model move
+        ]
 
 
 handleStop : Model -> List (Attribute Msg)
@@ -70,6 +74,26 @@ hanldeMoveEvents model move =
         onMouseEnter (CheckMove move)
     else
         onMouseDown (StartMove move)
+
+
+tracer : Model -> Move -> Html Msg
+tracer model (( coord, tile ) as move) =
+    div
+        [ style <|
+            styles
+                [ moveTracerStyles model move
+                , [ tilePaddingMap tile ]
+                , growingStyles model move
+                , enteringStyles model move
+                , fallingStyles model move
+                ]
+        , class <|
+            classes
+                [ tileColorMap tile
+                , "absolute br-100"
+                ]
+        ]
+        []
 
 
 innerTile : Model -> Move -> Html Msg

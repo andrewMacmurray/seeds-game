@@ -1,7 +1,7 @@
 module Styles.Animations exposing (..)
 
-import Formatting exposing (print, (<>))
-import Styles.Utils exposing (scale_, transform_, translateY_, keyframesAnimation, step_)
+import Formatting exposing ((<>), print)
+import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step_, transform_, translateY_)
 
 
 animationsToAdd : List String
@@ -9,7 +9,17 @@ animationsToAdd =
     [ fallDistances
     , bulge
     , bounce
+    , bulgeFade
     ]
+
+
+bulgeFade : String
+bulgeFade =
+    [ ( 0, 1, 1 )
+    , ( 100, 2.5, 0 )
+    ]
+        |> List.map (\( step, scale, opacity ) -> stepScaleFade step scale opacity)
+        |> keyframesAnimation "bulge-fade"
 
 
 fallDistances : String
@@ -57,6 +67,13 @@ bounce =
     ]
         |> List.map (uncurry stepTranslateY)
         |> keyframesAnimation "bounce"
+
+
+stepScaleFade : Int -> number -> number -> String
+stepScaleFade =
+    ((transform_ scale_) <> opacity_)
+        |> step_
+        |> print
 
 
 stepScale : Int -> number -> String
