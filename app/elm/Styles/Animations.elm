@@ -1,6 +1,8 @@
 module Styles.Animations exposing (..)
 
-import Utils.Animation exposing (animation, stepScale, stepTranslateY)
+import Formatting exposing (print)
+import Utils.Animation exposing (animation, step_)
+import Utils.Style exposing (scale_, transform_, translateY_)
 
 
 fall : String
@@ -37,7 +39,7 @@ bulge =
 
 bounces : String
 bounces =
-    [ ( 0, -1000 )
+    [ ( 0, -300 )
     , ( 60, 25 )
     , ( 75, -10 )
     , ( 90, 5 )
@@ -46,3 +48,17 @@ bounces =
         |> List.map (\( step, y ) -> stepTranslateY step y)
         |> String.join " "
         |> animation "bounce"
+
+
+stepScale : Int -> number -> String
+stepScale =
+    transform_ scale_
+        |> step_
+        |> print
+
+
+stepTranslateY : Int -> number -> String
+stepTranslateY =
+    transform_ translateY_
+        |> step_
+        |> print

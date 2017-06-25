@@ -59,15 +59,15 @@ type alias Board =
 
 
 type TileState
-    = Static Tile
-    | Leaving Tile LeavingOrder
-    | Falling Tile FallingDistance
-    | Entering Tile
-    | Growing Tile GrowingOrder
+    = Static TileType
+    | Leaving TileType LeavingOrder
+    | Falling TileType FallingDistance
+    | Entering TileType
+    | Growing TileType GrowingOrder
     | Empty
 
 
-type Tile
+type TileType
     = Rain
     | Sun
     | SeedPod
@@ -75,8 +75,8 @@ type Tile
 
 
 type Msg
-    = InitTiles (List Tile)
-    | AddTiles (List Tile)
+    = InitTiles (List TileType)
+    | AddTiles (List TileType)
     | StopMove
     | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move

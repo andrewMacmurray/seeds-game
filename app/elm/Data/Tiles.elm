@@ -3,7 +3,7 @@ module Data.Tiles exposing (..)
 import Model exposing (..)
 
 
-evenTiles : Int -> Tile
+evenTiles : Int -> TileType
 evenTiles n =
     if n > 65 then
         SeedPod
@@ -175,7 +175,7 @@ tilePaddingMap tileState =
             ( "", "" )
 
 
-tileColors : Tile -> String
+tileColors : TileType -> String
 tileColors tile =
     case tile of
         Rain ->
@@ -188,10 +188,10 @@ tileColors tile =
             "bg-seed-pod"
 
         Seed ->
-            "bg-seed"
+            "bg-sunflower"
 
 
-tilePadding : Tile -> ( String, String )
+tilePadding : TileType -> ( String, String )
 tilePadding tile =
     case tile of
         Rain ->

@@ -23,6 +23,7 @@ px_ =
     number <> s "px"
 
 
+transform_ : Format r a -> Format r a
 transform_ formatter =
     s "transform: " <> formatter <> s ";"
 

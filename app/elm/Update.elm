@@ -63,7 +63,7 @@ update msg model =
                         ! [ Delay.start StopMoveSequence
                                 [ ( 0, SetLeavingTiles )
                                 , ( 0, ResetMove )
-                                , ( 500, SetFallingTiles )
+                                , ( 300, SetFallingTiles )
                                 , ( 500, ShiftBoard )
                                 , ( 0, MakeNewTiles )
                                 , ( 500, ResetEntering )

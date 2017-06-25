@@ -12,7 +12,7 @@ handleResetEntering model =
     { model | board = resetEnteringTiles model.board }
 
 
-handleAddNewTiles : List Tile -> Model -> Model
+handleAddNewTiles : List TileType -> Model -> Model
 handleAddNewTiles tileList model =
     { model | board = addNewTiles tileList model.board }
 
@@ -22,7 +22,7 @@ resetEnteringTiles board =
     board |> Dict.map (\coord tile -> setEnteringToStatic tile)
 
 
-addNewTiles : List Tile -> Board -> Board
+addNewTiles : List TileType -> Board -> Board
 addNewTiles newTiles board =
     let
         tilesToAdd =

@@ -3,7 +3,7 @@ module Data.Moves.Type exposing (..)
 import Model exposing (..)
 
 
-currentMoveType : List Move -> Tile
+currentMoveType : List Move -> TileType
 currentMoveType moveList =
     moveList
         |> List.head
@@ -11,7 +11,7 @@ currentMoveType moveList =
         |> Maybe.withDefault Rain
 
 
-moveType : Move -> Tile
+moveType : Move -> TileType
 moveType ( _, tileState ) =
     case tileState of
         Static tile ->

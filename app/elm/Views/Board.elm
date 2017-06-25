@@ -1,15 +1,13 @@
 module Views.Board exposing (..)
 
-import Components.DebugTile exposing (debugTile)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Styles.Board exposing (baseTileStyles, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, tileCoordsStyles)
+import Styles.Board exposing (baseTileStyles, boardOffsetTop, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, tileCoordsStyles)
 import Utils.Style exposing (classes, px, styles, translate)
-import Utils.Window exposing (boardOffsetTop)
 
 
 renderBoard : Model -> Html Msg
@@ -38,7 +36,7 @@ boardLayout model =
 
 boardWidth : Model -> Float
 boardWidth { tileSettings, boardSettings } =
-    tileSettings.sizeX * toFloat (boardSettings.sizeX)
+    tileSettings.sizeY * toFloat (boardSettings.sizeY)
 
 
 renderTile : Model -> Move -> Html Msg
@@ -86,4 +84,4 @@ innerTile model (( coord, tile ) as move) =
                 , fallingStyles model move
                 ]
         ]
-        [ debugTile coord ]
+        []

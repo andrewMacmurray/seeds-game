@@ -6,6 +6,20 @@ import Model exposing (..)
 import Utils.Style exposing (classes, px, translate)
 
 
+boardOffsetTop : Model -> ( String, String )
+boardOffsetTop model =
+    let
+        offset =
+            (toFloat model.window.height - boardHeight model) / 2
+    in
+        ( "margin-top", px offset )
+
+
+boardHeight : Model -> Float
+boardHeight model =
+    model.tileSettings.sizeX * toFloat model.boardSettings.sizeX
+
+
 tileCoordsStyles : Model -> Coord -> List ( String, String )
 tileCoordsStyles model coord =
     let
@@ -30,7 +44,7 @@ enteringStyles model ( coord, tile ) =
     in
         case tile of
             Entering tile ->
-                [ ( "animation", "bounce 0.5s ease" )
+                [ ( "animation", "bounce 0.4s ease" )
                 ]
 
             _ ->
@@ -94,6 +108,7 @@ leavingStyles model (( ( y, x ), tile ) as move) =
             |> (++)
                 [ ( "transition", "0.8s ease" )
                 , ( "transition-delay", (toString (((leavingOrder tile) % 5) * 80)) ++ "ms" )
+                , ( "opacity", "0" )
                 ]
     else
         []
