@@ -112,7 +112,7 @@ update msg model =
         CheckMove move ->
             let
                 newModel =
-                    (model |> handleCheckMove move)
+                    model |> handleCheckMove move
             in
                 newModel ! [ triggerMoveIfSquare newModel ]
 
