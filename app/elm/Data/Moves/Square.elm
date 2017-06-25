@@ -11,10 +11,18 @@ isValidSquare moves =
     if shouldCheckSquare moves then
         moves
             |> List.head
-            |> Maybe.map (\currentMove -> List.member currentMove (List.drop 1 moves))
+            |> Maybe.andThen (checkIndexOfCurrentMove moves)
+            |> Maybe.map (\x -> x > 2)
             |> Maybe.withDefault False
     else
         False
+
+
+checkIndexOfCurrentMove : List Move -> Move -> Maybe Int
+checkIndexOfCurrentMove moves current =
+    moves
+        |> List.drop 1
+        |> List.Extra.elemIndex current
 
 
 shouldCheckSquare : List Move -> Bool
