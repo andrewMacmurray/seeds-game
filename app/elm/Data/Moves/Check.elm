@@ -1,7 +1,7 @@
 module Data.Moves.Check exposing (..)
 
 import Data.Directions exposing (validDirection)
-import Data.Moves.Square exposing (isSquare)
+import Data.Moves.Square exposing (isValidSquare)
 import Data.Moves.Type exposing (sameTileType, emptyMove)
 import Delay
 import Model exposing (..)
@@ -25,7 +25,7 @@ handleStartMove move model =
 
 triggerMoveIfSquare : Model -> Cmd Msg
 triggerMoveIfSquare model =
-    if isSquare model.currentMove then
+    if isValidSquare model.currentMove then
         Delay.after 0 SquareMove
     else
         Cmd.none
@@ -41,7 +41,7 @@ handleCheckMove move model =
 
 addToMove : Move -> List Move -> List Move
 addToMove next currentMoves =
-    if isValidMove next currentMoves || isSquare (next :: currentMoves) then
+    if isValidMove next currentMoves || isValidSquare (next :: currentMoves) then
         next :: currentMoves
     else
         currentMoves

@@ -6,18 +6,13 @@ import List.Extra
 import Model exposing (..)
 
 
-isSquare : List Move -> Bool
-isSquare moves =
+isValidSquare : List Move -> Bool
+isValidSquare moves =
     if shouldCheckSquare moves then
-        let
-            first =
-                List.head moves
-
-            last =
-                List.Extra.last moves
-        in
-            Maybe.map2 sameCoords first last
-                |> Maybe.withDefault False
+        moves
+            |> List.head
+            |> Maybe.map (\currentMove -> List.member currentMove (List.drop 1 moves))
+            |> Maybe.withDefault False
     else
         False
 
@@ -36,11 +31,6 @@ shouldCheckSquare moves =
             , validDirection first second
             , sameTileType first second
             ]
-
-
-sameCoords : Move -> Move -> Bool
-sameCoords ( c1, _ ) ( c2, _ ) =
-    c1 == c2
 
 
 allTrue : List Bool -> Bool
