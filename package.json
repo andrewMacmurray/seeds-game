@@ -11,7 +11,7 @@
     "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
     "add-bundle-changes": "git add . && git commit -m 'prepare bundle'",
     "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-publish": "git checkout gh-deploy && npm run make-elm && npm run css && npm run add-bundle-changes && npm run gh-pages-push"
+    "gh-publish": "git checkout gh-deploy && git merge master && npm run make-elm && npm run css && npm run add-bundle-changes && npm run gh-pages-push"
   },
   "repository": {
     "type": "git",
