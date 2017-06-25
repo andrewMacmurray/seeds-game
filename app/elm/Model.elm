@@ -30,6 +30,11 @@ type alias Move =
     ( Coord, TileState )
 
 
+type MoveType
+    = Square
+    | Line
+
+
 type alias Coord =
     ( Y, X )
 
@@ -78,7 +83,7 @@ type Msg
     = InitTiles (List TileType)
     | AddTiles (List TileType)
     | SquareMove
-    | StopMove
+    | StopMove MoveType
     | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
     | CheckMove Move

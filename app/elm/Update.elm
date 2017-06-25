@@ -7,9 +7,10 @@ import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, hand
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
-import Data.Moves.Check exposing (handleCheckMove, triggerMoveIfSquare, handleStartMove, handleStopMove)
+import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove, triggerMoveIfSquare)
 import Data.Moves.Type exposing (currentMoveType)
 import Data.Ports exposing (addCssAnimations)
+import Data.Sequence exposing (growSeedPods, removeTiles)
 import Delay
 import Dict
 import Helpers.Window exposing (getWindowSize)
@@ -47,29 +48,13 @@ update msg model =
         AddTiles tiles ->
             (model |> handleAddNewTiles tiles) ! []
 
-        StopMove ->
+        StopMove moveType ->
             case currentMoveType model.currentMove of
                 Just SeedPod ->
-                    model
-                        ! [ Delay.start StopMoveSequence
-                                [ ( 0, SetGrowingSeedPods )
-                                , ( 0, ResetMove )
-                                , ( 800, GrowPodsToSeeds )
-                                , ( 600, ResetGrowingSeeds )
-                                ]
-                          ]
+                    model ! [ growSeedPods ]
 
                 _ ->
-                    model
-                        ! [ Delay.start StopMoveSequence
-                                [ ( 0, SetLeavingTiles )
-                                , ( 0, ResetMove )
-                                , ( 300, SetFallingTiles )
-                                , ( 500, ShiftBoard )
-                                , ( 0, MakeNewTiles )
-                                , ( 500, ResetEntering )
-                                ]
-                          ]
+                    model ! [ removeTiles model moveType ]
 
         StopMoveSequence msgs ->
             Delay.handleSequence StopMoveSequence msgs update model
@@ -117,7 +102,7 @@ update msg model =
                 newModel ! [ triggerMoveIfSquare newModel ]
 
         SquareMove ->
-            (model |> handleAddAllTilesToMove) ! [ Delay.after 0 StopMove ]
+            (model |> handleAddAllTilesToMove) ! [ Delay.after 0 <| StopMove Square ]
 
         WindowSize size ->
             { model | window = size } ! []
