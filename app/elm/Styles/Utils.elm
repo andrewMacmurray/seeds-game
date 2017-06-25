@@ -93,6 +93,13 @@ joinStrings_ =
     premap (String.join " ") string
 
 
+step : Format String a -> Int -> a
+step formatter =
+    formatter
+        |> step_
+        |> print
+
+
 step_ : Format r a -> Format r (Int -> a)
 step_ formatter =
     int <> s "% { " <> formatter <> s "; }"

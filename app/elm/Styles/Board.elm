@@ -158,6 +158,16 @@ innerTileClasses model (( coord, tile ) as move) =
         ]
 
 
+moveTracerStyles : Model -> Move -> List ( String, String )
+moveTracerStyles model (( coord, tile ) as move) =
+    if isInCurrentMove move model.currentMove then
+        [ ( "animation", "bulge-fade 0.5s ease" )
+        , ( "animation-fill-mode", "forwards" )
+        ]
+    else
+        []
+
+
 draggingClasses : Model -> Move -> String
 draggingClasses model coord =
     if isInCurrentMove coord model.currentMove then
