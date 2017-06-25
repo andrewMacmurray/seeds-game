@@ -5,8 +5,8 @@ import Html.Attributes exposing (..)
 import Model exposing (..)
 
 
-debugTile : Coord -> Html Msg
-debugTile coord =
+debugCoord : Coord -> Html Msg
+debugCoord coord =
     p [ class debugClasses ] [ text <| toString coord ]
 
 

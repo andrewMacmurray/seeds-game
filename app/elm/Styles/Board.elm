@@ -3,7 +3,7 @@ module Styles.Board exposing (..)
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap)
 import Model exposing (..)
-import Utils.Style exposing (classes, px, translate)
+import Styles.Utils exposing (classes, ms, px, translate)
 
 
 boardOffsetTop : Model -> ( String, String )
@@ -58,11 +58,7 @@ growingStyles model ( coord, tile ) =
             tilePosition model coord
 
         transitionDelay =
-            growingOrder tile
-                |> (\x -> x % 5)
-                |> (*) 70
-                |> toString
-                |> (\x -> x ++ "ms")
+            ms <| ((growingOrder tile) % 5) * 70
     in
         case tile of
             Growing SeedPod _ ->

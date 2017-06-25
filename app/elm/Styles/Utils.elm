@@ -1,4 +1,4 @@
-module Utils.Style exposing (..)
+module Styles.Utils exposing (..)
 
 import Formatting exposing (..)
 
@@ -21,6 +21,26 @@ px =
 px_ : Format r (number -> r)
 px_ =
     number <> s "px"
+
+
+ms : number -> String
+ms =
+    print ms_
+
+
+ms_ : Format r (number -> r)
+ms_ =
+    number <> s "ms"
+
+
+opacity : number -> String
+opacity =
+    print opacity_
+
+
+opacity_ : Format r (number -> r)
+opacity_ =
+    s "opacity: " <> number <> s ";"
 
 
 transform_ : Format r a -> Format r a
@@ -56,3 +76,23 @@ scale =
 scale_ : Format r (number -> r)
 scale_ =
     s "scale(" <> number <> s ")"
+
+
+keyframesAnimation : String -> List String -> String
+keyframesAnimation =
+    print keyframesAnimation_
+
+
+keyframesAnimation_ : Format r (String -> List String -> r)
+keyframesAnimation_ =
+    s "@keyframes " <> string <> s " { " <> joinStrings_ <> s " }"
+
+
+joinStrings_ : Format r (List String -> r)
+joinStrings_ =
+    premap (String.join " ") string
+
+
+step_ : Format r a -> Format r (Int -> a)
+step_ formatter =
+    int <> s "% { " <> formatter <> s "; }"

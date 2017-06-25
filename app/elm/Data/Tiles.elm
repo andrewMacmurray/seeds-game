@@ -131,6 +131,28 @@ setToLeaving order tileState =
             x
 
 
+getTileType : TileState -> Maybe TileType
+getTileType tileState =
+    case tileState of
+        Static tile ->
+            Just tile
+
+        Leaving tile _ ->
+            Just tile
+
+        Falling tile _ ->
+            Just tile
+
+        Entering tile ->
+            Just tile
+
+        Growing tile _ ->
+            Just tile
+
+        _ ->
+            Nothing
+
+
 tileColorMap : TileState -> String
 tileColorMap tileState =
     case tileState of

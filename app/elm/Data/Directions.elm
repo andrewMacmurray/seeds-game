@@ -23,29 +23,9 @@ isBelow ( x1, y1 ) ( x2, y2 ) =
     x2 == x1 && y2 == y1 + 1
 
 
-isLeftAndAbove : Coord -> Coord -> Bool
-isLeftAndAbove ( x1, y1 ) ( x2, y2 ) =
-    x2 == x1 - 1 && y2 == y1 - 1
-
-
-isRightAndAbove : Coord -> Coord -> Bool
-isRightAndAbove ( x1, y1 ) ( x2, y2 ) =
-    x2 == x1 + 1 && y2 == y1 - 1
-
-
-isLeftAndBelow : Coord -> Coord -> Bool
-isLeftAndBelow ( x1, y1 ) ( x2, y2 ) =
-    x2 == x1 - 1 && y2 == y1 + 1
-
-
-isRightAndBelow : Coord -> Coord -> Bool
-isRightAndBelow ( x1, y1 ) ( x2, y2 ) =
-    x2 == x1 + 1 && y2 == y1 + 1
-
-
 anyTrue : List Bool -> Bool
 anyTrue =
-    List.foldl (||) False
+    List.foldr (||) False
 
 
 directionsToCheck : List (Coord -> Coord -> Bool)
@@ -54,10 +34,6 @@ directionsToCheck =
     , isRight
     , isAbove
     , isBelow
-    , isLeftAndAbove
-    , isRightAndAbove
-    , isLeftAndBelow
-    , isRightAndBelow
     ]
 
 

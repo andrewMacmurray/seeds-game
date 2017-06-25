@@ -2,18 +2,19 @@ module Update exposing (..)
 
 import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
 import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
+import Data.Board.Filter exposing (handleAddAllTilesToMove)
 import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
-import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Moves.Check exposing (handleCheckMove, triggerMoveIfSquare, handleStartMove, handleStopMove)
 import Data.Moves.Type exposing (currentMoveType)
 import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
-import Styles.Animations exposing (bounces, bulge, fall)
-import Utils.Window exposing (getWindowSize)
+import Helpers.Window exposing (getWindowSize)
 import Model exposing (..)
+import Styles.Animations exposing (animationsToAdd)
 import Window exposing (resizes)
 
 
@@ -21,7 +22,7 @@ init : ( Model, Cmd Msg )
 init =
     initialState
         ! [ handleGenerateTiles initialState
-          , addCssAnimations [ bounces, bulge, fall ]
+          , addCssAnimations animationsToAdd
           , getWindowSize
           ]
 
@@ -48,7 +49,7 @@ update msg model =
 
         StopMove ->
             case currentMoveType model.currentMove of
-                SeedPod ->
+                Just SeedPod ->
                     model
                         ! [ Delay.start StopMoveSequence
                                 [ ( 0, SetGrowingSeedPods )
@@ -69,6 +70,9 @@ update msg model =
                                 , ( 500, ResetEntering )
                                 ]
                           ]
+
+        StopMoveSequence msgs ->
+            Delay.handleSequence StopMoveSequence msgs update model
 
         SetLeavingTiles ->
             (model |> handleLeavingTiles) ! []
@@ -102,14 +106,18 @@ update msg model =
         ResetMove ->
             (model |> handleStopMove) ! []
 
-        StopMoveSequence msgs ->
-            Delay.handleSequence StopMoveSequence msgs update model
-
         StartMove move ->
             (model |> handleStartMove move) ! []
 
         CheckMove move ->
-            (model |> handleCheckMove move) ! []
+            let
+                newModel =
+                    model |> handleCheckMove move
+            in
+                newModel ! [ triggerMoveIfSquare newModel ]
+
+        SquareMove ->
+            (model |> handleAddAllTilesToMove) ! [ Delay.after 0 StopMove ]
 
         WindowSize size ->
             { model | window = size } ! []
