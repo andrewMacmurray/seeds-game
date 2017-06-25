@@ -11,9 +11,9 @@ import Data.Moves.Type exposing (currentMoveType)
 import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
-import Styles.Animations exposing (bounces, bulge, fall)
-import Utils.Window exposing (getWindowSize)
+import Helpers.Window exposing (getWindowSize)
 import Model exposing (..)
+import Styles.Animations exposing (animationsToAdd)
 import Window exposing (resizes)
 
 
@@ -21,7 +21,7 @@ init : ( Model, Cmd Msg )
 init =
     initialState
         ! [ handleGenerateTiles initialState
-          , addCssAnimations [ bounces, bulge, fall ]
+          , addCssAnimations animationsToAdd
           , getWindowSize
           ]
 

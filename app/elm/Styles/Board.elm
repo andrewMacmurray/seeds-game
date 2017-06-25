@@ -3,7 +3,7 @@ module Styles.Board exposing (..)
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap)
 import Model exposing (..)
-import Utils.Style exposing (classes, px, translate)
+import Styles.Utils exposing (classes, px, translate)
 
 
 boardOffsetTop : Model -> ( String, String )

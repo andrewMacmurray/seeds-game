@@ -1,17 +1,28 @@
 module Styles.Animations exposing (..)
 
-import Formatting exposing (print)
-import Utils.Animation exposing (animation, step_)
-import Utils.Style exposing (scale_, transform_, translateY_)
+import Formatting exposing (print, (<>))
+import Styles.Utils exposing (scale_, transform_, translateY_, keyframesAnimation, step_)
 
 
-fall : String
-fall =
+animationsToAdd : List String
+animationsToAdd =
+    [ fallDistances
+    , bulge
+    , bounce
+    ]
+
+
+fallDistances : String
+fallDistances =
     List.range 1 8
-        |> List.map (\magnitude -> List.map (\( step, y ) -> stepTranslateY step y) (fallsteps magnitude))
-        |> List.map (String.join " ")
-        |> List.indexedMap (\i steps -> animation ("fall-" ++ (toString i)) steps)
+        |> List.map (\magnitude -> List.map (uncurry stepTranslateY) (fallsteps magnitude))
+        |> List.indexedMap makeFallAnimation
         |> String.join " "
+
+
+makeFallAnimation : Int -> List String -> String
+makeFallAnimation i =
+    keyframesAnimation ("fall-" ++ toString i)
 
 
 fallsteps : Int -> List ( number, Float )
@@ -46,19 +57,6 @@ bounce =
     ]
         |> List.map (uncurry stepTranslateY)
         |> keyframesAnimation "bounce"
-
-
-stepOpacityTranslateY : Int -> number -> number -> String
-stepOpacityTranslateY =
-    (opacity_ <> (transform_ translateY_))
-        |> step_
-        |> print
-
-
-stepOpacity : Int -> number -> String
-stepOpacity =
-    step_ opacity_
-        |> print
 
 
 stepScale : Int -> number -> String

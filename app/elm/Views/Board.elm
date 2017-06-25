@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
 import Styles.Board exposing (baseTileStyles, boardOffsetTop, enteringStyles, fallingStyles, growingStyles, innerTileClasses, leavingStyles, tileCoordsStyles)
-import Utils.Style exposing (classes, px, styles, translate)
+import Styles.Utils exposing (classes, px, styles, translate)
 
 
 renderBoard : Model -> Html Msg
