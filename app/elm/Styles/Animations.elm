@@ -32,22 +32,33 @@ bulge =
     , ( 50, 1.3 )
     , ( 100, 1 )
     ]
-        |> List.map (\( step, scale ) -> stepScale step scale)
-        |> String.join " "
-        |> animation "bulge"
+        |> List.map (uncurry stepScale)
+        |> keyframesAnimation "bulge"
 
 
-bounces : String
-bounces =
+bounce : String
+bounce =
     [ ( 0, -300 )
     , ( 60, 25 )
     , ( 75, -10 )
     , ( 90, 5 )
     , ( 100, 0 )
     ]
-        |> List.map (\( step, y ) -> stepTranslateY step y)
-        |> String.join " "
-        |> animation "bounce"
+        |> List.map (uncurry stepTranslateY)
+        |> keyframesAnimation "bounce"
+
+
+stepOpacityTranslateY : Int -> number -> number -> String
+stepOpacityTranslateY =
+    (opacity_ <> (transform_ translateY_))
+        |> step_
+        |> print
+
+
+stepOpacity : Int -> number -> String
+stepOpacity =
+    step_ opacity_
+        |> print
 
 
 stepScale : Int -> number -> String

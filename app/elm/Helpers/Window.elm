@@ -1,4 +1,4 @@
-module Utils.Window exposing (..)
+module Helpers.Window exposing (..)
 
 import Model exposing (..)
 import Task
