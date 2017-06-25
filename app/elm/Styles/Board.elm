@@ -17,7 +17,7 @@ boardOffsetTop model =
 
 boardHeight : Model -> Float
 boardHeight model =
-    model.tileSettings.sizeX * toFloat model.boardSettings.sizeX
+    model.tileSettings.sizeY * toFloat model.boardSettings.sizeY
 
 
 tileCoordsStyles : Model -> Coord -> List ( String, String )

@@ -36,7 +36,7 @@ boardLayout model =
 
 boardWidth : Model -> Float
 boardWidth { tileSettings, boardSettings } =
-    tileSettings.sizeY * toFloat (boardSettings.sizeY)
+    tileSettings.sizeX * toFloat (boardSettings.sizeX)
 
 
 renderTile : Model -> Move -> Html Msg

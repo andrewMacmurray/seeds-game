@@ -11,8 +11,8 @@ handleMakeBoard tileList ({ boardSettings } as model) =
     { model
         | board =
             makeBoard
-                boardSettings.sizeY
                 boardSettings.sizeX
+                boardSettings.sizeY
                 tileList
     }
 
