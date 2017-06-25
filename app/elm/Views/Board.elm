@@ -63,7 +63,7 @@ renderTile model (( coord, tile ) as move) =
 handleStop : Model -> List (Attribute Msg)
 handleStop model =
     if model.isDragging then
-        [ onMouseUp StopMove ]
+        [ onMouseUp <| StopMove Line ]
     else
         []
 
@@ -71,9 +71,9 @@ handleStop model =
 hanldeMoveEvents : Model -> Move -> Attribute Msg
 hanldeMoveEvents model move =
     if model.isDragging then
-        onMouseEnter (CheckMove move)
+        onMouseEnter <| CheckMove move
     else
-        onMouseDown (StartMove move)
+        onMouseDown <| StartMove move
 
 
 tracer : Model -> Move -> Html Msg
