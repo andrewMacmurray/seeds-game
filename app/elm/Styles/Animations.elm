@@ -1,7 +1,7 @@
 module Styles.Animations exposing (..)
 
 import Formatting exposing ((<>), print)
-import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step_, transform_, translateY_)
+import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
 
 
 animationsToAdd : List String
@@ -71,20 +71,14 @@ bounce =
 
 stepScaleFade : Int -> number -> number -> String
 stepScaleFade =
-    ((transform_ scale_) <> opacity_)
-        |> step_
-        |> print
+    step <| (transform_ scale_) <> opacity_
 
 
 stepScale : Int -> number -> String
 stepScale =
-    transform_ scale_
-        |> step_
-        |> print
+    step <| transform_ scale_
 
 
 stepTranslateY : Int -> number -> String
 stepTranslateY =
-    transform_ translateY_
-        |> step_
-        |> print
+    step <| transform_ translateY_
