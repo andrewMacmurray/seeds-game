@@ -5,8 +5,13 @@
   "scripts": {
     "dev": "npm run live & npm run css",
     "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --open --debug --pushstate",
-    "css": "postcss --watch --config ./postcss-config.js",
-    "test": "cd ./test && elm-test Main.elm"
+    "css": "postcss --config ./postcss-config.js",
+    "css-watch": "postcss --watch --config ./postcss-config.js",
+    "test": "cd ./test && elm-test Main.elm",
+    "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
+    "add-bundle-changes": "git add . && git commit -m 'prepare bundle'",
+    "gh-pages-push": "git subtree push --prefix public origin gh-pages",
+    "gh-publish": "git checkout gh-deploy && npm run make-elm && npm run css && npm run add-bundle-changes && npm run gh-pages-push"
   },
   "repository": {
     "type": "git",
