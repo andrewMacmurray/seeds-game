@@ -11,8 +11,22 @@ body {
   background: var(--brown);
 }
 
-.bg-seed {
+.bg-sunflower {
   background: url(img/sunflower.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.bg-foxglove {
+  background: url(img/foxglove.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.bg-rose {
+  background: url(img/rose.svg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -32,6 +46,10 @@ body {
 
 .pointer {
   cursor: pointer;
+}
+
+.touch-disabled {
+  pointer-events: none;
 }
 
 .all {

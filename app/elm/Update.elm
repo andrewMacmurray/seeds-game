@@ -8,14 +8,22 @@ import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Data.Moves.Type exposing (currentMoveType)
+import Data.Ports exposing (addCssAnimations)
 import Delay
 import Dict
+import Styles.Animations exposing (bounces, bulge, fall)
+import Utils.Window exposing (getWindowSize)
 import Model exposing (..)
+import Window exposing (resizes)
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialState ! [ handleGenerateTiles initialState ]
+    initialState
+        ! [ handleGenerateTiles initialState
+          , addCssAnimations [ bounces, bulge, fall ]
+          , getWindowSize
+          ]
 
 
 initialState : Model
@@ -25,6 +33,7 @@ initialState =
     , currentMove = []
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
+    , window = { height = 0, width = 0 }
     }
 
 
@@ -54,9 +63,9 @@ update msg model =
                         ! [ Delay.start StopMoveSequence
                                 [ ( 0, SetLeavingTiles )
                                 , ( 0, ResetMove )
-                                , ( 500, SetFallingTiles )
+                                , ( 300, SetFallingTiles )
                                 , ( 500, ShiftBoard )
-                                , ( 500, MakeNewTiles )
+                                , ( 0, MakeNewTiles )
                                 , ( 500, ResetEntering )
                                 ]
                           ]
@@ -101,3 +110,11 @@ update msg model =
 
         CheckMove move ->
             (model |> handleCheckMove move) ! []
+
+        WindowSize size ->
+            { model | window = size } ! []
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    resizes WindowSize

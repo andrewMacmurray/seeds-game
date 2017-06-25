@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
-    "watch": "npm run live & npm run css",
+    "dev": "npm run live & npm run css",
     "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --open --debug --pushstate",
     "css": "postcss --watch --config ./postcss-config.js",
     "test": "cd ./test && elm-test Main.elm"

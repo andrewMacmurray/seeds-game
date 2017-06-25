@@ -6,18 +6,18 @@ import Random exposing (..)
 import Dict
 
 
-handleMakeBoard : List Tile -> Model -> Model
+handleMakeBoard : List TileType -> Model -> Model
 handleMakeBoard tileList ({ boardSettings } as model) =
     { model
         | board =
             makeBoard
-                boardSettings.sizeY
                 boardSettings.sizeX
+                boardSettings.sizeY
                 tileList
     }
 
 
-makeBoard : Int -> Int -> List Tile -> Board
+makeBoard : Int -> Int -> List TileType -> Board
 makeBoard y x tiles =
     tiles
         |> List.map Static
@@ -54,7 +54,7 @@ generateTiles x y =
         |> Random.generate InitTiles
 
 
-tileGenerator : Generator Tile
+tileGenerator : Generator TileType
 tileGenerator =
     Random.int 1 100
         |> Random.map evenTiles
