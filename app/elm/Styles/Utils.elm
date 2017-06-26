@@ -13,6 +13,11 @@ styles =
     List.concat
 
 
+emptyStyle : ( String, String )
+emptyStyle =
+    ( "", "" )
+
+
 px : number -> String
 px =
     print px_

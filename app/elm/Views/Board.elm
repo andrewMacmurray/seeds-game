@@ -78,7 +78,6 @@ tracer model (( coord, tile ) as move) =
         [ class <|
             classes
                 [ "absolute br-100"
-                , draggingClasses model move
                 , tileColorMap tile
                 ]
         , style <|
@@ -99,12 +98,12 @@ innerTile model (( coord, tile ) as move) =
         [ class <|
             classes
                 [ "br-100 absolute"
-                , draggingClasses model move
                 , tileColorMap tile
                 ]
         , style <|
             styles
                 [ [ tilePaddingMap tile ]
+                , draggingStyles model move
                 , growingStyles model move
                 , enteringStyles model move
                 , fallingStyles model move

@@ -1,7 +1,15 @@
 module Styles.Animations exposing (..)
 
 import Formatting exposing ((<>), print)
+import Html exposing (node, Html)
+import Html.Attributes exposing (property)
+import Json.Encode exposing (string)
 import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
+
+
+embeddedAnimations : Html msg
+embeddedAnimations =
+    node "style" [ property "textContent" <| string <| String.join " " animationsToAdd ] []
 
 
 animationsToAdd : List String
