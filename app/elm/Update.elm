@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
 import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
-import Data.Board.Filter exposing (handleAddAllTilesToMove)
+import Data.Board.Filter exposing (handleSquareMove)
 import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
@@ -33,6 +33,7 @@ initialState =
     { board = Dict.empty
     , isDragging = False
     , currentMove = []
+    , moveType = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , window = { height = 0, width = 0 }
@@ -102,7 +103,7 @@ update msg model =
                 newModel ! [ triggerMoveIfSquare newModel ]
 
         SquareMove ->
-            (model |> handleAddAllTilesToMove) ! [ Delay.after 0 <| StopMove Square ]
+            (model |> handleSquareMove) ! [ Delay.after 700 <| StopMove Square ]
 
         WindowSize size ->
             { model | window = size } ! []

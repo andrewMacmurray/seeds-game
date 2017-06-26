@@ -85,13 +85,9 @@ fallingStyles model ( coord, tile ) =
     in
         case tile of
             Falling tile distance ->
-                let
-                    _ =
-                        Debug.log "" (distance)
-                in
-                    [ ( "animation", "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease" )
-                    , ( "animation-fill-mode", "forwards" )
-                    ]
+                [ ( "animation", "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease" )
+                , ( "animation-fill-mode", "forwards" )
+                ]
 
             _ ->
                 []
@@ -103,7 +99,7 @@ leavingStyles model (( ( y, x ), tile ) as move) =
         handleExitDirection move model
             |> (++)
                 [ ( "transition", "0.8s ease" )
-                , ( "transition-delay", (toString (((leavingOrder tile) % 5) * 80)) ++ "ms" )
+                , ( "transition-delay", ms <| ((leavingOrder tile) % 5) * 80 )
                 , ( "opacity", "0" )
                 ]
     else
@@ -149,15 +145,6 @@ exitLeft =
     translate 0 -80
 
 
-innerTileClasses : Model -> Move -> String
-innerTileClasses model (( coord, tile ) as move) =
-    classes
-        [ "br-100 absolute"
-        , tileColorMap tile
-        , draggingClasses model move
-        ]
-
-
 moveTracerStyles : Model -> Move -> List ( String, String )
 moveTracerStyles model (( coord, tile ) as move) =
     if isInCurrentMove move model.currentMove then
@@ -169,15 +156,17 @@ moveTracerStyles model (( coord, tile ) as move) =
 
 
 draggingClasses : Model -> Move -> String
-draggingClasses model coord =
-    if isInCurrentMove coord model.currentMove then
+draggingClasses model (( _, tile ) as move) =
+    if isInCurrentMove move model.currentMove && model.moveType /= Just Square then
         "scale-half t3 ease"
+    else if model.moveType == Just Square then
+        "t3 ease"
     else
         ""
 
 
-baseTileStyles : Model -> List ( String, String )
-baseTileStyles { tileSettings } =
+tileWidthHeightStyles : Model -> List ( String, String )
+tileWidthHeightStyles { tileSettings } =
     [ ( "width", px tileSettings.sizeX )
     , ( "height", px tileSettings.sizeY )
     ]

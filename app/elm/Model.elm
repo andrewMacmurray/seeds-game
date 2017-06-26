@@ -8,6 +8,7 @@ type alias Model =
     { board : Board
     , isDragging : Bool
     , currentMove : List Move
+    , moveType : Maybe MoveType
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
     , window : Window.Size

@@ -6,9 +6,12 @@ import Dict
 import Model exposing (..)
 
 
-handleAddAllTilesToMove : Model -> Model
-handleAddAllTilesToMove model =
-    { model | currentMove = addAllTilesToMove model.currentMove model.board }
+handleSquareMove : Model -> Model
+handleSquareMove model =
+    { model
+        | currentMove = addAllTilesToMove model.currentMove model.board
+        , moveType = Just Square
+    }
 
 
 addAllTilesToMove : List Move -> Board -> List Move
