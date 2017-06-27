@@ -82,8 +82,8 @@
   --light-red:  #ff725c;
   --orange:  #ff6300;
   --gold:  #FFA000;
-  --yellow:  #ffd700;
-  --light-yellow: #fbf1a9;
+  --yellow:  #ffe455;
+  --light-yellow: #fffdc73;
   --brown: #A77B52;
   --purple:  #5e2ca5;
   --light-purple:  #a463f2;
@@ -101,6 +101,6 @@
   --lightest-blue:  #cdecff;
   --washed-blue:  #f6fffe;
   --washed-green:  #E1F8EA;
-  --washed-yellow:  #FFFBB3;
+  --washed-yellow:  #FFFEE1;
   --washed-red:  #ffdfdf;
 }

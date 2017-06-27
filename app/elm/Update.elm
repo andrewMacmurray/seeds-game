@@ -33,6 +33,7 @@ initialState =
     , moveType = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
+    , topBarHeight = 80
     , window = { height = 0, width = 0 }
     }
 

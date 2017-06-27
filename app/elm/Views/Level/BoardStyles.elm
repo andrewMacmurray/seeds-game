@@ -1,23 +1,23 @@
-module Views.Board.Styles exposing (..)
+module Views.Level.BoardStyles exposing (..)
 
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
-import Model exposing (..)
 import Helpers.Style exposing (classes, emptyStyle, ms, px, translate)
+import Model exposing (..)
 
 
 boardOffsetTop : Model -> ( String, String )
 boardOffsetTop model =
     let
         offset =
-            (toFloat model.window.height - boardHeight model) / 2
+            (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
     in
         ( "margin-top", px offset )
 
 
-boardHeight : Model -> Float
+boardHeight : Model -> Int
 boardHeight model =
-    model.tileSettings.sizeY * toFloat model.boardSettings.sizeY
+    round model.tileSettings.sizeY * model.boardSettings.sizeY
 
 
 tileCoordsStyles : Model -> Coord -> List ( String, String )

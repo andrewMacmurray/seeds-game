@@ -11,6 +11,7 @@ type alias Model =
     , moveType : Maybe MoveType
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
+    , topBarHeight : Int
     , window : Window.Size
     }
 

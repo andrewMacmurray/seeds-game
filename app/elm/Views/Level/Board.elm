@@ -1,17 +1,18 @@
-module Views.Board.Html exposing (..)
+module Views.Level.Board exposing (..)
 
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
+import Helpers.Html exposing (emptyProperty)
+import Helpers.Style exposing (classes, px, styles, translate)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Views.Board.Styles exposing (..)
-import Helpers.Style exposing (classes, px, styles, translate)
+import Views.Level.BoardStyles exposing (..)
 
 
-renderBoard : Model -> Html Msg
-renderBoard model =
+board : Model -> Html Msg
+board model =
     boardLayout model
         [ div [] <| renderTiles model ]
 
@@ -56,12 +57,12 @@ renderTile model (( coord, tile ) as move) =
         ]
 
 
-handleStop : Model -> List (Attribute Msg)
+handleStop : Model -> Attribute Msg
 handleStop model =
     if model.isDragging && model.moveType /= Just Square then
-        [ onMouseUp <| StopMove Line ]
+        onMouseUp <| StopMove Line
     else
-        []
+        emptyProperty
 
 
 hanldeMoveEvents : Model -> Move -> Attribute Msg
