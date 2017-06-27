@@ -1,4 +1,4 @@
-module Styles.Utils exposing (..)
+module Helpers.Style exposing (..)
 
 import Formatting exposing (..)
 
@@ -11,6 +11,11 @@ classes =
 styles : List (List ( String, String )) -> List ( String, String )
 styles =
     List.concat
+
+
+emptyStyle : ( String, String )
+emptyStyle =
+    ( "", "" )
 
 
 px : number -> String

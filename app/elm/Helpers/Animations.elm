@@ -1,16 +1,25 @@
-module Styles.Animations exposing (..)
+module Helpers.Animations exposing (..)
 
 import Formatting exposing ((<>), print)
-import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
+import Html exposing (node, Html)
+import Html.Attributes exposing (property)
+import Json.Encode exposing (string)
+import Helpers.Style exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
 
 
-animationsToAdd : List String
+embeddedAnimations : Html msg
+embeddedAnimations =
+    node "style" [ property "textContent" <| string animationsToAdd ] []
+
+
+animationsToAdd : String
 animationsToAdd =
     [ fallDistances
     , bulge
     , bounce
     , bulgeFade
     ]
+        |> String.join " "
 
 
 bulgeFade : String

@@ -1,4 +1,4 @@
-module Views.Board exposing (..)
+module Views.Board.Html exposing (..)
 
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
@@ -6,8 +6,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Styles.Board exposing (..)
-import Styles.Utils exposing (classes, px, styles, translate)
+import Views.Board.Styles exposing (..)
+import Helpers.Style exposing (classes, px, styles, translate)
 
 
 renderBoard : Model -> Html Msg
@@ -78,7 +78,6 @@ tracer model (( coord, tile ) as move) =
         [ class <|
             classes
                 [ "absolute br-100"
-                , draggingClasses model move
                 , tileColorMap tile
                 ]
         , style <|
@@ -99,12 +98,12 @@ innerTile model (( coord, tile ) as move) =
         [ class <|
             classes
                 [ "br-100 absolute"
-                , draggingClasses model move
                 , tileColorMap tile
                 ]
         , style <|
             styles
                 [ [ tilePaddingMap tile ]
+                , draggingStyles model move
                 , growingStyles model move
                 , enteringStyles model move
                 , fallingStyles model move
