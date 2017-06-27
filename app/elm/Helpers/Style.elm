@@ -1,4 +1,4 @@
-module Styles.Utils exposing (..)
+module Helpers.Style exposing (..)
 
 import Formatting exposing (..)
 

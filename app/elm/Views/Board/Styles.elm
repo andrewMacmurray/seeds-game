@@ -1,9 +1,9 @@
-module Styles.Board exposing (..)
+module Views.Board.Styles exposing (..)
 
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
 import Model exposing (..)
-import Styles.Utils exposing (classes, emptyStyle, ms, px, translate)
+import Helpers.Style exposing (classes, emptyStyle, ms, px, translate)
 
 
 boardOffsetTop : Model -> ( String, String )
@@ -116,7 +116,7 @@ exitRight model =
         x =
             model.tileSettings.sizeX * (toFloat (model.boardSettings.sizeX - 1))
     in
-        (translate x -80) ++ " scale(0.6)"
+        (translate x -80) ++ " scale(0.5)"
 
 
 exitTop : Model -> String
@@ -130,7 +130,7 @@ exitTop model =
 
 exitLeft : String
 exitLeft =
-    (translate 0 -80) ++ " scale(0.6)"
+    (translate 0 -80) ++ " scale(0.5)"
 
 
 moveTracerStyles : Model -> Move -> List ( String, String )
@@ -139,7 +139,7 @@ moveTracerStyles model (( coord, tile ) as move) =
         [ ( "animation", "bulge-fade 0.8s ease" )
         , ( "animation-fill-mode", "forwards" )
         ]
-    else if isLeaving tile && getTileType tile /= Just Seed then
+    else if isLeaving tile then
         [ ( "display", "none" )
         ]
     else
@@ -153,11 +153,9 @@ draggingStyles model (( _, tile ) as move) =
         , ( "transition", "0.5s ease" )
         ]
     else if model.moveType == Just Square then
-        [ ( "transition", "0.5s ease" )
-        ]
+        [ ( "transition", "0.5s ease" ) ]
     else if isLeaving tile then
-        [ ( "transform", "scale(0.7)" )
-        , ( "transition", "0.5s ease" )
+        [ ( "transition", "0.1s ease" )
         ]
     else
         []

@@ -1,10 +1,10 @@
-module Styles.Animations exposing (..)
+module Helpers.Animations exposing (..)
 
 import Formatting exposing ((<>), print)
 import Html exposing (node, Html)
 import Html.Attributes exposing (property)
 import Json.Encode exposing (string)
-import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
+import Helpers.Style exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
 
 
 embeddedAnimations : Html msg
