@@ -9,16 +9,17 @@ import Styles.Utils exposing (keyframesAnimation, opacity_, scale_, step, step_,
 
 embeddedAnimations : Html msg
 embeddedAnimations =
-    node "style" [ property "textContent" <| string <| String.join " " animationsToAdd ] []
+    node "style" [ property "textContent" <| string animationsToAdd ] []
 
 
-animationsToAdd : List String
+animationsToAdd : String
 animationsToAdd =
     [ fallDistances
     , bulge
     , bounce
     , bulgeFade
     ]
+        |> String.join " "
 
 
 bulgeFade : String
