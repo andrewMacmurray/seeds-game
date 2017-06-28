@@ -118,25 +118,29 @@ handleExitDirection ( coord, tile ) model =
 
 exitRight : Model -> String
 exitRight model =
-    let
-        x =
-            round model.tileSettings.sizeX * (model.boardSettings.sizeX - 1)
-    in
-        (translate x -(exitYdistance model)) ++ " scale(0.5)"
+    (translate (exitRightXdistance model) -(exitYdistance model)) ++ " scale(0.5)"
 
 
 exitTop : Model -> String
 exitTop model =
-    let
-        x =
-            round model.tileSettings.sizeX * (model.boardSettings.sizeX // 2) - (round model.tileSettings.sizeX // 2)
-    in
-        (translate x -(exitYdistance model)) ++ " scale(0.6)"
+    translate (exitTopXdistance model) -(exitYdistance model)
+        |> (++) "scale(0.6) "
 
 
 exitLeft : Model -> String
 exitLeft model =
-    (translate 0 -(exitYdistance model)) ++ " scale(0.5)"
+    translate 0 -(exitYdistance model)
+        |> (++) "scale(0.5) "
+
+
+exitRightXdistance : Model -> Int
+exitRightXdistance model =
+    round model.tileSettings.sizeX * (model.boardSettings.sizeX - 1)
+
+
+exitTopXdistance : Model -> Int
+exitTopXdistance { tileSettings, boardSettings } =
+    round <| tileSettings.sizeX * (toFloat boardSettings.sizeX / 2) - (tileSettings.sizeX / 2)
 
 
 exitYdistance : Model -> Int
