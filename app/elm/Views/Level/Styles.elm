@@ -1,4 +1,4 @@
-module Views.Level.BoardStyles exposing (..)
+module Views.Level.Styles exposing (..)
 
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
@@ -6,13 +6,14 @@ import Helpers.Style exposing (classes, emptyStyle, ms, px, translate)
 import Model exposing (..)
 
 
-boardOffsetTop : Model -> ( String, String )
+boardMarginTop : Model -> Style
+boardMarginTop model =
+    ( "margin-top", px <| boardOffsetTop model )
+
+
+boardOffsetTop : Model -> Int
 boardOffsetTop model =
-    let
-        offset =
-            (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
-    in
-        ( "margin-top", px offset )
+    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
 
 
 boardHeight : Model -> Int
@@ -20,7 +21,12 @@ boardHeight model =
     round model.tileSettings.sizeY * model.boardSettings.sizeY
 
 
-tileCoordsStyles : Model -> Coord -> List ( String, String )
+boardWidth : Model -> Int
+boardWidth { tileSettings, boardSettings } =
+    round tileSettings.sizeX * boardSettings.sizeX
+
+
+tileCoordsStyles : Model -> Coord -> List Style
 tileCoordsStyles model coord =
     let
         ( y, x ) =
@@ -36,7 +42,7 @@ tilePosition model ( y, x ) =
     )
 
 
-enteringStyles : Model -> Move -> List ( String, String )
+enteringStyles : Model -> Move -> List Style
 enteringStyles model ( _, tile ) =
     case tile of
         Entering tile ->
@@ -47,7 +53,7 @@ enteringStyles model ( _, tile ) =
             []
 
 
-growingStyles : Model -> Move -> List ( String, String )
+growingStyles : Model -> Move -> List Style
 growingStyles model ( coord, tile ) =
     let
         transitionDelay =
@@ -70,7 +76,7 @@ growingStyles model ( coord, tile ) =
                 []
 
 
-fallingStyles : Model -> Move -> List ( String, String )
+fallingStyles : Model -> Move -> List Style
 fallingStyles model ( _, tile ) =
     case tile of
         Falling tile distance ->
@@ -82,23 +88,23 @@ fallingStyles model ( _, tile ) =
             []
 
 
-leavingStyles : Model -> Move -> List ( String, String )
+leavingStyles : Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
         [ ( "transition", "0.8s ease" )
         , ( "transition-delay", ms <| ((leavingOrder tile) % 5) * 80 )
-        , ( "opacity", "0" )
+        , ( "opacity", "1" )
         , handleExitDirection move model
         ]
     else
         []
 
 
-handleExitDirection : Move -> Model -> ( String, String )
+handleExitDirection : Move -> Model -> Style
 handleExitDirection ( coord, tile ) model =
     case tile of
         Leaving Rain _ ->
-            ( "transform", exitLeft )
+            ( "transform", exitLeft model )
 
         Leaving Sun _ ->
             ( "transform", exitRight model )
@@ -114,26 +120,31 @@ exitRight : Model -> String
 exitRight model =
     let
         x =
-            model.tileSettings.sizeX * (toFloat (model.boardSettings.sizeX - 1))
+            round model.tileSettings.sizeX * (model.boardSettings.sizeX - 1)
     in
-        (translate x -80) ++ " scale(0.5)"
+        (translate x -(exitYdistance model)) ++ " scale(0.5)"
 
 
 exitTop : Model -> String
 exitTop model =
     let
         x =
-            model.tileSettings.sizeX * ((toFloat model.boardSettings.sizeX) / 2) - (model.tileSettings.sizeX / 2)
+            round model.tileSettings.sizeX * (model.boardSettings.sizeX // 2) - (round model.tileSettings.sizeX // 2)
     in
-        (translate x -80) ++ " scale(0.6)"
+        (translate x -(exitYdistance model)) ++ " scale(0.6)"
 
 
-exitLeft : String
-exitLeft =
-    (translate 0 -80) ++ " scale(0.5)"
+exitLeft : Model -> String
+exitLeft model =
+    (translate 0 -(exitYdistance model)) ++ " scale(0.5)"
 
 
-moveTracerStyles : Model -> Move -> List ( String, String )
+exitYdistance : Model -> Int
+exitYdistance model =
+    (boardOffsetTop model) - 9
+
+
+moveTracerStyles : Model -> Move -> List Style
 moveTracerStyles model (( coord, tile ) as move) =
     if isInCurrentMove move model.currentMove then
         [ ( "animation", "bulge-fade 0.8s ease" )
@@ -146,7 +157,7 @@ moveTracerStyles model (( coord, tile ) as move) =
         []
 
 
-draggingStyles : Model -> Move -> List ( String, String )
+draggingStyles : Model -> Move -> List Style
 draggingStyles model (( _, tile ) as move) =
     if isInCurrentMove move model.currentMove && model.moveType /= Just Square then
         [ ( "transform", "scale(0.5)" )
@@ -161,7 +172,7 @@ draggingStyles model (( _, tile ) as move) =
         []
 
 
-tileWidthHeightStyles : Model -> List ( String, String )
+tileWidthHeightStyles : Model -> List Style
 tileWidthHeightStyles { tileSettings } =
     [ ( "width", px tileSettings.sizeX )
     , ( "height", px tileSettings.sizeY )

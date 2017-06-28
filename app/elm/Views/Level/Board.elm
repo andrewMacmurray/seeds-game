@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
 import Model exposing (..)
-import Views.Level.BoardStyles exposing (..)
+import Views.Level.Styles exposing (..)
 
 
 board : Model -> Html Msg
@@ -30,14 +30,9 @@ boardLayout model =
         [ class "relative z-3 center flex flex-wrap"
         , style
             [ ( "width", px <| boardWidth model )
-            , boardOffsetTop model
+            , boardMarginTop model
             ]
         ]
-
-
-boardWidth : Model -> Float
-boardWidth { tileSettings, boardSettings } =
-    tileSettings.sizeX * toFloat (boardSettings.sizeX)
 
 
 renderTile : Model -> Move -> Html Msg

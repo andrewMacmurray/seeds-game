@@ -99,3 +99,7 @@ type Msg
     | ShiftBoard
     | ResetMove
     | WindowSize Window.Size
+
+
+type alias Style =
+    ( String, String )
