@@ -2,7 +2,7 @@ module Views.Level.Styles exposing (..)
 
 import Data.Moves.Check exposing (isInCurrentMove)
 import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
-import Helpers.Style exposing (classes, emptyStyle, ms, px, translate)
+import Helpers.Style exposing (classes, emptyStyle, ms, px, scale, translate, translateScale)
 import Model exposing (..)
 
 
@@ -61,7 +61,7 @@ growingStyles model ( coord, tile ) =
     in
         case tile of
             Growing SeedPod _ ->
-                [ ( "transform", "scale(4)" )
+                [ ( "transform", scale 4 )
                 , ( "opacity", "0" )
                 , ( "transition", "0.4s ease" )
                 , ( "transition-delay", transitionDelay )
@@ -93,7 +93,7 @@ leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
         [ ( "transition", "0.8s ease" )
         , ( "transition-delay", ms <| ((leavingOrder tile) % 5) * 80 )
-        , ( "opacity", "1" )
+        , ( "opacity", "0.2" )
         , handleExitDirection move model
         ]
     else
@@ -118,19 +118,17 @@ handleExitDirection ( coord, tile ) model =
 
 exitRight : Model -> String
 exitRight model =
-    (translate (exitRightXdistance model) -(exitYdistance model)) ++ " scale(0.5)"
+    translateScale (exitRightXdistance model) -(exitYdistance model) 0.5
 
 
 exitTop : Model -> String
 exitTop model =
-    translate (exitTopXdistance model) -(exitYdistance model)
-        |> (++) "scale(0.6) "
+    translateScale (exitTopXdistance model) -(exitYdistance model) 0.6
 
 
 exitLeft : Model -> String
 exitLeft model =
-    translate 0 -(exitYdistance model)
-        |> (++) "scale(0.5) "
+    translateScale 0 -(exitYdistance model) 0.5
 
 
 exitRightXdistance : Model -> Int
@@ -140,7 +138,7 @@ exitRightXdistance model =
 
 exitTopXdistance : Model -> Int
 exitTopXdistance { tileSettings, boardSettings } =
-    round <| tileSettings.sizeX * (toFloat boardSettings.sizeX / 2) - (tileSettings.sizeX / 2)
+    round tileSettings.sizeX * (boardSettings.sizeX // 2) - (round tileSettings.sizeX // 2)
 
 
 exitYdistance : Model -> Int
