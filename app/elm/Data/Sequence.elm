@@ -1,12 +1,13 @@
 module Data.Sequence exposing (..)
 
-import Delay
+import Delay exposing (withUnit)
 import Model exposing (..)
+import Time exposing (millisecond, Time)
 
 
-growSeedPods : Cmd Msg
+growSeedPods : List ( Float, Time, Msg )
 growSeedPods =
-    Delay.start StopMoveSequence
+    withUnit millisecond
         [ ( 0, SetGrowingSeedPods )
         , ( 0, ResetMove )
         , ( 800, GrowPodsToSeeds )
@@ -14,9 +15,9 @@ growSeedPods =
         ]
 
 
-removeTiles : Model -> MoveType -> Cmd Msg
+removeTiles : Model -> MoveType -> List ( Float, Time, Msg )
 removeTiles model moveType =
-    Delay.start StopMoveSequence
+    withUnit millisecond
         [ ( 0, SetLeavingTiles )
         , ( 0, ResetMove )
         , ( fallDelay model moveType, SetFallingTiles )

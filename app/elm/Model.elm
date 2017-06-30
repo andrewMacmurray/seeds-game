@@ -86,7 +86,6 @@ type Msg
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveType
-    | StopMoveSequence (List ( Float, Msg ))
     | StartMove Move
     | CheckMove Move
     | SetLeavingTiles
