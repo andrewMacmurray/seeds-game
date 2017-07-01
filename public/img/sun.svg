@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="38" viewBox="0 0 32 38">
+  <g fill="#FFAA00" fill-rule="evenodd" transform="translate(-3)">
+    <polygon points="19 0 23 14 15 14"/>
+    <polygon points="19 24 23 38 15 38" transform="rotate(180 19 31)"/>
+    <polygon points="27.692 6.015 31.692 20.015 23.692 20.015" transform="rotate(50 27.692 13.015)"/>
+    <polygon points="8.933 18.564 12.933 32.564 4.933 32.564" transform="rotate(-122 8.933 25.564)"/>
+    <polygon points="10 6.237 14 20.237 6 20.237" transform="scale(-1 1) rotate(56 0 -5.57)"/>
+    <polygon points="29.04 18.231 33.04 32.231 25.04 32.231" transform="scale(1 -1) rotate(56 76.492 0)"/>
+    <circle cx="19" cy="19" r="9"/>
+  </g>
+</svg>

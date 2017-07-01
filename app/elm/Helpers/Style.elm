@@ -18,6 +18,11 @@ emptyStyle =
     ( "", "" )
 
 
+backgroundImage : String -> ( String, String )
+backgroundImage url =
+    ( "background-image", "url(" ++ url ++ ")" )
+
+
 px : number -> String
 px =
     print px_
@@ -81,6 +86,11 @@ scale =
 scale_ : Format r (number -> r)
 scale_ =
     s "scale(" <> number <> s ")"
+
+
+translateScale : number1 -> number2 -> number3 -> String
+translateScale =
+    print <| translate_ <> scale_
 
 
 keyframesAnimation : String -> List String -> String

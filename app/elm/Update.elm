@@ -9,11 +9,13 @@ import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove, triggerMoveIfSquare)
 import Data.Moves.Type exposing (currentMoveType)
+import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPods, removeTiles)
 import Delay
 import Dict
 import Helpers.Window exposing (getWindowSize)
 import Model exposing (..)
+import Time exposing (millisecond)
 import Window exposing (resizes)
 
 
@@ -28,11 +30,13 @@ init =
 initialState : Model
 initialState =
     { board = Dict.empty
+    , scores = initialScores [ Sun, Rain, Seed ]
     , isDragging = False
     , currentMove = []
-    , moveType = Nothing
+    , moveShape = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
+    , topBarHeight = 80
     , window = { height = 0, width = 0 }
     }
 
@@ -49,16 +53,17 @@ update msg model =
         StopMove moveType ->
             case currentMoveType model.currentMove of
                 Just SeedPod ->
-                    model ! [ growSeedPods ]
+                    model ! [ Delay.sequence growSeedPods ]
 
                 _ ->
-                    model ! [ removeTiles model moveType ]
-
-        StopMoveSequence msgs ->
-            Delay.handleSequence StopMoveSequence msgs update model
+                    model ! [ Delay.sequence (removeTiles model moveType) ]
 
         SetLeavingTiles ->
-            (model |> handleLeavingTiles) ! []
+            (model
+                |> handleAddScore
+                |> handleLeavingTiles
+            )
+                ! []
 
         SetFallingTiles ->
             (model |> handleFallingTiles) ! []
@@ -100,7 +105,7 @@ update msg model =
                 newModel ! [ triggerMoveIfSquare newModel ]
 
         SquareMove ->
-            (model |> handleSquareMove) ! [ Delay.after 600 <| StopMove Square ]
+            (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
 
         WindowSize size ->
             { model | window = size } ! []

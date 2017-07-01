@@ -1,16 +1,16 @@
 module View exposing (..)
 
 import Components.Backdrop exposing (backdrop)
+import Helpers.Animations exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
-import Helpers.Animations exposing (embeddedAnimations)
-import Views.Board.Html exposing (handleStop, renderBoard)
+import Views.Level exposing (level)
 
 
 view : Model -> Html Msg
 view model =
-    div (handleStop model)
+    div []
         [ embeddedAnimations
-        , renderBoard model
+        , level model
         , backdrop model
         ]

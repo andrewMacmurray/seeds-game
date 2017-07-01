@@ -10,7 +10,7 @@ handleSquareMove : Model -> Model
 handleSquareMove model =
     { model
         | currentMove = addAllTilesToMove model.currentMove model.board
-        , moveType = Just Square
+        , moveShape = Just Square
     }
 
 

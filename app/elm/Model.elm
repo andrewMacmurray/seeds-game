@@ -1,18 +1,24 @@
 module Model exposing (..)
 
-import Dict exposing (..)
+import Dict exposing (Dict)
 import Window
 
 
 type alias Model =
     { board : Board
+    , scores : Scores
     , isDragging : Bool
     , currentMove : List Move
-    , moveType : Maybe MoveType
+    , moveShape : Maybe MoveShape
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
+    , topBarHeight : Int
     , window : Window.Size
     }
+
+
+type alias Scores =
+    Dict String Int
 
 
 type alias TileSettings =
@@ -31,7 +37,7 @@ type alias Move =
     ( Coord, TileState )
 
 
-type MoveType
+type MoveShape
     = Square
     | Line
 
@@ -84,8 +90,7 @@ type Msg
     = InitTiles (List TileType)
     | AddTiles (List TileType)
     | SquareMove
-    | StopMove MoveType
-    | StopMoveSequence (List ( Float, Msg ))
+    | StopMove MoveShape
     | StartMove Move
     | CheckMove Move
     | SetLeavingTiles
@@ -98,3 +103,7 @@ type Msg
     | ShiftBoard
     | ResetMove
     | WindowSize Window.Size
+
+
+type alias Style =
+    ( String, String )

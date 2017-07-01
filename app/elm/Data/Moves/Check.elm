@@ -2,9 +2,10 @@ module Data.Moves.Check exposing (..)
 
 import Data.Directions exposing (validDirection)
 import Data.Moves.Square exposing (isValidSquare)
-import Data.Moves.Type exposing (sameTileType, emptyMove)
+import Data.Moves.Type exposing (emptyMove, sameTileType)
 import Delay
 import Model exposing (..)
+import Time exposing (millisecond)
 
 
 handleStopMove : Model -> Model
@@ -12,7 +13,7 @@ handleStopMove model =
     { model
         | isDragging = False
         , currentMove = []
-        , moveType = Nothing
+        , moveShape = Nothing
     }
 
 
@@ -21,14 +22,14 @@ handleStartMove move model =
     { model
         | isDragging = True
         , currentMove = [ move ]
-        , moveType = Just Line
+        , moveShape = Just Line
     }
 
 
 triggerMoveIfSquare : Model -> Cmd Msg
 triggerMoveIfSquare model =
     if isValidSquare model.currentMove then
-        Delay.after 0 SquareMove
+        Delay.after 0 millisecond SquareMove
     else
         Cmd.none
 
