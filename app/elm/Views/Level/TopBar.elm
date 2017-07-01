@@ -19,15 +19,15 @@ topBar model =
             , class "flex justify-between"
             ]
             [ div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "/img/rain.svg" ] ] []
+                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/rain.svg" ] ] []
                 , renderScore Rain model.scores
                 ]
             , div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "/img/sunflower.svg" ] ] []
+                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/sunflower.svg" ] ] []
                 , renderScore Seed model.scores
                 ]
             , div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "/img/sun.svg" ] ] []
+                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/sun.svg" ] ] []
                 , renderScore Sun model.scores
                 ]
             ]
