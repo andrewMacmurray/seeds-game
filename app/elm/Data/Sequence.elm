@@ -15,7 +15,7 @@ growSeedPods =
         ]
 
 
-removeTiles : Model -> MoveType -> List ( Float, Time, Msg )
+removeTiles : Model -> MoveShape -> List ( Float, Time, Msg )
 removeTiles model moveType =
     withUnit millisecond
         [ ( 0, SetLeavingTiles )
@@ -27,7 +27,7 @@ removeTiles model moveType =
         ]
 
 
-fallDelay : Model -> MoveType -> Float
+fallDelay : Model -> MoveShape -> Float
 fallDelay model moveType =
     if List.length (model.currentMove) > 15 || moveType == Square then
         700

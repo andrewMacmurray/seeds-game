@@ -161,11 +161,11 @@ moveTracerStyles model (( coord, tile ) as move) =
 
 draggingStyles : Model -> Move -> List Style
 draggingStyles model (( _, tile ) as move) =
-    if isInCurrentMove move model.currentMove && model.moveType /= Just Square then
+    if isInCurrentMove move model.currentMove && model.moveShape /= Just Square then
         [ ( "transform", "scale(0.5)" )
         , ( "transition", "0.5s ease" )
         ]
-    else if model.moveType == Just Square then
+    else if model.moveShape == Just Square then
         [ ( "transition", "0.5s ease" ) ]
     else if isLeaving tile then
         [ ( "transition", "0.1s ease" )

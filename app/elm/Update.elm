@@ -9,6 +9,7 @@ import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove, triggerMoveIfSquare)
 import Data.Moves.Type exposing (currentMoveType)
+import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPods, removeTiles)
 import Delay
 import Dict
@@ -29,9 +30,10 @@ init =
 initialState : Model
 initialState =
     { board = Dict.empty
+    , scores = initialScores [ Sun, Rain, Seed ]
     , isDragging = False
     , currentMove = []
-    , moveType = Nothing
+    , moveShape = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
@@ -54,10 +56,14 @@ update msg model =
                     model ! [ Delay.sequence growSeedPods ]
 
                 _ ->
-                    model ! [ Delay.sequence <| removeTiles model moveType ]
+                    model ! [ Delay.sequence (removeTiles model moveType) ]
 
         SetLeavingTiles ->
-            (model |> handleLeavingTiles) ! []
+            (model
+                |> handleAddScore
+                |> handleLeavingTiles
+            )
+                ! []
 
         SetFallingTiles ->
             (model |> handleFallingTiles) ! []

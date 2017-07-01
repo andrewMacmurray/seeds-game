@@ -54,7 +54,7 @@ renderTile model (( coord, tile ) as move) =
 
 handleStop : Model -> Attribute Msg
 handleStop model =
-    if model.isDragging && model.moveType /= Just Square then
+    if model.isDragging && model.moveShape /= Just Square then
         onMouseUp <| StopMove Line
     else
         emptyProperty

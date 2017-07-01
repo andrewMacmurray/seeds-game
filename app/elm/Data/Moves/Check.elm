@@ -13,7 +13,7 @@ handleStopMove model =
     { model
         | isDragging = False
         , currentMove = []
-        , moveType = Nothing
+        , moveShape = Nothing
     }
 
 
@@ -22,7 +22,7 @@ handleStartMove move model =
     { model
         | isDragging = True
         , currentMove = [ move ]
-        , moveType = Just Line
+        , moveShape = Just Line
     }
 
 

@@ -18,6 +18,11 @@ emptyStyle =
     ( "", "" )
 
 
+backgroundImage : String -> ( String, String )
+backgroundImage url =
+    ( "background-image", "url(" ++ url ++ ")" )
+
+
 px : number -> String
 px =
     print px_
