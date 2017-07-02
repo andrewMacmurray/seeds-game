@@ -12,10 +12,20 @@ currentMoveType board =
         |> Maybe.andThen moveType
 
 
+moveShape : Move -> Maybe MoveShape
+moveShape ( _, tileState ) =
+    case tileState of
+        Dragging _ _ _ moveShape ->
+            Just moveShape
+
+        _ ->
+            Nothing
+
+
 moveType : Move -> Maybe TileType
 moveType ( _, tileState ) =
     case tileState of
-        Dragging tile _ _ ->
+        Dragging tile _ _ _ ->
             Just tile
 
         _ ->

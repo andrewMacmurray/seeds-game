@@ -1,9 +1,8 @@
 module Data.Moves.Check exposing (..)
 
 import Data.Directions exposing (isAbove, isBelow, isLeft, isRight, validDirection)
-import Data.Moves.Square exposing (isValidSquare)
-import Data.Moves.Type exposing (emptyMove, sameTileType)
-import Data.Tiles exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToDragging, setStaticToFirstMove)
+import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Tiles exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Delay
 import Dict
 import Dict.Extra
@@ -30,10 +29,63 @@ handleStartMove move model =
 
 triggerMoveIfSquare : Model -> Cmd Msg
 triggerMoveIfSquare model =
-    if isValidSquare (currentMoves model.board) then
+    if hasSquareTile model.board then
         Delay.after 0 millisecond SquareMove
     else
         Cmd.none
+
+
+isValidSquare : Move -> Board -> Bool
+isValidSquare move board =
+    let
+        moves =
+            currentMoves board |> List.reverse
+
+        first =
+            move
+
+        second =
+            List.head moves
+                |> Maybe.withDefault emptyMove
+    in
+        allTrue
+            [ moveLongEnough moves
+            , validDirection first second
+            , sameTileType first second
+            , draggingOrderDifferent first second
+            ]
+
+
+draggingOrderDifferent : Move -> Move -> Bool
+draggingOrderDifferent ( _, t2 ) ( _, t1 ) =
+    moveOrder t2 < (moveOrder t1) - 1
+
+
+hasSquareTile : Board -> Bool
+hasSquareTile board =
+    board
+        |> Dict.filter (\coord tileState -> moveShape ( coord, tileState ) == Just Square)
+        |> (\x -> Dict.size x > 0)
+
+
+isSquare : List Move -> Bool
+isSquare moves =
+    moves |> List.any (\a -> moveShape a == Just Square)
+
+
+allTrue : List Bool -> Bool
+allTrue =
+    List.foldr (&&) True
+
+
+collisionWithTail : List Move -> Bool
+collisionWithTail moveList =
+    False
+
+
+moveLongEnough : List Move -> Bool
+moveLongEnough moves =
+    (List.length moves) > 3
 
 
 handleCheckMove : Move -> Model -> Model
@@ -46,10 +98,14 @@ handleCheckMove move model =
 
 addToMove : Move -> Board -> Board
 addToMove next board =
-    if isValidMove next board then
-        addBearings next board
-    else
-        board
+    let
+        newBoard =
+            addBearings next board
+    in
+        if isValidMove next board || isValidSquare next board then
+            newBoard
+        else
+            board
 
 
 addBearings : Move -> Board -> Board
@@ -82,9 +138,13 @@ changeBearings (( c2, t2 ) as move2) (( c1, t1 ) as move1) =
             ( newCurrentMove
             , ( c1, addBearing Up t1 )
             )
-        else
+        else if isBelow c1 c2 then
             ( newCurrentMove
             , ( c1, addBearing Down t1 )
+            )
+        else
+            ( newCurrentMove
+            , ( c1, addBearing Head t1 )
             )
 
 
@@ -95,7 +155,7 @@ startMove ( c1, t1 ) board =
 
 setNewCurrentMove : Move -> Move -> Move
 setNewCurrentMove ( c2, t2 ) m1 =
-    ( c2, setStaticToDragging (incrementMoveOrder m1) t2 )
+    ( c2, setToDragging (incrementMoveOrder m1) t2 )
 
 
 isValidMove : Move -> Board -> Bool

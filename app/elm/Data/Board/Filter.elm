@@ -1,7 +1,7 @@
 module Data.Board.Filter exposing (..)
 
 import Data.Moves.Type exposing (currentMoveType)
-import Data.Tiles exposing (getTileType, setStaticToDragging)
+import Data.Tiles exposing (getTileType, setToDragging)
 import Dict
 import Model exposing (..)
 
@@ -24,11 +24,12 @@ setAllTilesOfTypeToDragging board =
 
 allTilesOfType : Board -> TileType -> Board
 allTilesOfType board tileType =
-    board
-        |> Dict.map
-            (\_ tile ->
-                if getTileType tile == Just tileType then
-                    setStaticToDragging 1 tile
-                else
-                    tile
-            )
+    board |> Dict.map (setDraggingIfMatch tileType)
+
+
+setDraggingIfMatch : TileType -> Coord -> TileState -> TileState
+setDraggingIfMatch tileType ( y, x ) tileState =
+    if getTileType tileState == Just tileType then
+        setToDragging (x + 1 + (y * 8)) tileState
+    else
+        tileState

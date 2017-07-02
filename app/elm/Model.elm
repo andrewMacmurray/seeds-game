@@ -83,7 +83,7 @@ type MoveBearing
 
 type TileState
     = Static TileType
-    | Dragging TileType MoveOrder MoveBearing
+    | Dragging TileType MoveOrder MoveBearing MoveShape
     | Leaving TileType LeavingOrder
     | Falling TileType FallingDistance
     | Entering TileType
