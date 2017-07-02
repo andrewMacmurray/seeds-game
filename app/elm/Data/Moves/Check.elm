@@ -36,17 +36,13 @@ triggerMoveIfSquare model =
 
 
 isValidSquare : Move -> Board -> Bool
-isValidSquare move board =
+isValidSquare first board =
     let
         moves =
             currentMoves board |> List.reverse
 
-        first =
-            move
-
         second =
-            List.head moves
-                |> Maybe.withDefault emptyMove
+            List.head moves |> Maybe.withDefault emptyMove
     in
         allTrue
             [ moveLongEnough moves

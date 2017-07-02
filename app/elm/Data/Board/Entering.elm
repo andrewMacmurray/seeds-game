@@ -3,23 +3,19 @@ module Data.Board.Entering exposing (..)
 import Data.Board.Make exposing (tileGenerator)
 import Data.Tiles exposing (setEnteringToStatic)
 import Dict
+import Helpers.Dict exposing (mapValues)
 import Model exposing (..)
 import Random exposing (Generator)
 
 
 handleResetEntering : Model -> Model
 handleResetEntering model =
-    { model | board = resetEnteringTiles model.board }
+    { model | board = model.board |> mapValues setEnteringToStatic }
 
 
 handleAddNewTiles : List TileType -> Model -> Model
 handleAddNewTiles tileList model =
     { model | board = addNewTiles tileList model.board }
-
-
-resetEnteringTiles : Board -> Board
-resetEnteringTiles board =
-    board |> Dict.map (\coord tile -> setEnteringToStatic tile)
 
 
 addNewTiles : List TileType -> Board -> Board
