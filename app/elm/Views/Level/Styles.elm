@@ -1,7 +1,6 @@
 module Views.Level.Styles exposing (..)
 
-import Data.Moves.Check exposing (isInCurrentMove)
-import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
+import Data.Tiles exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (classes, emptyStyle, ms, px, scale, translate, translateScale)
 import Model exposing (..)
 
@@ -148,7 +147,7 @@ exitYdistance model =
 
 moveTracerStyles : Model -> Move -> List Style
 moveTracerStyles model (( coord, tile ) as move) =
-    if isInCurrentMove move model.currentMove then
+    if isDragging tile then
         [ ( "animation", "bulge-fade 0.8s ease" )
         , ( "animation-fill-mode", "forwards" )
         ]
@@ -161,7 +160,7 @@ moveTracerStyles model (( coord, tile ) as move) =
 
 draggingStyles : Model -> Move -> List Style
 draggingStyles model (( _, tile ) as move) =
-    if isInCurrentMove move model.currentMove && model.moveShape /= Just Square then
+    if isDragging tile && model.moveShape /= Just Square then
         [ ( "transform", "scale(0.5)" )
         , ( "transition", "0.5s ease" )
         ]

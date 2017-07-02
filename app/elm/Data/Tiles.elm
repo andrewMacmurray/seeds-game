@@ -15,6 +15,11 @@ evenTiles n =
         Sun
 
 
+allSeed : Int -> TileType
+allSeed _ =
+    Seed
+
+
 growingOrder : TileState -> Int
 growingOrder tileState =
     case tileState of
@@ -43,6 +48,66 @@ isLeaving tileState =
 
         _ ->
             False
+
+
+isDragging : TileState -> Bool
+isDragging tileState =
+    case tileState of
+        Dragging _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+moveOrder : TileState -> Int
+moveOrder tileState =
+    case tileState of
+        Dragging _ moveOrder _ ->
+            moveOrder
+
+        _ ->
+            0
+
+
+isCurrentMove : TileState -> Bool
+isCurrentMove tileState =
+    case tileState of
+        Dragging _ _ Head ->
+            True
+
+        _ ->
+            False
+
+
+setStaticToDragging : MoveOrder -> TileState -> TileState
+setStaticToDragging moveOrder tileState =
+    case tileState of
+        Static tileType ->
+            Dragging tileType moveOrder Head
+
+        x ->
+            x
+
+
+setStaticToFirstMove : TileState -> TileState
+setStaticToFirstMove tileState =
+    case tileState of
+        Static tileType ->
+            Dragging tileType 1 Head
+
+        x ->
+            x
+
+
+addBearing : MoveBearing -> TileState -> TileState
+addBearing moveBearing tileState =
+    case tileState of
+        Dragging tileType moveOrder _ ->
+            Dragging tileType moveOrder moveBearing
+
+        x ->
+            x
 
 
 setGrowingToStatic : TileState -> TileState
@@ -105,26 +170,26 @@ setLeavingToEmpty tileState =
             x
 
 
-setToGrowing : Int -> TileState -> TileState
-setToGrowing order tileState =
+setDraggingToGrowing : TileState -> TileState
+setDraggingToGrowing tileState =
     case tileState of
-        Static SeedPod ->
+        Dragging SeedPod order _ ->
             Growing SeedPod order
 
         x ->
             x
 
 
-setToLeaving : Int -> TileState -> TileState
-setToLeaving order tileState =
+setToLeaving : TileState -> TileState
+setToLeaving tileState =
     case tileState of
-        Static Rain ->
+        Dragging Rain order _ ->
             Leaving Rain order
 
-        Static Sun ->
+        Dragging Sun order _ ->
             Leaving Sun order
 
-        Static Seed ->
+        Dragging Seed order _ ->
             Leaving Seed order
 
         x ->
@@ -135,6 +200,9 @@ getTileType : TileState -> Maybe TileType
 getTileType tileState =
     case tileState of
         Static tile ->
+            Just tile
+
+        Dragging tile _ _ ->
             Just tile
 
         Leaving tile _ ->
@@ -159,6 +227,9 @@ tileColorMap tileState =
         Static tile ->
             tileColors tile
 
+        Dragging tile _ _ ->
+            tileColors tile
+
         Leaving tile _ ->
             tileColors tile
 
@@ -179,6 +250,9 @@ tilePaddingMap : TileState -> ( String, String )
 tilePaddingMap tileState =
     case tileState of
         Static tile ->
+            tilePadding tile
+
+        Dragging tile _ _ ->
             tilePadding tile
 
         Leaving tile _ ->

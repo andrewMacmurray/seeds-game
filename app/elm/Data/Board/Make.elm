@@ -1,9 +1,9 @@
 module Data.Board.Make exposing (..)
 
-import Model exposing (..)
 import Data.Tiles exposing (evenTiles)
-import Random exposing (..)
 import Dict
+import Model exposing (..)
+import Random exposing (..)
 
 
 handleMakeBoard : List TileType -> Model -> Model

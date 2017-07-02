@@ -1,7 +1,7 @@
 module Data.Board.Filter exposing (..)
 
 import Data.Moves.Type exposing (currentMoveType)
-import Data.Tiles exposing (getTileType)
+import Data.Tiles exposing (getTileType, setStaticToDragging)
 import Dict
 import Model exposing (..)
 
@@ -9,21 +9,26 @@ import Model exposing (..)
 handleSquareMove : Model -> Model
 handleSquareMove model =
     { model
-        | currentMove = addAllTilesToMove model.currentMove model.board
-        , moveShape = Just Square
+        | moveShape = Just Square
+        , board = setAllTilesOfTypeToDragging model.board
     }
 
 
-addAllTilesToMove : List Move -> Board -> List Move
-addAllTilesToMove currentMove board =
-    currentMove
+setAllTilesOfTypeToDragging : Board -> Board
+setAllTilesOfTypeToDragging board =
+    board
         |> currentMoveType
         |> Maybe.map (allTilesOfType board)
-        |> Maybe.withDefault []
+        |> Maybe.withDefault board
 
 
-allTilesOfType : Board -> TileType -> List Move
+allTilesOfType : Board -> TileType -> Board
 allTilesOfType board tileType =
     board
-        |> Dict.filter (\_ tile -> getTileType tile == Just tileType)
-        |> Dict.toList
+        |> Dict.map
+            (\_ tile ->
+                if getTileType tile == Just tileType then
+                    setStaticToDragging 1 tile
+                else
+                    tile
+            )

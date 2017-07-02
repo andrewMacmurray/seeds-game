@@ -8,7 +8,6 @@ type alias Model =
     { board : Board
     , scores : Scores
     , isDragging : Bool
-    , currentMove : List Move
     , moveShape : Maybe MoveShape
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
@@ -54,6 +53,10 @@ type alias X =
     Int
 
 
+type alias MoveOrder =
+    Int
+
+
 type alias LeavingOrder =
     Int
 
@@ -70,8 +73,17 @@ type alias Board =
     Dict Coord TileState
 
 
+type MoveBearing
+    = Head
+    | Left
+    | Right
+    | Up
+    | Down
+
+
 type TileState
     = Static TileType
+    | Dragging TileType MoveOrder MoveBearing
     | Leaving TileType LeavingOrder
     | Falling TileType FallingDistance
     | Entering TileType

@@ -32,7 +32,6 @@ initialState =
     { board = Dict.empty
     , scores = initialScores [ Sun, Rain, Seed ]
     , isDragging = False
-    , currentMove = []
     , moveShape = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
@@ -51,7 +50,7 @@ update msg model =
             (model |> handleAddNewTiles tiles) ! []
 
         StopMove moveType ->
-            case currentMoveType model.currentMove of
+            case currentMoveType model.board of
                 Just SeedPod ->
                     model ! [ Delay.sequence growSeedPods ]
 

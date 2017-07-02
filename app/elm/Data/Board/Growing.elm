@@ -1,9 +1,7 @@
 module Data.Board.Growing exposing (..)
 
-import Data.Moves.Check exposing (coordsList)
-import Data.Tiles exposing (growSeedPod, setGrowingToStatic, setToGrowing)
+import Data.Tiles exposing (growSeedPod, setDraggingToGrowing, setGrowingToStatic)
 import Dict
-import List.Extra exposing (elemIndex)
 import Model exposing (..)
 
 
@@ -19,29 +17,24 @@ handleGrowSeedPods model =
 
 handleSetGrowingSeedPods : Model -> Model
 handleSetGrowingSeedPods model =
-    { model | board = setGrowingSeedPods model.currentMove model.board }
+    { model | board = setGrowingSeedPods model.board }
 
 
 resetGrowingTiles : Board -> Board
 resetGrowingTiles board =
-    board |> Dict.map (\_ tile -> setGrowingToStatic tile)
+    board |> mapKeys setGrowingToStatic
 
 
 growPodsToSeeds : Board -> Board
 growPodsToSeeds board =
-    board |> Dict.map (\_ tile -> growSeedPod tile)
+    board |> mapKeys growSeedPod
 
 
-setGrowingSeedPods : List Move -> Board -> Board
-setGrowingSeedPods moves board =
-    board |> Dict.map (setTileToGrowing moves)
+setGrowingSeedPods : Board -> Board
+setGrowingSeedPods board =
+    board |> mapKeys setDraggingToGrowing
 
 
-setTileToGrowing : List Move -> Coord -> TileState -> TileState
-setTileToGrowing moves coordToCheck tile =
-    case elemIndex coordToCheck (coordsList moves) of
-        Just i ->
-            setToGrowing i tile
-
-        Nothing ->
-            tile
+mapKeys : (b -> b) -> Dict.Dict comparable b -> Dict.Dict comparable b
+mapKeys f xs =
+    Dict.map (\_ x -> f x) xs

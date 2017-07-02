@@ -29,7 +29,7 @@ removeTiles model moveType =
 
 fallDelay : Model -> MoveShape -> Float
 fallDelay model moveType =
-    if List.length (model.currentMove) > 15 || moveType == Square then
+    if moveType == Square then
         700
     else
         300
