@@ -23,7 +23,7 @@ addNewTiles newTiles board =
     let
         tilesToAdd =
             board
-                |> getEmpties
+                |> getEmptyCoords
                 |> List.map2 (\tile coord -> ( coord, Entering tile )) newTiles
                 |> Dict.fromList
     in
@@ -40,12 +40,16 @@ numberOfEmpties : Board -> Int
 numberOfEmpties board =
     board
         |> getEmpties
-        |> List.length
+        |> Dict.size
 
 
-getEmpties : Board -> List Coord
-getEmpties board =
+getEmptyCoords : Board -> List Coord
+getEmptyCoords board =
     board
-        |> Dict.toList
-        |> List.filter (\( _, tile ) -> tile == Empty)
-        |> List.map Tuple.first
+        |> getEmpties
+        |> Dict.keys
+
+
+getEmpties : Board -> Board
+getEmpties board =
+    board |> Dict.filter (\_ tile -> tile == Empty)

@@ -5,11 +5,11 @@ import Dict.Extra
 import Model exposing (..)
 
 
-currentMoveType : Board -> Maybe TileType
-currentMoveType board =
+currentMoveTileType : Board -> Maybe TileType
+currentMoveTileType board =
     board
         |> Dict.Extra.find (\_ tile -> isDragging tile)
-        |> Maybe.andThen moveType
+        |> Maybe.andThen moveTileType
 
 
 moveShape : Move -> Maybe MoveShape
@@ -22,8 +22,8 @@ moveShape ( _, tileState ) =
             Nothing
 
 
-moveType : Move -> Maybe TileType
-moveType ( _, tileState ) =
+moveTileType : Move -> Maybe TileType
+moveTileType ( _, tileState ) =
     case tileState of
         Dragging tile _ _ _ ->
             Just tile

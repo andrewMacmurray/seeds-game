@@ -1,6 +1,7 @@
-module Data.Directions exposing (..)
+module Data.Moves.Directions exposing (..)
 
 import Model exposing (..)
+import Utils exposing (anyTrue)
 
 
 isLeft : Coord -> Coord -> Bool
@@ -21,11 +22,6 @@ isAbove ( y1, x1 ) ( y2, x2 ) =
 isBelow : Coord -> Coord -> Bool
 isBelow ( y1, x1 ) ( y2, x2 ) =
     x2 == x1 && y2 == y1 + 1
-
-
-anyTrue : List Bool -> Bool
-anyTrue =
-    List.foldr (||) False
 
 
 directionsToCheck : List (Coord -> Coord -> Bool)

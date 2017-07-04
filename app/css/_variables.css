@@ -20,6 +20,10 @@
   --letter-spacing-1:.1em;
   --letter-spacing-2:.25em;
 
+  --measure: 30em;
+  --measure-narrow: 20em;
+  --measure-wide: 34em;
+
   --spacing-none: 0;
   --spacing-extra-small: .25rem;
   --spacing-small: .5rem;

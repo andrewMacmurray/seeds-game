@@ -1,6 +1,6 @@
 module Data.Board.Filter exposing (..)
 
-import Data.Moves.Type exposing (currentMoveType)
+import Data.Moves.Type exposing (currentMoveTileType)
 import Data.Tiles exposing (getTileType, setToDragging)
 import Dict
 import Model exposing (..)
@@ -17,7 +17,7 @@ handleSquareMove model =
 setAllTilesOfTypeToDragging : Board -> Board
 setAllTilesOfTypeToDragging board =
     board
-        |> currentMoveType
+        |> currentMoveTileType
         |> Maybe.map (allTilesOfType board)
         |> Maybe.withDefault board
 

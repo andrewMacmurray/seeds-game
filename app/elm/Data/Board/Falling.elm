@@ -31,6 +31,5 @@ markFallingTile board coord tile =
 tileFallingDistance : Move -> Board -> Int
 tileFallingDistance ( ( y2, x2 ), tile2 ) board =
     board
-        |> Dict.toList
-        |> List.filter (\( ( y1, x1 ), tile1 ) -> x2 == x1 && isLeaving tile1 && y1 > y2)
-        |> List.length
+        |> Dict.filter (\( y1, x1 ) tile1 -> x2 == x1 && isLeaving tile1 && y1 > y2)
+        |> Dict.size
