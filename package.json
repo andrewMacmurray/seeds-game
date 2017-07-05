@@ -9,9 +9,10 @@
     "css-watch": "postcss --watch --config ./postcss-config.js",
     "test": "cd ./test && elm-test Main.elm",
     "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
+    "bundle": "npm run make-elm && npm run css",
     "add-bundle-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
     "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-publish": "git checkout gh-deploy && git merge master && npm run make-elm && npm run css && npm run add-bundle-changes && npm run gh-pages-push"
+    "gh-publish": "git checkout gh-deploy && git merge master && npm run bundle && npm run add-bundle-changes && npm run gh-pages-push && git checkout master"
   },
   "repository": {
     "type": "git",
