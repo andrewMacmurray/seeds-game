@@ -1,5 +1,6 @@
 module Data.Tiles exposing (..)
 
+import Helpers.Style exposing (emptyStyle)
 import Model exposing (..)
 
 
@@ -220,53 +221,79 @@ getTileType tileState =
 
 
 tileColorMap : TileState -> String
-tileColorMap tileState =
+tileColorMap =
+    tileClassMap tileColors
+
+
+tilePaddingMap : TileState -> Style
+tilePaddingMap =
+    tileStyleMap tilePadding
+
+
+tileClassMap : (TileType -> String) -> TileState -> String
+tileClassMap fn tileState =
     case tileState of
         Static tile ->
-            tileColors tile
+            fn tile
 
         Dragging tile _ _ _ ->
-            tileColors tile
+            fn tile
 
         Leaving tile _ ->
-            tileColors tile
+            fn tile
 
         Falling tile _ ->
-            tileColors tile
+            fn tile
 
         Entering tile ->
-            tileColors tile
+            fn tile
 
         Growing tile _ ->
-            tileColors tile
+            fn tile
 
         _ ->
             ""
 
 
-tilePaddingMap : TileState -> ( String, String )
-tilePaddingMap tileState =
+tileStyleMap : (TileType -> Style) -> TileState -> Style
+tileStyleMap fn tileState =
     case tileState of
         Static tile ->
-            tilePadding tile
+            fn tile
 
         Dragging tile _ _ _ ->
-            tilePadding tile
+            fn tile
 
         Leaving tile _ ->
-            tilePadding tile
+            fn tile
 
         Falling tile _ ->
-            tilePadding tile
+            fn tile
 
         Entering tile ->
-            tilePadding tile
+            fn tile
 
         Growing tile _ ->
-            tilePadding tile
+            fn tile
 
         _ ->
-            ( "", "" )
+            emptyStyle
+
+
+strokeColors : TileType -> String
+strokeColors tile =
+    case tile of
+        Rain ->
+            "stroke-light-blue"
+
+        Sun ->
+            "stroke-gold"
+
+        SeedPod ->
+            "stroke-green"
+
+        Seed ->
+            "stroke-dark-brown"
 
 
 tileColors : TileType -> String

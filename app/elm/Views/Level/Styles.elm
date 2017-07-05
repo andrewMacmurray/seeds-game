@@ -169,27 +169,27 @@ draggingStyles model ( _, tileState ) =
     else
         case tileState of
             Dragging _ _ Left _ ->
-                [ ( "transform", "scale(0.5) rotateZ(-90deg)" )
+                [ ( "transform", "scale(0.8)" )
                 , ( "transition", "0.3s ease" )
                 ]
 
             Dragging _ _ Right _ ->
-                [ ( "transform", "scale(0.5) rotateZ(90deg)" )
+                [ ( "transform", "scale(0.8)" )
                 , ( "transition", "0.3s ease" )
                 ]
 
             Dragging _ _ Up _ ->
-                [ ( "transform", "scale(0.5) rotateZ(0deg)" )
+                [ ( "transform", "scale(0.8)" )
                 , ( "transition", "0.3s ease" )
                 ]
 
             Dragging _ _ Down _ ->
-                [ ( "transform", "scale(0.5) rotateZ(180deg)" )
+                [ ( "transform", "scale(0.8)" )
                 , ( "transition", "0.3s ease" )
                 ]
 
             Dragging _ _ Head _ ->
-                [ ( "transform", "scale(0.5)" )
+                [ ( "transform", "scale(0.8)" )
                 , ( "transition", "0.3s ease" )
                 ]
 

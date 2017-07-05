@@ -1,5 +1,6 @@
 module Views.Level.Board exposing (..)
 
+import Components.Line exposing (renderLine)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
 import Helpers.Html exposing (emptyProperty)
@@ -47,7 +48,8 @@ renderTile model (( coord, tile ) as move) =
         , class "dib flex items-center justify-center absolute pointer"
         , hanldeMoveEvents model move
         ]
-        [ innerTile model move
+        [ renderLine model move
+        , innerTile model move
         , tracer model move
         ]
 

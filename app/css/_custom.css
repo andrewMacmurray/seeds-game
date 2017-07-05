@@ -71,3 +71,24 @@ body {
 .scale-full {
   transform: scale(1);
 }
+
+.stroke-light-blue {
+  stroke: var(--light-blue);
+}
+
+.stroke-gold {
+  stroke: var(--gold);
+}
+
+.stroke-green {
+  stroke: var(--green);
+}
+
+.stroke-dark-brown {
+  stroke: var(--dark-brown);
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
