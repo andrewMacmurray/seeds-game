@@ -1,7 +1,6 @@
 module Views.Level.Styles exposing (..)
 
-import Data.Moves.Check exposing (isInCurrentMove)
-import Data.Tiles exposing (getTileType, growingOrder, isLeaving, leavingOrder, tileColorMap)
+import Data.Tiles exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (classes, emptyStyle, ms, px, scale, translate, translateScale)
 import Model exposing (..)
 
@@ -148,7 +147,7 @@ exitYdistance model =
 
 moveTracerStyles : Model -> Move -> List Style
 moveTracerStyles model (( coord, tile ) as move) =
-    if isInCurrentMove move model.currentMove then
+    if isDragging tile then
         [ ( "animation", "bulge-fade 0.8s ease" )
         , ( "animation-fill-mode", "forwards" )
         ]
@@ -160,18 +159,42 @@ moveTracerStyles model (( coord, tile ) as move) =
 
 
 draggingStyles : Model -> Move -> List Style
-draggingStyles model (( _, tile ) as move) =
-    if isInCurrentMove move model.currentMove && model.moveShape /= Just Square then
-        [ ( "transform", "scale(0.5)" )
-        , ( "transition", "0.5s ease" )
+draggingStyles model ( _, tileState ) =
+    if model.moveShape == Just Square then
+        [ ( "transition", "0.5s ease" )
         ]
-    else if model.moveShape == Just Square then
-        [ ( "transition", "0.5s ease" ) ]
-    else if isLeaving tile then
+    else if isLeaving tileState then
         [ ( "transition", "0.1s ease" )
         ]
     else
-        []
+        case tileState of
+            Dragging _ _ Left _ ->
+                [ ( "transform", "scale(0.5) rotateZ(-90deg)" )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            Dragging _ _ Right _ ->
+                [ ( "transform", "scale(0.5) rotateZ(90deg)" )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            Dragging _ _ Up _ ->
+                [ ( "transform", "scale(0.5) rotateZ(0deg)" )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            Dragging _ _ Down _ ->
+                [ ( "transform", "scale(0.5) rotateZ(180deg)" )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            Dragging _ _ Head _ ->
+                [ ( "transform", "scale(0.5)" )
+                , ( "transition", "0.3s ease" )
+                ]
+
+            _ ->
+                []
 
 
 tileWidthHeightStyles : Model -> List Style

@@ -1,51 +1,58 @@
 module Data.Moves.Square exposing (..)
 
-import Data.Directions exposing (validDirection)
-import Data.Moves.Type exposing (sameTileType, emptyMove)
-import List.Extra
+import Data.Moves.Directions exposing (validDirection)
+import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Moves.Utils exposing (currentMoves)
+import Data.Tiles exposing (moveOrder)
+import Delay
+import Dict
 import Model exposing (..)
+import Time exposing (millisecond)
+import Utils exposing (allTrue)
 
 
-isValidSquare : List Move -> Bool
-isValidSquare moves =
-    if shouldCheckSquare moves then
-        moves
-            |> List.head
-            |> Maybe.andThen (checkSquareInCurrentMove moves)
-            |> Maybe.withDefault False
+triggerMoveIfSquare : Model -> Cmd Msg
+triggerMoveIfSquare model =
+    if hasSquareTile model.board then
+        Delay.after 0 millisecond SquareMove
     else
-        False
+        Cmd.none
 
 
-checkSquareInCurrentMove : List Move -> Move -> Maybe Bool
-checkSquareInCurrentMove moves current =
-    moves
-        |> List.drop 1
-        |> List.Extra.elemIndex current
-        |> Maybe.map (\x -> x > 2)
-
-
-shouldCheckSquare : List Move -> Bool
-shouldCheckSquare moves =
+isValidSquare : Move -> Board -> Bool
+isValidSquare first board =
     let
-        first =
-            List.head moves |> Maybe.withDefault emptyMove
+        moves =
+            currentMoves board |> List.reverse
 
         second =
-            List.Extra.getAt 1 moves |> Maybe.withDefault emptyMove
+            List.head moves |> Maybe.withDefault emptyMove
     in
         allTrue
             [ moveLongEnough moves
             , validDirection first second
             , sameTileType first second
+            , draggingOrderDifferent first second
             ]
 
 
-allTrue : List Bool -> Bool
-allTrue =
-    List.foldr (&&) True
+draggingOrderDifferent : Move -> Move -> Bool
+draggingOrderDifferent ( _, t2 ) ( _, t1 ) =
+    moveOrder t2 < (moveOrder t1) - 1
+
+
+hasSquareTile : Board -> Bool
+hasSquareTile board =
+    board
+        |> Dict.filter (\coord tileState -> moveShape ( coord, tileState ) == Just Square)
+        |> (\x -> Dict.size x > 0)
+
+
+isSquare : List Move -> Bool
+isSquare moves =
+    moves |> List.any (\a -> moveShape a == Just Square)
 
 
 moveLongEnough : List Move -> Bool
 moveLongEnough moves =
-    (List.length moves) > 4
+    List.length moves > 3

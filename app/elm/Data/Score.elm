@@ -1,23 +1,24 @@
 module Data.Score exposing (..)
 
-import Data.Moves.Type exposing (currentMoveType)
+import Data.Moves.Utils exposing (currentMoves)
+import Data.Moves.Type exposing (currentMoveTileType)
 import Dict
 import Model exposing (..)
 
 
 handleAddScore : Model -> Model
 handleAddScore model =
-    { model | scores = addScoreFromMoves model.currentMove model.scores }
+    { model | scores = addScoreFromMoves model.board model.scores }
 
 
-addScoreFromMoves : List Move -> Scores -> Scores
-addScoreFromMoves moves scores =
+addScoreFromMoves : Board -> Scores -> Scores
+addScoreFromMoves board scores =
     let
         tileType =
-            currentMoveType moves |> Maybe.withDefault SeedPod
+            currentMoveTileType board |> Maybe.withDefault SeedPod
 
         scoreToAdd =
-            List.length moves
+            currentMoves board |> List.length
     in
         addToScore scoreToAdd tileType scores
 

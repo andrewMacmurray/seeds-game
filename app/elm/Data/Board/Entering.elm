@@ -3,13 +3,14 @@ module Data.Board.Entering exposing (..)
 import Data.Board.Make exposing (tileGenerator)
 import Data.Tiles exposing (setEnteringToStatic)
 import Dict
+import Helpers.Dict exposing (mapValues)
 import Model exposing (..)
 import Random exposing (Generator)
 
 
 handleResetEntering : Model -> Model
 handleResetEntering model =
-    { model | board = resetEnteringTiles model.board }
+    { model | board = model.board |> mapValues setEnteringToStatic }
 
 
 handleAddNewTiles : List TileType -> Model -> Model
@@ -17,17 +18,12 @@ handleAddNewTiles tileList model =
     { model | board = addNewTiles tileList model.board }
 
 
-resetEnteringTiles : Board -> Board
-resetEnteringTiles board =
-    board |> Dict.map (\coord tile -> setEnteringToStatic tile)
-
-
 addNewTiles : List TileType -> Board -> Board
 addNewTiles newTiles board =
     let
         tilesToAdd =
             board
-                |> getEmpties
+                |> getEmptyCoords
                 |> List.map2 (\tile coord -> ( coord, Entering tile )) newTiles
                 |> Dict.fromList
     in
@@ -44,12 +40,16 @@ numberOfEmpties : Board -> Int
 numberOfEmpties board =
     board
         |> getEmpties
-        |> List.length
+        |> Dict.size
 
 
-getEmpties : Board -> List Coord
-getEmpties board =
+getEmptyCoords : Board -> List Coord
+getEmptyCoords board =
     board
-        |> Dict.toList
-        |> List.filter (\( _, tile ) -> tile == Empty)
-        |> List.map Tuple.first
+        |> getEmpties
+        |> Dict.keys
+
+
+getEmpties : Board -> Board
+getEmpties board =
+    board |> Dict.filter (\_ tile -> tile == Empty)

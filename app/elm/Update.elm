@@ -7,8 +7,9 @@ import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, hand
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
-import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove, triggerMoveIfSquare)
-import Data.Moves.Type exposing (currentMoveType)
+import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Moves.Square exposing (triggerMoveIfSquare)
+import Data.Moves.Type exposing (currentMoveTileType)
 import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPods, removeTiles)
 import Delay
@@ -32,7 +33,6 @@ initialState =
     { board = Dict.empty
     , scores = initialScores [ Sun, Rain, Seed ]
     , isDragging = False
-    , currentMove = []
     , moveShape = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
@@ -51,7 +51,7 @@ update msg model =
             (model |> handleAddNewTiles tiles) ! []
 
         StopMove moveType ->
-            case currentMoveType model.currentMove of
+            case currentMoveTileType model.board of
                 Just SeedPod ->
                     model ! [ Delay.sequence growSeedPods ]
 

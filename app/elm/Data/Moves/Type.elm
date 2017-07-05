@@ -1,20 +1,31 @@
 module Data.Moves.Type exposing (..)
 
-import Data.Tiles exposing (getTileType)
+import Data.Tiles exposing (getTileType, isDragging)
+import Dict.Extra
 import Model exposing (..)
 
 
-currentMoveType : List Move -> Maybe TileType
-currentMoveType moveList =
-    moveList
-        |> List.head
-        |> Maybe.andThen moveType
+currentMoveTileType : Board -> Maybe TileType
+currentMoveTileType board =
+    board
+        |> Dict.Extra.find (\_ tile -> isDragging tile)
+        |> Maybe.andThen moveTileType
 
 
-moveType : Move -> Maybe TileType
-moveType ( _, tileState ) =
+moveShape : Move -> Maybe MoveShape
+moveShape ( _, tileState ) =
     case tileState of
-        Static tile ->
+        Dragging _ _ _ moveShape ->
+            Just moveShape
+
+        _ ->
+            Nothing
+
+
+moveTileType : Move -> Maybe TileType
+moveTileType ( _, tileState ) =
+    case tileState of
+        Dragging tile _ _ _ ->
             Just tile
 
         _ ->

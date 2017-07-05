@@ -1,18 +1,19 @@
 module Data.Moves.Check exposing (..)
 
-import Data.Directions exposing (validDirection)
+import Data.Moves.Bearings exposing (addBearings)
+import Data.Moves.Directions exposing (isAbove, isBelow, isLeft, isRight, validDirection)
 import Data.Moves.Square exposing (isValidSquare)
-import Data.Moves.Type exposing (emptyMove, sameTileType)
-import Delay
+import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Moves.Utils exposing (currentMoves, isUniqueMove, lastMove)
+import Data.Tiles exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
+import Dict
 import Model exposing (..)
-import Time exposing (millisecond)
 
 
 handleStopMove : Model -> Model
 handleStopMove model =
     { model
         | isDragging = False
-        , currentMove = []
         , moveShape = Nothing
     }
 
@@ -21,63 +22,42 @@ handleStartMove : Move -> Model -> Model
 handleStartMove move model =
     { model
         | isDragging = True
-        , currentMove = [ move ]
+        , board = startMove move model.board
         , moveShape = Just Line
     }
-
-
-triggerMoveIfSquare : Model -> Cmd Msg
-triggerMoveIfSquare model =
-    if isValidSquare model.currentMove then
-        Delay.after 0 millisecond SquareMove
-    else
-        Cmd.none
 
 
 handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
-        { model | currentMove = addToMove move model.currentMove }
+        { model | board = addToMove move model.board }
     else
         model
 
 
-addToMove : Move -> List Move -> List Move
-addToMove next currentMoves =
-    if isValidMove next currentMoves || isValidSquare (next :: currentMoves) then
-        next :: currentMoves
-    else
-        currentMoves
-
-
-isValidMove : Move -> List Move -> Bool
-isValidMove next currentMoves =
+addToMove : Move -> Board -> Board
+addToMove curr board =
     let
-        curr =
-            currentMove currentMoves
+        newBoard =
+            addBearings curr board
     in
-        validDirection next curr
-            && sameTileType next curr
-            && isUniqueMove next currentMoves
+        if isValidMove curr board || isValidSquare curr board then
+            newBoard
+        else
+            board
 
 
-isUniqueMove : Move -> List Move -> Bool
-isUniqueMove next currentMoves =
-    isInCurrentMove next currentMoves
-        |> not
+startMove : Move -> Board -> Board
+startMove ( c1, t1 ) board =
+    board |> Dict.update c1 (Maybe.map (\_ -> setStaticToFirstMove t1))
 
 
-isInCurrentMove : Move -> List Move -> Bool
-isInCurrentMove next currentMoves =
-    currentMoves |> List.member next
-
-
-currentMove : List Move -> Move
-currentMove currentMoves =
-    List.head currentMoves
-        |> Maybe.withDefault emptyMove
-
-
-coordsList : List Move -> List Coord
-coordsList moves =
-    moves |> List.map Tuple.first
+isValidMove : Move -> Board -> Bool
+isValidMove curr board =
+    let
+        last =
+            lastMove board
+    in
+        validDirection curr last
+            && sameTileType curr last
+            && isUniqueMove curr board
