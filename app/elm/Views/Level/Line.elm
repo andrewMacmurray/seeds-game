@@ -33,8 +33,8 @@ line_ tileType bearing =
     svg
         [ width "50"
         , height "9"
-        , Svg.Attributes.style <| transformMap bearing
-        , class "relative z-0"
+        , Svg.Attributes.style <| String.join "; " [ transformMap bearing, "margin: auto" ]
+        , class "absolute bottom-0 right-0 left-0 top-0 z-0"
         ]
         [ line
             [ strokeWidth "9"

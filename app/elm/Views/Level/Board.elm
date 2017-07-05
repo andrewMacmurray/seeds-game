@@ -47,7 +47,7 @@ renderTile model (( coord, tile ) as move) =
                 , tileCoordsStyles model coord
                 , leavingStyles model move
                 ]
-        , class "dib flex items-center justify-center absolute pointer"
+        , class "dib absolute pointer"
         , hanldeMoveEvents model move
         ]
         [ renderLine model move
@@ -82,16 +82,19 @@ tracer model (( coord, tile ) as move) =
     div
         [ class <|
             classes
-                [ "absolute br-100"
+                [ "absolute br-100 top-0 left-0 right-0 bottom-0"
                 , tileColorMap tile
                 ]
         , style <|
             styles
                 [ moveTracerStyles model move
-                , [ tilePaddingMap tile ]
                 , growingStyles model move
                 , enteringStyles model move
                 , fallingStyles model move
+                , [ ( "width", "20px" )
+                  , ( "height", "20px" )
+                  , ( "margin", "auto" )
+                  ]
                 ]
         ]
         []
@@ -102,16 +105,19 @@ innerTile model (( coord, tile ) as move) =
     div
         [ class <|
             classes
-                [ "br-100 absolute"
+                [ "br-100 absolute top-0 left-0 right-0 bottom-0"
                 , tileColorMap tile
                 ]
         , style <|
             styles
-                [ [ tilePaddingMap tile ]
-                , draggingStyles model move
+                [ draggingStyles model move
                 , growingStyles model move
                 , enteringStyles model move
                 , fallingStyles model move
+                , [ ( "width", "20px" )
+                  , ( "height", "20px" )
+                  , ( "margin", "auto" )
+                  ]
                 ]
         ]
         []
