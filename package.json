@@ -9,10 +9,11 @@
     "css-watch": "postcss --watch --config ./postcss-config.js",
     "test": "cd ./test && elm-test Main.elm",
     "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
+    "compress": "uglifyjs -c -m -o public/bundle.js public/main.js",
     "bundle": "npm run make-elm && npm run css",
     "add-bundle-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
     "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-publish": "git checkout gh-deploy && git merge master && npm run bundle && npm run add-bundle-changes && npm run gh-pages-push && git checkout master"
+    "gh-publish": "git checkout gh-deploy && git merge master && npm run bundle && npm run compress && npm run add-bundle-changes && npm run gh-pages-push && git checkout master"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
     "postcss-custom-properties": "^5.0.2",
-    "postcss-import": "^9.1.0"
+    "postcss-import": "^9.1.0",
+    "uglify-js": "^3.0.23"
   }
 }
