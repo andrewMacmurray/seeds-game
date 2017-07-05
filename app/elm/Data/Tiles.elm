@@ -82,8 +82,8 @@ setToDragging moveOrder tileState =
         Static tileType ->
             Dragging tileType moveOrder Head Line
 
-        Dragging tileType _ _ _ ->
-            Dragging tileType moveOrder Head Square
+        Dragging tileType _ bearing _ ->
+            Dragging tileType moveOrder bearing Square
 
         x ->
             x

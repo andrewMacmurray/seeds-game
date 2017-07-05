@@ -43,6 +43,16 @@ ms_ =
     number <> s "ms"
 
 
+deg : number -> String
+deg =
+    print deg_
+
+
+deg_ : Format r (number -> r)
+deg_ =
+    number <> s "deg"
+
+
 opacity : number -> String
 opacity =
     print opacity_
@@ -56,6 +66,11 @@ opacity_ =
 transform_ : Format r a -> Format r a
 transform_ formatter =
     s "transform: " <> formatter <> s ";"
+
+
+rotateZ_ : Format r (number -> r)
+rotateZ_ =
+    s "rotateZ(" <> deg_ <> s ")"
 
 
 translateY : number -> String

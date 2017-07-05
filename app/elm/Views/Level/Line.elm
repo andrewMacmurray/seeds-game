@@ -1,6 +1,8 @@
 module Views.Level.Line exposing (..)
 
 import Data.Tiles exposing (strokeColors)
+import Formatting exposing ((<>), print, s)
+import Helpers.Style exposing (rotateZ_, transform_, translate_)
 import Html exposing (Html, span)
 import Model exposing (..)
 import Svg exposing (..)
@@ -11,22 +13,23 @@ renderLine : Model -> Move -> Html Msg
 renderLine model ( coord, tileState ) =
     case tileState of
         Dragging tileType _ Left _ ->
-            testLine tileType Left
+            line_ tileType Left
 
         Dragging tileType _ Right _ ->
-            testLine tileType Right
+            line_ tileType Right
 
         Dragging tileType _ Up _ ->
-            testLine tileType Up
+            line_ tileType Up
 
         Dragging tileType _ Down _ ->
-            testLine tileType Down
+            line_ tileType Down
 
         _ ->
             span [] []
 
 
-testLine tileType bearing =
+line_ : TileType -> MoveBearing -> Html Msg
+line_ tileType bearing =
     svg
         [ width "50"
         , height "9"
@@ -45,19 +48,30 @@ testLine tileType bearing =
         ]
 
 
+transformMap : MoveBearing -> String
 transformMap bearing =
     case bearing of
         Left ->
-            "transform: translateX(-25px) translateY(1.5px)"
+            tTranslate -25 1.5
 
         Right ->
-            "transform: translateX(25px) translateY(1.5px)"
+            tTranslate 25 1.5
 
         Up ->
-            "transform: rotateZ(90deg) translateX(-25px) translateY(1.5px)"
+            tRotateTranslate 90 -25 1.5
 
         Down ->
-            "transform: rotateZ(90deg) translateX(25px) translateY(1.5px)"
+            tRotateTranslate 90 25 1.5
 
         _ ->
             ""
+
+
+tRotateTranslate : number -> number -> number -> String
+tRotateTranslate =
+    transform_ (rotateZ_ <> translate_) |> print
+
+
+tTranslate : number -> number -> String
+tTranslate =
+    transform_ translate_ |> print

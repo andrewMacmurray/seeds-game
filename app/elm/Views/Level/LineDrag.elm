@@ -1,5 +1,6 @@
 module Views.Level.LineDrag exposing (..)
 
+import Data.Moves.Square exposing (hasSquareTile)
 import Data.Moves.Type exposing (currentMoveTileType)
 import Data.Moves.Utils exposing (currentMoves, lastMove)
 import Data.Tiles exposing (strokeColors)
@@ -13,23 +14,17 @@ import Views.Level.Styles exposing (boardOffsetTop, boardWidth)
 
 handleLineDrag : Model -> Html Msg
 handleLineDrag model =
-    if model.isDragging && model.moveShape == Just Line then
+    if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
     else
         span [] []
 
 
 lineDrag : Model -> Html Msg
-lineDrag model =
+lineDrag ({ window } as model) =
     let
-        w =
-            model.window.width
-
-        h =
-            model.window.height
-
         vb =
-            "0 0 " ++ toString w ++ " " ++ toString h
+            "0 0 " ++ toString window.width ++ " " ++ toString window.height
 
         ( oY, oX ) =
             getOrigins model
@@ -40,8 +35,8 @@ lineDrag model =
                 |> Maybe.withDefault ""
     in
         svg
-            [ width <| px w
-            , height <| px h
+            [ width <| px window.width
+            , height <| px window.height
             , viewBox vb
             , class "fixed top-0 right-0 z-1 touch-disabled"
             ]
@@ -57,7 +52,8 @@ lineDrag model =
             ]
 
 
-getOrigins model =
+getOrigins : Model -> ( Float, Float )
+getOrigins ({ window, tileSettings } as model) =
     let
         ( ( y, x ), _ ) =
             lastMove model.board
@@ -68,12 +64,18 @@ getOrigins model =
         x1 =
             toFloat x
 
+        sY =
+            tileSettings.sizeY
+
+        sX =
+            tileSettings.sizeX
+
         offsetY =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (model.window.width - (boardWidth model)) // 2 |> toFloat
+            (window.width - (boardWidth model)) // 2 |> toFloat
     in
-        ( ((y1 + 1) * 51) + offsetY - (51 / 2)
-        , ((x1 + 1) * 55) + offsetX - (55 / 2) + 1
+        ( ((y1 + 1) * sY) + offsetY - (sY / 2)
+        , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1
         )
