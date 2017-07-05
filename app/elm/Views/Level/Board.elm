@@ -1,14 +1,16 @@
 module Views.Level.Board exposing (..)
 
-import Components.Line exposing (renderLine)
+import Views.Level.Line exposing (renderLine)
 import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
 import Dict
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (classes, px, styles, translate)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onMouseDown, onMouseEnter, onMouseUp)
+import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
+import Json.Decode as Json
 import Model exposing (..)
+import Mouse exposing (position)
 import Views.Level.Styles exposing (..)
 
 
@@ -67,7 +69,12 @@ hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
     else
-        onMouseDown <| StartMove move
+        onMouseDownStartMove move
+
+
+onMouseDownStartMove : Move -> Attribute Msg
+onMouseDownStartMove move =
+    on "mousedown" (position |> Json.map (StartMove move))
 
 
 tracer : Model -> Move -> Html Msg

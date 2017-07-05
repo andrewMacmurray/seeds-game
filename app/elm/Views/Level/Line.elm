@@ -1,4 +1,4 @@
-module Components.Line exposing (..)
+module Views.Level.Line exposing (..)
 
 import Data.Tiles exposing (strokeColors)
 import Html exposing (Html, span)
@@ -40,7 +40,6 @@ testLine tileType bearing =
             , x2 "50"
             , y2 "0"
             , class <| strokeColors tileType
-            , Svg.Attributes.style "animation: fade-in 0.6s ease; animation-fill-mode: forwards"
             ]
             []
         ]
@@ -49,16 +48,16 @@ testLine tileType bearing =
 transformMap bearing =
     case bearing of
         Left ->
-            "transform: translateX(-25px)"
+            "transform: translateX(-25px) translateY(1.5px)"
 
         Right ->
-            "transform: translateX(25px)"
+            "transform: translateX(25px) translateY(1.5px)"
 
         Up ->
-            "transform: rotateZ(90deg) translateX(-25px)"
+            "transform: rotateZ(90deg) translateX(-25px) translateY(1.5px)"
 
         Down ->
-            "transform: rotateZ(90deg) translateX(25px)"
+            "transform: rotateZ(90deg) translateX(25px) translateY(1.5px)"
 
         _ ->
             ""
