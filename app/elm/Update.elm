@@ -14,7 +14,7 @@ import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPods, removeTiles)
 import Delay
 import Dict
-import Helpers.Window exposing (getWindowSize)
+import Helpers.Window exposing (getWindowSize, handleMousePosition, updateMousePosition)
 import Model exposing (..)
 import Time exposing (millisecond)
 import Window exposing (resizes)
@@ -38,6 +38,7 @@ initialState =
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
     , window = { height = 0, width = 0 }
+    , mouse = { x = 0, y = 0 }
     }
 
 
@@ -94,8 +95,12 @@ update msg model =
         ResetMove ->
             (model |> handleStopMove) ! []
 
-        StartMove move ->
-            (model |> handleStartMove move) ! []
+        StartMove move position ->
+            (model
+                |> handleMousePosition position
+                |> handleStartMove move
+            )
+                ! []
 
         CheckMove move ->
             let
@@ -110,7 +115,13 @@ update msg model =
         WindowSize size ->
             { model | window = size } ! []
 
+        MousePosition position ->
+            { model | mouse = position } ! []
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    resizes WindowSize
+    Sub.batch
+        [ resizes WindowSize
+        , updateMousePosition model
+        ]

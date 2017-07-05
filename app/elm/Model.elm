@@ -1,6 +1,7 @@
 module Model exposing (..)
 
 import Dict exposing (Dict)
+import Mouse
 import Window
 
 
@@ -13,6 +14,7 @@ type alias Model =
     , tileSettings : TileSettings
     , topBarHeight : Int
     , window : Window.Size
+    , mouse : Mouse.Position
     }
 
 
@@ -103,7 +105,7 @@ type Msg
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape
-    | StartMove Move
+    | StartMove Move Mouse.Position
     | CheckMove Move
     | SetLeavingTiles
     | SetFallingTiles
@@ -115,6 +117,7 @@ type Msg
     | ShiftBoard
     | ResetMove
     | WindowSize Window.Size
+    | MousePosition Mouse.Position
 
 
 type alias Style =
