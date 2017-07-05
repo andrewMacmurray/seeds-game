@@ -4,7 +4,7 @@ import Data.Moves.Bearings exposing (addBearings)
 import Data.Moves.Directions exposing (isAbove, isBelow, isLeft, isRight, validDirection)
 import Data.Moves.Square exposing (isValidSquare)
 import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Moves.Utils exposing (currentMoves, lastMove)
+import Data.Moves.Utils exposing (currentMoves, isUniqueMove, lastMove)
 import Data.Tiles exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Dict
 import Model exposing (..)
@@ -61,16 +61,3 @@ isValidMove curr board =
         validDirection curr last
             && sameTileType curr last
             && isUniqueMove curr board
-
-
-isUniqueMove : Move -> Board -> Bool
-isUniqueMove move board =
-    isInCurrentMoves move board
-        |> not
-
-
-isInCurrentMoves : Move -> Board -> Bool
-isInCurrentMoves move board =
-    board
-        |> currentMoves
-        |> List.member move

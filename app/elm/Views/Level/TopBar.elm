@@ -11,7 +11,7 @@ import Views.Level.Styles exposing (boardWidth)
 topBar : Model -> Html Msg
 topBar model =
     div
-        [ class "w-100 bg-washed-yellow flex items-center justify-center fixed top-0 z-3"
+        [ class "w-100 bg-washed-yellow gold flex items-center justify-center fixed top-0 z-3"
         , style [ ( "height", px model.topBarHeight ) ]
         ]
         [ div

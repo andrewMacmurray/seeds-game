@@ -7,6 +7,19 @@ import Dict.Extra
 import Model exposing (..)
 
 
+isUniqueMove : Move -> Board -> Bool
+isUniqueMove move board =
+    isInCurrentMoves move board
+        |> not
+
+
+isInCurrentMoves : Move -> Board -> Bool
+isInCurrentMoves move board =
+    board
+        |> currentMoves
+        |> List.member move
+
+
 lastMove : Board -> Move
 lastMove board =
     board
