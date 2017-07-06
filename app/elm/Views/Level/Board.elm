@@ -1,16 +1,16 @@
 module Views.Level.Board exposing (..)
 
-import Views.Level.Line exposing (renderLine)
-import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tilePaddingMap)
+import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (classes, px, styles, translate)
+import Helpers.Style exposing (classes, px, styles, translate, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
 import Json.Decode as Json
 import Model exposing (..)
 import Mouse exposing (position)
+import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 
 
@@ -32,14 +32,14 @@ boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ ( "width", px <| boardWidth model )
+            [ widthStyle <| boardWidth model
             , boardMarginTop model
             ]
         ]
 
 
 renderTile : Model -> Move -> Html Msg
-renderTile model (( coord, tile ) as move) =
+renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
             styles
@@ -47,7 +47,7 @@ renderTile model (( coord, tile ) as move) =
                 , tileCoordsStyles model coord
                 , leavingStyles model move
                 ]
-        , class "dib flex items-center justify-center absolute pointer"
+        , class "dib absolute pointer"
         , hanldeMoveEvents model move
         ]
         [ renderLine model move
@@ -78,40 +78,50 @@ onMouseDownStartMove move =
 
 
 tracer : Model -> Move -> Html Msg
-tracer model (( coord, tile ) as move) =
-    div
-        [ class <|
-            classes
-                [ "absolute br-100"
-                , tileColorMap tile
-                ]
-        , style <|
-            styles
-                [ moveTracerStyles model move
-                , [ tilePaddingMap tile ]
-                , growingStyles model move
-                , enteringStyles model move
-                , fallingStyles model move
-                ]
-        ]
-        []
+tracer model move =
+    let
+        extraStyles =
+            moveTracerStyles model move
+    in
+        makeInnerTile extraStyles model move
 
 
 innerTile : Model -> Move -> Html Msg
-innerTile model (( coord, tile ) as move) =
+innerTile model move =
+    let
+        extraStyles =
+            draggingStyles model move
+    in
+        makeInnerTile extraStyles model move
+
+
+makeInnerTile : List Style -> Model -> Move -> Html Msg
+makeInnerTile extraStyles model (( _, tile ) as move) =
     div
-        [ class <|
-            classes
-                [ "br-100 absolute"
-                , tileColorMap tile
-                ]
+        [ class <| baseTileClasses tile
         , style <|
             styles
-                [ [ tilePaddingMap tile ]
-                , draggingStyles model move
-                , growingStyles model move
-                , enteringStyles model move
-                , fallingStyles model move
+                [ extraStyles
+                , baseTileStyles model move
                 ]
         ]
         []
+
+
+baseTileStyles : Model -> Move -> List Style
+baseTileStyles model (( _, tile ) as move) =
+    styles
+        [ growingStyles model move
+        , enteringStyles model move
+        , fallingStyles model move
+        , tileSizeMap tile
+        ]
+
+
+baseTileClasses : TileState -> String
+baseTileClasses tile =
+    classes
+        [ "br-100 ma"
+        , "absolute top-0 left-0 right-0 bottom-0"
+        , tileColorMap tile
+        ]

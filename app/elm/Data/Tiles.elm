@@ -1,6 +1,6 @@
 module Data.Tiles exposing (..)
 
-import Helpers.Style exposing (emptyStyle)
+import Helpers.Style exposing (emptyStyle, heightStyle, widthStyle)
 import Model exposing (..)
 
 
@@ -225,59 +225,9 @@ tileColorMap =
     tileClassMap tileColors
 
 
-tilePaddingMap : TileState -> Style
-tilePaddingMap =
-    tileStyleMap tilePadding
-
-
-tileClassMap : (TileType -> String) -> TileState -> String
-tileClassMap fn tileState =
-    case tileState of
-        Static tile ->
-            fn tile
-
-        Dragging tile _ _ _ ->
-            fn tile
-
-        Leaving tile _ ->
-            fn tile
-
-        Falling tile _ ->
-            fn tile
-
-        Entering tile ->
-            fn tile
-
-        Growing tile _ ->
-            fn tile
-
-        _ ->
-            ""
-
-
-tileStyleMap : (TileType -> Style) -> TileState -> Style
-tileStyleMap fn tileState =
-    case tileState of
-        Static tile ->
-            fn tile
-
-        Dragging tile _ _ _ ->
-            fn tile
-
-        Leaving tile _ ->
-            fn tile
-
-        Falling tile _ ->
-            fn tile
-
-        Entering tile ->
-            fn tile
-
-        Growing tile _ ->
-            fn tile
-
-        _ ->
-            emptyStyle
+tileSizeMap : TileState -> List Style
+tileSizeMap =
+    tileStyleMap tileSize
 
 
 strokeColors : TileType -> String
@@ -312,17 +262,67 @@ tileColors tile =
             "bg-sunflower"
 
 
-tilePadding : TileType -> ( String, String )
-tilePadding tile =
+tileSize : TileType -> List Style
+tileSize tile =
     case tile of
         Rain ->
-            ( "padding", "9px" )
+            [ heightStyle 18, widthStyle 18 ]
 
         Sun ->
-            ( "padding", "9px" )
+            [ heightStyle 18, widthStyle 18 ]
 
         SeedPod ->
-            ( "padding", "13px" )
+            [ heightStyle 26, widthStyle 26 ]
 
         Seed ->
-            ( "padding", "17px" )
+            [ heightStyle 35, widthStyle 35 ]
+
+
+tileClassMap : (TileType -> String) -> TileState -> String
+tileClassMap fn tileState =
+    case tileState of
+        Static tile ->
+            fn tile
+
+        Dragging tile _ _ _ ->
+            fn tile
+
+        Leaving tile _ ->
+            fn tile
+
+        Falling tile _ ->
+            fn tile
+
+        Entering tile ->
+            fn tile
+
+        Growing tile _ ->
+            fn tile
+
+        _ ->
+            ""
+
+
+tileStyleMap : (TileType -> List Style) -> TileState -> List Style
+tileStyleMap fn tileState =
+    case tileState of
+        Static tile ->
+            fn tile
+
+        Dragging tile _ _ _ ->
+            fn tile
+
+        Leaving tile _ ->
+            fn tile
+
+        Falling tile _ ->
+            fn tile
+
+        Entering tile ->
+            fn tile
+
+        Growing tile _ ->
+            fn tile
+
+        _ ->
+            [ emptyStyle ]

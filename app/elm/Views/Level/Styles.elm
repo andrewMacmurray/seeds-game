@@ -1,7 +1,7 @@
 module Views.Level.Styles exposing (..)
 
 import Data.Tiles exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
-import Helpers.Style exposing (classes, emptyStyle, ms, px, scale, translate, translateScale)
+import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model exposing (..)
 
 
@@ -31,7 +31,7 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-        [ ( "transform", translate x y ) ]
+        [ transformStyle <| translate x y ]
 
 
 tilePosition : Model -> Coord -> ( Float, Float )
@@ -45,7 +45,7 @@ enteringStyles : Model -> Move -> List Style
 enteringStyles model ( _, tile ) =
     case tile of
         Entering tile ->
-            [ ( "animation", "bounce 0.4s ease" )
+            [ animationStyle "bounce 0.4s ease"
             ]
 
         _ ->
@@ -56,19 +56,19 @@ growingStyles : Model -> Move -> List Style
 growingStyles model ( coord, tile ) =
     let
         transitionDelay =
-            ms <| ((growingOrder tile) % 5) * 70
+            ((growingOrder tile) % 5) * 70
     in
         case tile of
             Growing SeedPod _ ->
-                [ ( "transform", scale 4 )
-                , ( "opacity", "0" )
-                , ( "transition", "0.4s ease" )
-                , ( "transition-delay", transitionDelay )
+                [ transformStyle <| scale 4
+                , transitionStyle "0.4s ease"
+                , opacityStyle 0
+                , transitionDelayStyle transitionDelay
                 , ( "pointer-events", "none" )
                 ]
 
             Growing Seed _ ->
-                [ ( "animation", "bulge 0.5s ease" )
+                [ animationStyle "bulge 0.5s ease"
                 ]
 
             _ ->
@@ -79,8 +79,8 @@ fallingStyles : Model -> Move -> List Style
 fallingStyles model ( _, tile ) =
     case tile of
         Falling tile distance ->
-            [ ( "animation", "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease" )
-            , ( "animation-fill-mode", "forwards" )
+            [ animationStyle <| "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease"
+            , fillModeStyle "forwards"
             ]
 
         _ ->
@@ -90,9 +90,9 @@ fallingStyles model ( _, tile ) =
 leavingStyles : Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
-        [ ( "transition", "0.8s ease" )
-        , ( "transition-delay", ms <| ((leavingOrder tile) % 5) * 80 )
-        , ( "opacity", "0.2" )
+        [ transitionStyle "0.8s ease"
+        , opacityStyle 0.2
+        , transitionDelayStyle <| ((leavingOrder tile) % 5) * 80
         , handleExitDirection move model
         ]
     else
@@ -103,13 +103,13 @@ handleExitDirection : Move -> Model -> Style
 handleExitDirection ( coord, tile ) model =
     case tile of
         Leaving Rain _ ->
-            ( "transform", exitLeft model )
+            transformStyle <| exitLeft model
 
         Leaving Sun _ ->
-            ( "transform", exitRight model )
+            transformStyle <| exitRight model
 
         Leaving Seed _ ->
-            ( "transform", exitTop model )
+            transformStyle <| exitTop model
 
         _ ->
             emptyStyle
@@ -148,11 +148,11 @@ exitYdistance model =
 moveTracerStyles : Model -> Move -> List Style
 moveTracerStyles model (( coord, tile ) as move) =
     if isDragging tile then
-        [ ( "animation", "bulge-fade 0.8s ease" )
-        , ( "animation-fill-mode", "forwards" )
+        [ animationStyle "bulge-fade 0.8s ease"
+        , fillModeStyle "forwards"
         ]
     else if isLeaving tile then
-        [ ( "display", "none" )
+        [ displayStyle "none"
         ]
     else
         []
@@ -161,44 +161,21 @@ moveTracerStyles model (( coord, tile ) as move) =
 draggingStyles : Model -> Move -> List Style
 draggingStyles model ( _, tileState ) =
     if model.moveShape == Just Square then
-        [ ( "transition", "0.5s ease" )
+        [ transitionStyle "0.5s ease"
         ]
     else if isLeaving tileState then
-        [ ( "transition", "0.1s ease" )
+        [ transitionStyle "0.1s ease"
+        ]
+    else if isDragging tileState then
+        [ transformStyle <| scale 0.8
+        , transitionStyle "0.3s ease"
         ]
     else
-        case tileState of
-            Dragging _ _ Left _ ->
-                [ ( "transform", "scale(0.8)" )
-                , ( "transition", "0.3s ease" )
-                ]
-
-            Dragging _ _ Right _ ->
-                [ ( "transform", "scale(0.8)" )
-                , ( "transition", "0.3s ease" )
-                ]
-
-            Dragging _ _ Up _ ->
-                [ ( "transform", "scale(0.8)" )
-                , ( "transition", "0.3s ease" )
-                ]
-
-            Dragging _ _ Down _ ->
-                [ ( "transform", "scale(0.8)" )
-                , ( "transition", "0.3s ease" )
-                ]
-
-            Dragging _ _ Head _ ->
-                [ ( "transform", "scale(0.8)" )
-                , ( "transition", "0.3s ease" )
-                ]
-
-            _ ->
-                []
+        []
 
 
 tileWidthHeightStyles : Model -> List Style
 tileWidthHeightStyles { tileSettings } =
-    [ ( "width", px tileSettings.sizeX )
-    , ( "height", px tileSettings.sizeY )
+    [ widthStyle tileSettings.sizeX
+    , heightStyle tileSettings.sizeY
     ]

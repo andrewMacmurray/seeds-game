@@ -3,7 +3,7 @@ module Helpers.Window exposing (..)
 import Model exposing (..)
 import Mouse exposing (moves)
 import Task
-import Window exposing (size)
+import Window exposing (resizes, size)
 
 
 handleMousePosition : Mouse.Position -> Model -> Model
@@ -16,13 +16,18 @@ percentWindowHeight percent model =
     model.window.height // 100 * percent
 
 
+trackWindowSize : Sub Msg
+trackWindowSize =
+    resizes WindowSize
+
+
 getWindowSize : Cmd Msg
 getWindowSize =
     size |> Task.perform WindowSize
 
 
-updateMousePosition : Model -> Sub Msg
-updateMousePosition model =
+trackMousePosition : Model -> Sub Msg
+trackMousePosition model =
     if model.isDragging then
         moves MousePosition
     else
