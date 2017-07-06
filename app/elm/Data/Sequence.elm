@@ -1,30 +1,32 @@
 module Data.Sequence exposing (..)
 
-import Delay exposing (withUnit)
+import Delay exposing (withUnit, sequence)
 import Model exposing (..)
 import Time exposing (millisecond, Time)
 
 
-growSeedPods : List ( Float, Time, Msg )
-growSeedPods =
-    withUnit millisecond
-        [ ( 0, SetGrowingSeedPods )
-        , ( 0, ResetMove )
-        , ( 800, GrowPodsToSeeds )
-        , ( 600, ResetGrowingSeeds )
-        ]
+growSeedPodsSequence : Cmd Msg
+growSeedPodsSequence =
+    sequence <|
+        withUnit millisecond
+            [ ( 0, SetGrowingSeedPods )
+            , ( 0, ResetMove )
+            , ( 800, GrowPodsToSeeds )
+            , ( 600, ResetGrowingSeeds )
+            ]
 
 
-removeTiles : Model -> MoveShape -> List ( Float, Time, Msg )
-removeTiles model moveShape =
-    withUnit millisecond
-        [ ( 0, SetLeavingTiles )
-        , ( 0, ResetMove )
-        , ( fallDelay model moveShape, SetFallingTiles )
-        , ( 500, ShiftBoard )
-        , ( 0, MakeNewTiles )
-        , ( 500, ResetEntering )
-        ]
+removeTilesSequence : Model -> MoveShape -> Cmd Msg
+removeTilesSequence model moveShape =
+    sequence <|
+        withUnit millisecond
+            [ ( 0, SetLeavingTiles )
+            , ( 0, ResetMove )
+            , ( fallDelay model moveShape, SetFallingTiles )
+            , ( 500, ShiftBoard )
+            , ( 0, MakeNewTiles )
+            , ( 500, ResetEntering )
+            ]
 
 
 fallDelay : Model -> MoveShape -> Float

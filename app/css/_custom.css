@@ -40,6 +40,10 @@ body {
   height: 100%;
 }
 
+.ma {
+  margin: auto;
+}
+
 .no-select {
   user-select: none;
 }

@@ -27,7 +27,7 @@ lineDrag ({ window } as model) =
             "0 0 " ++ toString window.width ++ " " ++ toString window.height
 
         ( oY, oX ) =
-            getOrigins model
+            lastMoveOrigin model
 
         colorClass =
             currentMoveTileType model.board
@@ -42,7 +42,8 @@ lineDrag ({ window } as model) =
             ]
             [ line
                 [ class colorClass
-                , strokeWidth "5"
+                , strokeWidth "6"
+                , strokeLinecap "round"
                 , x1 <| toString oX
                 , y1 <| toString oY
                 , x2 <| toString model.mouse.x
@@ -52,8 +53,8 @@ lineDrag ({ window } as model) =
             ]
 
 
-getOrigins : Model -> ( Float, Float )
-getOrigins ({ window, tileSettings } as model) =
+lastMoveOrigin : Model -> ( Float, Float )
+lastMoveOrigin ({ window, tileSettings } as model) =
     let
         ( ( y, x ), _ ) =
             lastMove model.board

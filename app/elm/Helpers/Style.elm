@@ -1,6 +1,7 @@
 module Helpers.Style exposing (..)
 
 import Formatting exposing (..)
+import Model exposing (Style)
 
 
 classes : List String -> String
@@ -8,19 +9,69 @@ classes =
     String.join " "
 
 
-styles : List (List ( String, String )) -> List ( String, String )
+styles : List (List Style) -> List Style
 styles =
     List.concat
 
 
-emptyStyle : ( String, String )
+emptyStyle : Style
 emptyStyle =
     ( "", "" )
 
 
-backgroundImage : String -> ( String, String )
+backgroundImage : String -> Style
 backgroundImage url =
     ( "background-image", "url(" ++ url ++ ")" )
+
+
+widthStyle : number -> Style
+widthStyle width =
+    ( "width", px width )
+
+
+heightStyle : number -> Style
+heightStyle height =
+    ( "height", px height )
+
+
+displayStyle : String -> Style
+displayStyle =
+    (,) "display"
+
+
+transformStyle : String -> Style
+transformStyle =
+    (,) "transform"
+
+
+transitionStyle : String -> Style
+transitionStyle =
+    (,) "transition"
+
+
+transitionDelayStyle : number -> Style
+transitionDelayStyle delay =
+    ( "transition-delay", ms delay )
+
+
+animationStyle : String -> Style
+animationStyle =
+    (,) "animation"
+
+
+animationDelayStyle : String -> Style
+animationDelayStyle =
+    (,) "animation-delay"
+
+
+fillModeStyle : String -> Style
+fillModeStyle =
+    (,) "animation-fill-mode"
+
+
+opacityStyle : number -> Style
+opacityStyle number =
+    ( "opacity", toString number )
 
 
 px : number -> String
@@ -51,11 +102,6 @@ deg =
 deg_ : Format r (number -> r)
 deg_ =
     number <> s "deg"
-
-
-opacity : number -> String
-opacity =
-    print opacity_
 
 
 opacity_ : Format r (number -> r)

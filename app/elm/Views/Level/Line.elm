@@ -37,7 +37,7 @@ line_ tileType bearing =
         , class "absolute bottom-0 right-0 left-0 top-0 z-0"
         ]
         [ line
-            [ strokeWidth "9"
+            [ strokeWidth "11"
             , x1 "0"
             , y1 "0"
             , x2 "50"

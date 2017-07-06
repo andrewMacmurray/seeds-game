@@ -11,13 +11,12 @@ import Data.Moves.Check exposing (handleCheckMove, handleStartMove, handleStopMo
 import Data.Moves.Square exposing (triggerMoveIfSquare)
 import Data.Moves.Type exposing (currentMoveTileType)
 import Data.Score exposing (handleAddScore, initialScores)
-import Data.Sequence exposing (growSeedPods, removeTiles)
+import Data.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Delay
 import Dict
-import Helpers.Window exposing (getWindowSize, handleMousePosition, updateMousePosition)
+import Helpers.Window exposing (getWindowSize, handleMousePosition, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Time exposing (millisecond)
-import Window exposing (resizes)
 
 
 init : ( Model, Cmd Msg )
@@ -54,10 +53,10 @@ update msg model =
         StopMove moveType ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
-                    model ! [ Delay.sequence growSeedPods ]
+                    model ! [ growSeedPodsSequence ]
 
                 _ ->
-                    model ! [ Delay.sequence (removeTiles model moveType) ]
+                    model ! [ removeTilesSequence model moveType ]
 
         SetLeavingTiles ->
             (model
@@ -122,6 +121,6 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ resizes WindowSize
-        , updateMousePosition model
+        [ trackWindowSize
+        , trackMousePosition model
         ]
