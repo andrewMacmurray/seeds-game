@@ -35,14 +35,14 @@ shiftRow row =
         |> shiftRemainingTiles
 
 
-shiftRemainingTiles : ( List Coord, List TileState ) -> List Move
+shiftRemainingTiles : ( List Coord, List Block ) -> List Move
 shiftRemainingTiles ( coords, tiles ) =
     tiles
         |> sortByLeaving
         |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
 
 
-sortByLeaving : List TileState -> List TileState
+sortByLeaving : List Block -> List Block
 sortByLeaving tiles =
     tiles
         |> List.partition isLeaving
@@ -62,11 +62,11 @@ sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
     x1 == x2
 
 
-yCoord : ( Coord, TileState ) -> Int
+yCoord : ( Coord, Block ) -> Int
 yCoord ( ( y, _ ), _ ) =
     y
 
 
-xCoord : ( Coord, TileState ) -> Int
+xCoord : ( Coord, Block ) -> Int
 xCoord ( ( _, x ), _ ) =
     x

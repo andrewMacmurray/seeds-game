@@ -1,5 +1,6 @@
 module Views.Level.Line exposing (..)
 
+import Data.Block exposing (getTileState)
 import Data.Tiles exposing (strokeColors)
 import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, transform_, translate_)
@@ -10,22 +11,26 @@ import Svg.Attributes exposing (..)
 
 
 renderLine : Model -> Move -> Html Msg
-renderLine model ( coord, tileState ) =
-    case tileState of
-        Dragging tileType _ Left _ ->
-            line_ tileType Left
+renderLine model ( coord, block ) =
+    let
+        tileState =
+            getTileState block
+    in
+        case tileState of
+            Dragging tileType _ Left _ ->
+                line_ tileType Left
 
-        Dragging tileType _ Right _ ->
-            line_ tileType Right
+            Dragging tileType _ Right _ ->
+                line_ tileType Right
 
-        Dragging tileType _ Up _ ->
-            line_ tileType Up
+            Dragging tileType _ Up _ ->
+                line_ tileType Up
 
-        Dragging tileType _ Down _ ->
-            line_ tileType Down
+            Dragging tileType _ Down _ ->
+                line_ tileType Down
 
-        _ ->
-            span [] []
+            _ ->
+                span [] []
 
 
 line_ : TileType -> MoveBearing -> Html Msg

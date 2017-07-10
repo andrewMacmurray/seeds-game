@@ -13,9 +13,9 @@ currentMoveTileType board =
 
 
 moveShape : Move -> Maybe MoveShape
-moveShape ( _, tileState ) =
-    case tileState of
-        Dragging _ _ _ moveShape ->
+moveShape ( _, block ) =
+    case block of
+        Space (Dragging _ _ _ moveShape) ->
             Just moveShape
 
         _ ->
@@ -23,9 +23,9 @@ moveShape ( _, tileState ) =
 
 
 moveTileType : Move -> Maybe TileType
-moveTileType ( _, tileState ) =
-    case tileState of
-        Dragging tile _ _ _ ->
+moveTileType ( _, block ) =
+    case block of
+        Space (Dragging tile _ _ _) ->
             Just tile
 
         _ ->
@@ -39,4 +39,4 @@ sameTileType ( _, t2 ) ( _, t1 ) =
 
 emptyMove : Move
 emptyMove =
-    ( ( 0, 0 ), Empty )
+    ( ( 0, 0 ), Space Empty )

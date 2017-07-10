@@ -118,7 +118,7 @@ baseTileStyles model (( _, tile ) as move) =
         ]
 
 
-baseTileClasses : TileState -> String
+baseTileClasses : Block -> String
 baseTileClasses tile =
     classes
         [ "br-100 ma"

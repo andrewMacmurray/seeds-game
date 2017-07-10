@@ -42,12 +42,12 @@ currentMoves board =
         |> List.sortBy moveOrder_
 
 
-isCurrentMove_ : Coord -> TileState -> Bool
+isCurrentMove_ : Coord -> Block -> Bool
 isCurrentMove_ _ =
     isCurrentMove
 
 
-isDragging_ : Coord -> TileState -> Bool
+isDragging_ : Coord -> Block -> Bool
 isDragging_ _ =
     isDragging
 

@@ -2,6 +2,7 @@ module Data.Tiles exposing (..)
 
 import Helpers.Style exposing (emptyStyle, heightStyle, widthStyle)
 import Model exposing (..)
+import Data.Block as Block
 
 
 evenTiles : Int -> TileType
@@ -16,8 +17,13 @@ evenTiles n =
         Sun
 
 
-growingOrder : TileState -> Int
-growingOrder tileState =
+growingOrder : Block -> Int
+growingOrder =
+    Block.fold tileGrowingOrder 0
+
+
+tileGrowingOrder : TileState -> Int
+tileGrowingOrder tileState =
     case tileState of
         Growing _ order ->
             order
@@ -26,8 +32,13 @@ growingOrder tileState =
             0
 
 
-leavingOrder : TileState -> Int
-leavingOrder tileState =
+leavingOrder : Block -> Int
+leavingOrder =
+    Block.fold tileLeavingOrder 0
+
+
+tileLeavingOrder : TileState -> Int
+tileLeavingOrder tileState =
     case tileState of
         Leaving _ order ->
             order
@@ -36,8 +47,13 @@ leavingOrder tileState =
             0
 
 
-isLeaving : TileState -> Bool
-isLeaving tileState =
+isLeaving : Block -> Bool
+isLeaving =
+    Block.fold isLeavingTile False
+
+
+isLeavingTile : TileState -> Bool
+isLeavingTile tileState =
     case tileState of
         Leaving _ _ ->
             True
@@ -46,8 +62,13 @@ isLeaving tileState =
             False
 
 
-isDragging : TileState -> Bool
-isDragging tileState =
+isDragging : Block -> Bool
+isDragging =
+    Block.fold isDraggingTile False
+
+
+isDraggingTile : TileState -> Bool
+isDraggingTile tileState =
     case tileState of
         Dragging _ _ _ _ ->
             True
@@ -56,8 +77,13 @@ isDragging tileState =
             False
 
 
-moveOrder : TileState -> Int
-moveOrder tileState =
+moveOrder : Block -> Int
+moveOrder =
+    Block.fold moveOrderTile 0
+
+
+moveOrderTile : TileState -> Int
+moveOrderTile tileState =
     case tileState of
         Dragging _ moveOrder _ _ ->
             moveOrder
@@ -66,8 +92,13 @@ moveOrder tileState =
             0
 
 
-isCurrentMove : TileState -> Bool
-isCurrentMove tileState =
+isCurrentMove : Block -> Bool
+isCurrentMove =
+    Block.fold isCurrentMoveTile False
+
+
+isCurrentMoveTile : TileState -> Bool
+isCurrentMoveTile tileState =
     case tileState of
         Dragging _ _ Head _ ->
             True
@@ -76,8 +107,13 @@ isCurrentMove tileState =
             False
 
 
-setToDragging : MoveOrder -> TileState -> TileState
-setToDragging moveOrder tileState =
+setToDragging : MoveOrder -> Block -> Block
+setToDragging moveOrder =
+    Block.map <| setToDraggingTile moveOrder
+
+
+setToDraggingTile : MoveOrder -> TileState -> TileState
+setToDraggingTile moveOrder tileState =
     case tileState of
         Static tileType ->
             Dragging tileType moveOrder Head Line
@@ -89,8 +125,13 @@ setToDragging moveOrder tileState =
             x
 
 
-setStaticToFirstMove : TileState -> TileState
-setStaticToFirstMove tileState =
+setStaticToFirstMove : Block -> Block
+setStaticToFirstMove =
+    Block.map setStaticToFirstMoveTile
+
+
+setStaticToFirstMoveTile : TileState -> TileState
+setStaticToFirstMoveTile tileState =
     case tileState of
         Static tileType ->
             Dragging tileType 1 Head Line
@@ -99,8 +140,13 @@ setStaticToFirstMove tileState =
             x
 
 
-addBearing : MoveBearing -> TileState -> TileState
-addBearing moveBearing tileState =
+addBearing : MoveBearing -> Block -> Block
+addBearing moveBearing =
+    Block.map <| addBearingTile moveBearing
+
+
+addBearingTile : MoveBearing -> TileState -> TileState
+addBearingTile moveBearing tileState =
     case tileState of
         Dragging tileType moveOrder _ moveShape ->
             Dragging tileType moveOrder moveBearing moveShape
@@ -109,8 +155,13 @@ addBearing moveBearing tileState =
             x
 
 
-setGrowingToStatic : TileState -> TileState
-setGrowingToStatic tileState =
+setGrowingToStatic : Block -> Block
+setGrowingToStatic =
+    Block.map setGrowingToStaticTile
+
+
+setGrowingToStaticTile : TileState -> TileState
+setGrowingToStaticTile tileState =
     case tileState of
         Growing Seed _ ->
             Static Seed
@@ -119,8 +170,13 @@ setGrowingToStatic tileState =
             x
 
 
-growSeedPod : TileState -> TileState
-growSeedPod tileState =
+growSeedPod : Block -> Block
+growSeedPod =
+    Block.map growSeedPodTile
+
+
+growSeedPodTile : TileState -> TileState
+growSeedPodTile tileState =
     case tileState of
         Growing SeedPod n ->
             Growing Seed n
@@ -129,8 +185,13 @@ growSeedPod tileState =
             x
 
 
-setToFalling : Int -> TileState -> TileState
-setToFalling fallingDistance tileState =
+setToFalling : Int -> Block -> Block
+setToFalling fallingDistance =
+    Block.map <| setToFallingTile fallingDistance
+
+
+setToFallingTile : Int -> TileState -> TileState
+setToFallingTile fallingDistance tileState =
     case tileState of
         Static tile ->
             Falling tile fallingDistance
@@ -139,8 +200,13 @@ setToFalling fallingDistance tileState =
             x
 
 
-setEnteringToStatic : TileState -> TileState
-setEnteringToStatic tileState =
+setEnteringToStatic : Block -> Block
+setEnteringToStatic =
+    Block.map setEnteringToSaticTile
+
+
+setEnteringToSaticTile : TileState -> TileState
+setEnteringToSaticTile tileState =
     case tileState of
         Entering tile ->
             Static tile
@@ -149,8 +215,13 @@ setEnteringToStatic tileState =
             x
 
 
-setFallingToStatic : TileState -> TileState
-setFallingToStatic tileState =
+setFallingToStatic : Block -> Block
+setFallingToStatic =
+    Block.map setFallingToStaticTile
+
+
+setFallingToStaticTile : TileState -> TileState
+setFallingToStaticTile tileState =
     case tileState of
         Falling tile _ ->
             Static tile
@@ -159,8 +230,13 @@ setFallingToStatic tileState =
             x
 
 
-setLeavingToEmpty : TileState -> TileState
-setLeavingToEmpty tileState =
+setLeavingToEmpty : Block -> Block
+setLeavingToEmpty =
+    Block.map setLeavingToEmptyTile
+
+
+setLeavingToEmptyTile : TileState -> TileState
+setLeavingToEmptyTile tileState =
     case tileState of
         Leaving _ _ ->
             Empty
@@ -169,8 +245,13 @@ setLeavingToEmpty tileState =
             x
 
 
-setDraggingToGrowing : TileState -> TileState
-setDraggingToGrowing tileState =
+setDraggingToGrowing : Block -> Block
+setDraggingToGrowing =
+    Block.map setDraggingToGrowingTile
+
+
+setDraggingToGrowingTile : TileState -> TileState
+setDraggingToGrowingTile tileState =
     case tileState of
         Dragging SeedPod order _ _ ->
             Growing SeedPod order
@@ -179,8 +260,13 @@ setDraggingToGrowing tileState =
             x
 
 
-setToLeaving : TileState -> TileState
-setToLeaving tileState =
+setToLeaving : Block -> Block
+setToLeaving =
+    Block.map setToLeavingTile
+
+
+setToLeavingTile : TileState -> TileState
+setToLeavingTile tileState =
     case tileState of
         Dragging Rain order _ _ ->
             Leaving Rain order
@@ -195,8 +281,13 @@ setToLeaving tileState =
             x
 
 
-getTileType : TileState -> Maybe TileType
-getTileType tileState =
+getTileType : Block -> Maybe TileType
+getTileType =
+    Block.fold getTileType_ Nothing
+
+
+getTileType_ : TileState -> Maybe TileType
+getTileType_ tileState =
     case tileState of
         Static tile ->
             Just tile
@@ -220,13 +311,23 @@ getTileType tileState =
             Nothing
 
 
-tileColorMap : TileState -> String
+tileColorMap : Block -> String
 tileColorMap =
+    Block.fold tileColorMap_ ""
+
+
+tileColorMap_ : TileState -> String
+tileColorMap_ =
     tileClassMap tileColors
 
 
-tileSizeMap : TileState -> List Style
+tileSizeMap : Block -> List Style
 tileSizeMap =
+    Block.fold tileSizeMap_ []
+
+
+tileSizeMap_ : TileState -> List Style
+tileSizeMap_ =
     tileStyleMap tileSize
 
 
@@ -279,50 +380,18 @@ tileSize tile =
 
 
 tileClassMap : (TileType -> String) -> TileState -> String
-tileClassMap fn tileState =
-    case tileState of
-        Static tile ->
-            fn tile
-
-        Dragging tile _ _ _ ->
-            fn tile
-
-        Leaving tile _ ->
-            fn tile
-
-        Falling tile _ ->
-            fn tile
-
-        Entering tile ->
-            fn tile
-
-        Growing tile _ ->
-            fn tile
-
-        _ ->
-            ""
+tileClassMap =
+    tileTypeMap ""
 
 
 tileStyleMap : (TileType -> List Style) -> TileState -> List Style
-tileStyleMap fn tileState =
-    case tileState of
-        Static tile ->
-            fn tile
+tileStyleMap =
+    tileTypeMap []
 
-        Dragging tile _ _ _ ->
-            fn tile
 
-        Leaving tile _ ->
-            fn tile
-
-        Falling tile _ ->
-            fn tile
-
-        Entering tile ->
-            fn tile
-
-        Growing tile _ ->
-            fn tile
-
-        _ ->
-            [ emptyStyle ]
+tileTypeMap : a -> (TileType -> a) -> TileState -> a
+tileTypeMap default fn tileState =
+    tileState
+        |> getTileType_
+        |> Maybe.map fn
+        |> Maybe.withDefault default

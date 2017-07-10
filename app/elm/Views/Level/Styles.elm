@@ -1,5 +1,6 @@
 module Views.Level.Styles exposing (..)
 
+import Data.Block exposing (getTileState)
 import Data.Tiles exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model exposing (..)
@@ -42,21 +43,28 @@ tilePosition model ( y, x ) =
 
 
 enteringStyles : Model -> Move -> List Style
-enteringStyles model ( _, tile ) =
-    case tile of
-        Entering tile ->
-            [ animationStyle "bounce 0.4s ease"
-            ]
+enteringStyles model ( _, block ) =
+    let
+        tile =
+            getTileState block
+    in
+        case tile of
+            Entering tile ->
+                [ animationStyle "bounce 0.4s ease"
+                ]
 
-        _ ->
-            []
+            _ ->
+                []
 
 
 growingStyles : Model -> Move -> List Style
-growingStyles model ( coord, tile ) =
+growingStyles model ( coord, block ) =
     let
+        tile =
+            getTileState block
+
         transitionDelay =
-            ((growingOrder tile) % 5) * 70
+            ((growingOrder block) % 5) * 70
     in
         case tile of
             Growing SeedPod _ ->
@@ -76,15 +84,19 @@ growingStyles model ( coord, tile ) =
 
 
 fallingStyles : Model -> Move -> List Style
-fallingStyles model ( _, tile ) =
-    case tile of
-        Falling tile distance ->
-            [ animationStyle <| "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease"
-            , fillModeStyle "forwards"
-            ]
+fallingStyles model ( _, block ) =
+    let
+        tile =
+            getTileState block
+    in
+        case tile of
+            Falling tile distance ->
+                [ animationStyle <| "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease"
+                , fillModeStyle "forwards"
+                ]
 
-        _ ->
-            []
+            _ ->
+                []
 
 
 leavingStyles : Model -> Move -> List Style
@@ -100,19 +112,23 @@ leavingStyles model (( _, tile ) as move) =
 
 
 handleExitDirection : Move -> Model -> Style
-handleExitDirection ( coord, tile ) model =
-    case tile of
-        Leaving Rain _ ->
-            transformStyle <| exitLeft model
+handleExitDirection ( coord, block ) model =
+    let
+        tile =
+            getTileState block
+    in
+        case tile of
+            Leaving Rain _ ->
+                transformStyle <| exitLeft model
 
-        Leaving Sun _ ->
-            transformStyle <| exitRight model
+            Leaving Sun _ ->
+                transformStyle <| exitRight model
 
-        Leaving Seed _ ->
-            transformStyle <| exitTop model
+            Leaving Seed _ ->
+                transformStyle <| exitTop model
 
-        _ ->
-            emptyStyle
+            _ ->
+                emptyStyle
 
 
 exitRight : Model -> String

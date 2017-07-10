@@ -16,20 +16,20 @@ handleFallingTiles model =
     { model | board = model.board |> Dict.map (markFallingTile model.board) }
 
 
-markFallingTile : Board -> Coord -> TileState -> TileState
-markFallingTile board coord tile =
+markFallingTile : Board -> Coord -> Block -> Block
+markFallingTile board coord block =
     let
         fallingDistance =
-            tileFallingDistance ( coord, tile ) board
+            tileFallingDistance ( coord, block ) board
     in
         if fallingDistance > 0 then
-            setToFalling fallingDistance tile
+            setToFalling fallingDistance block
         else
-            tile
+            block
 
 
 tileFallingDistance : Move -> Board -> Int
-tileFallingDistance ( ( y2, x2 ), tile2 ) board =
+tileFallingDistance ( ( y2, x2 ), _ ) board =
     board
-        |> Dict.filter (\( y1, x1 ) tile1 -> x2 == x1 && isLeaving tile1 && y1 > y2)
+        |> Dict.filter (\( y1, x1 ) block -> x2 == x1 && isLeaving block && y1 > y2)
         |> Dict.size

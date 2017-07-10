@@ -24,7 +24,7 @@ addNewTiles newTiles board =
         tilesToAdd =
             board
                 |> getEmptyCoords
-                |> List.map2 (\tile coord -> ( coord, Entering tile )) newTiles
+                |> List.map2 (\tile coord -> ( coord, Space (Entering tile) )) newTiles
                 |> Dict.fromList
     in
         Dict.union tilesToAdd board
@@ -52,4 +52,4 @@ getEmptyCoords board =
 
 getEmpties : Board -> Board
 getEmpties board =
-    board |> Dict.filter (\_ tile -> tile == Empty)
+    board |> Dict.filter (\_ tile -> tile == Space Empty)
