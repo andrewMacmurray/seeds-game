@@ -15,7 +15,11 @@ handleMakeBoard tileList ({ boardSettings } as model) =
                 boardSettings.sizeX
                 boardSettings.sizeY
                 tileList
-                |> addWalls [ ( 3, 0 ), ( 4, 0 ) ]
+                |> addWalls
+                    [ ( 1, 0 )
+                    , ( 3, 0 )
+                    , ( 5, 0 )
+                    ]
     }
 
 
