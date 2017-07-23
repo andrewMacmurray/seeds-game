@@ -211,6 +211,9 @@ setToFallingTile fallingDistance tileState =
         Static tile ->
             Falling tile fallingDistance
 
+        Falling tile _ ->
+            Falling tile fallingDistance
+
         x ->
             x
 
