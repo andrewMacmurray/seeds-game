@@ -53,6 +53,7 @@ renderTile model (( ( y, x ) as coord, tile ) as move) =
         [ renderLine model move
         , innerTile model move
         , tracer model move
+        , wall move
         ]
 
 
@@ -86,6 +87,15 @@ tracer model move =
         makeInnerTile extraStyles model move
 
 
+wall : Move -> Html Msg
+wall move =
+    div
+        [ style <| wallStyles move
+        , class centerBlock
+        ]
+        []
+
+
 innerTile : Model -> Move -> Html Msg
 innerTile model move =
     let
@@ -111,9 +121,9 @@ makeInnerTile extraStyles model (( _, tile ) as move) =
 baseTileStyles : Model -> Move -> List Style
 baseTileStyles model (( _, tile ) as move) =
     styles
-        [ growingStyles model move
-        , enteringStyles model move
-        , fallingStyles model move
+        [ growingStyles move
+        , enteringStyles move
+        , fallingStyles move
         , tileSizeMap tile
         ]
 
@@ -121,7 +131,7 @@ baseTileStyles model (( _, tile ) as move) =
 baseTileClasses : Block -> String
 baseTileClasses tile =
     classes
-        [ "br-100 ma"
-        , "absolute top-0 left-0 right-0 bottom-0"
+        [ "br-100"
+        , centerBlock
         , tileColorMap tile
         ]

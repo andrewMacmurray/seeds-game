@@ -2,7 +2,7 @@ module Views.Level.Styles exposing (..)
 
 import Data.Block exposing (getTileState)
 import Data.Tiles exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
-import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
+import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model exposing (..)
 
 
@@ -42,8 +42,21 @@ tilePosition model ( y, x ) =
     )
 
 
-enteringStyles : Model -> Move -> List Style
-enteringStyles model ( _, block ) =
+wallStyles : Move -> List Style
+wallStyles ( _, block ) =
+    case block of
+        Wall ->
+            [ ( "background-color", "#f6e06f" )
+            , widthStyle 45
+            , heightStyle 45
+            ]
+
+        _ ->
+            []
+
+
+enteringStyles : Move -> List Style
+enteringStyles ( _, block ) =
     let
         tile =
             getTileState block
@@ -57,8 +70,8 @@ enteringStyles model ( _, block ) =
                 []
 
 
-growingStyles : Model -> Move -> List Style
-growingStyles model ( coord, block ) =
+growingStyles : Move -> List Style
+growingStyles ( coord, block ) =
     let
         tile =
             getTileState block
@@ -83,8 +96,8 @@ growingStyles model ( coord, block ) =
                 []
 
 
-fallingStyles : Model -> Move -> List Style
-fallingStyles model ( _, block ) =
+fallingStyles : Move -> List Style
+fallingStyles ( _, block ) =
     let
         tile =
             getTileState block
@@ -195,3 +208,8 @@ tileWidthHeightStyles { tileSettings } =
     [ widthStyle tileSettings.sizeX
     , heightStyle tileSettings.sizeY
     ]
+
+
+centerBlock : String
+centerBlock =
+    "ma absolute top-0 left-0 right-0 bottom-0"

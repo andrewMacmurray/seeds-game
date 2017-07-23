@@ -1,5 +1,6 @@
 module Data.Board.Make exposing (..)
 
+import Data.Block exposing (addWalls)
 import Data.Tiles exposing (evenTiles)
 import Dict
 import Model exposing (..)
@@ -14,6 +15,18 @@ handleMakeBoard tileList ({ boardSettings } as model) =
                 boardSettings.sizeX
                 boardSettings.sizeY
                 tileList
+                |> addWalls
+                    [ ( 2, 0 )
+                    , ( 3, 0 )
+                    , ( 4, 0 )
+                    , ( 3, 3 )
+                    , ( 4, 3 )
+                    , ( 3, 4 )
+                    , ( 4, 4 )
+                    , ( 2, 7 )
+                    , ( 3, 7 )
+                    , ( 4, 7 )
+                    ]
     }
 
 
