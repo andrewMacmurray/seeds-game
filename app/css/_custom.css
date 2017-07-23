@@ -32,6 +32,13 @@ body {
   background-size: contain;
 }
 
+.bg-anemone {
+  background: url(img/anemone.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .w-100 {
   width: 100%;
 }
