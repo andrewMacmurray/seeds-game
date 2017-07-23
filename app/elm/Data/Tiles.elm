@@ -1,8 +1,8 @@
 module Data.Tiles exposing (..)
 
-import Helpers.Style exposing (emptyStyle, heightStyle, widthStyle)
-import Model exposing (..)
 import Data.Block as Block
+import Helpers.Style exposing (emptyStyle, size)
+import Model exposing (..)
 
 
 evenTiles : Int -> TileType
@@ -71,6 +71,21 @@ isDraggingTile : TileState -> Bool
 isDraggingTile tileState =
     case tileState of
         Dragging _ _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isFalling : Block -> Bool
+isFalling =
+    Block.fold isFallingTile False
+
+
+isFallingTile : TileState -> Bool
+isFallingTile tileState =
+    case tileState of
+        Falling _ _ ->
             True
 
         _ ->
@@ -367,16 +382,16 @@ tileSize : TileType -> List Style
 tileSize tile =
     case tile of
         Rain ->
-            [ heightStyle 18, widthStyle 18 ]
+            size 18
 
         Sun ->
-            [ heightStyle 18, widthStyle 18 ]
+            size 18
 
         SeedPod ->
-            [ heightStyle 26, widthStyle 26 ]
+            size 26
 
         Seed ->
-            [ heightStyle 35, widthStyle 35 ]
+            size 35
 
 
 tileClassMap : (TileType -> String) -> TileState -> String
