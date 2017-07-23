@@ -3,7 +3,7 @@ module Data.Board.Falling exposing (..)
 import Data.Board.Shift exposing (groupBoardByColumn, handleShiftBoard, shiftBoard, yCoord)
 import Data.Tiles exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
-import Helpers.Dict exposing (mapValues)
+import Helpers.Dict exposing (filterValues, mapValues)
 import Model exposing (..)
 
 
@@ -21,21 +21,19 @@ updateFallingDistances : Board -> Board
 updateFallingDistances board =
     let
         beforeBoard =
-            board
-                |> Dict.map (markFallingTile board)
+            board |> Dict.map (temporaryMarkFalling board)
 
         shiftedBoard =
-            beforeBoard
-                |> shiftBoard
+            beforeBoard |> shiftBoard
 
-        tilesToUpdate =
-            allNewFallingTiles beforeBoard shiftedBoard
+        fallingTilesToUpdate =
+            newFallingTiles beforeBoard shiftedBoard
     in
-        List.foldl (\( coord, block ) b -> Dict.insert coord block b) beforeBoard tilesToUpdate
+        List.foldl (\( coord, block ) b -> Dict.insert coord block b) beforeBoard fallingTilesToUpdate
 
 
-allNewFallingTiles : Board -> Board -> List Move
-allNewFallingTiles beforeBoard shiftedBoard =
+newFallingTiles : Board -> Board -> List Move
+newFallingTiles beforeBoard shiftedBoard =
     let
         beforeTiles =
             listsOfFallingTiles beforeBoard
@@ -43,26 +41,28 @@ allNewFallingTiles beforeBoard shiftedBoard =
         shiftedTiles =
             listsOfFallingTiles shiftedBoard
     in
-        List.map2 newFallingTiles beforeTiles shiftedTiles
+        List.map2 addFallingDistance beforeTiles shiftedTiles
             |> List.concat
 
 
-newFallingTiles : List Move -> List Move -> List Move
-newFallingTiles before shifted =
-    before
-        |> List.map2 (\( ( y1, x1 ), b ) ( ( y2, x2 ), _ ) -> ( ( y2, x2 ), setToFalling (y1 - y2) b )) shifted
+addFallingDistance : List Move -> List Move -> List Move
+addFallingDistance before shifted =
+    List.map2
+        (\( ( y1, x1 ), b ) ( ( y2, x2 ), _ ) -> ( ( y1, x1 ), setToFalling (y2 - y1) b ))
+        before
+        shifted
 
 
 listsOfFallingTiles : Board -> List (List Move)
 listsOfFallingTiles board =
     board
-        |> Dict.filter (\_ b -> isFalling b)
+        |> filterValues isFalling
         |> groupBoardByColumn
         |> List.map (List.sortBy yCoord)
 
 
-markFallingTile : Board -> Coord -> Block -> Block
-markFallingTile board coord block =
+temporaryMarkFalling : Board -> Coord -> Block -> Block
+temporaryMarkFalling board coord block =
     if shouldMarkFalling board coord then
         setToFalling 0 block
     else
