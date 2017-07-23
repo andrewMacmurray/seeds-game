@@ -8,7 +8,7 @@ import Model exposing (..)
 
 handleShiftBoard : Model -> Model
 handleShiftBoard model =
-    { model | board = shiftBoard model.board }
+    { model | board = model.board |> shiftBoard }
 
 
 shiftBoard : Board -> Board
@@ -31,28 +31,46 @@ shiftRow : List Move -> List Move
 shiftRow row =
     row
         |> List.sortBy yCoord
-        |> List.unzip
         |> shiftRemainingTiles
 
 
-shiftRemainingTiles : ( List Coord, List TileState ) -> List Move
-shiftRemainingTiles ( coords, tiles ) =
-    tiles
+shiftRemainingTiles : List Move -> List Move
+shiftRemainingTiles row =
+    row
         |> sortByLeaving
-        |> List.indexedMap (\i tile -> ( ( i, getXfromRow coords ), tile ))
+        |> List.indexedMap (\i ( _, block ) -> ( ( i, getXfromRow row ), block ))
 
 
-sortByLeaving : List TileState -> List TileState
-sortByLeaving tiles =
-    tiles
-        |> List.partition isLeaving
-        |> (\( a, b ) -> a ++ b)
+sortByLeaving : List Move -> List Move
+sortByLeaving row =
+    let
+        walls =
+            List.filter (\( _, block ) -> block == Wall) row
+    in
+        row
+            |> List.filter (\( _, block ) -> block /= Wall)
+            |> List.partition (\( coord, block ) -> isLeaving block)
+            |> (\( a, b ) -> a ++ b)
+            |> reAddWalls walls
 
 
-getXfromRow : List Coord -> Int
+reAddWalls : List Move -> List Move -> List Move
+reAddWalls walls row =
+    List.foldl addWall row walls
+
+
+addWall : Move -> List Move -> List Move
+addWall (( ( y, x ), w ) as wall) row =
+    row
+        |> List.Extra.splitAt y
+        |> (\( a, b ) -> a ++ [ wall ] ++ b)
+
+
+getXfromRow : List Move -> Int
 getXfromRow coords =
     coords
         |> List.head
+        |> Maybe.map Tuple.first
         |> Maybe.map Tuple.second
         |> Maybe.withDefault 0
 
@@ -62,11 +80,11 @@ sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
     x1 == x2
 
 
-yCoord : ( Coord, TileState ) -> Int
+yCoord : ( Coord, Block ) -> Int
 yCoord ( ( y, _ ), _ ) =
     y
 
 
-xCoord : ( Coord, TileState ) -> Int
+xCoord : ( Coord, Block ) -> Int
 xCoord ( ( _, x ), _ ) =
     x

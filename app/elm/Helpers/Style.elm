@@ -24,6 +24,13 @@ backgroundImage url =
     ( "background-image", "url(" ++ url ++ ")" )
 
 
+size : number -> List Style
+size n =
+    [ widthStyle n
+    , heightStyle n
+    ]
+
+
 widthStyle : number -> Style
 widthStyle width =
     ( "width", px width )

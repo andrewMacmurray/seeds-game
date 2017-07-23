@@ -27,9 +27,9 @@ allTilesOfType board tileType =
     board |> Dict.map (setDraggingIfMatch tileType)
 
 
-setDraggingIfMatch : TileType -> Coord -> TileState -> TileState
-setDraggingIfMatch tileType ( y, x ) tileState =
-    if getTileType tileState == Just tileType then
-        setToDragging (x + 1 + (y * 8)) tileState
+setDraggingIfMatch : TileType -> Coord -> Block -> Block
+setDraggingIfMatch tileType ( y, x ) block =
+    if getTileType block == Just tileType then
+        setToDragging (x + 1 + (y * 8)) block
     else
-        tileState
+        block

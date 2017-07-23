@@ -35,7 +35,7 @@ type alias BoardSettings =
 
 
 type alias Move =
-    ( Coord, TileState )
+    ( Coord, Block )
 
 
 type MoveShape
@@ -72,7 +72,7 @@ type alias GrowingOrder =
 
 
 type alias Board =
-    Dict Coord TileState
+    Dict Coord Block
 
 
 type MoveBearing
@@ -81,6 +81,11 @@ type MoveBearing
     | Right
     | Up
     | Down
+
+
+type Block
+    = Wall
+    | Space TileState
 
 
 type TileState
