@@ -17,9 +17,29 @@ seedPodGradient_ =
         ]
 
 
+darkRed : String
+darkRed =
+    "rgb(191, 30, 45)"
+
+
+crimson : String
+crimson =
+    "rgb(237, 31, 36)"
+
+
+orange : String
+orange =
+    "rgb(241, 101, 34)"
+
+
 gold : String
 gold =
     "rgb(255, 160, 0)"
+
+
+darkYellow : String
+darkYellow =
+    "rgb(201, 153, 6)"
 
 
 yellow : String
@@ -42,14 +62,24 @@ washedYellow =
     "rgb(255, 254, 224)"
 
 
+lightBrown : String
+lightBrown =
+    "rgb(167, 123, 82)"
+
+
 brown : String
 brown =
-    "rgb(167, 123, 82)"
+    "rgb(119, 76, 40)"
 
 
 darkBrown : String
 darkBrown =
     "rgb(97, 62, 16)"
+
+
+chocolate : String
+chocolate =
+    "rgb(57, 35, 21)"
 
 
 green : String
@@ -65,3 +95,8 @@ lightGreen =
 lightBlue : String
 lightBlue =
     "rgb(38, 170, 224)"
+
+
+purple : String
+purple =
+    "rgb(173, 81, 126)"
