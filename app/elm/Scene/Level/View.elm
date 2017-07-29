@@ -1,4 +1,4 @@
-module Views.Level exposing (..)
+module Scene.Level.View exposing (..)
 
 import Html exposing (..)
 import Model exposing (..)

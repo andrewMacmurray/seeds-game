@@ -1,4 +1,4 @@
-module Components.Seeds.Sunflower exposing (..)
+module Views.Seed.Sunflower exposing (..)
 
 import Model exposing (..)
 import Html exposing (Html)

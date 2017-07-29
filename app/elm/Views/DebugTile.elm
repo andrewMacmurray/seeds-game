@@ -1,4 +1,4 @@
-module Components.DebugTile exposing (..)
+module Views.DebugTile exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

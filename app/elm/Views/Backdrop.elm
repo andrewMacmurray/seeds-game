@@ -1,4 +1,4 @@
-module Components.Backdrop exposing (backdrop)
+module Views.Backdrop exposing (backdrop)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -1,4 +1,4 @@
-module Components.Seeds.Foxglove exposing (..)
+module Views.Seed.Foxglove exposing (..)
 
 import Model exposing (..)
 import Html exposing (Html)

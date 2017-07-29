@@ -1,10 +1,10 @@
 module View exposing (..)
 
-import Components.Backdrop exposing (backdrop)
+import Views.Backdrop exposing (backdrop)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
-import Views.Level exposing (level)
+import Scene.Level.View exposing (level)
 
 
 view : Model -> Html Msg
