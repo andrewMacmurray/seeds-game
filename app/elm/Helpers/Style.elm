@@ -14,6 +14,11 @@ styles =
     List.concat
 
 
+svgStyles : List String -> String
+svgStyles =
+    String.join "; "
+
+
 emptyStyle : Style
 emptyStyle =
     ( "", "" )

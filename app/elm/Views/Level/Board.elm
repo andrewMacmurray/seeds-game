@@ -17,14 +17,26 @@ import Views.Level.Styles exposing (..)
 board : Model -> Html Msg
 board model =
     boardLayout model
-        [ div [] <| renderTiles model ]
+        [ div [ class "relative z-5" ] <| renderTiles model
+        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
+        ]
 
 
 renderTiles : Model -> List (Html Msg)
-renderTiles model =
+renderTiles =
+    renderFromBoard renderTile
+
+
+renderLines : Model -> List (Html Msg)
+renderLines =
+    renderFromBoard renderLineLayer
+
+
+renderFromBoard : (Model -> Move -> Html Msg) -> Model -> List (Html Msg)
+renderFromBoard renderFn model =
     model.board
         |> Dict.toList
-        |> List.map (renderTile model)
+        |> List.map (renderFn model)
 
 
 boardLayout : Model -> List (Html Msg) -> Html Msg
@@ -35,6 +47,20 @@ boardLayout model =
             [ widthStyle <| boardWidth model
             , boardMarginTop model
             ]
+        ]
+
+
+renderLineLayer : Model -> Move -> Html Msg
+renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
+    div
+        [ style <|
+            styles
+                [ tileWidthHeightStyles model
+                , tileCoordsStyles model coord
+                ]
+        , class "dib absolute touch-disabled"
+        ]
+        [ renderLine model move
         ]
 
 
@@ -50,8 +76,7 @@ renderTile model (( ( y, x ) as coord, tile ) as move) =
         , class "dib absolute pointer"
         , hanldeMoveEvents model move
         ]
-        [ renderLine model move
-        , innerTile model move
+        [ innerTile model move
         , tracer model move
         , wall move
         ]
