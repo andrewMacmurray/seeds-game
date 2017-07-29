@@ -4,7 +4,7 @@ import Data.Score exposing (getScoreFor, scoreToString)
 import Helpers.Style exposing (backgroundImage, heightStyle, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Views.Level.Styles exposing (boardWidth)
 
 

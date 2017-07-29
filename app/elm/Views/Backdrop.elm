@@ -2,7 +2,7 @@ module Views.Backdrop exposing (backdrop)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Views.Level.Board exposing (handleStop)
 
 

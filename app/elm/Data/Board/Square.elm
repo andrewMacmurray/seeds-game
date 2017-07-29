@@ -3,7 +3,7 @@ module Data.Board.Square exposing (..)
 import Data.Move.Type exposing (currentMoveTileType)
 import Data.Tile exposing (getTileType, setToDragging)
 import Dict
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleSquareMove : Model -> Model

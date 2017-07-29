@@ -1,7 +1,7 @@
-module Scene.Level.View exposing (..)
+module Scenes.Level.View exposing (..)
 
 import Html exposing (..)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Views.Level.Board exposing (board, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)
 import Views.Level.TopBar exposing (topBar)

@@ -8,8 +8,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
 import Json.Decode as Json
-import Model exposing (..)
+import Model exposing (Style)
 import Mouse exposing (position)
+import Scenes.Level.Model exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 

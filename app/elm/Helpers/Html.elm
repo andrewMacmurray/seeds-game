@@ -3,7 +3,7 @@ module Helpers.Html exposing (..)
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)
 import Json.Encode exposing (string)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 emptyProperty : Attribute Msg

@@ -1,6 +1,6 @@
 module Views.Seed.Foxglove exposing (..)
 
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)

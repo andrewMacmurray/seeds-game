@@ -2,7 +2,7 @@ module Data.Move.Type exposing (..)
 
 import Data.Tile exposing (getTileType, isDragging)
 import Dict.Extra
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 currentMoveTileType : Board -> Maybe TileType

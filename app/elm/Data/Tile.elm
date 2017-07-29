@@ -2,7 +2,8 @@ module Data.Tile exposing (..)
 
 import Data.Block as Block
 import Helpers.Style exposing (emptyStyle, size)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
+import Model exposing (Style)
 
 
 evenTiles : Int -> TileType

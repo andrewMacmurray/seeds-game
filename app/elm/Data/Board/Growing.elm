@@ -2,7 +2,7 @@ module Data.Board.Growing exposing (..)
 
 import Data.Tile exposing (growSeedPod, setDraggingToGrowing, setGrowingToStatic)
 import Helpers.Dict exposing (mapValues)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleResetGrowing : Model -> Model

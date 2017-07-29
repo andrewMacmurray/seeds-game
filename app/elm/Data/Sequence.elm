@@ -1,7 +1,7 @@
 module Data.Sequence exposing (..)
 
 import Delay exposing (withUnit, sequence)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond, Time)
 
 

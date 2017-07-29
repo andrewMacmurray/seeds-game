@@ -1,6 +1,6 @@
 module Helpers.Window exposing (..)
 
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Mouse exposing (moves)
 import Task
 import Window exposing (resizes, size)

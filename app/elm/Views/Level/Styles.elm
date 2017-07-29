@@ -3,7 +3,8 @@ module Views.Level.Styles exposing (..)
 import Data.Block exposing (getTileState)
 import Data.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
+import Model exposing (Style)
 
 
 boardMarginTop : Model -> Style

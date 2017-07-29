@@ -5,7 +5,7 @@ import Data.Tile exposing (strokeColors)
 import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

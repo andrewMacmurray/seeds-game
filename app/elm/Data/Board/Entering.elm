@@ -4,7 +4,7 @@ import Data.Board.Make exposing (tileGenerator)
 import Data.Tile exposing (setEnteringToStatic)
 import Dict
 import Helpers.Dict exposing (mapValues)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Random exposing (Generator)
 
 
