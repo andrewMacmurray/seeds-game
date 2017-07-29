@@ -1,7 +1,7 @@
 module Data.Board.Entering exposing (..)
 
 import Data.Board.Make exposing (tileGenerator)
-import Data.Tiles exposing (setEnteringToStatic)
+import Data.Tile exposing (setEnteringToStatic)
 import Dict
 import Helpers.Dict exposing (mapValues)
 import Model exposing (..)
@@ -24,7 +24,7 @@ addNewTiles newTiles board =
         tilesToAdd =
             board
                 |> getEmptyCoords
-                |> List.map2 (\tile coord -> ( coord, Space (Entering tile) )) newTiles
+                |> List.map2 (\tile coord -> ( coord, Space <| Entering tile )) newTiles
                 |> Dict.fromList
     in
         Dict.union tilesToAdd board
@@ -32,7 +32,8 @@ addNewTiles newTiles board =
 
 makeNewTiles : Board -> Cmd Msg
 makeNewTiles board =
-    Random.list (numberOfEmpties board) tileGenerator
+    tileGenerator
+        |> Random.list (numberOfEmpties board)
         |> Random.generate AddTiles
 
 

@@ -1,9 +1,9 @@
 module Views.Level.LineDrag exposing (..)
 
-import Data.Moves.Square exposing (hasSquareTile)
-import Data.Moves.Type exposing (currentMoveTileType)
-import Data.Moves.Utils exposing (currentMoves, lastMove)
-import Data.Tiles exposing (strokeColors)
+import Data.Move.Square exposing (hasSquareTile)
+import Data.Move.Type exposing (currentMoveTileType)
+import Data.Move.Utils exposing (currentMoves, lastMove)
+import Data.Tile exposing (strokeColors)
 import Helpers.Style exposing (px)
 import Html exposing (Html, span)
 import Model exposing (..)

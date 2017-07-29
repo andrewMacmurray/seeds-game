@@ -1,7 +1,7 @@
 module Data.Score exposing (..)
 
-import Data.Moves.Utils exposing (currentMoves)
-import Data.Moves.Type exposing (currentMoveTileType)
+import Data.Move.Utils exposing (currentMoves)
+import Data.Move.Type exposing (currentMoveTileType)
 import Dict
 import Model exposing (..)
 

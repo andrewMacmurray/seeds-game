@@ -1,7 +1,7 @@
-module Data.Board.Filter exposing (..)
+module Data.Board.Square exposing (..)
 
-import Data.Moves.Type exposing (currentMoveTileType)
-import Data.Tiles exposing (getTileType, setToDragging)
+import Data.Move.Type exposing (currentMoveTileType)
+import Data.Tile exposing (getTileType, setToDragging)
 import Dict
 import Model exposing (..)
 

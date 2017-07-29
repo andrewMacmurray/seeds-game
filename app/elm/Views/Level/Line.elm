@@ -1,9 +1,9 @@
 module Views.Level.Line exposing (..)
 
 import Data.Block exposing (getTileState)
-import Data.Tiles exposing (strokeColors)
+import Data.Tile exposing (strokeColors)
 import Formatting exposing ((<>), print, s)
-import Helpers.Style exposing (rotateZ_, transform_, translate_)
+import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
 import Model exposing (..)
 import Svg exposing (..)
@@ -38,7 +38,11 @@ line_ tileType bearing =
     svg
         [ width "50"
         , height "9"
-        , Svg.Attributes.style <| String.join "; " [ transformMap bearing, "margin: auto" ]
+        , Svg.Attributes.style <|
+            svgStyles
+                [ transformMap bearing
+                , "margin: auto"
+                ]
         , class "absolute bottom-0 right-0 left-0 top-0 z-0"
         ]
         [ line
@@ -57,26 +61,26 @@ transformMap : MoveBearing -> String
 transformMap bearing =
     case bearing of
         Left ->
-            tTranslate -25 1.5
+            translate -25 1.5
 
         Right ->
-            tTranslate 25 1.5
+            translate 25 1.5
 
         Up ->
-            tRotateTranslate 90 -25 1.5
+            rotateTranslate 90 -25 1.5
 
         Down ->
-            tRotateTranslate 90 25 1.5
+            rotateTranslate 90 25 1.5
 
         _ ->
             ""
 
 
-tRotateTranslate : number -> number -> number -> String
-tRotateTranslate =
+rotateTranslate : number -> number -> number -> String
+rotateTranslate =
     transform_ (rotateZ_ <> translate_) |> print
 
 
-tTranslate : number -> number -> String
-tTranslate =
+translate : number -> number -> String
+translate =
     transform_ translate_ |> print

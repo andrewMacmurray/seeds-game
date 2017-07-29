@@ -1,7 +1,7 @@
-module Data.Moves.Utils exposing (..)
+module Data.Move.Utils exposing (..)
 
-import Data.Moves.Type exposing (emptyMove)
-import Data.Tiles exposing (isCurrentMove, isDragging, moveOrder)
+import Data.Move.Type exposing (emptyMove)
+import Data.Tile exposing (isCurrentMove, isDragging, moveOrder)
 import Dict
 import Dict.Extra
 import Model exposing (..)

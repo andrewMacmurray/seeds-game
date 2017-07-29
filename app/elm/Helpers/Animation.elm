@@ -1,4 +1,4 @@
-module Helpers.Animations exposing (..)
+module Helpers.Animation exposing (..)
 
 import Formatting exposing ((<>), print)
 import Html exposing (node, Html)

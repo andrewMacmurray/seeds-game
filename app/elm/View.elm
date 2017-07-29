@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Components.Backdrop exposing (backdrop)
-import Helpers.Animations exposing (embeddedAnimations)
+import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
 import Views.Level exposing (level)

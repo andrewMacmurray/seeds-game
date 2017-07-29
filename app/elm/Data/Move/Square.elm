@@ -1,14 +1,14 @@
-module Data.Moves.Square exposing (..)
+module Data.Move.Square exposing (..)
 
-import Data.Moves.Directions exposing (validDirection)
-import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Moves.Utils exposing (currentMoves)
-import Data.Tiles exposing (moveOrder)
+import Data.Move.Direction exposing (validDirection)
+import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Move.Utils exposing (currentMoves)
+import Data.Tile exposing (moveOrder)
 import Delay
 import Dict
 import Model exposing (..)
 import Time exposing (millisecond)
-import Utils exposing (allTrue)
+import Helpers.List exposing (allTrue)
 
 
 triggerMoveIfSquare : Model -> Cmd Msg
