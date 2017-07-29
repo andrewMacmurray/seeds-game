@@ -1,4 +1,4 @@
-module Data.Tiles exposing (..)
+module Data.Tile exposing (..)
 
 import Data.Block as Block
 import Helpers.Style exposing (emptyStyle, size)

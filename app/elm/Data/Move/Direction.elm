@@ -1,7 +1,7 @@
-module Data.Moves.Directions exposing (..)
+module Data.Move.Direction exposing (..)
 
 import Model exposing (..)
-import Utils exposing (anyTrue)
+import Helpers.List exposing (anyTrue)
 
 
 isLeft : Coord -> Coord -> Bool

@@ -1,7 +1,7 @@
 module Views.Level.Line exposing (..)
 
 import Data.Block exposing (getTileState)
-import Data.Tiles exposing (strokeColors)
+import Data.Tile exposing (strokeColors)
 import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, transform_, translate_)
 import Html exposing (Html, span)

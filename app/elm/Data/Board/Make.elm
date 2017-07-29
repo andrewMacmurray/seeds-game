@@ -1,7 +1,7 @@
 module Data.Board.Make exposing (..)
 
 import Data.Block exposing (addWalls)
-import Data.Tiles exposing (evenTiles)
+import Data.Tile exposing (evenTiles)
 import Dict
 import Model exposing (..)
 import Random exposing (..)

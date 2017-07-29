@@ -1,6 +1,6 @@
 module Data.Board.Shift exposing (..)
 
-import Data.Tiles exposing (isLeaving)
+import Data.Tile exposing (isLeaving)
 import Dict
 import List.Extra exposing (groupWhile)
 import Model exposing (..)

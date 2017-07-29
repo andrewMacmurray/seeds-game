@@ -1,6 +1,6 @@
 module Data.Board.Leaving exposing (..)
 
-import Data.Tiles exposing (setLeavingToEmpty, setToLeaving)
+import Data.Tile exposing (setLeavingToEmpty, setToLeaving)
 import Helpers.Dict exposing (mapValues)
 import Model exposing (..)
 

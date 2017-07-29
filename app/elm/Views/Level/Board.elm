@@ -1,6 +1,6 @@
 module Views.Level.Board exposing (..)
 
-import Data.Tiles exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
+import Data.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (classes, px, styles, translate, widthStyle)

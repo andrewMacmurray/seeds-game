@@ -1,11 +1,11 @@
-module Data.Moves.Check exposing (..)
+module Data.Move.Check exposing (..)
 
-import Data.Moves.Bearings exposing (addBearings)
-import Data.Moves.Directions exposing (isAbove, isBelow, isLeft, isRight, validDirection)
-import Data.Moves.Square exposing (isValidSquare)
-import Data.Moves.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Moves.Utils exposing (currentMoves, isUniqueMove, lastMove)
-import Data.Tiles exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
+import Data.Move.Bearing exposing (addBearings)
+import Data.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDirection)
+import Data.Move.Square exposing (isValidSquare)
+import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
+import Data.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Dict
 import Model exposing (..)
 

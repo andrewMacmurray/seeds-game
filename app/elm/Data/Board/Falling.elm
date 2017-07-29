@@ -1,7 +1,7 @@
 module Data.Board.Falling exposing (..)
 
 import Data.Board.Shift exposing (groupBoardByColumn, handleShiftBoard, shiftBoard, yCoord)
-import Data.Tiles exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
+import Data.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
 import Helpers.Dict exposing (filterValues, mapValues)
 import Model exposing (..)
@@ -14,11 +14,11 @@ handleResetFallingTiles model =
 
 handleFallingTiles : Model -> Model
 handleFallingTiles model =
-    { model | board = model.board |> updateFallingDistances }
+    { model | board = model.board |> setFallingTiles }
 
 
-updateFallingDistances : Board -> Board
-updateFallingDistances board =
+setFallingTiles : Board -> Board
+setFallingTiles board =
     let
         beforeBoard =
             board |> Dict.map (temporaryMarkFalling board)

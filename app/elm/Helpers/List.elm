@@ -1,4 +1,4 @@
-module Utils exposing (..)
+module Helpers.List exposing (..)
 
 
 allTrue : List Bool -> Bool

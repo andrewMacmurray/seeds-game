@@ -1,8 +1,8 @@
-module Data.Moves.Bearings exposing (..)
+module Data.Move.Bearing exposing (..)
 
-import Data.Moves.Directions exposing (..)
-import Data.Moves.Utils exposing (lastMove)
-import Data.Tiles exposing (addBearing, moveOrder, setToDragging)
+import Data.Move.Direction exposing (..)
+import Data.Move.Utils exposing (lastMove)
+import Data.Tile exposing (addBearing, moveOrder, setToDragging)
 import Dict
 import Model exposing (..)
 

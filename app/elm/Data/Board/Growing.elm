@@ -1,6 +1,6 @@
 module Data.Board.Growing exposing (..)
 
-import Data.Tiles exposing (growSeedPod, setDraggingToGrowing, setGrowingToStatic)
+import Data.Tile exposing (growSeedPod, setDraggingToGrowing, setGrowingToStatic)
 import Helpers.Dict exposing (mapValues)
 import Model exposing (..)
 
