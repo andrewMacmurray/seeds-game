@@ -151,6 +151,7 @@ baseTileStyles model (( _, tile ) as move) =
         , enteringStyles move
         , fallingStyles move
         , tileSizeMap tile
+        , tileColorMap tile
         ]
 
 
@@ -159,5 +160,4 @@ baseTileClasses tile =
     classes
         [ "br-100"
         , centerBlock
-        , tileColorMap tile
         ]

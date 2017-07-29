@@ -1,9 +1,10 @@
 module Data.Tile exposing (..)
 
 import Data.Block as Block
-import Helpers.Style exposing (emptyStyle, size)
-import Scenes.Level.Model exposing (..)
+import Data.Color exposing (darkBrown, gold, green, lightBlue, seedPodGradient)
+import Helpers.Style exposing (background, backgroundColor, backgroundImage, emptyStyle, frameBackground, size, svgStyle)
 import Model exposing (Style)
+import Scenes.Level.Model exposing (..)
 
 
 evenTiles : Int -> TileType
@@ -330,14 +331,14 @@ getTileType_ tileState =
             Nothing
 
 
-tileColorMap : Block -> String
+tileColorMap : Block -> List Style
 tileColorMap =
-    Block.fold tileColorMap_ ""
+    Block.fold tileColorMap_ []
 
 
-tileColorMap_ : TileState -> String
+tileColorMap_ : TileState -> List Style
 tileColorMap_ =
-    tileClassMap tileColors
+    tileStyleMap tileColors
 
 
 tileSizeMap : Block -> List Style
@@ -354,32 +355,32 @@ strokeColors : TileType -> String
 strokeColors tile =
     case tile of
         Rain ->
-            "stroke-light-blue"
+            svgStyle "stroke" lightBlue
 
         Sun ->
-            "stroke-gold"
+            svgStyle "stroke" gold
 
         SeedPod ->
-            "stroke-green"
+            svgStyle "stroke" green
 
         Seed ->
-            "stroke-dark-brown"
+            svgStyle "stroke" darkBrown
 
 
-tileColors : TileType -> String
+tileColors : TileType -> List Style
 tileColors tile =
     case tile of
         Rain ->
-            "bg-light-blue"
+            [ backgroundColor lightBlue ]
 
         Sun ->
-            "bg-gold"
+            [ backgroundColor gold ]
 
         SeedPod ->
-            "bg-seed-pod"
+            [ background seedPodGradient ]
 
         Seed ->
-            "bg-sunflower"
+            [ backgroundImage "img/sunflower.svg" ] ++ frameBackground
 
 
 tileSize : TileType -> List Style

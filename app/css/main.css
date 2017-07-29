@@ -4,8 +4,6 @@
 @import 'tachyons-custom/src/_background-size';
 @import 'tachyons-custom/src/_background-position';
 @import 'tachyons-custom/src/_outlines';
-@import 'tachyons-custom/src/_borders';
-@import 'tachyons-custom/src/_border-colors';
 @import 'tachyons-custom/src/_border-radius';
 @import 'tachyons-custom/src/_coordinates';
 @import 'tachyons-custom/src/_display';
@@ -17,8 +15,6 @@
 @import 'tachyons-custom/src/_overflow';
 @import 'tachyons-custom/src/_position';
 @import 'tachyons-custom/src/_opacity';
-@import 'tachyons-custom/src/_skins';
-@import 'tachyons-custom/src/_skins-pseudo';
 @import 'tachyons-custom/src/_spacing';
 @import 'tachyons-custom/src/_text-decoration';
 @import 'tachyons-custom/src/_text-align';

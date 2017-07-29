@@ -51,7 +51,7 @@ line_ tileType bearing =
             , y1 "0"
             , x2 "50"
             , y2 "0"
-            , class <| strokeColors tileType
+            , Svg.Attributes.style <| strokeColors tileType
             ]
             []
         ]

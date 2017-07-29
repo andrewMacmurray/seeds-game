@@ -19,14 +19,42 @@ svgStyles =
     String.join "; "
 
 
+svgStyle : String -> String -> String
+svgStyle a b =
+    a ++ ":" ++ b
+
+
 emptyStyle : Style
 emptyStyle =
     ( "", "" )
 
 
+color : String -> Style
+color =
+    (,) "color"
+
+
+frameBackground : List Style
+frameBackground =
+    [ ( "background-position", "center" )
+    , ( "background-repeat", "no-repeat" )
+    , ( "background-size", "contain" )
+    ]
+
+
 backgroundImage : String -> Style
 backgroundImage url =
     ( "background-image", "url(" ++ url ++ ")" )
+
+
+backgroundColor : String -> Style
+backgroundColor =
+    (,) "background-color"
+
+
+background : String -> Style
+background =
+    (,) "background"
 
 
 size : number -> List Style

@@ -41,7 +41,7 @@ lineDrag ({ window } as model) =
             , class "fixed top-0 right-0 z-1 touch-disabled"
             ]
             [ line
-                [ class colorClass
+                [ Svg.Attributes.style colorClass
                 , strokeWidth "6"
                 , strokeLinecap "round"
                 , x1 <| toString oX

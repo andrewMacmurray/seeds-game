@@ -1,7 +1,8 @@
 module Views.Level.TopBar exposing (..)
 
+import Data.Color exposing (gold, washedYellow)
 import Data.Score exposing (getScoreFor, scoreToString)
-import Helpers.Style exposing (backgroundImage, heightStyle, px, widthStyle)
+import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Model exposing (..)
@@ -11,8 +12,12 @@ import Views.Level.Styles exposing (boardWidth)
 topBar : Model -> Html Msg
 topBar model =
     div
-        [ class "no-select w-100 bg-washed-yellow gold flex items-center justify-center fixed top-0 z-3"
-        , style [ heightStyle model.topBarHeight ]
+        [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
+        , style
+            [ heightStyle model.topBarHeight
+            , color gold
+            , backgroundColor washedYellow
+            ]
         ]
         [ div
             [ style

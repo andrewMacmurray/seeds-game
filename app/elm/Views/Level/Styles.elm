@@ -1,10 +1,11 @@
 module Views.Level.Styles exposing (..)
 
 import Data.Block exposing (getTileState)
+import Data.Color exposing (blockYellow)
 import Data.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
-import Helpers.Style exposing (animationStyle, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
-import Scenes.Level.Model exposing (..)
+import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model exposing (Style)
+import Scenes.Level.Model exposing (..)
 
 
 boardMarginTop : Model -> Style
@@ -47,7 +48,7 @@ wallStyles : Move -> List Style
 wallStyles ( _, block ) =
     case block of
         Wall ->
-            [ ( "background-color", "#f6e06f" )
+            [ backgroundColor blockYellow
             , widthStyle 45
             , heightStyle 45
             ]
