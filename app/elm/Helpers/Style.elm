@@ -29,6 +29,11 @@ emptyStyle =
     ( "", "" )
 
 
+marginTop : number -> Style
+marginTop n =
+    ( "margin-top", px n )
+
+
 color : String -> Style
 color =
     (,) "color"

@@ -2,7 +2,7 @@ module Views.Level.TopBar exposing (..)
 
 import Data.Color exposing (gold, washedYellow)
 import Data.Score exposing (getScoreFor, scoreToString)
-import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, px, widthStyle)
+import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Model exposing (..)
@@ -22,7 +22,7 @@ topBar model =
         [ div
             [ style
                 [ widthStyle <| boardWidth model
-                , ( "margin-top", "-1em" )
+                , marginTop -16
                 , ( "padding", "0 9px" )
                 ]
             , class "flex justify-between"
