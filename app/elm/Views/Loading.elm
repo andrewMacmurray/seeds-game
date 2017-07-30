@@ -26,7 +26,7 @@ loadingScreen model =
 
 transitionClasses : Model -> String
 transitionClasses model =
-    if model.transitioning then
+    if model.sceneTransition then
         "o-100"
     else
         "o-0 touch-disabled"

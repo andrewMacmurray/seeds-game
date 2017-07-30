@@ -101,6 +101,14 @@ type TileType
     | Seed
 
 
+type SeedType
+    = Sunflower
+    | Foxglove
+    | Lupin
+    | Marigold
+    | Rose
+
+
 type Msg
     = InitTiles (List TileType)
     | AddTiles (List TileType)
