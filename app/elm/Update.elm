@@ -6,10 +6,15 @@ import Scenes.Level.Update as Level
 
 init : ( Model, Cmd Msg )
 init =
+    initialModel ! [ Cmd.map LevelMsg Level.initCmds ]
+
+
+initialModel : Model
+initialModel =
     { scene = TitleScreen
+    , transitioning = False
     , levelModel = Level.initialState
     }
-        ! [ Cmd.map LevelMsg Level.initCmds ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -17,6 +22,9 @@ update msg model =
     case msg of
         SetScene scene ->
             { model | scene = scene } ! []
+
+        Transition bool ->
+            { model | transitioning = bool } ! []
 
         LevelMsg levelMsg ->
             let

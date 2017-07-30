@@ -19,6 +19,7 @@ circle ( bgColor, circleColor ) =
         , width "124.5px"
         , height "193.5px"
         , viewBox "0 0 124.5 193.5"
+        , Svg.Attributes.style "width: 100%; height: 100%"
         ]
         [ Svg.path
             [ fill bgColor
