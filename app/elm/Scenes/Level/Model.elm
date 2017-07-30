@@ -110,7 +110,7 @@ type SeedType
 
 
 type Msg
-    = InitTiles (List TileType)
+    = InitTiles (List Coord) (List TileType)
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape

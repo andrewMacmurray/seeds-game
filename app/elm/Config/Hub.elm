@@ -1,5 +1,6 @@
 module Config.Hub exposing (..)
 
+import Config.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, white, yellow)
 import Dict
 import Model exposing (HubData, WorldData, WorldLevels)
@@ -35,9 +36,9 @@ world1 =
 world1levels : WorldLevels
 world1levels =
     Dict.fromList
-        [ ( 1, { goal = 100, tiles = [ Seed, SeedPod ] } )
-        , ( 2, { goal = 100, tiles = [ Seed, SeedPod, Rain ] } )
-        , ( 3, { goal = 200, tiles = [ Seed, SeedPod, Rain ] } )
-        , ( 4, { goal = 500, tiles = [ Seed, SeedPod, Rain ] } )
-        , ( 5, { goal = 500, tiles = [ Seed, SeedPod, Rain, Sun ] } )
+        [ ( 1, { goal = 100, tiles = [ Seed, SeedPod ], walls = standardWalls } )
+        , ( 2, { goal = 100, tiles = [ Seed, SeedPod, Rain ], walls = corners } )
+        , ( 3, { goal = 200, tiles = [ Seed, SeedPod, Rain ], walls = standardWalls } )
+        , ( 4, { goal = 500, tiles = [ Seed, SeedPod, Rain ], walls = [] } )
+        , ( 5, { goal = 500, tiles = [ Seed, SeedPod, Rain, Sun ], walls = [] } )
         ]

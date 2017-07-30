@@ -1,5 +1,6 @@
 module Scenes.Level.Update exposing (..)
 
+import Data.Board.Block exposing (handleAddWalls)
 import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
 import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
 import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
@@ -14,19 +15,21 @@ import Data.Move.Square exposing (triggerMoveIfSquare)
 import Data.Move.Type exposing (currentMoveTileType)
 import Delay
 import Dict
+import Model as Main exposing (LevelData)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
 
-initCmd : Cmd Msg
-initCmd =
-    handleGenerateTiles initialState
+initCmd : LevelData -> Main.Model -> Cmd Main.Msg
+initCmd levelData model =
+    handleGenerateTiles levelData.walls model.levelModel
+        |> Cmd.map Main.LevelMsg
 
 
 initialState : Model
 initialState =
     { board = Dict.empty
-    , scores = initialScores [ Sun, Rain, Seed ]
+    , scores = Dict.empty
     , isDragging = False
     , moveShape = Nothing
     , boardSettings = { sizeY = 8, sizeX = 8 }
@@ -38,8 +41,12 @@ initialState =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitTiles tiles ->
-            (model |> handleMakeBoard tiles) ! []
+        InitTiles walls tiles ->
+            (model
+                |> handleMakeBoard tiles
+                |> handleAddWalls walls
+            )
+                ! []
 
         AddTiles tiles ->
             (model |> handleAddNewTiles tiles) ! []

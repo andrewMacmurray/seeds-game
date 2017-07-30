@@ -1,6 +1,5 @@
 module Data.Board.Make exposing (..)
 
-import Data.Board.Block exposing (addWalls)
 import Data.Board.Tile exposing (evenTiles)
 import Dict
 import Scenes.Level.Model exposing (..)
@@ -15,18 +14,6 @@ handleMakeBoard tileList ({ boardSettings } as model) =
                 boardSettings.sizeX
                 boardSettings.sizeY
                 tileList
-                |> addWalls
-                    [ ( 2, 0 )
-                    , ( 3, 0 )
-                    , ( 4, 0 )
-                    , ( 3, 3 )
-                    , ( 4, 3 )
-                    , ( 3, 4 )
-                    , ( 4, 4 )
-                    , ( 2, 7 )
-                    , ( 3, 7 )
-                    , ( 4, 7 )
-                    ]
     }
 
 
@@ -54,17 +41,18 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-handleGenerateTiles : Model -> Cmd Msg
-handleGenerateTiles { boardSettings } =
+handleGenerateTiles : List Coord -> Model -> Cmd Msg
+handleGenerateTiles walls { boardSettings } =
     generateTiles
+        walls
         boardSettings.sizeX
         boardSettings.sizeY
 
 
-generateTiles : Int -> Int -> Cmd Msg
-generateTiles x y =
+generateTiles : List Coord -> Int -> Int -> Cmd Msg
+generateTiles walls x y =
     Random.list (x * y) tileGenerator
-        |> Random.generate InitTiles
+        |> Random.generate (InitTiles walls)
 
 
 tileGenerator : Generator TileType

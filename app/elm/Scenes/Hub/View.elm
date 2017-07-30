@@ -4,6 +4,7 @@ import Dict
 import Helpers.Style exposing (backgroundColor, color, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Model exposing (..)
 import Scenes.Level.Model exposing (SeedType(..))
 import Views.Seed.Circle exposing (foxglove)
@@ -35,9 +36,10 @@ renderWorld ( _, worldData ) =
 
 
 renderLevel : WorldData -> ( Int, LevelData ) -> Html Msg
-renderLevel worldData ( number, _ ) =
+renderLevel worldData ( number, level ) =
     div
-        [ class "tc center pointer"
+        [ onClick <| StartLevel level
+        , class "tc center pointer"
         , style
             [ widthStyle 50
             , color worldData.textColor

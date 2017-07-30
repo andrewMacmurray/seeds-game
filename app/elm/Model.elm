@@ -2,7 +2,7 @@ module Model exposing (..)
 
 import Dict exposing (Dict)
 import Mouse
-import Scenes.Level.Model as Level exposing (TileType, SeedType)
+import Scenes.Level.Model as Level exposing (Coord, SeedType, TileType)
 import Window
 
 
@@ -53,6 +53,7 @@ type alias WorldLevels =
 
 type alias LevelData =
     { tiles : List TileType
+    , walls : List Coord
     , goal : Int
     }
 
@@ -60,7 +61,9 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
-    | StartLevel
+    | StartLevel LevelData
+    | LoadLevelData LevelData
+    | GoToHub
     | IncrementProgress
     | LevelMsg Level.Msg
     | WindowSize Window.Size

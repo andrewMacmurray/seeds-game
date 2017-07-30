@@ -1,6 +1,7 @@
 module Update exposing (..)
 
 import Config.Hub exposing (hubData)
+import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (handleIncrementProgress)
 import Delay
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
@@ -11,15 +12,12 @@ import Time exposing (millisecond)
 
 init : ( Model, Cmd Msg )
 init =
-    initialModel
-        ! [ getWindowSize
-          , Level.initCmd |> Cmd.map LevelMsg
-          ]
+    initialModel ! [ getWindowSize ]
 
 
 initialModel : Model
 initialModel =
-    { scene = Hub
+    { scene = TitleScreen
     , sceneTransition = False
     , progress = ( 1, 1 )
     , hubData = hubData
@@ -38,15 +36,29 @@ update msg model =
         Transition bool ->
             { model | sceneTransition = bool } ! []
 
-        StartLevel ->
+        StartLevel levelData ->
             model
                 ! [ Delay.sequence <|
                         Delay.withUnit millisecond
                             [ ( 0, Transition True )
                             , ( 500, SetScene Level )
+                            , ( 0, LoadLevelData levelData )
                             , ( 2500, Transition False )
                             ]
                   ]
+
+        GoToHub ->
+            model
+                ! [ Delay.sequence <|
+                        Delay.withUnit millisecond
+                            [ ( 0, Transition True )
+                            , ( 500, SetScene Hub )
+                            , ( 2500, Transition False )
+                            ]
+                  ]
+
+        LoadLevelData levelData ->
+            handleLoadLevel levelData model
 
         IncrementProgress ->
             (model |> handleIncrementProgress) ! []

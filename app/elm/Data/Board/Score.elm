@@ -43,6 +43,7 @@ addToScore score tileType scores =
 initialScores : List TileType -> Scores
 initialScores tileTypes =
     tileTypes
+        |> List.filter ((/=) SeedPod)
         |> List.map toString
         |> List.map (\tile -> ( tile, 0 ))
         |> Dict.fromList

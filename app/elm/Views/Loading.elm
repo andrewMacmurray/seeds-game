@@ -13,7 +13,7 @@ loadingScreen model =
     div
         [ class <|
             classes
-                [ "w-100 h-100 absolute z-999 top-0 left-0 flex items-center justify-center"
+                [ "w-100 h-100 fixed z-999 top-0 left-0 flex items-center justify-center"
                 , transitionClasses model
                 ]
         , style

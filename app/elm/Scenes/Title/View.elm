@@ -23,7 +23,7 @@ title model =
             [ text "seeds" ]
         , button
             [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , onClick StartLevel
+            , onClick GoToHub
             , style
                 [ ( "border", "none" )
                 , marginTop 15
