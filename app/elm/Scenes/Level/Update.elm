@@ -14,16 +14,13 @@ import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Delay
 import Dict
-import Helpers.Window exposing (handleMousePosition, trackMousePosition)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
 
-initCmds : Cmd Msg
-initCmds =
-    Cmd.batch
-        [ handleGenerateTiles initialState
-        ]
+initCmd : Cmd Msg
+initCmd =
+    handleGenerateTiles initialState
 
 
 initialState : Model
@@ -92,12 +89,8 @@ update msg model =
         ResetMove ->
             (model |> handleStopMove) ! []
 
-        StartMove move position ->
-            (model
-                |> handleMousePosition position
-                |> handleStartMove move
-            )
-                ! []
+        StartMove move ->
+            (model |> handleStartMove move) ! []
 
         CheckMove move ->
             let
@@ -115,6 +108,4 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ trackMousePosition model
-        ]
+    Sub.none

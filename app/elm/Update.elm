@@ -1,25 +1,25 @@
 module Update exposing (..)
 
+import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Scenes.Level.Update as Level
-import Task
-import Window exposing (resizes, size)
 
 
 init : ( Model, Cmd Msg )
 init =
     initialModel
-        ! [ size |> Task.perform WindowSize
-          , Cmd.map LevelMsg Level.initCmds
+        ! [ getWindowSize
+          , Level.initCmd |> Cmd.map LevelMsg
           ]
 
 
 initialModel : Model
 initialModel =
-    { scene = TitleScreen
+    { scene = Level
     , transitioning = False
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
+    , mouse = { x = 0, y = 0 }
     }
 
 
@@ -37,15 +37,20 @@ update msg model =
                 ( levelModel, levelCmd ) =
                     Level.update levelMsg model.levelModel
             in
-                { model | levelModel = levelModel } ! [ Cmd.map LevelMsg levelCmd ]
+                { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
 
         WindowSize size ->
             { model | window = size } ! []
+
+        MousePosition position ->
+            { model | mouse = position } ! []
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ resizes WindowSize
-        , Sub.map LevelMsg <| Level.subscriptions model.levelModel
+        [ trackWindowSize
+        , trackMousePosition model
+        , trackMouseDowns
+        , Level.subscriptions model.levelModel |> Sub.map LevelMsg
         ]

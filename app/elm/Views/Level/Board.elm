@@ -7,9 +7,7 @@ import Helpers.Style exposing (classes, px, styles, translate, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
-import Json.Decode as Json
 import Model as MainModel exposing (Style)
-import Mouse exposing (position)
 import Scenes.Level.Model exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
@@ -93,12 +91,7 @@ hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
     else
-        onMouseDownStartMove move
-
-
-onMouseDownStartMove : Move -> Attribute Msg
-onMouseDownStartMove move =
-    on "mousedown" (position |> Json.map (StartMove move))
+        onMouseDown <| StartMove move
 
 
 tracer : Model -> Move -> Html Msg

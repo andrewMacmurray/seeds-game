@@ -1,5 +1,6 @@
 module Model exposing (..)
 
+import Mouse
 import Scenes.Level.Model as Level
 import Window
 
@@ -9,6 +10,7 @@ type alias Model =
     , transitioning : Bool
     , levelModel : Level.Model
     , window : Window.Size
+    , mouse : Mouse.Position
     }
 
 
@@ -22,6 +24,7 @@ type Msg
     | Transition Bool
     | LevelMsg Level.Msg
     | WindowSize Window.Size
+    | MousePosition Mouse.Position
 
 
 type alias Style =

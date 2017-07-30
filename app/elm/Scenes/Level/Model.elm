@@ -108,7 +108,7 @@ type Msg
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape
-    | StartMove Move Mouse.Position
+    | StartMove Move
     | CheckMove Move
     | SetLeavingTiles
     | SetFallingTiles
