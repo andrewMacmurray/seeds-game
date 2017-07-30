@@ -8,6 +8,7 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , moveShape : Maybe MoveShape
+    , tileProbabilities : List TileProbability
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
     , topBarHeight : Int
@@ -28,6 +29,10 @@ type alias BoardSettings =
     { sizeY : Int
     , sizeX : Int
     }
+
+
+type alias TileProbability =
+    ( TileType, Int )
 
 
 type alias Move =

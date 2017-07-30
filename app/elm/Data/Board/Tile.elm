@@ -7,18 +7,6 @@ import Model exposing (Style)
 import Scenes.Level.Model exposing (..)
 
 
-evenTiles : Int -> TileType
-evenTiles n =
-    if n > 65 then
-        SeedPod
-    else if n > 30 then
-        Seed
-    else if n > 20 then
-        Rain
-    else
-        Sun
-
-
 growingOrder : Block -> Int
 growingOrder =
     Block.fold tileGrowingOrder 0

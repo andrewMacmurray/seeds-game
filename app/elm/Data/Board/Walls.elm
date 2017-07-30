@@ -1,4 +1,4 @@
-module Config.Walls exposing (..)
+module Data.Board.Walls exposing (..)
 
 import Scenes.Level.Model exposing (Coord)
 

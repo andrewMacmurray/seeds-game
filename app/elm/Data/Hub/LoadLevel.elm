@@ -1,7 +1,7 @@
 module Data.Hub.LoadLevel exposing (..)
 
 import Data.Board.Block exposing (addWalls)
-import Data.Board.Score exposing (initialScores)
+import Data.Board.Score exposing (initialScores, initialScoresFromProbabilites)
 import Model as Main exposing (LevelData)
 import Scenes.Level.Model as Level
 import Scenes.Level.Update exposing (initCmd)
@@ -17,8 +17,9 @@ handleLoadLevel levelData model =
 
 
 addLevelData : LevelData -> Level.Model -> Level.Model
-addLevelData levelData model =
+addLevelData { tileProbabilities, walls } model =
     { model
-        | scores = initialScores levelData.tiles
-        , board = addWalls levelData.walls model.board
+        | scores = initialScoresFromProbabilites tileProbabilities
+        , board = addWalls walls model.board
+        , tileProbabilities = tileProbabilities
     }

@@ -22,7 +22,7 @@ import Time exposing (millisecond)
 
 initCmd : LevelData -> Main.Model -> Cmd Main.Msg
 initCmd levelData model =
-    handleGenerateTiles levelData.walls model.levelModel
+    handleGenerateTiles levelData model.levelModel
         |> Cmd.map Main.LevelMsg
 
 
@@ -32,6 +32,7 @@ initialState =
     , scores = Dict.empty
     , isDragging = False
     , moveShape = Nothing
+    , tileProbabilities = []
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
@@ -87,7 +88,7 @@ update msg model =
             (model |> handleResetGrowing) ! []
 
         MakeNewTiles ->
-            model ! [ makeNewTiles model.board ]
+            model ! [ makeNewTiles model ]
 
         ResetEntering ->
             (model |> handleResetEntering) ! []

@@ -30,10 +30,10 @@ addNewTiles newTiles board =
         Dict.union tilesToAdd board
 
 
-makeNewTiles : Board -> Cmd Msg
-makeNewTiles board =
-    tileGenerator
-        |> Random.list (numberOfEmpties board)
+makeNewTiles : Model -> Cmd Msg
+makeNewTiles model =
+    (tileGenerator model.tileProbabilities)
+        |> Random.list (numberOfEmpties model.board)
         |> Random.generate AddTiles
 
 

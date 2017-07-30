@@ -3,7 +3,7 @@ module Model exposing (..)
 import Dict exposing (Dict)
 import Dom
 import Mouse
-import Scenes.Level.Model as Level exposing (Coord, SeedType, TileType)
+import Scenes.Level.Model as Level exposing (Coord, SeedType, TileProbability)
 import Window
 
 
@@ -53,7 +53,7 @@ type alias WorldLevels =
 
 
 type alias LevelData =
-    { tiles : List TileType
+    { tileProbabilities : List TileProbability
     , walls : List Coord
     , goal : Int
     }

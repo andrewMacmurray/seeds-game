@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Config.Hub exposing (hubData)
+import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (handleIncrementProgress)
 import Delay

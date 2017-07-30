@@ -40,6 +40,13 @@ addToScore score tileType scores =
     scores |> Dict.update (toString tileType) (Maybe.map ((+) score))
 
 
+initialScoresFromProbabilites : List TileProbability -> Scores
+initialScoresFromProbabilites probabilities =
+    probabilities
+        |> List.map Tuple.first
+        |> initialScores
+
+
 initialScores : List TileType -> Scores
 initialScores tileTypes =
     tileTypes
