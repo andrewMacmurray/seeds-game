@@ -19,6 +19,7 @@ type alias Model =
 
 type Scene
     = Level
+    | Hub
     | TitleScreen
 
 
@@ -42,6 +43,7 @@ type alias WorldData =
     { levels : WorldLevels
     , seedType : SeedType
     , background : String
+    , textColor : String
     }
 
 

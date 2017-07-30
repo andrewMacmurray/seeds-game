@@ -19,7 +19,7 @@ init =
 
 initialModel : Model
 initialModel =
-    { scene = TitleScreen
+    { scene = Hub
     , sceneTransition = False
     , progress = ( 1, 1 )
     , hubData = hubData
