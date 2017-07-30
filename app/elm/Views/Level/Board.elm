@@ -2,11 +2,11 @@ module Views.Level.Board exposing (..)
 
 import Data.Board.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
-import Helpers.Html exposing (emptyProperty)
+import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
 import Helpers.Style exposing (classes, px, styles, translate, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
+import Html.Events exposing (onMouseEnter, onMouseUp)
 import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)
 import Views.Level.Line exposing (renderLine)
@@ -91,7 +91,7 @@ hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
     else
-        onMouseDown <| StartMove move
+        onMouseDownPreventDefault <| StartMove move
 
 
 tracer : Model -> Move -> Html Msg
