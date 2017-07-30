@@ -14,7 +14,7 @@ import Data.Score exposing (handleAddScore, initialScores)
 import Data.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Delay
 import Dict
-import Helpers.Window exposing (getWindowSize, handleMousePosition, trackMousePosition, trackWindowSize)
+import Helpers.Window exposing (handleMousePosition, trackMousePosition)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
@@ -23,7 +23,6 @@ initCmds : Cmd Msg
 initCmds =
     Cmd.batch
         [ handleGenerateTiles initialState
-        , getWindowSize
         ]
 
 
@@ -36,7 +35,6 @@ initialState =
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
-    , window = { height = 0, width = 0 }
     , mouse = { x = 0, y = 0 }
     }
 
@@ -111,9 +109,6 @@ update msg model =
         SquareMove ->
             (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
 
-        WindowSize size ->
-            { model | window = size } ! []
-
         MousePosition position ->
             { model | mouse = position } ! []
 
@@ -121,6 +116,5 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ trackWindowSize
-        , trackMousePosition model
+        [ trackMousePosition model
         ]

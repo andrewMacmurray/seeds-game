@@ -2,11 +2,16 @@ module Update exposing (..)
 
 import Model exposing (..)
 import Scenes.Level.Update as Level
+import Task
+import Window exposing (resizes, size)
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialModel ! [ Cmd.map LevelMsg Level.initCmds ]
+    initialModel
+        ! [ size |> Task.perform WindowSize
+          , Cmd.map LevelMsg Level.initCmds
+          ]
 
 
 initialModel : Model
@@ -14,6 +19,7 @@ initialModel =
     { scene = TitleScreen
     , transitioning = False
     , levelModel = Level.initialState
+    , window = { height = 0, width = 0 }
     }
 
 
@@ -33,7 +39,13 @@ update msg model =
             in
                 { model | levelModel = levelModel } ! [ Cmd.map LevelMsg levelCmd ]
 
+        WindowSize size ->
+            { model | window = size } ! []
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map LevelMsg <| Level.subscriptions model.levelModel
+    Sub.batch
+        [ resizes WindowSize
+        , Sub.map LevelMsg <| Level.subscriptions model.levelModel
+        ]

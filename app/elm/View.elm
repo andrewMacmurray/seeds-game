@@ -31,7 +31,7 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.scene of
         Level ->
-            Html.map LevelMsg <| level model.levelModel
+            Html.map LevelMsg <| level model
 
         TitleScreen ->
             title model

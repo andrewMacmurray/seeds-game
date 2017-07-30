@@ -9,18 +9,19 @@ import Html exposing (Html, span)
 import Scenes.Level.Model exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Model as MainModel
 import Views.Level.Styles exposing (boardOffsetTop, boardWidth)
 
 
-handleLineDrag : Model -> Html Msg
+handleLineDrag : MainModel.Model -> Html Msg
 handleLineDrag model =
-    if model.isDragging && hasSquareTile model.board |> not then
+    if model.levelModel.isDragging && hasSquareTile model.levelModel.board |> not then
         lineDrag model
     else
         span [] []
 
 
-lineDrag : Model -> Html Msg
+lineDrag : MainModel.Model -> Html Msg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -30,7 +31,7 @@ lineDrag ({ window } as model) =
             lastMoveOrigin model
 
         colorClass =
-            currentMoveTileType model.board
+            currentMoveTileType model.levelModel.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault ""
     in
@@ -46,18 +47,21 @@ lineDrag ({ window } as model) =
                 , strokeLinecap "round"
                 , x1 <| toString oX
                 , y1 <| toString oY
-                , x2 <| toString model.mouse.x
-                , y2 <| toString model.mouse.y
+                , x2 <| toString model.levelModel.mouse.x
+                , y2 <| toString model.levelModel.mouse.y
                 ]
                 []
             ]
 
 
-lastMoveOrigin : Model -> ( Float, Float )
-lastMoveOrigin ({ window, tileSettings } as model) =
+lastMoveOrigin : MainModel.Model -> ( Float, Float )
+lastMoveOrigin ({ window } as model) =
     let
+        tileSettings =
+            model.levelModel.tileSettings
+
         ( ( y, x ), _ ) =
-            lastMove model.board
+            lastMove model.levelModel.board
 
         y1 =
             toFloat y
@@ -75,7 +79,7 @@ lastMoveOrigin ({ window, tileSettings } as model) =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - (boardWidth model)) // 2 |> toFloat
+            (window.width - (boardWidth model.levelModel)) // 2 |> toFloat
     in
         ( ((y1 + 1) * sY) + offsetY - (sY / 2)
         , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

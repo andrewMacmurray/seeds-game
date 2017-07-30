@@ -2,7 +2,6 @@ module Scenes.Level.Model exposing (..)
 
 import Dict exposing (Dict)
 import Mouse
-import Window
 
 
 type alias Model =
@@ -13,7 +12,6 @@ type alias Model =
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
     , topBarHeight : Int
-    , window : Window.Size
     , mouse : Mouse.Position
     }
 
@@ -121,5 +119,4 @@ type Msg
     | ResetEntering
     | ShiftBoard
     | ResetMove
-    | WindowSize Window.Size
     | MousePosition Mouse.Position

@@ -4,18 +4,18 @@ import Data.Block exposing (getTileState)
 import Data.Color exposing (blockYellow)
 import Data.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
-import Model exposing (Style)
+import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)
 
 
-boardMarginTop : Model -> Style
+boardMarginTop : MainModel.Model -> Style
 boardMarginTop model =
     ( "margin-top", px <| boardOffsetTop model )
 
 
-boardOffsetTop : Model -> Int
+boardOffsetTop : MainModel.Model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
+    (model.window.height - boardHeight model.levelModel) // 2 + model.levelModel.topBarHeight // 2
 
 
 boardHeight : Model -> Int
@@ -114,7 +114,7 @@ fallingStyles ( _, block ) =
                 []
 
 
-leavingStyles : Model -> Move -> List Style
+leavingStyles : MainModel.Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
         [ transitionStyle "0.8s ease"
@@ -126,7 +126,7 @@ leavingStyles model (( _, tile ) as move) =
         []
 
 
-handleExitDirection : Move -> Model -> Style
+handleExitDirection : Move -> MainModel.Model -> Style
 handleExitDirection ( coord, block ) model =
     let
         tile =
@@ -146,17 +146,17 @@ handleExitDirection ( coord, block ) model =
                 emptyStyle
 
 
-exitRight : Model -> String
+exitRight : MainModel.Model -> String
 exitRight model =
-    translateScale (exitRightXdistance model) -(exitYdistance model) 0.5
+    translateScale (exitRightXdistance model.levelModel) -(exitYdistance model) 0.5
 
 
-exitTop : Model -> String
+exitTop : MainModel.Model -> String
 exitTop model =
-    translateScale (exitTopXdistance model) -(exitYdistance model) 0.6
+    translateScale (exitTopXdistance model.levelModel) -(exitYdistance model) 0.6
 
 
-exitLeft : Model -> String
+exitLeft : MainModel.Model -> String
 exitLeft model =
     translateScale 0 -(exitYdistance model) 0.5
 
@@ -171,7 +171,7 @@ exitTopXdistance { tileSettings, boardSettings } =
     round tileSettings.sizeX * (boardSettings.sizeX // 2) - (round tileSettings.sizeX // 2)
 
 
-exitYdistance : Model -> Int
+exitYdistance : MainModel.Model -> Int
 exitYdistance model =
     (boardOffsetTop model) - 9
 

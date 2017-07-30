@@ -8,44 +8,41 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onMouseDown, onMouseEnter, onMouseUp)
 import Json.Decode as Json
-import Model exposing (Style)
+import Model as MainModel exposing (Style)
 import Mouse exposing (position)
 import Scenes.Level.Model exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 
 
-board : Model -> Html Msg
+board : MainModel.Model -> Html Msg
 board model =
     boardLayout model
         [ div [ class "relative z-5" ] <| renderTiles model
-        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
+        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model.levelModel
         ]
 
 
-renderTiles : Model -> List (Html Msg)
-renderTiles =
-    renderFromBoard renderTile
+renderTiles : MainModel.Model -> List (Html Msg)
+renderTiles model =
+    model.levelModel.board
+        |> Dict.toList
+        |> List.map (renderTile model)
 
 
 renderLines : Model -> List (Html Msg)
-renderLines =
-    renderFromBoard renderLineLayer
-
-
-renderFromBoard : (Model -> Move -> Html Msg) -> Model -> List (Html Msg)
-renderFromBoard renderFn model =
+renderLines model =
     model.board
         |> Dict.toList
-        |> List.map (renderFn model)
+        |> List.map (renderLineLayer model)
 
 
-boardLayout : Model -> List (Html Msg) -> Html Msg
+boardLayout : MainModel.Model -> List (Html Msg) -> Html Msg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ widthStyle <| boardWidth model
+            [ widthStyle <| boardWidth model.levelModel
             , boardMarginTop model
             ]
         ]
@@ -65,20 +62,20 @@ renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-renderTile : Model -> Move -> Html Msg
+renderTile : MainModel.Model -> Move -> Html Msg
 renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
             styles
-                [ tileWidthHeightStyles model
-                , tileCoordsStyles model coord
+                [ tileWidthHeightStyles model.levelModel
+                , tileCoordsStyles model.levelModel coord
                 , leavingStyles model move
                 ]
         , class "dib absolute pointer"
-        , hanldeMoveEvents model move
+        , hanldeMoveEvents model.levelModel move
         ]
-        [ innerTile model move
-        , tracer model move
+        [ innerTile model.levelModel move
+        , tracer model.levelModel move
         , wall move
         ]
 
