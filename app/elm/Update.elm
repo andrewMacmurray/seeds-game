@@ -1,8 +1,10 @@
 module Update exposing (..)
 
+import Delay
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Scenes.Level.Update as Level
+import Time exposing (millisecond)
 
 
 init : ( Model, Cmd Msg )
@@ -15,7 +17,7 @@ init =
 
 initialModel : Model
 initialModel =
-    { scene = Level
+    { scene = TitleScreen
     , transitioning = False
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
@@ -31,6 +33,16 @@ update msg model =
 
         Transition bool ->
             { model | transitioning = bool } ! []
+
+        StartLevel ->
+            model
+                ! [ Delay.sequence <|
+                        Delay.withUnit millisecond
+                            [ ( 0, Transition True )
+                            , ( 500, SetScene Level )
+                            , ( 2500, Transition False )
+                            ]
+                  ]
 
         LevelMsg levelMsg ->
             let

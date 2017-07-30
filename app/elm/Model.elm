@@ -22,6 +22,7 @@ type Scene
 type Msg
     = SetScene Scene
     | Transition Bool
+    | StartLevel
     | LevelMsg Level.Msg
     | WindowSize Window.Size
     | MousePosition Mouse.Position

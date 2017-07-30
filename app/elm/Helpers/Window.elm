@@ -16,9 +16,9 @@ trackWindowSize =
     resizes WindowSize
 
 
-percentWindowHeight : Int -> Model -> Int
+percentWindowHeight : Float -> Model -> Float
 percentWindowHeight percent model =
-    model.window.height // 100 * percent
+    toFloat model.window.height / 100 * percent
 
 
 handleMousePosition : Mouse.Position -> Model -> Model

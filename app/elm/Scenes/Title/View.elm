@@ -1,37 +1,40 @@
 module Scenes.Title.View exposing (..)
 
-import Data.Color exposing (darkYellow)
-import Helpers.Style exposing (color, widthStyle)
+import Data.Color exposing (darkYellow, gold, lightOrange, orange, white)
+import Helpers.Style exposing (backgroundColor, color, px, widthStyle)
+import Helpers.Window exposing (percentWindowHeight)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model exposing (..)
-import Views.Seed.Circle exposing (foxglove)
-import Views.Seed.Mono exposing (rose)
-import Views.Seed.Twin exposing (lupin, marigold, sunflower)
+import Views.Title.Seeds exposing (seeds)
 
 
-title : model -> Html Msg
+title : Model -> Html Msg
 title model =
     div [ class "relative z-5 tc" ]
         [ div
-            [ class "mt5"
-            , onClick <| Transition True
+            [ style [ ( "margin-top", px <| percentWindowHeight 17 model ) ]
             ]
-            [ div
-                [ style [ widthStyle 300 ]
-                , class "flex center"
-                ]
-                [ foxglove
-                , lupin
-                , sunflower
-                , marigold
-                , rose
-                ]
+            [ seeds
             ]
         , p
             [ class "f3 tracked-mega"
-            , style [ color darkYellow ]
+            , style
+                [ color darkYellow
+                , ( "margin-top", px 45 )
+                ]
             ]
             [ text "seeds" ]
+        , button
+            [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
+            , onClick StartLevel
+            , style
+                [ ( "border", "none" )
+                , ( "margin-top", px 15 )
+                , color white
+                , backgroundColor lightOrange
+                ]
+            ]
+            [ text "PLAY" ]
         ]
