@@ -1,34 +1,38 @@
 module Scenes.Level.Update exposing (..)
 
+import Data.Board.Block exposing (handleAddWalls)
 import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
 import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
-import Data.Board.Square exposing (handleSquareMove)
 import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
+import Data.Board.Score exposing (handleAddScore, initialScores)
+import Data.Board.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
+import Data.Board.Square exposing (handleSquareMove)
 import Data.Move.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Data.Move.Square exposing (triggerMoveIfSquare)
 import Data.Move.Type exposing (currentMoveTileType)
-import Data.Score exposing (handleAddScore, initialScores)
-import Data.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Delay
 import Dict
+import Model as Main exposing (LevelData)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
 
-initCmd : Cmd Msg
-initCmd =
-    handleGenerateTiles initialState
+initCmd : LevelData -> Main.Model -> Cmd Main.Msg
+initCmd levelData model =
+    handleGenerateTiles levelData model.levelModel
+        |> Cmd.map Main.LevelMsg
 
 
 initialState : Model
 initialState =
     { board = Dict.empty
-    , scores = initialScores [ Sun, Rain, Seed ]
+    , scores = Dict.empty
     , isDragging = False
     , moveShape = Nothing
+    , tileProbabilities = []
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
@@ -38,8 +42,12 @@ initialState =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitTiles tiles ->
-            (model |> handleMakeBoard tiles) ! []
+        InitTiles walls tiles ->
+            (model
+                |> handleMakeBoard tiles
+                |> handleAddWalls walls
+            )
+                ! []
 
         AddTiles tiles ->
             (model |> handleAddNewTiles tiles) ! []
@@ -80,7 +88,7 @@ update msg model =
             (model |> handleResetGrowing) ! []
 
         MakeNewTiles ->
-            model ! [ makeNewTiles model.board ]
+            model ! [ makeNewTiles model ]
 
         ResetEntering ->
             (model |> handleResetEntering) ! []

@@ -1,7 +1,7 @@
 module Views.Level.TopBar exposing (..)
 
 import Data.Color exposing (gold, washedYellow)
-import Data.Score exposing (getScoreFor, scoreToString)
+import Data.Board.Score exposing (getScoreFor, scoreToString)
 import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)

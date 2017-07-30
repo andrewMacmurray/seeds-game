@@ -1,4 +1,4 @@
-module Data.Score exposing (..)
+module Data.Board.Score exposing (..)
 
 import Data.Move.Utils exposing (currentMoves)
 import Data.Move.Type exposing (currentMoveTileType)
@@ -40,9 +40,17 @@ addToScore score tileType scores =
     scores |> Dict.update (toString tileType) (Maybe.map ((+) score))
 
 
+initialScoresFromProbabilites : List TileProbability -> Scores
+initialScoresFromProbabilites probabilities =
+    probabilities
+        |> List.map Tuple.first
+        |> initialScores
+
+
 initialScores : List TileType -> Scores
 initialScores tileTypes =
     tileTypes
+        |> List.filter ((/=) SeedPod)
         |> List.map toString
         |> List.map (\tile -> ( tile, 0 ))
         |> Dict.fromList

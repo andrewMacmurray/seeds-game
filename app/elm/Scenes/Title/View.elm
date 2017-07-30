@@ -14,21 +14,16 @@ title : Model -> Html Msg
 title model =
     div [ class "relative z-5 tc" ]
         [ div
-            [ style [ marginTop <| percentWindowHeight 17 model ]
-            ]
-            [ seeds
-            ]
+            [ style [ marginTop <| percentWindowHeight 17 model ] ]
+            [ seeds ]
         , p
             [ class "f3 tracked-mega"
-            , style
-                [ color darkYellow
-                , marginTop 45
-                ]
+            , style [ color darkYellow, marginTop 45 ]
             ]
             [ text "seeds" ]
         , button
             [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , onClick StartLevel
+            , onClick GoToHub
             , style
                 [ ( "border", "none" )
                 , marginTop 15

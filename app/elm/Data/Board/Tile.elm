@@ -1,22 +1,10 @@
-module Data.Tile exposing (..)
+module Data.Board.Tile exposing (..)
 
-import Data.Block as Block
+import Data.Board.Block as Block
 import Data.Color exposing (darkBrown, gold, green, lightBlue, seedPodGradient)
 import Helpers.Style exposing (background, backgroundColor, backgroundImage, emptyStyle, frameBackground, size, svgStyle)
 import Model exposing (Style)
 import Scenes.Level.Model exposing (..)
-
-
-evenTiles : Int -> TileType
-evenTiles n =
-    if n > 65 then
-        SeedPod
-    else if n > 30 then
-        Seed
-    else if n > 20 then
-        Rain
-    else
-        Sun
 
 
 growingOrder : Block -> Int

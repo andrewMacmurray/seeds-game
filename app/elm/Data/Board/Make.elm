@@ -1,10 +1,10 @@
 module Data.Board.Make exposing (..)
 
-import Data.Block exposing (addWalls)
-import Data.Tile exposing (evenTiles)
+import Data.Board.Probabilities exposing (tileProbability)
 import Dict
-import Scenes.Level.Model exposing (..)
+import Model exposing (LevelData)
 import Random exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleMakeBoard : List TileType -> Model -> Model
@@ -15,18 +15,6 @@ handleMakeBoard tileList ({ boardSettings } as model) =
                 boardSettings.sizeX
                 boardSettings.sizeY
                 tileList
-                |> addWalls
-                    [ ( 2, 0 )
-                    , ( 3, 0 )
-                    , ( 4, 0 )
-                    , ( 3, 3 )
-                    , ( 4, 3 )
-                    , ( 3, 4 )
-                    , ( 4, 4 )
-                    , ( 2, 7 )
-                    , ( 3, 7 )
-                    , ( 4, 7 )
-                    ]
     }
 
 
@@ -54,20 +42,21 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-handleGenerateTiles : Model -> Cmd Msg
-handleGenerateTiles { boardSettings } =
+handleGenerateTiles : LevelData -> Model -> Cmd Msg
+handleGenerateTiles levelData { boardSettings } =
     generateTiles
+        levelData
         boardSettings.sizeX
         boardSettings.sizeY
 
 
-generateTiles : Int -> Int -> Cmd Msg
-generateTiles x y =
-    Random.list (x * y) tileGenerator
-        |> Random.generate InitTiles
+generateTiles : LevelData -> Int -> Int -> Cmd Msg
+generateTiles levelData x y =
+    Random.list (x * y) (tileGenerator levelData.tileProbabilities)
+        |> Random.generate (InitTiles levelData.walls)
 
 
-tileGenerator : Generator TileType
-tileGenerator =
+tileGenerator : List TileProbability -> Generator TileType
+tileGenerator probabilities =
     Random.int 1 100
-        |> Random.map evenTiles
+        |> Random.map (tileProbability probabilities)

@@ -1,7 +1,12 @@
-module Data.Block exposing (..)
+module Data.Board.Block exposing (..)
 
 import Dict
 import Scenes.Level.Model exposing (..)
+
+
+handleAddWalls : List Coord -> Model -> Model
+handleAddWalls walls model =
+    { model | board = model.board |> addWalls walls }
 
 
 addWalls : List Coord -> Board -> Board

@@ -8,6 +8,7 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , moveShape : Maybe MoveShape
+    , tileProbabilities : List TileProbability
     , boardSettings : BoardSettings
     , tileSettings : TileSettings
     , topBarHeight : Int
@@ -28,6 +29,10 @@ type alias BoardSettings =
     { sizeY : Int
     , sizeX : Int
     }
+
+
+type alias TileProbability =
+    ( TileType, Int )
 
 
 type alias Move =
@@ -101,8 +106,16 @@ type TileType
     | Seed
 
 
+type SeedType
+    = Sunflower
+    | Foxglove
+    | Lupin
+    | Marigold
+    | Rose
+
+
 type Msg
-    = InitTiles (List TileType)
+    = InitTiles (List Coord) (List TileType)
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape

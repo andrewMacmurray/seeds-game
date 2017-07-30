@@ -3,6 +3,7 @@ module View exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
+import Scenes.Hub.View exposing (hub)
 import Scenes.Level.View exposing (level)
 import Scenes.Title.View exposing (title)
 import Views.Backdrop exposing (backdrop)
@@ -15,7 +16,7 @@ view model =
         [ embeddedAnimations
         , loadingScreen model
         , renderScene model
-        , Html.map LevelMsg <| backdrop model.levelModel
+        , backdrop model.levelModel |> Html.map LevelMsg
         ]
 
 
@@ -23,7 +24,10 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.scene of
         Level ->
-            Html.map LevelMsg <| level model
+            level model |> Html.map LevelMsg
+
+        Hub ->
+            hub model
 
         TitleScreen ->
             title model

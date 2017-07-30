@@ -3,7 +3,7 @@ module Data.Move.Square exposing (..)
 import Data.Move.Direction exposing (validDirection)
 import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
 import Data.Move.Utils exposing (currentMoves)
-import Data.Tile exposing (moveOrder)
+import Data.Board.Tile exposing (moveOrder)
 import Delay
 import Dict
 import Scenes.Level.Model exposing (..)
