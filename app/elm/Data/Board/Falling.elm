@@ -4,7 +4,7 @@ import Data.Board.Shift exposing (groupBoardByColumn, handleShiftBoard, shiftBoa
 import Data.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
 import Helpers.Dict exposing (filterValues, mapValues)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleResetFallingTiles : Model -> Model

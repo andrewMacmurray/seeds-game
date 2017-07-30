@@ -3,7 +3,7 @@ module Data.Score exposing (..)
 import Data.Move.Utils exposing (currentMoves)
 import Data.Move.Type exposing (currentMoveTileType)
 import Dict
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleAddScore : Model -> Model

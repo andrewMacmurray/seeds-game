@@ -3,42 +3,6 @@ body {
   font-family: var(--sans-serif);
 }
 
-.bg-seed-pod {
-  background: linear-gradient(90deg, var(--light-green), var(--light-green) 50%, var(--green) 51%, var(--green));
-}
-
-.bg-brown {
-  background: var(--brown);
-}
-
-.bg-sunflower {
-  background: url(img/sunflower.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-.bg-foxglove {
-  background: url(img/foxglove.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-.bg-rose {
-  background: url(img/rose.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-.bg-anemone {
-  background: url(img/anemone.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
 .w-100 {
   width: 100%;
 }
@@ -61,40 +25,4 @@ body {
 
 .touch-disabled {
   pointer-events: none;
-}
-
-.all {
-  transition-property: all;
-}
-
-.ease {
-  transition-timing-function: ease;
-}
-
-.t3 {
-  transition-duration: 0.3s;
-}
-
-.scale-half {
-  transform: scale(0.5);
-}
-
-.scale-full {
-  transform: scale(1);
-}
-
-.stroke-light-blue {
-  stroke: var(--light-blue);
-}
-
-.stroke-gold {
-  stroke: var(--gold);
-}
-
-.stroke-green {
-  stroke: var(--green);
-}
-
-.stroke-dark-brown {
-  stroke: var(--dark-brown);
 }

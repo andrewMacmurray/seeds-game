@@ -4,7 +4,7 @@ import Data.Move.Type exposing (emptyMove)
 import Data.Tile exposing (isCurrentMove, isDragging, moveOrder)
 import Dict
 import Dict.Extra
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 isUniqueMove : Move -> Board -> Bool

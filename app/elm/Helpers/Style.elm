@@ -19,14 +19,47 @@ svgStyles =
     String.join "; "
 
 
+svgStyle : String -> String -> String
+svgStyle a b =
+    a ++ ":" ++ b
+
+
 emptyStyle : Style
 emptyStyle =
     ( "", "" )
 
 
+marginTop : number -> Style
+marginTop n =
+    ( "margin-top", px n )
+
+
+color : String -> Style
+color =
+    (,) "color"
+
+
+frameBackground : List Style
+frameBackground =
+    [ ( "background-position", "center" )
+    , ( "background-repeat", "no-repeat" )
+    , ( "background-size", "contain" )
+    ]
+
+
 backgroundImage : String -> Style
 backgroundImage url =
     ( "background-image", "url(" ++ url ++ ")" )
+
+
+backgroundColor : String -> Style
+backgroundColor =
+    (,) "background-color"
+
+
+background : String -> Style
+background =
+    (,) "background"
 
 
 size : number -> List Style
@@ -86,6 +119,16 @@ opacityStyle number =
     ( "opacity", toString number )
 
 
+pc : number -> String
+pc =
+    print pc_
+
+
+pc_ : Format r (number -> r)
+pc_ =
+    number <> s "%"
+
+
 px : number -> String
 px =
     print px_
@@ -114,6 +157,26 @@ deg =
 deg_ : Format r (number -> r)
 deg_ =
     number <> s "deg"
+
+
+gradientStop : String -> number -> String
+gradientStop =
+    print gradientStop_
+
+
+gradientStop_ : Format r (String -> number -> r)
+gradientStop_ =
+    string <> s " " <> pc_
+
+
+linearGradient : String -> String
+linearGradient =
+    print linearGradient_
+
+
+linearGradient_ : Format r (String -> r)
+linearGradient_ =
+    s "linear-gradient(" <> string <> s ")"
 
 
 opacity_ : Format r (number -> r)

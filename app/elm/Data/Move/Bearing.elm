@@ -4,7 +4,7 @@ import Data.Move.Direction exposing (..)
 import Data.Move.Utils exposing (lastMove)
 import Data.Tile exposing (addBearing, moveOrder, setToDragging)
 import Dict
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 addBearings : Move -> Board -> Board

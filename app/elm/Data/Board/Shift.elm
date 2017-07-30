@@ -3,7 +3,7 @@ module Data.Board.Shift exposing (..)
 import Data.Tile exposing (isLeaving)
 import Dict
 import List.Extra exposing (groupWhile)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleShiftBoard : Model -> Model

@@ -1,8 +1,8 @@
-module Components.DebugTile exposing (..)
+module Views.DebugTile exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 debugCoord : Coord -> Html Msg

@@ -7,7 +7,7 @@ import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
 import Data.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
 import Data.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Dict
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 
 
 handleStopMove : Model -> Model

@@ -6,7 +6,7 @@ import Data.Move.Utils exposing (currentMoves)
 import Data.Tile exposing (moveOrder)
 import Delay
 import Dict
-import Model exposing (..)
+import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 import Helpers.List exposing (allTrue)
 
