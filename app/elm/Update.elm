@@ -64,5 +64,4 @@ subscriptions model =
         [ trackWindowSize
         , trackMousePosition model
         , trackMouseDowns
-        , Level.subscriptions model.levelModel |> Sub.map LevelMsg
         ]

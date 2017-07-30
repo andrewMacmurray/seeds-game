@@ -32,7 +32,6 @@ initialState =
     , boardSettings = { sizeY = 8, sizeX = 8 }
     , tileSettings = { sizeY = 51, sizeX = 55 }
     , topBarHeight = 80
-    , mouse = { x = 0, y = 0 }
     }
 
 
@@ -101,11 +100,3 @@ update msg model =
 
         SquareMove ->
             (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
-
-        MousePosition position ->
-            { model | mouse = position } ! []
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
