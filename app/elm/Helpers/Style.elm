@@ -114,6 +114,16 @@ opacityStyle number =
     ( "opacity", toString number )
 
 
+pc : number -> String
+pc =
+    print pc_
+
+
+pc_ : Format r (number -> r)
+pc_ =
+    number <> s "%"
+
+
 px : number -> String
 px =
     print px_
@@ -142,6 +152,26 @@ deg =
 deg_ : Format r (number -> r)
 deg_ =
     number <> s "deg"
+
+
+gradientStop : String -> number -> String
+gradientStop =
+    print gradientStop_
+
+
+gradientStop_ : Format r (String -> number -> r)
+gradientStop_ =
+    string <> s " " <> pc_
+
+
+linearGradient : String -> String
+linearGradient =
+    print linearGradient_
+
+
+linearGradient_ : Format r (String -> r)
+linearGradient_ =
+    s "linear-gradient(" <> string <> s ")"
 
 
 opacity_ : Format r (number -> r)

@@ -1,18 +1,20 @@
 module Data.Color exposing (..)
 
+import Helpers.Style exposing (deg, gradientStop, linearGradient, pc)
+
 
 seedPodGradient : String
 seedPodGradient =
-    "linear-gradient(" ++ seedPodGradient_ ++ ")"
+    linearGradient seedPodGradient_
 
 
 seedPodGradient_ : String
 seedPodGradient_ =
     String.join ", "
-        [ "90deg"
+        [ deg 90
         , lightGreen
-        , lightGreen ++ " 50%"
-        , green ++ " 51%"
+        , gradientStop lightGreen 50
+        , gradientStop green 51
         , green
         ]
 
