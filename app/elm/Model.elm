@@ -1,6 +1,7 @@
 module Model exposing (..)
 
 import Dict exposing (Dict)
+import Dom
 import Mouse
 import Scenes.Level.Model as Level exposing (Coord, SeedType, TileType)
 import Window
@@ -65,6 +66,8 @@ type Msg
     | LoadLevelData LevelData
     | GoToHub
     | IncrementProgress
+    | DomNoOp (Result Dom.Error ())
+    | ScrollHubToBottom
     | LevelMsg Level.Msg
     | WindowSize Window.Size
     | MousePosition Mouse.Position

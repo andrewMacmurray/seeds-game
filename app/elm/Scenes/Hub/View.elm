@@ -1,7 +1,7 @@
 module Scenes.Hub.View exposing (..)
 
 import Dict
-import Helpers.Style exposing (backgroundColor, color, widthStyle)
+import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -14,7 +14,11 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 
 hub : Model -> Html Msg
 hub model =
-    div [ class "w-100 relative z-5" ]
+    div
+        [ class "w-100 fixed overflow-y-scroll z-5"
+        , id "hub"
+        , style [ heightStyle model.window.height ]
+        ]
         (model.hubData
             |> Dict.toList
             |> List.reverse
@@ -41,7 +45,7 @@ renderLevel worldData ( number, level ) =
         [ onClick <| StartLevel level
         , class "tc center pointer"
         , style
-            [ widthStyle 50
+            [ widthStyle 40
             , color worldData.textColor
             ]
         ]

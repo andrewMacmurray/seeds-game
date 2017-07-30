@@ -4,6 +4,7 @@ import Config.Hub exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (handleIncrementProgress)
 import Delay
+import Helpers.Dom exposing (scrollHubToBottom)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Scenes.Level.Update as Level
@@ -53,7 +54,8 @@ update msg model =
                         Delay.withUnit millisecond
                             [ ( 0, Transition True )
                             , ( 500, SetScene Hub )
-                            , ( 2500, Transition False )
+                            , ( 100, ScrollHubToBottom )
+                            , ( 2400, Transition False )
                             ]
                   ]
 
@@ -62,6 +64,12 @@ update msg model =
 
         IncrementProgress ->
             (model |> handleIncrementProgress) ! []
+
+        ScrollHubToBottom ->
+            model ! [ scrollHubToBottom ]
+
+        DomNoOp _ ->
+            model ! []
 
         LevelMsg levelMsg ->
             let
