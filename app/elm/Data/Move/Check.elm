@@ -5,7 +5,7 @@ import Data.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDir
 import Data.Move.Square exposing (isValidSquare)
 import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
 import Data.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
-import Data.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
+import Data.Board.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Dict
 import Scenes.Level.Model exposing (..)
 

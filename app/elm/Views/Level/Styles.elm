@@ -1,8 +1,8 @@
 module Views.Level.Styles exposing (..)
 
-import Data.Block exposing (getTileState)
+import Data.Board.Block exposing (getTileState)
 import Data.Color exposing (blockYellow)
-import Data.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
+import Data.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)

@@ -2,7 +2,7 @@ module Data.Move.Bearing exposing (..)
 
 import Data.Move.Direction exposing (..)
 import Data.Move.Utils exposing (lastMove)
-import Data.Tile exposing (addBearing, moveOrder, setToDragging)
+import Data.Board.Tile exposing (addBearing, moveOrder, setToDragging)
 import Dict
 import Scenes.Level.Model exposing (..)
 

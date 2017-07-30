@@ -1,4 +1,4 @@
-module Data.Sequence exposing (..)
+module Data.Board.Sequence exposing (..)
 
 import Delay exposing (withUnit, sequence)
 import Scenes.Level.Model exposing (..)

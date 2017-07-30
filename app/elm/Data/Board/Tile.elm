@@ -1,6 +1,6 @@
-module Data.Tile exposing (..)
+module Data.Board.Tile exposing (..)
 
-import Data.Block as Block
+import Data.Board.Block as Block
 import Data.Color exposing (darkBrown, gold, green, lightBlue, seedPodGradient)
 import Helpers.Style exposing (background, backgroundColor, backgroundImage, emptyStyle, frameBackground, size, svgStyle)
 import Model exposing (Style)

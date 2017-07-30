@@ -1,7 +1,7 @@
 module Data.Board.Entering exposing (..)
 
 import Data.Board.Make exposing (tileGenerator)
-import Data.Tile exposing (setEnteringToStatic)
+import Data.Board.Tile exposing (setEnteringToStatic)
 import Dict
 import Helpers.Dict exposing (mapValues)
 import Scenes.Level.Model exposing (..)
