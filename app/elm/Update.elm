@@ -18,9 +18,10 @@ init =
 
 initialModel : Model
 initialModel =
-    { scene = TitleScreen
+    { scene = Title
     , sceneTransition = False
-    , progress = ( 1, 1 )
+    , progress = ( 3, 3 )
+    , currentLevel = Nothing
     , hubData = hubData
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
@@ -37,11 +38,15 @@ update msg model =
         Transition bool ->
             { model | sceneTransition = bool } ! []
 
-        StartLevel levelData ->
+        SetCurrentLevel progress ->
+            { model | currentLevel = progress } ! []
+
+        StartLevel progress levelData ->
             model
                 ! [ Delay.sequence <|
                         Delay.withUnit millisecond
-                            [ ( 0, Transition True )
+                            [ ( 0, SetCurrentLevel <| Just progress )
+                            , ( 10, Transition True )
                             , ( 500, SetScene Level )
                             , ( 0, LoadLevelData levelData )
                             , ( 2500, Transition False )

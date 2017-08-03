@@ -1,11 +1,12 @@
 module Views.Loading exposing (..)
 
 import Data.Color exposing (gold)
+import Data.Hub.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (..)
-import Views.Seed.Twin exposing (sunflower)
+import Views.Seed.All exposing (renderSeed)
 
 
 loadingScreen : Model -> Html Msg
@@ -21,7 +22,7 @@ loadingScreen model =
             , transitionStyle "0.5s ease"
             ]
         ]
-        [ div [ style [ widthStyle 50 ] ] [ sunflower ] ]
+        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model ] ]
 
 
 transitionClasses : Model -> String

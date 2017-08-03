@@ -5,7 +5,6 @@ import Html.Attributes exposing (property)
 import Html.Events exposing (onWithOptions)
 import Json.Encode exposing (string)
 import Json.Decode exposing (succeed)
-import Scenes.Level.Model exposing (..)
 
 
 onMouseDownPreventDefault : msg -> Attribute msg
@@ -20,6 +19,6 @@ preventDefault =
     }
 
 
-emptyProperty : Attribute Msg
+emptyProperty : Attribute msg
 emptyProperty =
     property "" <| string ""

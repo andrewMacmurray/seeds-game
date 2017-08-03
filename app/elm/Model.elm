@@ -11,6 +11,7 @@ type alias Model =
     { scene : Scene
     , sceneTransition : Bool
     , progress : Progress
+    , currentLevel : Maybe Progress
     , hubData : HubData
     , levelModel : Level.Model
     , window : Window.Size
@@ -21,7 +22,7 @@ type alias Model =
 type Scene
     = Level
     | Hub
-    | TitleScreen
+    | Title
 
 
 type alias Progress =
@@ -62,7 +63,8 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
-    | StartLevel LevelData
+    | StartLevel Progress LevelData
+    | SetCurrentLevel (Maybe Progress)
     | LoadLevelData LevelData
     | GoToHub
     | IncrementProgress

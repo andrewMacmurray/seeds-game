@@ -35,3 +35,7 @@ img {
 .touch-disabled {
   pointer-events: none;
 }
+
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+}

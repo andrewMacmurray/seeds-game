@@ -48,32 +48,47 @@ world1levels =
     Dict.fromList
         [ ( 1
           , { goal = 100
-            , tileProbabilities = [ ( Seed, 25 ), ( SeedPod, 75 ) ]
+            , tileProbabilities = noWeather
             , walls = standardWalls
             }
           )
         , ( 2
           , { goal = 100
-            , tileProbabilities = [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+            , tileProbabilities = noSun
             , walls = standardWalls
             }
           )
         , ( 3
           , { goal = 200
-            , tileProbabilities = [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+            , tileProbabilities = noSun
             , walls = standardWalls
             }
           )
         , ( 4
           , { goal = 500
-            , tileProbabilities = [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+            , tileProbabilities = noSun
             , walls = corners
             }
           )
         , ( 5
           , { goal = 500
-            , tileProbabilities = [ ( Seed, 25 ), ( SeedPod, 25 ), ( Rain, 25 ), ( Sun, 25 ) ]
+            , tileProbabilities = evenTiles
             , walls = []
             }
           )
         ]
+
+
+evenTiles : List TileProbability
+evenTiles =
+    [ ( Seed, 25 ), ( SeedPod, 25 ), ( Rain, 25 ), ( Sun, 25 ) ]
+
+
+noSun : List TileProbability
+noSun =
+    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+
+
+noWeather : List TileProbability
+noWeather =
+    [ ( Seed, 25 ), ( SeedPod, 75 ) ]

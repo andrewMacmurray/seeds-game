@@ -112,6 +112,7 @@ type SeedType
     | Lupin
     | Marigold
     | Rose
+    | GreyedOut
 
 
 type Msg

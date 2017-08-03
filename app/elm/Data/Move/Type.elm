@@ -39,4 +39,4 @@ sameTileType ( _, t2 ) ( _, t1 ) =
 
 emptyMove : Move
 emptyMove =
-    ( ( 0, 0 ), Space Empty )
+    ( ( -1, -1 ), Space Empty )
