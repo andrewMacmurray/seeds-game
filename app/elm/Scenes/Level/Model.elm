@@ -9,8 +9,8 @@ type alias Model =
     , isDragging : Bool
     , moveShape : Maybe MoveShape
     , tileProbabilities : List TileProbability
-    , boardSettings : BoardSettings
-    , tileSettings : TileSettings
+    , boardScale : Int
+    , tileSize : TileSize
     , topBarHeight : Int
     }
 
@@ -19,15 +19,9 @@ type alias Scores =
     Dict String Int
 
 
-type alias TileSettings =
-    { sizeY : Float
-    , sizeX : Float
-    }
-
-
-type alias BoardSettings =
-    { sizeY : Int
-    , sizeX : Int
+type alias TileSize =
+    { y : Float
+    , x : Float
     }
 
 

@@ -33,8 +33,8 @@ initialState =
     , isDragging = False
     , moveShape = Nothing
     , tileProbabilities = []
-    , boardSettings = { sizeY = 8, sizeX = 8 }
-    , tileSettings = { sizeY = 51, sizeX = 55 }
+    , boardScale = 8
+    , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
     }
 

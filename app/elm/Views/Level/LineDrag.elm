@@ -57,8 +57,8 @@ lineDrag ({ window } as model) =
 lastMoveOrigin : MainModel.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
-        tileSettings =
-            model.levelModel.tileSettings
+        tileSize =
+            model.levelModel.tileSize
 
         ( ( y, x ), _ ) =
             lastMove model.levelModel.board
@@ -70,10 +70,10 @@ lastMoveOrigin ({ window } as model) =
             toFloat x
 
         sY =
-            tileSettings.sizeY
+            tileSize.y
 
         sX =
-            tileSettings.sizeX
+            tileSize.x
 
         offsetY =
             boardOffsetTop model |> toFloat

@@ -20,12 +20,12 @@ boardOffsetTop model =
 
 boardHeight : Model -> Int
 boardHeight model =
-    round model.tileSettings.sizeY * model.boardSettings.sizeY
+    round model.tileSize.y * model.boardScale
 
 
 boardWidth : Model -> Int
-boardWidth { tileSettings, boardSettings } =
-    round tileSettings.sizeX * boardSettings.sizeX
+boardWidth { tileSize, boardScale } =
+    round tileSize.x * boardScale
 
 
 tileCoordsStyles : Model -> Coord -> List Style
@@ -39,8 +39,8 @@ tileCoordsStyles model coord =
 
 tilePosition : Model -> Coord -> ( Float, Float )
 tilePosition model ( y, x ) =
-    ( (toFloat y) * model.tileSettings.sizeY
-    , (toFloat x) * model.tileSettings.sizeX
+    ( (toFloat y) * model.tileSize.y
+    , (toFloat x) * model.tileSize.x
     )
 
 
@@ -163,12 +163,12 @@ exitLeft model =
 
 exitRightXdistance : Model -> Int
 exitRightXdistance model =
-    round model.tileSettings.sizeX * (model.boardSettings.sizeX - 1)
+    round model.tileSize.x * (model.boardScale - 1)
 
 
 exitTopXdistance : Model -> Int
-exitTopXdistance { tileSettings, boardSettings } =
-    round tileSettings.sizeX * (boardSettings.sizeX // 2) - (round tileSettings.sizeX // 2)
+exitTopXdistance { tileSize, boardScale } =
+    round tileSize.x * (boardScale // 2) - (round tileSize.x // 2)
 
 
 exitYdistance : MainModel.Model -> Int
@@ -206,9 +206,9 @@ draggingStyles model ( _, tileState ) =
 
 
 tileWidthHeightStyles : Model -> List Style
-tileWidthHeightStyles { tileSettings } =
-    [ widthStyle tileSettings.sizeX
-    , heightStyle tileSettings.sizeY
+tileWidthHeightStyles { tileSize } =
+    [ widthStyle tileSize.x
+    , heightStyle tileSize.y
     ]
 
 
