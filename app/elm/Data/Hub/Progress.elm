@@ -22,6 +22,11 @@ currentProgressSeedType { hubData, progress } =
         |> Maybe.withDefault GreyedOut
 
 
+completedLevel : ( WorldNumber, LevelNumber ) -> Model -> Bool
+completedLevel ( world, level ) { progress, hubData } =
+    getLevelNumber progress hubData > getLevelNumber ( world, level ) hubData
+
+
 reachedLevel : ( WorldNumber, LevelNumber ) -> Model -> Bool
 reachedLevel ( world, level ) { progress, hubData } =
     getLevelNumber progress hubData >= getLevelNumber ( world, level ) hubData

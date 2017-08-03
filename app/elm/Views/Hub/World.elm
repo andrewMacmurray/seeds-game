@@ -1,9 +1,9 @@
 module Views.Hub.World exposing (..)
 
-import Data.Hub.Progress exposing (getLevelNumber, reachedLevel)
+import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Dict
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
+import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom, marginTop, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -45,12 +45,31 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             , id <| "level-" ++ levelNumber
             , style
                 [ widthStyle 40
+                , marginTop 50
+                , marginBottom 50
                 , color worldData.textColor
                 ]
             ]
             [ renderIcon ( world, level ) worldData.seedType model
-            , p [] [ text levelNumber ]
+            , renderNumber levelNumber ( world, level ) worldData model
             ]
+
+
+renderNumber : String -> ( WorldNumber, LevelNumber ) -> WorldData -> Model -> Html Msg
+renderNumber visibleLevelNumber currentLevel worldData model =
+    if reachedLevel currentLevel model then
+        div
+            [ class "br-100 center flex justify-center items-center"
+            , style
+                [ backgroundColor worldData.textBackgroundColor
+                , marginTop 10
+                , widthStyle 30
+                , heightStyle 30
+                ]
+            ]
+            [ p [ style [ color worldData.textCompleteColor ] ] [ text visibleLevelNumber ] ]
+    else
+        p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 
 
 handleStartLevel : ( WorldNumber, LevelNumber ) -> LevelData -> Model -> Attribute Msg
@@ -63,9 +82,7 @@ handleStartLevel currentLevel levelData model =
 
 renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> Model -> Html Msg
 renderIcon currentLevel seedType model =
-    if currentLevel == model.progress then
-        renderSeed GreyedOut
-    else if reachedLevel currentLevel model then
+    if completedLevel currentLevel model then
         renderSeed seedType
     else
         renderSeed GreyedOut

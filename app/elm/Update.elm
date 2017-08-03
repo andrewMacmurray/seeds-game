@@ -3,7 +3,7 @@ module Update exposing (..)
 import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelNumber, handleIncrementProgress)
-import Data.Ports exposing (receiveLevelOffset, scrollToLevel)
+import Data.Ports exposing (receiveHubLevelOffset, scrollToHubLevel)
 import Delay
 import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
@@ -60,7 +60,7 @@ update msg model =
                         Delay.withUnit millisecond
                             [ ( 0, Transition True )
                             , ( 500, SetScene Hub )
-                            , ( 100, ScrollToLevel <| getLevelNumber model.progress model.hubData )
+                            , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
                             , ( 2400, Transition False )
                             ]
                   ]
@@ -71,10 +71,10 @@ update msg model =
         IncrementProgress ->
             (model |> handleIncrementProgress) ! []
 
-        ScrollToLevel level ->
-            model ! [ scrollToLevel level ]
+        ScrollToHubLevel level ->
+            model ! [ scrollToHubLevel level ]
 
-        ReceiveLevelOffset offset ->
+        ReceiveHubLevelOffset offset ->
             model ! [ scrollHubToLevel offset model ]
 
         DomNoOp _ ->
@@ -100,5 +100,5 @@ subscriptions model =
         [ trackWindowSize
         , trackMousePosition model
         , trackMouseDowns
-        , receiveLevelOffset ReceiveLevelOffset
+        , receiveHubLevelOffset ReceiveHubLevelOffset
         ]

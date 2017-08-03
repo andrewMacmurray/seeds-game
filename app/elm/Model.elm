@@ -46,6 +46,8 @@ type alias WorldData =
     , seedType : SeedType
     , background : String
     , textColor : String
+    , textCompleteColor : String
+    , textBackgroundColor : String
     }
 
 
@@ -68,8 +70,8 @@ type Msg
     | LoadLevelData LevelData
     | GoToHub
     | IncrementProgress
-    | ScrollToLevel Int
-    | ReceiveLevelOffset Float
+    | ScrollToHubLevel Int
+    | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())
     | LevelMsg Level.Msg
     | WindowSize Window.Size

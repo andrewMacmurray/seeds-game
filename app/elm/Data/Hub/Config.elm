@@ -1,7 +1,7 @@
 module Data.Hub.Config exposing (..)
 
 import Data.Board.Walls exposing (corners, standardWalls)
-import Data.Color exposing (darkYellow, gold, purple, washedYellow, white, yellow)
+import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
 import Dict
 import Model exposing (HubData, WorldData, WorldLevels)
 import Scenes.Level.Model exposing (..)
@@ -22,6 +22,8 @@ world3 =
     , levels = world1levels
     , background = washedYellow
     , textColor = gold
+    , textCompleteColor = white
+    , textBackgroundColor = gold
     }
 
 
@@ -31,6 +33,8 @@ world2 =
     , levels = world1levels
     , background = gold
     , textColor = white
+    , textCompleteColor = yellow
+    , textBackgroundColor = softRed
     }
 
 
@@ -40,6 +44,8 @@ world1 =
     , levels = world1levels
     , background = yellow
     , textColor = darkYellow
+    , textCompleteColor = yellow
+    , textBackgroundColor = lightBrown
     }
 
 

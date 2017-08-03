@@ -39,6 +39,11 @@ crimson =
     "rgb(237, 31, 36)"
 
 
+softRed : String
+softRed =
+    "rgb(235, 76, 72)"
+
+
 lightOrange : String
 lightOrange =
     "rgb(238, 124, 51)"

@@ -22,9 +22,9 @@
       }
     }, 1000)
 
-    app.ports.scrollToLevel.subscribe(function (level) {
+    app.ports.scrollToHubLevel.subscribe(function (level) {
       var levelOffset = document.getElementById('level-' + level).offsetTop
-      app.ports.receiveLevelOffset.send(levelOffset)
+      app.ports.receiveHubLevelOffset.send(levelOffset)
     })
   </script>
 </html>
