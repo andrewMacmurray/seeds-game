@@ -24,11 +24,11 @@ currentProgressSeedType { hubData, progress } =
 
 reachedLevel : ( WorldNumber, LevelNumber ) -> Model -> Bool
 reachedLevel ( world, level ) { progress, hubData } =
-    levelNumber progress hubData >= levelNumber ( world, level ) hubData
+    getLevelNumber progress hubData >= getLevelNumber ( world, level ) hubData
 
 
-levelNumber : Progress -> HubData -> Int
-levelNumber ( world, level ) hubData =
+getLevelNumber : Progress -> HubData -> Int
+getLevelNumber ( world, level ) hubData =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w hubData) 0
         |> ((+) level)

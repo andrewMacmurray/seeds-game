@@ -68,8 +68,9 @@ type Msg
     | LoadLevelData LevelData
     | GoToHub
     | IncrementProgress
+    | ScrollToLevel Int
+    | ReceiveLevelOffset Float
     | DomNoOp (Result Dom.Error ())
-    | ScrollHubToBottom
     | LevelMsg Level.Msg
     | WindowSize Window.Size
     | MousePosition Mouse.Position

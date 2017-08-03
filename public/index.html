@@ -14,5 +14,17 @@
   <script type="text/javascript">
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
+
+    setTimeout(function () {
+      var overlay = document.querySelector('.elm-overlay')
+      if (overlay) {
+        overlay.classList.add('z-999')
+      }
+    }, 1000)
+
+    app.ports.scrollToLevel.subscribe(function (level) {
+      var levelOffset = document.getElementById('level-' + level).offsetTop
+      app.ports.receiveLevelOffset.send(levelOffset)
+    })
   </script>
 </html>

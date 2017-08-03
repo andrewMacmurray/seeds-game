@@ -1,6 +1,6 @@
 module Views.Hub.World exposing (..)
 
-import Data.Hub.Progress exposing (levelNumber, reachedLevel)
+import Data.Hub.Progress exposing (getLevelNumber, reachedLevel)
 import Dict
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
@@ -35,17 +35,22 @@ renderWorld model (( _, worldData ) as world) =
 
 renderLevel : Model -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelData ) -> Html Msg
 renderLevel model ( world, worldData ) ( level, levelData ) =
-    div
-        [ handleStartLevel ( world, level ) levelData model
-        , class "tc center pointer"
-        , style
-            [ widthStyle 40
-            , color worldData.textColor
+    let
+        levelNumber =
+            getLevelNumber ( world, level ) model.hubData |> toString
+    in
+        div
+            [ handleStartLevel ( world, level ) levelData model
+            , class "tc center pointer"
+            , id <| "level-" ++ levelNumber
+            , style
+                [ widthStyle 40
+                , color worldData.textColor
+                ]
             ]
-        ]
-        [ renderIcon ( world, level ) worldData.seedType model
-        , p [] [ text <| toString <| levelNumber ( world, level ) model.hubData ]
-        ]
+            [ renderIcon ( world, level ) worldData.seedType model
+            , p [] [ text levelNumber ]
+            ]
 
 
 handleStartLevel : ( WorldNumber, LevelNumber ) -> LevelData -> Model -> Attribute Msg
