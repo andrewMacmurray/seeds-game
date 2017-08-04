@@ -1,6 +1,6 @@
 # Elm Seeds
 
-A connect the dots game with seeds: https://andrewmacmurray.github.io/elm-seeds/
+A connect the dots game with seeds: http://seedsgame.com
 
 Heavily inspired by the fantastic [Two Dots](https://www.dots.co/twodots/)
 
