@@ -1,15 +1,15 @@
 module Views.Level.TopBar exposing (..)
 
+import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Data.Board.Tile exposing (seedBackgrounds)
 import Data.Color exposing (gold, washedYellow)
-import Data.Board.Score exposing (getScoreFor, scoreToString)
-import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginTop, px, widthStyle)
+import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Model exposing (..)
-import Views.Level.Styles exposing (boardWidth)
 
 
-topBar : Model -> Html Msg
+topBar : Model -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -21,32 +21,61 @@ topBar model =
         ]
         [ div
             [ style
-                [ widthStyle <| boardWidth model
-                , marginTop -16
+                [ marginTop -16
                 , ( "padding", "0 9px" )
                 ]
-            , class "flex justify-between"
+            , class "flex justify-center"
             ]
-            [ div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/rain.svg" ] ] []
-                , renderScore Rain model.scores
-                ]
-            , div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/sunflower.svg" ] ] []
-                , renderScore Seed model.scores
-                ]
-            , div [ class "relative tc" ]
-                [ div [ class "bg-center contain pa3", style [ backgroundImage "img/sun.svg" ] ] []
-                , renderScore Sun model.scores
-                ]
-            ]
+            (List.map (renderScore model) (scoreTileTypes model.tileProbabilities))
         ]
 
 
-renderScore : TileType -> Scores -> Html Msg
-renderScore tileType scores =
-    p
-        [ class "ma0 absolute left-0 right-0 f6"
-        , style [ ( "bottom", "-1.5em" ) ]
+renderScore : Model -> TileType -> Html msg
+renderScore model tileType =
+    let
+        scoreMargin =
+            model.scoreIconSize // 2
+    in
+        div
+            [ class "relative tc"
+            , style
+                [ marginRight scoreMargin
+                , marginLeft scoreMargin
+                ]
+            ]
+            [ renderScoreIcon model tileType
+            , p
+                [ class "ma0 absolute left-0 right-0 f6"
+                , style [ ( "bottom", "-1.5em" ) ]
+                ]
+                [ text <| scoreToString tileType model.scores ]
+            ]
+
+
+renderScoreIcon : Model -> TileType -> Html msg
+renderScoreIcon model tileType =
+    case tileType of
+        Sun ->
+            scoreIcon model "img/sun.svg"
+
+        Rain ->
+            scoreIcon model "img/rain.svg"
+
+        Seed ->
+            scoreIcon model <| seedBackgrounds model.seedType
+
+        _ ->
+            span [] []
+
+
+scoreIcon : Model -> String -> Html msg
+scoreIcon { scoreIconSize } url =
+    div
+        [ class "bg-center contain"
+        , style
+            [ backgroundImage url
+            , widthStyle scoreIconSize
+            , heightStyle scoreIconSize
+            ]
         ]
-        [ text <| scoreToString tileType scores ]
+        []

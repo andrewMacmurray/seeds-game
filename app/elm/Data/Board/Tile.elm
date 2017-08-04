@@ -319,14 +319,14 @@ getTileType_ tileState =
             Nothing
 
 
-tileColorMap : Block -> List Style
-tileColorMap =
-    Block.fold tileColorMap_ []
+tileColorMap : SeedType -> Block -> List Style
+tileColorMap seedType =
+    Block.fold (tileColorMap_ seedType) []
 
 
-tileColorMap_ : TileState -> List Style
-tileColorMap_ =
-    tileStyleMap tileColors
+tileColorMap_ : SeedType -> TileState -> List Style
+tileColorMap_ seedType =
+    tileStyleMap <| tileColors seedType
 
 
 tileSizeMap : Block -> List Style
@@ -355,8 +355,8 @@ strokeColors tile =
             svgStyle "stroke" darkBrown
 
 
-tileColors : TileType -> List Style
-tileColors tile =
+tileColors : SeedType -> TileType -> List Style
+tileColors seedType tile =
     case tile of
         Rain ->
             [ backgroundColor lightBlue ]
@@ -368,7 +368,26 @@ tileColors tile =
             [ background seedPodGradient ]
 
         Seed ->
-            [ backgroundImage "img/sunflower.svg" ] ++ frameBackground
+            [ backgroundImage <| seedBackgrounds seedType ] ++ frameBackground
+
+
+seedBackgrounds : SeedType -> String
+seedBackgrounds seedType =
+    case seedType of
+        Sunflower ->
+            "img/sunflower.svg"
+
+        Foxglove ->
+            "img/foxglove.svg"
+
+        Lupin ->
+            "img/lupin.svg"
+
+        Rose ->
+            "img/rose.svg"
+
+        _ ->
+            ""
 
 
 tileSize : TileType -> List Style

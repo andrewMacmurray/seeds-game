@@ -1,10 +1,14 @@
 module Helpers.Dom exposing (..)
 
-import Dom.Scroll exposing (toBottom)
+import Dom.Scroll exposing (toY)
 import Model exposing (..)
 import Task
 
 
-scrollHubToBottom : Cmd Msg
-scrollHubToBottom =
-    toBottom "hub" |> Task.attempt DomNoOp
+scrollHubToLevel : Float -> Model -> Cmd Msg
+scrollHubToLevel offset model =
+    let
+        targetDistance =
+            offset - toFloat (model.window.height // 2) + 60
+    in
+        toY "hub" targetDistance |> Task.attempt DomNoOp

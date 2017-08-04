@@ -1,8 +1,10 @@
 module Views.Level.Styles exposing (..)
 
 import Data.Board.Block exposing (getTileState)
-import Data.Color exposing (blockYellow)
+import Data.Board.Score exposing (scoreTileTypes)
 import Data.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
+import Data.Color exposing (blockYellow)
+import Dict exposing (Dict)
 import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)
@@ -20,12 +22,12 @@ boardOffsetTop model =
 
 boardHeight : Model -> Int
 boardHeight model =
-    round model.tileSettings.sizeY * model.boardSettings.sizeY
+    round model.tileSize.y * model.boardScale
 
 
 boardWidth : Model -> Int
-boardWidth { tileSettings, boardSettings } =
-    round tileSettings.sizeX * boardSettings.sizeX
+boardWidth { tileSize, boardScale } =
+    round tileSize.x * boardScale
 
 
 tileCoordsStyles : Model -> Coord -> List Style
@@ -39,8 +41,8 @@ tileCoordsStyles model coord =
 
 tilePosition : Model -> Coord -> ( Float, Float )
 tilePosition model ( y, x ) =
-    ( (toFloat y) * model.tileSettings.sizeY
-    , (toFloat x) * model.tileSettings.sizeX
+    ( (toFloat y) * model.tileSize.y
+    , (toFloat x) * model.tileSize.x
     )
 
 
@@ -134,41 +136,53 @@ handleExitDirection ( coord, block ) model =
     in
         case tile of
             Leaving Rain _ ->
-                transformStyle <| exitLeft model
+                transformStyle <| getLeavingStyle Rain model
 
             Leaving Sun _ ->
-                transformStyle <| exitRight model
+                transformStyle <| getLeavingStyle Sun model
 
             Leaving Seed _ ->
-                transformStyle <| exitTop model
+                transformStyle <| getLeavingStyle Seed model
 
             _ ->
                 emptyStyle
 
 
-exitRight : MainModel.Model -> String
-exitRight model =
-    translateScale (exitRightXdistance model.levelModel) -(exitYdistance model) 0.5
+getLeavingStyle : TileType -> MainModel.Model -> String
+getLeavingStyle tileType model =
+    newLeavingStyles model
+        |> Dict.get (toString tileType)
+        |> Maybe.withDefault ""
 
 
-exitTop : MainModel.Model -> String
-exitTop model =
-    translateScale (exitTopXdistance model.levelModel) -(exitYdistance model) 0.6
+newLeavingStyles : MainModel.Model -> Dict String String
+newLeavingStyles model =
+    model.levelModel.tileProbabilities
+        |> scoreTileTypes
+        |> List.indexedMap (prepareLeavingStyle model)
+        |> Dict.fromList
 
 
-exitLeft : MainModel.Model -> String
-exitLeft model =
-    translateScale 0 -(exitYdistance model) 0.5
+prepareLeavingStyle : MainModel.Model -> Int -> TileType -> ( String, String )
+prepareLeavingStyle model i tileType =
+    ( toString tileType
+    , translateScale (exitXDistance i model.levelModel) -(exitYdistance model) 0.5
+    )
 
 
-exitRightXdistance : Model -> Int
-exitRightXdistance model =
-    round model.tileSettings.sizeX * (model.boardSettings.sizeX - 1)
+exitXDistance : Int -> Model -> Int
+exitXDistance n model =
+    let
+        scoreWidth =
+            model.scoreIconSize * 2
 
+        scoreBarWidth =
+            (List.length model.tileProbabilities) * scoreWidth
 
-exitTopXdistance : Model -> Int
-exitTopXdistance { tileSettings, boardSettings } =
-    round tileSettings.sizeX * (boardSettings.sizeX // 2) - (round tileSettings.sizeX // 2)
+        baseOffset =
+            (boardWidth model - scoreBarWidth) // 2
+    in
+        baseOffset + (n * scoreWidth) + (model.scoreIconSize + 3)
 
 
 exitYdistance : MainModel.Model -> Int
@@ -206,9 +220,9 @@ draggingStyles model ( _, tileState ) =
 
 
 tileWidthHeightStyles : Model -> List Style
-tileWidthHeightStyles { tileSettings } =
-    [ widthStyle tileSettings.sizeX
-    , heightStyle tileSettings.sizeY
+tileWidthHeightStyles { tileSize } =
+    [ widthStyle tileSize.x
+    , heightStyle tileSize.y
     ]
 
 

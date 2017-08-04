@@ -11,9 +11,10 @@
     "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
     "compress": "uglifyjs -c -m -o public/bundle.js public/main.js",
     "bundle": "npm run make-elm && npm run css",
-    "add-bundle-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
+    "prepare-assets": "npm run bundle && npm run compress",
+    "add-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
     "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-publish": "git checkout gh-deploy && git merge master && npm run bundle && npm run compress && npm run add-bundle-changes && npm run gh-pages-push && git checkout master"
+    "gh-publish": "git checkout gh-deploy && git merge master && npm run prepare-assets && npm run add-changes && npm run gh-pages-push && git checkout master"
   },
   "repository": {
     "type": "git",

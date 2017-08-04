@@ -1,6 +1,6 @@
 module Views.Seed.Mono exposing (..)
 
-import Data.Color exposing (brown, darkBrown, orange)
+import Data.Color exposing (brown, darkBrown, orange, transparentGray)
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -9,6 +9,11 @@ import Svg.Attributes exposing (..)
 rose : Html msg
 rose =
     mono orange
+
+
+greyedOut : Html msg
+greyedOut =
+    mono transparentGray
 
 
 mono : String -> Html msg

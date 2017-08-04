@@ -11,6 +11,7 @@ type alias Model =
     { scene : Scene
     , sceneTransition : Bool
     , progress : Progress
+    , currentLevel : Maybe Progress
     , hubData : HubData
     , levelModel : Level.Model
     , window : Window.Size
@@ -21,7 +22,7 @@ type alias Model =
 type Scene
     = Level
     | Hub
-    | TitleScreen
+    | Title
 
 
 type alias Progress =
@@ -45,6 +46,8 @@ type alias WorldData =
     , seedType : SeedType
     , background : String
     , textColor : String
+    , textCompleteColor : String
+    , textBackgroundColor : String
     }
 
 
@@ -62,12 +65,14 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
-    | StartLevel LevelData
-    | LoadLevelData LevelData
+    | StartLevel Progress ( WorldData, LevelData )
+    | SetCurrentLevel (Maybe Progress)
+    | LoadLevelData ( WorldData, LevelData )
     | GoToHub
     | IncrementProgress
+    | ScrollToHubLevel Int
+    | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())
-    | ScrollHubToBottom
     | LevelMsg Level.Msg
     | WindowSize Window.Size
     | MousePosition Mouse.Position

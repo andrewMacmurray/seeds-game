@@ -8,9 +8,11 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , moveShape : Maybe MoveShape
+    , seedType : SeedType
     , tileProbabilities : List TileProbability
-    , boardSettings : BoardSettings
-    , tileSettings : TileSettings
+    , boardScale : Int
+    , scoreIconSize : Int
+    , tileSize : TileSize
     , topBarHeight : Int
     }
 
@@ -19,15 +21,9 @@ type alias Scores =
     Dict String Int
 
 
-type alias TileSettings =
-    { sizeY : Float
-    , sizeX : Float
-    }
-
-
-type alias BoardSettings =
-    { sizeY : Int
-    , sizeX : Int
+type alias TileSize =
+    { y : Float
+    , x : Float
     }
 
 
@@ -112,6 +108,7 @@ type SeedType
     | Lupin
     | Marigold
     | Rose
+    | GreyedOut
 
 
 type Msg

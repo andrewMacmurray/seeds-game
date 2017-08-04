@@ -29,5 +29,5 @@ renderScene model =
         Hub ->
             hub model
 
-        TitleScreen ->
+        Title ->
             title model

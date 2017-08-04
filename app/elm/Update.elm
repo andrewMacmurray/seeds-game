@@ -2,9 +2,10 @@ module Update exposing (..)
 
 import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
-import Data.Hub.Progress exposing (handleIncrementProgress)
+import Data.Hub.Progress exposing (getLevelNumber, handleIncrementProgress)
+import Data.Ports exposing (receiveHubLevelOffset, scrollToHubLevel)
 import Delay
-import Helpers.Dom exposing (scrollHubToBottom)
+import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Scenes.Level.Update as Level
@@ -18,9 +19,10 @@ init =
 
 initialModel : Model
 initialModel =
-    { scene = TitleScreen
+    { scene = Title
     , sceneTransition = False
-    , progress = ( 1, 1 )
+    , progress = ( 3, 4 )
+    , currentLevel = Nothing
     , hubData = hubData
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
@@ -37,11 +39,15 @@ update msg model =
         Transition bool ->
             { model | sceneTransition = bool } ! []
 
-        StartLevel levelData ->
+        SetCurrentLevel progress ->
+            { model | currentLevel = progress } ! []
+
+        StartLevel progress levelData ->
             model
                 ! [ Delay.sequence <|
                         Delay.withUnit millisecond
-                            [ ( 0, Transition True )
+                            [ ( 0, SetCurrentLevel <| Just progress )
+                            , ( 10, Transition True )
                             , ( 500, SetScene Level )
                             , ( 0, LoadLevelData levelData )
                             , ( 2500, Transition False )
@@ -54,7 +60,7 @@ update msg model =
                         Delay.withUnit millisecond
                             [ ( 0, Transition True )
                             , ( 500, SetScene Hub )
-                            , ( 100, ScrollHubToBottom )
+                            , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
                             , ( 2400, Transition False )
                             ]
                   ]
@@ -65,8 +71,11 @@ update msg model =
         IncrementProgress ->
             (model |> handleIncrementProgress) ! []
 
-        ScrollHubToBottom ->
-            model ! [ scrollHubToBottom ]
+        ScrollToHubLevel level ->
+            model ! [ scrollToHubLevel level ]
+
+        ReceiveHubLevelOffset offset ->
+            model ! [ scrollHubToLevel offset model ]
 
         DomNoOp _ ->
             model ! []
@@ -91,4 +100,5 @@ subscriptions model =
         [ trackWindowSize
         , trackMousePosition model
         , trackMouseDowns
+        , receiveHubLevelOffset ReceiveHubLevelOffset
         ]

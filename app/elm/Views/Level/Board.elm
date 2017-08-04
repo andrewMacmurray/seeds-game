@@ -141,7 +141,7 @@ baseTileStyles model (( _, tile ) as move) =
         , enteringStyles move
         , fallingStyles move
         , tileSizeMap tile
-        , tileColorMap tile
+        , tileColorMap model.seedType tile
         ]
 
 

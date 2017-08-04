@@ -29,9 +29,24 @@ emptyStyle =
     ( "", "" )
 
 
+marginRight : number -> Style
+marginRight n =
+    ( "margin-right", px n )
+
+
 marginTop : number -> Style
 marginTop n =
     ( "margin-top", px n )
+
+
+marginLeft : number -> Style
+marginLeft n =
+    ( "margin-left", px n )
+
+
+marginBottom : number -> Style
+marginBottom n =
+    ( "margin-bottom", px n )
 
 
 color : String -> Style

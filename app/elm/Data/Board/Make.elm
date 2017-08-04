@@ -2,33 +2,29 @@ module Data.Board.Make exposing (..)
 
 import Data.Board.Probabilities exposing (tileProbability)
 import Dict
-import Model exposing (LevelData)
+import Model exposing (LevelData, WorldData)
 import Random exposing (..)
 import Scenes.Level.Model exposing (..)
 
 
 handleMakeBoard : List TileType -> Model -> Model
-handleMakeBoard tileList ({ boardSettings } as model) =
+handleMakeBoard tileList ({ boardScale } as model) =
     { model
-        | board =
-            makeBoard
-                boardSettings.sizeX
-                boardSettings.sizeY
-                tileList
+        | board = makeBoard boardScale tileList
     }
 
 
-makeBoard : Int -> Int -> List TileType -> Board
-makeBoard y x tiles =
+makeBoard : Int -> List TileType -> Board
+makeBoard scale tiles =
     tiles
         |> List.map (Static >> Space)
-        |> List.map2 (,) (makeCoords y x)
+        |> List.map2 (,) (makeCoords scale)
         |> Dict.fromList
 
 
-makeCoords : Int -> Int -> List Coord
-makeCoords y x =
-    List.concatMap (rangeToCoord y) (makeRange x)
+makeCoords : Int -> List Coord
+makeCoords x =
+    List.concatMap (rangeToCoord x) (makeRange x)
 
 
 rangeToCoord : Int -> Int -> List Coord
@@ -43,16 +39,13 @@ makeRange n =
 
 
 handleGenerateTiles : LevelData -> Model -> Cmd Msg
-handleGenerateTiles levelData { boardSettings } =
-    generateTiles
-        levelData
-        boardSettings.sizeX
-        boardSettings.sizeY
+handleGenerateTiles levelData { boardScale } =
+    generateTiles levelData boardScale
 
 
-generateTiles : LevelData -> Int -> Int -> Cmd Msg
-generateTiles levelData x y =
-    Random.list (x * y) (tileGenerator levelData.tileProbabilities)
+generateTiles : LevelData -> Int -> Cmd Msg
+generateTiles levelData x =
+    Random.list (x * x) (tileGenerator levelData.tileProbabilities)
         |> Random.generate (InitTiles levelData.walls)
 
 

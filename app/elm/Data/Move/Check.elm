@@ -1,11 +1,11 @@
 module Data.Move.Check exposing (..)
 
+import Data.Board.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Data.Move.Bearing exposing (addBearings)
 import Data.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDirection)
-import Data.Move.Square exposing (isValidSquare)
+import Data.Move.Square exposing (isValidSquare, triggerMoveIfSquare)
 import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
 import Data.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
-import Data.Board.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
 import Dict
 import Scenes.Level.Model exposing (..)
 
@@ -27,8 +27,17 @@ handleStartMove move model =
     }
 
 
-handleCheckMove : Move -> Model -> Model
+handleCheckMove : Move -> Model -> ( Model, Cmd Msg )
 handleCheckMove move model =
+    let
+        newModel =
+            model |> handleCheckMove_ move
+    in
+        newModel ! [ triggerMoveIfSquare newModel ]
+
+
+handleCheckMove_ : Move -> Model -> Model
+handleCheckMove_ move model =
     if model.isDragging then
         { model | board = addToMove move model.board }
     else

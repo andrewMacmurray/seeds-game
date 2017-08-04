@@ -11,18 +11,17 @@ import Data.Board.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Board.Square exposing (handleSquareMove)
 import Data.Move.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
-import Data.Move.Square exposing (triggerMoveIfSquare)
 import Data.Move.Type exposing (currentMoveTileType)
 import Delay
 import Dict
-import Model as Main exposing (LevelData)
+import Model as Main exposing (LevelData, WorldData)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
 
 initCmd : LevelData -> Main.Model -> Cmd Main.Msg
-initCmd levelData model =
-    handleGenerateTiles levelData model.levelModel
+initCmd config model =
+    handleGenerateTiles config model.levelModel
         |> Cmd.map Main.LevelMsg
 
 
@@ -32,9 +31,11 @@ initialState =
     , scores = Dict.empty
     , isDragging = False
     , moveShape = Nothing
+    , seedType = Sunflower
     , tileProbabilities = []
-    , boardSettings = { sizeY = 8, sizeX = 8 }
-    , tileSettings = { sizeY = 51, sizeX = 55 }
+    , boardScale = 8
+    , scoreIconSize = 32
+    , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
     }
 
@@ -100,11 +101,7 @@ update msg model =
             (model |> handleStartMove move) ! []
 
         CheckMove move ->
-            let
-                newModel =
-                    model |> handleCheckMove move
-            in
-                newModel ! [ triggerMoveIfSquare newModel ]
+            handleCheckMove move model
 
         SquareMove ->
             (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
