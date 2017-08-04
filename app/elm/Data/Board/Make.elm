@@ -38,13 +38,13 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-handleGenerateTiles : ( WorldData, LevelData ) -> Model -> Cmd Msg
+handleGenerateTiles : LevelData -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardScale } =
     generateTiles levelData boardScale
 
 
-generateTiles : ( WorldData, LevelData ) -> Int -> Cmd Msg
-generateTiles ( _, levelData ) x =
+generateTiles : LevelData -> Int -> Cmd Msg
+generateTiles levelData x =
     Random.list (x * x) (tileGenerator levelData.tileProbabilities)
         |> Random.generate (InitTiles levelData.walls)
 

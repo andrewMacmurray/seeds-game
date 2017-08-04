@@ -19,7 +19,7 @@ import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
 
 
-initCmd : ( WorldData, LevelData ) -> Main.Model -> Cmd Main.Msg
+initCmd : LevelData -> Main.Model -> Cmd Main.Msg
 initCmd config model =
     handleGenerateTiles config model.levelModel
         |> Cmd.map Main.LevelMsg

@@ -8,12 +8,12 @@ import Scenes.Level.Update exposing (initCmd)
 
 
 handleLoadLevel : ( WorldData, LevelData ) -> Main.Model -> ( Main.Model, Cmd Main.Msg )
-handleLoadLevel config model =
+handleLoadLevel (( _, levelData ) as config) model =
     let
         newModel =
             { model | levelModel = addLevelData config model.levelModel }
     in
-        newModel ! [ initCmd config newModel ]
+        newModel ! [ initCmd levelData newModel ]
 
 
 addLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
