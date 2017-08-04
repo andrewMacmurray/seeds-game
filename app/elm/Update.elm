@@ -21,7 +21,7 @@ initialModel : Model
 initialModel =
     { scene = Title
     , sceneTransition = False
-    , progress = ( 3, 2 )
+    , progress = ( 3, 4 )
     , currentLevel = Nothing
     , hubData = hubData
     , levelModel = Level.initialState

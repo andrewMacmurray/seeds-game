@@ -8,8 +8,10 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , moveShape : Maybe MoveShape
+    , seedType : SeedType
     , tileProbabilities : List TileProbability
     , boardScale : Int
+    , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
     }

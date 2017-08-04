@@ -1,6 +1,7 @@
 module Views.Level.TopBar exposing (..)
 
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Data.Board.Tile exposing (seedBackgrounds)
 import Data.Color exposing (gold, washedYellow)
 import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
 import Html exposing (..)
@@ -25,44 +26,56 @@ topBar model =
                 ]
             , class "flex justify-center"
             ]
-            (List.map (renderScore model.scores) (scoreTileTypes model.tileProbabilities))
+            (List.map (renderScore model) (scoreTileTypes model.tileProbabilities))
         ]
 
 
-renderScore : Scores -> TileType -> Html msg
-renderScore scores tileType =
-    div
-        [ class "relative tc"
-        , style
-            [ marginRight 16
-            , marginLeft 16
+renderScore : Model -> TileType -> Html msg
+renderScore model tileType =
+    let
+        scoreMargin =
+            model.scoreIconSize // 2
+    in
+        div
+            [ class "relative tc"
+            , style
+                [ marginRight scoreMargin
+                , marginLeft scoreMargin
+                ]
             ]
-        ]
-        [ renderScoreIcon tileType
-        , p
-            [ class "ma0 absolute left-0 right-0 f6"
-            , style [ ( "bottom", "-1.5em" ) ]
+            [ renderScoreIcon model tileType
+            , p
+                [ class "ma0 absolute left-0 right-0 f6"
+                , style [ ( "bottom", "-1.5em" ) ]
+                ]
+                [ text <| scoreToString tileType model.scores ]
             ]
-            [ text <| scoreToString tileType scores ]
-        ]
 
 
-renderScoreIcon : TileType -> Html msg
-renderScoreIcon tileType =
+renderScoreIcon : Model -> TileType -> Html msg
+renderScoreIcon model tileType =
     case tileType of
         Sun ->
-            scoreIcon "img/sun.svg"
+            scoreIcon model "img/sun.svg"
 
         Rain ->
-            scoreIcon "img/rain.svg"
+            scoreIcon model "img/rain.svg"
 
         Seed ->
-            scoreIcon "img/sunflower.svg"
+            scoreIcon model <| seedBackgrounds model.seedType
 
         _ ->
             span [] []
 
 
-scoreIcon : String -> Html msg
-scoreIcon url =
-    div [ class "bg-center contain pa3", style [ backgroundImage url ] ] []
+scoreIcon : Model -> String -> Html msg
+scoreIcon { scoreIconSize } url =
+    div
+        [ class "bg-center contain"
+        , style
+            [ backgroundImage url
+            , widthStyle scoreIconSize
+            , heightStyle scoreIconSize
+            ]
+        ]
+        []

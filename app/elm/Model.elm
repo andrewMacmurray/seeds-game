@@ -65,9 +65,9 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
-    | StartLevel Progress LevelData
+    | StartLevel Progress ( WorldData, LevelData )
     | SetCurrentLevel (Maybe Progress)
-    | LoadLevelData LevelData
+    | LoadLevelData ( WorldData, LevelData )
     | GoToHub
     | IncrementProgress
     | ScrollToHubLevel Int

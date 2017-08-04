@@ -40,7 +40,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             getLevelNumber ( world, level ) model.hubData |> toString
     in
         div
-            [ handleStartLevel ( world, level ) levelData model
+            [ handleStartLevel ( world, level ) ( worldData, levelData ) model
             , class "tc center pointer"
             , id <| "level-" ++ levelNumber
             , style
@@ -72,10 +72,10 @@ renderNumber visibleLevelNumber currentLevel worldData model =
         p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 
 
-handleStartLevel : ( WorldNumber, LevelNumber ) -> LevelData -> Model -> Attribute Msg
-handleStartLevel currentLevel levelData model =
+handleStartLevel : ( WorldNumber, LevelNumber ) -> ( WorldData, LevelData ) -> Model -> Attribute Msg
+handleStartLevel currentLevel config model =
     if reachedLevel currentLevel model then
-        onClick <| StartLevel currentLevel levelData
+        onClick <| StartLevel currentLevel config
     else
         emptyProperty
 
