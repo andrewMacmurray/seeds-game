@@ -76,13 +76,15 @@ world1levels =
             , walls = corners
             }
           )
-        , ( 5
-          , { goal = 500
-            , tileProbabilities = evenTiles
-            , walls = []
-            }
-          )
+        , ( 5, level5 )
         ]
+
+
+level5 =
+    { goal = 500
+    , tileProbabilities = evenTiles
+    , walls = []
+    }
 
 
 evenTiles : List TileProbability

@@ -1,25 +1,43 @@
 module Helpers.Animation exposing (..)
 
 import Formatting exposing ((<>), print)
-import Html exposing (node, Html)
-import Html.Attributes exposing (property)
-import Json.Encode exposing (string)
 import Helpers.Style exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
+import Html exposing (Html, node)
+import Html.Attributes exposing (property)
+import Json.Encode as Encode
+import Model exposing (Model)
 
 
-embeddedAnimations : Html msg
-embeddedAnimations =
-    node "style" [ property "textContent" <| string animationsToAdd ] []
+embeddedAnimations : Model -> Html msg
+embeddedAnimations model =
+    node "style" [ property "textContent" <| encodedAnimations model ] []
 
 
-animationsToAdd : String
-animationsToAdd =
-    [ fallDistances
-    , bulge
-    , bounce
-    , bulgeFade
+encodedAnimations : Model -> Encode.Value
+encodedAnimations model =
+    [ internalAnimations
+    , model.externalAnimations
     ]
         |> String.join " "
+        |> Encode.string
+
+
+internalAnimations : String
+internalAnimations =
+    [ bulge
+    , bulgeFade
+    , exitDown
+    ]
+        |> String.join " "
+
+
+exitDown : String
+exitDown =
+    [ ( 0, 0, 1 )
+    , ( 100, 300, 0 )
+    ]
+        |> List.map (\( step, y, opacity ) -> stepTranslateYFade step y opacity)
+        |> keyframesAnimation "exit-down"
 
 
 bulgeFade : String
@@ -29,31 +47,6 @@ bulgeFade =
     ]
         |> List.map (\( step, scale, opacity ) -> stepScaleFade step scale opacity)
         |> keyframesAnimation "bulge-fade"
-
-
-fallDistances : String
-fallDistances =
-    List.range 1 8
-        |> List.map (\magnitude -> List.map (uncurry stepTranslateY) (fallsteps magnitude))
-        |> List.indexedMap makeFallAnimation
-        |> String.join " "
-
-
-makeFallAnimation : Int -> List String -> String
-makeFallAnimation i =
-    keyframesAnimation ("fall-" ++ toString i)
-
-
-fallsteps : Int -> List ( number, Float )
-fallsteps x =
-    let
-        floatX =
-            ((toFloat x) * 51) / 100
-    in
-        [ ( 0, 0 )
-        , ( 75, floatX * 105 )
-        , ( 100, floatX * 100 )
-        ]
 
 
 bulge : String
@@ -66,16 +59,9 @@ bulge =
         |> keyframesAnimation "bulge"
 
 
-bounce : String
-bounce =
-    [ ( 0, -300 )
-    , ( 60, 25 )
-    , ( 75, -10 )
-    , ( 90, 5 )
-    , ( 100, 0 )
-    ]
-        |> List.map (uncurry stepTranslateY)
-        |> keyframesAnimation "bounce"
+stepTranslateYFade : Int -> number -> number -> String
+stepTranslateYFade =
+    step <| (transform_ translateY_) <> opacity_
 
 
 stepScaleFade : Int -> number -> number -> String
@@ -86,8 +72,3 @@ stepScaleFade =
 stepScale : Int -> number -> String
 stepScale =
     step <| transform_ scale_
-
-
-stepTranslateY : Int -> number -> String
-stepTranslateY =
-    step <| transform_ translateY_
