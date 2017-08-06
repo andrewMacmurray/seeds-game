@@ -18,3 +18,4 @@ elm-stuff
 public/style.min.css
 public/main.js
 public/bundle.js
+public/embed.js
