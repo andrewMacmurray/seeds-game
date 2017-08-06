@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
-    "dev": "npm run live & npm run css-watch",
+    "dev": "npm run live & npm run css-watch & npm run js-watch",
     "live": "elm-live app/elm/Main.elm --output=public/main.js --dir=public --open --debug --pushstate",
     "css": "postcss --config ./postcss-config.js",
     "css-watch": "postcss --watch --config ./postcss-config.js",
+    "js-watch": "watchify app/js/embed.js -o public/embed.js -v",
     "test": "cd ./test && elm-test Main.elm",
+    "make-js": "browserify app/js/embed.js -o public/embed.js",
     "make-elm": "elm-make app/elm/Main.elm --output=public/main.js",
     "compress": "uglifyjs -c -m -o public/bundle.js public/main.js",
     "bundle": "npm run make-elm && npm run css",
@@ -27,17 +29,20 @@
   },
   "homepage": "https://github.com/andrewMacmurray/elm-seed#readme",
   "dependencies": {
+    "bounce.js": "^0.8.2",
     "elm": "^0.18.0",
     "tachyons-custom": "^4.5.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.3",
+    "browserify": "^14.4.0",
     "elm-live": "^2.7.4",
     "postcss-clean": "^1.0.2",
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
     "postcss-custom-properties": "^5.0.2",
     "postcss-import": "^9.1.0",
-    "uglify-js": "^3.0.23"
+    "uglify-js": "^3.0.23",
+    "watchify": "^3.9.0"
   }
 }

@@ -3,6 +3,7 @@ module Update exposing (..)
 import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Delay exposing (sequenceMs)
 import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
@@ -12,13 +13,17 @@ import Scenes.Level.Update as Level
 
 init : ( Model, Cmd Msg )
 init =
-    initialModel ! [ getWindowSize ]
+    initialModel
+        ! [ getWindowSize
+          , getExternalAnimations initialModel.levelModel.tileSize.y
+          ]
 
 
 initialModel : Model
 initialModel =
-    { scene = Title
+    { scene = Hub
     , sceneTransition = False
+    , externalAnimations = ""
     , progress = ( 3, 4 )
     , currentLevel = Nothing
     , infoWindow = Hidden
@@ -40,6 +45,9 @@ update msg model =
 
         SetCurrentLevel progress ->
             { model | currentLevel = progress } ! []
+
+        ReceieveExternalAnimations animations ->
+            { model | externalAnimations = animations } ! []
 
         StartLevel progress ->
             let
@@ -120,4 +128,5 @@ subscriptions model =
         , trackMousePosition model
         , trackMouseDowns
         , receiveHubLevelOffset ReceiveHubLevelOffset
+        , receiveExternalAnimations ReceieveExternalAnimations
         ]

@@ -10,6 +10,7 @@ import Window
 type alias Model =
     { scene : Scene
     , sceneTransition : Bool
+    , externalAnimations : String
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
@@ -72,6 +73,7 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
+    | ReceieveExternalAnimations String
     | StartLevel LevelProgress
     | SetCurrentLevel (Maybe LevelProgress)
     | LoadLevelData ( WorldData, LevelData )

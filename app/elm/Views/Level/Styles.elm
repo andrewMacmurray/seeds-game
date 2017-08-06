@@ -5,7 +5,7 @@ import Data.Board.Score exposing (scoreTileTypes)
 import Data.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Data.Color exposing (blockYellow)
 import Dict exposing (Dict)
-import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
+import Helpers.Style exposing (animationDelayStyle, animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)
 
@@ -67,7 +67,7 @@ enteringStyles ( _, block ) =
     in
         case tile of
             Entering tile ->
-                [ animationStyle "bounce 0.4s ease"
+                [ animationStyle "hard-bounce-down 1.3s ease-in"
                 ]
 
             _ ->
@@ -108,7 +108,7 @@ fallingStyles ( _, block ) =
     in
         case tile of
             Falling tile distance ->
-                [ animationStyle <| "fall-" ++ (toString (distance - 1)) ++ " 0.5s ease"
+                [ animationStyle <| "hard-bounce-down-" ++ (toString (distance)) ++ " 1s linear"
                 , fillModeStyle "forwards"
                 ]
 

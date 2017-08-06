@@ -13,7 +13,7 @@ import Views.Loading exposing (loadingScreen)
 view : Model -> Html Msg
 view model =
     div []
-        [ embeddedAnimations
+        [ embeddedAnimations model
         , loadingScreen model
         , renderScene model
         , backdrop model.levelModel |> Html.map LevelMsg
