@@ -21,7 +21,7 @@ init =
 
 initialModel : Model
 initialModel =
-    { scene = Hub
+    { scene = Title
     , sceneTransition = False
     , externalAnimations = ""
     , progress = ( 3, 4 )

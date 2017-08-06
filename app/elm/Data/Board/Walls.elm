@@ -52,15 +52,13 @@ bottomRight =
 
 leftCenter : List Coord
 leftCenter =
-    [ ( 2, 0 )
-    , ( 3, 0 )
+    [ ( 3, 0 )
     , ( 4, 0 )
     ]
 
 
 rightCenter : List Coord
 rightCenter =
-    [ ( 2, 7 )
-    , ( 3, 7 )
+    [ ( 3, 7 )
     , ( 4, 7 )
     ]

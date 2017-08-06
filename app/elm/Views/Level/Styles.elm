@@ -5,7 +5,7 @@ import Data.Board.Score exposing (scoreTileTypes)
 import Data.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Data.Color exposing (blockYellow)
 import Dict exposing (Dict)
-import Helpers.Style exposing (animationDelayStyle, animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
+import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)
 import Model as MainModel exposing (Style)
 import Scenes.Level.Model exposing (..)
 

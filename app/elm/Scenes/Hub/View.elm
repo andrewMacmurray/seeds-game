@@ -10,17 +10,15 @@ import Views.Hub.World exposing (renderWorlds)
 
 hub : Model -> Html Msg
 hub model =
-    div []
-        [ worlds model
-        ]
-
-
-worlds : Model -> Html Msg
-worlds model =
     div
         [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
         , id "hub"
         , style [ heightStyle model.window.height ]
         , handleHideInfo model
         ]
-        ([ info model ] ++ (renderWorlds model))
+        (hubContent model)
+
+
+hubContent : Model -> List (Html Msg)
+hubContent model =
+    [ info model ] ++ renderWorlds model

@@ -10,11 +10,20 @@ import Model exposing (Model)
 
 embeddedAnimations : Model -> Html msg
 embeddedAnimations model =
-    node "style" [ property "textContent" <| Encode.string <| String.join " " [ animationsToAdd, model.externalAnimations ] ] []
+    node "style" [ property "textContent" <| encodedAnimations model ] []
 
 
-animationsToAdd : String
-animationsToAdd =
+encodedAnimations : Model -> Encode.Value
+encodedAnimations model =
+    [ internalAnimations
+    , model.externalAnimations
+    ]
+        |> String.join " "
+        |> Encode.string
+
+
+internalAnimations : String
+internalAnimations =
     [ bulge
     , bulgeFade
     , exitDown
