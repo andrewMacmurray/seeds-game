@@ -2,14 +2,12 @@ module Update exposing (..)
 
 import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
-import Data.Hub.Progress exposing (getLevelNumber, handleIncrementProgress)
-import Data.Ports exposing (receiveHubLevelOffset, scrollToHubLevel)
-import Delay
+import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Helpers.Delay exposing (sequenceMs)
 import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Scenes.Level.Update as Level
-import Time exposing (millisecond)
 
 
 init : ( Model, Cmd Msg )
@@ -23,6 +21,7 @@ initialModel =
     , sceneTransition = False
     , progress = ( 3, 4 )
     , currentLevel = Nothing
+    , infoWindow = Hidden
     , hubData = hubData
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
@@ -42,28 +41,48 @@ update msg model =
         SetCurrentLevel progress ->
             { model | currentLevel = progress } ! []
 
-        StartLevel progress levelData ->
-            model
-                ! [ Delay.sequence <|
-                        Delay.withUnit millisecond
-                            [ ( 0, SetCurrentLevel <| Just progress )
+        StartLevel progress ->
+            let
+                levelConfig =
+                    getLevelConfig progress model
+            in
+                model
+                    ! [ sequenceMs
+                            [ ( 600, SetCurrentLevel <| Just progress )
                             , ( 10, Transition True )
                             , ( 500, SetScene Level )
-                            , ( 0, LoadLevelData levelData )
+                            , ( 0, LoadLevelData levelConfig )
                             , ( 2500, Transition False )
                             ]
-                  ]
+                      ]
 
         GoToHub ->
             model
-                ! [ Delay.sequence <|
-                        Delay.withUnit millisecond
-                            [ ( 0, Transition True )
-                            , ( 500, SetScene Hub )
-                            , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
-                            , ( 2400, Transition False )
-                            ]
+                ! [ sequenceMs
+                        [ ( 0, Transition True )
+                        , ( 500, SetScene Hub )
+                        , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
+                        , ( 2400, Transition False )
+                        ]
                   ]
+
+        SetInfoState infoWindow ->
+            { model | infoWindow = infoWindow } ! []
+
+        ShowInfo levelProgress ->
+            { model | infoWindow = Visible levelProgress } ! []
+
+        HideInfo ->
+            let
+                selectedLevel =
+                    getSelectedProgress model |> Maybe.withDefault ( 1, 1 )
+            in
+                model
+                    ! [ sequenceMs
+                            [ ( 0, SetInfoState <| Leaving selectedLevel )
+                            , ( 1000, SetInfoState Hidden )
+                            ]
+                      ]
 
         LoadLevelData levelData ->
             handleLoadLevel levelData model

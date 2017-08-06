@@ -10,8 +10,9 @@ import Window
 type alias Model =
     { scene : Scene
     , sceneTransition : Bool
-    , progress : Progress
-    , currentLevel : Maybe Progress
+    , progress : LevelProgress
+    , currentLevel : Maybe LevelProgress
+    , infoWindow : InfoWindow
     , hubData : HubData
     , levelModel : Level.Model
     , window : Window.Size
@@ -25,7 +26,13 @@ type Scene
     | Title
 
 
-type alias Progress =
+type InfoWindow
+    = Visible LevelProgress
+    | Leaving LevelProgress
+    | Hidden
+
+
+type alias LevelProgress =
     ( WorldNumber, LevelNumber )
 
 
@@ -65,10 +72,13 @@ type alias LevelData =
 type Msg
     = SetScene Scene
     | Transition Bool
-    | StartLevel Progress ( WorldData, LevelData )
-    | SetCurrentLevel (Maybe Progress)
+    | StartLevel LevelProgress
+    | SetCurrentLevel (Maybe LevelProgress)
     | LoadLevelData ( WorldData, LevelData )
     | GoToHub
+    | ShowInfo LevelProgress
+    | HideInfo
+    | SetInfoState InfoWindow
     | IncrementProgress
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float

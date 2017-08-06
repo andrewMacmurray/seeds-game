@@ -1,8 +1,36 @@
 module Data.Hub.Progress exposing (..)
 
+import Data.Hub.Config exposing (level5, world1)
 import Dict
 import Model exposing (..)
 import Scenes.Level.Model exposing (SeedType(..))
+
+
+getSelectedProgress : Model -> Maybe LevelProgress
+getSelectedProgress model =
+    case model.infoWindow of
+        Hidden ->
+            Nothing
+
+        Visible progress ->
+            Just progress
+
+        Leaving progress ->
+            Just progress
+
+
+getLevelConfig : LevelProgress -> Model -> ( WorldData, LevelData )
+getLevelConfig ( w, l ) model =
+    let
+        worldData =
+            model.hubData |> Dict.get w
+
+        levelData =
+            worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
+    in
+        ( worldData |> Maybe.withDefault world1
+        , levelData |> Maybe.withDefault level5
+        )
 
 
 currentLevelSeedType : Model -> SeedType
@@ -32,7 +60,7 @@ reachedLevel ( world, level ) { progress, hubData } =
     getLevelNumber progress hubData >= getLevelNumber ( world, level ) hubData
 
 
-getLevelNumber : Progress -> HubData -> Int
+getLevelNumber : LevelProgress -> HubData -> Int
 getLevelNumber ( world, level ) hubData =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w hubData) 0
@@ -52,7 +80,7 @@ handleIncrementProgress model =
     { model | progress = incrementProgress model.progress model.hubData }
 
 
-incrementProgress : Progress -> HubData -> Progress
+incrementProgress : LevelProgress -> HubData -> LevelProgress
 incrementProgress (( world, level ) as currentProgress) hubData =
     hubData
         |> Dict.get world
@@ -60,7 +88,7 @@ incrementProgress (( world, level ) as currentProgress) hubData =
         |> Maybe.withDefault ( 0, 0 )
 
 
-handleIncrement : Progress -> WorldData -> Progress
+handleIncrement : LevelProgress -> WorldData -> LevelProgress
 handleIncrement (( _, level ) as currentProgress) worldData =
     if lastLevel worldData == level then
         incrementWorld currentProgress
@@ -73,11 +101,11 @@ lastLevel worldData =
     Dict.size worldData.levels
 
 
-incrementWorld : Progress -> Progress
+incrementWorld : LevelProgress -> LevelProgress
 incrementWorld ( world, _ ) =
     ( world + 1, 1 )
 
 
-incrementLevel : Progress -> Progress
+incrementLevel : LevelProgress -> LevelProgress
 incrementLevel ( world, level ) =
     ( world, level + 1 )
