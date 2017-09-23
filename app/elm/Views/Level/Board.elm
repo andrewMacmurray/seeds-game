@@ -129,6 +129,7 @@ makeInnerTile extraStyles model (( _, tile ) as move) =
             styles
                 [ extraStyles
                 , baseTileStyles model move
+                , [ ( "will-change", "transform, opacity" ) ]
                 ]
         ]
         []

@@ -9,9 +9,7 @@ import Scenes.Level.Model exposing (..)
 
 handleMakeBoard : List TileType -> Model -> Model
 handleMakeBoard tileList ({ boardScale } as model) =
-    { model
-        | board = makeBoard boardScale tileList
-    }
+    { model | board = makeBoard boardScale tileList }
 
 
 makeBoard : Int -> List TileType -> Board

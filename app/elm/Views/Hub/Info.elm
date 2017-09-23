@@ -1,9 +1,9 @@
 module Views.Hub.Info exposing (..)
 
-import Data.Color exposing (gold, purple, white)
+import Data.Color exposing (gold, purple, seedPodGradient, white)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (animationStyle, backgroundColor, classes, color, fillModeStyle, marginTop, transformStyle, transitionStyle, translateY, widthStyle)
+import Helpers.Style exposing (animationStyle, background, backgroundColor, classes, color, fillModeStyle, marginTop, transformStyle, transitionStyle, translateY, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -26,7 +26,7 @@ info model =
                     [ div
                         [ class "pa3 br3 tc relative"
                         , style
-                            [ backgroundColor gold
+                            [ background seedPodGradient
                             , color white
                             , animationStyle "elastic-bounce-in 2s linear"
                             , widthStyle 380
@@ -45,7 +45,7 @@ info model =
                     [ div
                         [ class "pa3 br3 tc relative"
                         , style
-                            [ backgroundColor gold
+                            [ background seedPodGradient
                             , color white
                             , widthStyle 380
                             , animationStyle "exit-down 0.7s cubic-bezier(0.93, -0.36, 0.57, 0.96)"

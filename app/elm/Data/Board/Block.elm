@@ -30,10 +30,10 @@ map fn block =
 
 
 fold : (TileState -> a) -> a -> Block -> a
-fold fn acc block =
+fold fn default block =
     case block of
         Wall ->
-            acc
+            default
 
         Space tileState ->
             fn tileState

@@ -7,16 +7,19 @@ import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, hand
 import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
 import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
 import Data.Board.Score exposing (handleAddScore, initialScores)
-import Data.Board.Sequence exposing (growSeedPodsSequence, removeTilesSequence)
 import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
 import Data.Board.Square exposing (handleSquareMove)
 import Data.Move.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
 import Data.Move.Type exposing (currentMoveTileType)
 import Delay
 import Dict
+import Helpers.Delay exposing (sequenceMs)
 import Model as Main exposing (LevelData, WorldData)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
+
+
+-- STATE
 
 
 initCmd : LevelData -> Main.Model -> Cmd Main.Msg
@@ -53,13 +56,13 @@ update msg model =
         AddTiles tiles ->
             (model |> handleAddNewTiles tiles) ! []
 
-        StopMove moveType ->
+        StopMove moveShape ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
                     model ! [ growSeedPodsSequence ]
 
                 _ ->
-                    model ! [ removeTilesSequence model moveType ]
+                    model ! [ removeTilesSequence moveShape ]
 
         SetLeavingTiles ->
             (model
@@ -105,3 +108,37 @@ update msg model =
 
         SquareMove ->
             (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
+
+
+
+-- SEQUENCES
+
+
+growSeedPodsSequence : Cmd Msg
+growSeedPodsSequence =
+    sequenceMs
+        [ ( 0, SetGrowingSeedPods )
+        , ( 0, ResetMove )
+        , ( 800, GrowPodsToSeeds )
+        , ( 600, ResetGrowingSeeds )
+        ]
+
+
+removeTilesSequence : MoveShape -> Cmd Msg
+removeTilesSequence moveShape =
+    sequenceMs
+        [ ( 0, SetLeavingTiles )
+        , ( 0, ResetMove )
+        , ( fallDelay moveShape, SetFallingTiles )
+        , ( 500, ShiftBoard )
+        , ( 0, MakeNewTiles )
+        , ( 500, ResetEntering )
+        ]
+
+
+fallDelay : MoveShape -> Float
+fallDelay moveShape =
+    if moveShape == Square then
+        500
+    else
+        350

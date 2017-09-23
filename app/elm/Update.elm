@@ -3,6 +3,7 @@ module Update exposing (..)
 import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Delay exposing (sequenceMs)
 import Helpers.Dom exposing (scrollHubToLevel)
@@ -23,14 +24,15 @@ initialModel : Model
 initialModel =
     { scene = Title
     , sceneTransition = False
-    , externalAnimations = ""
-    , progress = ( 3, 4 )
+    , transitionBackground = Orange
+    , progress = ( 2, 2 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , hubData = hubData
     , levelModel = Level.initialState
     , window = { height = 0, width = 0 }
     , mouse = { x = 0, y = 0 }
+    , externalAnimations = ""
     }
 
 
@@ -40,8 +42,11 @@ update msg model =
         SetScene scene ->
             { model | scene = scene } ! []
 
-        Transition bool ->
-            { model | sceneTransition = bool } ! []
+        BeginSceneTransition ->
+            { model | sceneTransition = True } ! [ genRandomBackground ]
+
+        EndSceneTransition ->
+            { model | sceneTransition = False } ! []
 
         SetCurrentLevel progress ->
             { model | currentLevel = progress } ! []
@@ -57,20 +62,20 @@ update msg model =
                 model
                     ! [ sequenceMs
                             [ ( 600, SetCurrentLevel <| Just progress )
-                            , ( 10, Transition True )
+                            , ( 10, BeginSceneTransition )
                             , ( 500, SetScene Level )
                             , ( 0, LoadLevelData levelConfig )
-                            , ( 2500, Transition False )
+                            , ( 2500, EndSceneTransition )
                             ]
                       ]
 
         GoToHub ->
             model
                 ! [ sequenceMs
-                        [ ( 0, Transition True )
+                        [ ( 0, BeginSceneTransition )
                         , ( 500, SetScene Hub )
                         , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
-                        , ( 2400, Transition False )
+                        , ( 2400, EndSceneTransition )
                         ]
                   ]
 
@@ -91,6 +96,9 @@ update msg model =
                             , ( 1000, SetInfoState Hidden )
                             ]
                       ]
+
+        RandomBackground background ->
+            { model | transitionBackground = background } ! []
 
         LoadLevelData levelData ->
             handleLoadLevel levelData model

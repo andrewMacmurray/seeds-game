@@ -10,7 +10,7 @@ import Window
 type alias Model =
     { scene : Scene
     , sceneTransition : Bool
-    , externalAnimations : String
+    , transitionBackground : TransitionBackground
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
@@ -18,6 +18,7 @@ type alias Model =
     , levelModel : Level.Model
     , window : Window.Size
     , mouse : Mouse.Position
+    , externalAnimations : String
     }
 
 
@@ -31,6 +32,11 @@ type InfoWindow
     = Visible LevelProgress
     | Leaving LevelProgress
     | Hidden
+
+
+type TransitionBackground
+    = Orange
+    | Blue
 
 
 type alias LevelProgress =
@@ -72,7 +78,9 @@ type alias LevelData =
 
 type Msg
     = SetScene Scene
-    | Transition Bool
+    | BeginSceneTransition
+    | EndSceneTransition
+    | RandomBackground TransitionBackground
     | ReceieveExternalAnimations String
     | StartLevel LevelProgress
     | SetCurrentLevel (Maybe LevelProgress)

@@ -18,9 +18,8 @@ function hardBounceDown () {
     .translate({
       from: { x: 0, y: -200 },
       to: { x: 0, y: 0 },
-      stiffness: 2,
-      bounces: 4,
-      easing: "hardbounce"
+      stiffness: 3,
+      bounces: 5
     })
     .getKeyframeCSS({
       name: 'hard-bounce-down'
@@ -35,9 +34,8 @@ function hardBounceDowns (tileSize) {
       .translate({
         from: { x: 0, y: 0 },
         to: { x: 0, y: tileSize * i },
-        stiffness: 1,
-        bounces: 2,
-        easing: "hardbounce"
+        stiffness: 2,
+        bounces: 2
       })
       .getKeyframeCSS({
         name: 'hard-bounce-down-' + i
