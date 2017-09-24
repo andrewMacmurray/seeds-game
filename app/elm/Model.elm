@@ -3,7 +3,8 @@ module Model exposing (..)
 import Dict exposing (Dict)
 import Dom
 import Mouse
-import Scenes.Level.Model as Level exposing (Coord, SeedType, TileProbability)
+import Data.Level.Types exposing (Coord, SeedType, TileProbability)
+import Scenes.Level.Model as Level
 import Window
 
 

@@ -3,7 +3,7 @@ module Data.Level.Score exposing (..)
 import Data.Level.Move.Utils exposing (currentMoves)
 import Data.Level.Move.Type exposing (currentMoveTileType)
 import Dict
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 addScoreFromMoves : Board -> Scores -> Scores

@@ -18,6 +18,7 @@ import Helpers.Dict exposing (mapValues)
 import Html exposing (Html, div)
 import Model as Main exposing (LevelData, WorldData)
 import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 import Time exposing (millisecond)
 import Views.Level.Board exposing (board, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)
@@ -110,7 +111,7 @@ update msg model =
             (model |> mapBoard setGrowingToStatic) ! []
 
         MakeNewTiles ->
-            model ! [ makeNewTiles model ]
+            model ! [ makeNewTiles model.tileProbabilities model.board AddTiles ]
 
         ResetEntering ->
             (model |> transformBoard (mapValues setEnteringToStatic)) ! []
@@ -168,7 +169,7 @@ fallDelay moveShape =
 
 handleGenerateTiles : LevelData -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardScale } =
-    generateTiles levelData boardScale
+    generateTiles levelData boardScale InitTiles
 
 
 handleMakeBoard : List TileType -> Model -> Model
@@ -219,7 +220,7 @@ handleCheckMove move model =
         newModel =
             model |> handleCheckMove_ move
     in
-        newModel ! [ triggerMoveIfSquare newModel ]
+        newModel ! [ triggerMoveIfSquare newModel.board SquareMove ]
 
 
 handleCheckMove_ : Move -> Model -> Model

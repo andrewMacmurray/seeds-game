@@ -7,7 +7,7 @@ import Data.Level.Move.Square exposing (isValidSquare, triggerMoveIfSquare)
 import Data.Level.Move.Type exposing (emptyMove, moveShape, sameTileType)
 import Data.Level.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
 import Dict
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 addToMove : Move -> Board -> Board

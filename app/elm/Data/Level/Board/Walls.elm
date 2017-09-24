@@ -1,6 +1,6 @@
 module Data.Level.Board.Walls exposing (..)
 
-import Scenes.Level.Model exposing (Coord)
+import Data.Level.Types exposing (Coord)
 
 
 standardWalls : List Coord

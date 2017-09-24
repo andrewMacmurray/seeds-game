@@ -4,7 +4,7 @@ import Data.Level.Board.Probabilities exposing (tileProbability)
 import Dict
 import Model exposing (LevelData, WorldData)
 import Random exposing (..)
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 makeBoard : Int -> List TileType -> Board
@@ -22,8 +22,7 @@ makeCoords x =
 
 rangeToCoord : Int -> Int -> List Coord
 rangeToCoord y x =
-    makeRange y
-        |> List.map (\y -> ( x, y ))
+    makeRange y |> List.map (\y -> ( x, y ))
 
 
 makeRange : Int -> List Int
@@ -31,10 +30,10 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-generateTiles : LevelData -> Int -> Cmd Msg
-generateTiles levelData x =
+generateTiles : LevelData -> Int -> (List Coord -> List TileType -> msg) -> Cmd msg
+generateTiles levelData x msg =
     Random.list (x * x) (tileGenerator levelData.tileProbabilities)
-        |> Random.generate (InitTiles levelData.walls)
+        |> Random.generate (msg levelData.walls)
 
 
 tileGenerator : List TileProbability -> Generator TileType

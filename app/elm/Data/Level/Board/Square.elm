@@ -3,7 +3,7 @@ module Data.Level.Board.Square exposing (..)
 import Data.Level.Move.Type exposing (currentMoveTileType)
 import Data.Level.Board.Tile exposing (getTileType, setToDragging)
 import Dict
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 setAllTilesOfTypeToDragging : Board -> Board

@@ -3,8 +3,8 @@ module Data.Hub.Config exposing (..)
 import Data.Level.Board.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
 import Dict
-import Model exposing (HubData, WorldData, WorldLevels)
-import Scenes.Level.Model exposing (..)
+import Model exposing (HubData, WorldData, LevelData, WorldLevels)
+import Data.Level.Types exposing (..)
 
 
 hubData : HubData
@@ -80,6 +80,7 @@ world1levels =
         ]
 
 
+level5 : LevelData
 level5 =
     { goal = 500
     , tileProbabilities = evenTiles

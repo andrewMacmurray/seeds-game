@@ -1,6 +1,6 @@
 module Data.Level.Board.Probabilities exposing (..)
 
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 tileProbability : List TileProbability -> Int -> TileType
