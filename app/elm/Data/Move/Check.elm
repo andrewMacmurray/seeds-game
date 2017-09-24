@@ -10,40 +10,6 @@ import Dict
 import Scenes.Level.Model exposing (..)
 
 
-handleStopMove : Model -> Model
-handleStopMove model =
-    { model
-        | isDragging = False
-        , moveShape = Nothing
-    }
-
-
-handleStartMove : Move -> Model -> Model
-handleStartMove move model =
-    { model
-        | isDragging = True
-        , board = startMove move model.board
-        , moveShape = Just Line
-    }
-
-
-handleCheckMove : Move -> Model -> ( Model, Cmd Msg )
-handleCheckMove move model =
-    let
-        newModel =
-            model |> handleCheckMove_ move
-    in
-        newModel ! [ triggerMoveIfSquare newModel ]
-
-
-handleCheckMove_ : Move -> Model -> Model
-handleCheckMove_ move model =
-    if model.isDragging then
-        { model | board = addToMove move model.board }
-    else
-        model
-
-
 addToMove : Move -> Board -> Board
 addToMove curr board =
     let

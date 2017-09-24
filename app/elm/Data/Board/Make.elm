@@ -7,11 +7,6 @@ import Random exposing (..)
 import Scenes.Level.Model exposing (..)
 
 
-handleMakeBoard : List TileType -> Model -> Model
-handleMakeBoard tileList ({ boardScale } as model) =
-    { model | board = makeBoard boardScale tileList }
-
-
 makeBoard : Int -> List TileType -> Board
 makeBoard scale tiles =
     tiles
@@ -34,11 +29,6 @@ rangeToCoord y x =
 makeRange : Int -> List Int
 makeRange n =
     List.range 0 (n - 1)
-
-
-handleGenerateTiles : LevelData -> Model -> Cmd Msg
-handleGenerateTiles levelData { boardScale } =
-    generateTiles levelData boardScale
 
 
 generateTiles : LevelData -> Int -> Cmd Msg

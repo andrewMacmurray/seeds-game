@@ -6,11 +6,6 @@ import List.Extra exposing (groupWhile)
 import Scenes.Level.Model exposing (..)
 
 
-handleShiftBoard : Model -> Model
-handleShiftBoard model =
-    { model | board = model.board |> shiftBoard }
-
-
 shiftBoard : Board -> Board
 shiftBoard board =
     board

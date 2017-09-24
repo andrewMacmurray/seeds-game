@@ -4,7 +4,7 @@ import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
 import Scenes.Hub.View exposing (hub)
-import Scenes.Level.View exposing (level)
+import Scenes.Level.Update exposing (levelView)
 import Scenes.Title.View exposing (title)
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
@@ -24,7 +24,7 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.scene of
         Level ->
-            level model |> Html.map LevelMsg
+            levelView model |> Html.map LevelMsg
 
         Hub ->
             hub model

@@ -1,20 +1,10 @@
 module Data.Board.Falling exposing (..)
 
-import Data.Board.Shift exposing (groupBoardByColumn, handleShiftBoard, shiftBoard, yCoord)
+import Data.Board.Shift exposing (groupBoardByColumn, shiftBoard, yCoord)
 import Data.Board.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
 import Helpers.Dict exposing (filterValues, mapValues)
 import Scenes.Level.Model exposing (..)
-
-
-handleResetFallingTiles : Model -> Model
-handleResetFallingTiles model =
-    { model | board = model.board |> mapValues setFallingToStatic }
-
-
-handleFallingTiles : Model -> Model
-handleFallingTiles model =
-    { model | board = model.board |> setFallingTiles }
 
 
 setFallingTiles : Board -> Board

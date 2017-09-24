@@ -6,14 +6,6 @@ import Dict
 import Scenes.Level.Model exposing (..)
 
 
-handleSquareMove : Model -> Model
-handleSquareMove model =
-    { model
-        | moveShape = Just Square
-        , board = setAllTilesOfTypeToDragging model.board
-    }
-
-
 setAllTilesOfTypeToDragging : Board -> Board
 setAllTilesOfTypeToDragging board =
     board

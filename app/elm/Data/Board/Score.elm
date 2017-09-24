@@ -6,11 +6,6 @@ import Dict
 import Scenes.Level.Model exposing (..)
 
 
-handleAddScore : Model -> Model
-handleAddScore model =
-    { model | scores = addScoreFromMoves model.board model.scores }
-
-
 addScoreFromMoves : Board -> Scores -> Scores
 addScoreFromMoves board scores =
     let

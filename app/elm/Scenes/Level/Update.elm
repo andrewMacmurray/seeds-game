@@ -1,22 +1,40 @@
 module Scenes.Level.Update exposing (..)
 
-import Data.Board.Block exposing (handleAddWalls)
-import Data.Board.Entering exposing (handleAddNewTiles, handleResetEntering, makeNewTiles)
-import Data.Board.Falling exposing (handleFallingTiles, handleResetFallingTiles)
-import Data.Board.Growing exposing (handleGrowSeedPods, handleResetGrowing, handleSetGrowingSeedPods)
-import Data.Board.Leaving exposing (handleLeavingTiles, handleRemoveLeavingTiles)
-import Data.Board.Make exposing (handleGenerateTiles, handleMakeBoard)
-import Data.Board.Score exposing (handleAddScore, initialScores)
-import Data.Board.Shift exposing (handleShiftBoard, shiftBoard)
-import Data.Board.Square exposing (handleSquareMove)
-import Data.Move.Check exposing (handleCheckMove, handleStartMove, handleStopMove)
+import Data.Board.Block exposing (addWalls)
+import Data.Board.Entering exposing (addNewTiles, makeNewTiles)
+import Data.Board.Falling exposing (setFallingTiles)
+import Data.Board.Make exposing (generateTiles, makeBoard)
+import Data.Board.Score exposing (addScoreFromMoves, initialScores)
+import Data.Board.Shift exposing (shiftBoard)
+import Data.Board.Square exposing (setAllTilesOfTypeToDragging)
+import Data.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
+import Data.Move.Check exposing (addToMove, startMove)
+import Data.Move.Square exposing (triggerMoveIfSquare)
 import Data.Move.Type exposing (currentMoveTileType)
 import Delay
-import Dict
+import Dict exposing (Dict)
 import Helpers.Delay exposing (sequenceMs)
+import Helpers.Dict exposing (mapValues)
+import Html exposing (Html, div)
 import Model as Main exposing (LevelData, WorldData)
 import Scenes.Level.Model exposing (..)
 import Time exposing (millisecond)
+import Views.Level.Board exposing (board, handleStop)
+import Views.Level.LineDrag exposing (handleLineDrag)
+import Views.Level.TopBar exposing (topBar)
+
+
+-- VIEW
+
+
+levelView : Main.Model -> Html Msg
+levelView model =
+    div [ handleStop model.levelModel ]
+        [ topBar model.levelModel
+        , board model
+        , handleLineDrag model
+        ]
+
 
 
 -- STATE
@@ -49,7 +67,7 @@ update msg model =
         InitTiles walls tiles ->
             (model
                 |> handleMakeBoard tiles
-                |> handleAddWalls walls
+                |> transformBoard (addWalls walls)
             )
                 ! []
 
@@ -67,35 +85,35 @@ update msg model =
         SetLeavingTiles ->
             (model
                 |> handleAddScore
-                |> handleLeavingTiles
+                |> mapBoard setToLeaving
             )
                 ! []
 
         SetFallingTiles ->
-            (model |> handleFallingTiles) ! []
+            (model |> transformBoard setFallingTiles) ! []
 
         ShiftBoard ->
             (model
-                |> handleShiftBoard
-                |> handleResetFallingTiles
-                |> handleRemoveLeavingTiles
+                |> transformBoard shiftBoard
+                |> mapBoard setFallingToStatic
+                |> mapBoard setLeavingToEmpty
             )
                 ! []
 
         SetGrowingSeedPods ->
-            (model |> handleSetGrowingSeedPods) ! []
+            (model |> mapBoard setDraggingToGrowing) ! []
 
         GrowPodsToSeeds ->
-            (model |> handleGrowSeedPods) ! []
+            (model |> mapBoard growSeedPod) ! []
 
         ResetGrowingSeeds ->
-            (model |> handleResetGrowing) ! []
+            (model |> mapBoard setGrowingToStatic) ! []
 
         MakeNewTiles ->
             model ! [ makeNewTiles model ]
 
         ResetEntering ->
-            (model |> handleResetEntering) ! []
+            (model |> transformBoard (mapValues setEnteringToStatic)) ! []
 
         ResetMove ->
             (model |> handleStopMove) ! []
@@ -142,3 +160,79 @@ fallDelay moveShape =
         500
     else
         350
+
+
+
+-- UPDATE HELPERS
+
+
+handleGenerateTiles : LevelData -> Model -> Cmd Msg
+handleGenerateTiles levelData { boardScale } =
+    generateTiles levelData boardScale
+
+
+handleMakeBoard : List TileType -> Model -> Model
+handleMakeBoard tileList ({ boardScale } as model) =
+    { model | board = makeBoard boardScale tileList }
+
+
+handleAddNewTiles : List TileType -> Model -> Model
+handleAddNewTiles tileList =
+    transformBoard <| addNewTiles tileList
+
+
+handleAddScore : Model -> Model
+handleAddScore model =
+    { model | scores = addScoreFromMoves model.board model.scores }
+
+
+mapBoard : (Block -> Block) -> Model -> Model
+mapBoard f model =
+    { model | board = (mapValues f) model.board }
+
+
+transformBoard : (a -> a) -> { m | board : a } -> { m | board : a }
+transformBoard fn model =
+    { model | board = fn model.board }
+
+
+handleStopMove : Model -> Model
+handleStopMove model =
+    { model
+        | isDragging = False
+        , moveShape = Nothing
+    }
+
+
+handleStartMove : Move -> Model -> Model
+handleStartMove move model =
+    { model
+        | isDragging = True
+        , board = startMove move model.board
+        , moveShape = Just Line
+    }
+
+
+handleCheckMove : Move -> Model -> ( Model, Cmd Msg )
+handleCheckMove move model =
+    let
+        newModel =
+            model |> handleCheckMove_ move
+    in
+        newModel ! [ triggerMoveIfSquare newModel ]
+
+
+handleCheckMove_ : Move -> Model -> Model
+handleCheckMove_ move model =
+    if model.isDragging then
+        { model | board = addToMove move model.board }
+    else
+        model
+
+
+handleSquareMove : Model -> Model
+handleSquareMove model =
+    { model
+        | moveShape = Just Square
+        , board = setAllTilesOfTypeToDragging model.board
+    }
