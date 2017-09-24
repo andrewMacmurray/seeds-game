@@ -1,9 +1,10 @@
 module Data.Hub.LoadLevel exposing (..)
 
-import Data.Board.Block exposing (addWalls)
-import Data.Board.Score exposing (initialScores, initialScoresFromProbabilites)
-import Model as Main exposing (LevelData, WorldData)
-import Scenes.Level.Model as Level
+import Data.Level.Board.Block exposing (addWalls)
+import Data.Level.Score exposing (initialScores, initialScoresFromProbabilites)
+import Model as Main
+import Data.Hub.Types exposing (..)
+import Scenes.Level.Model exposing (LevelModel)
 import Scenes.Level.Update exposing (initCmd)
 
 
@@ -16,7 +17,7 @@ handleLoadLevel (( _, levelData ) as config) model =
         newModel ! [ initCmd levelData newModel ]
 
 
-addLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
+addLevelData : ( WorldData, LevelData ) -> LevelModel -> LevelModel
 addLevelData ( worldData, { tileProbabilities, walls } ) model =
     { model
         | scores = initialScoresFromProbabilites tileProbabilities

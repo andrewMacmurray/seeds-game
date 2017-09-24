@@ -1,12 +1,7 @@
-module Data.Board.Block exposing (..)
+module Data.Level.Board.Block exposing (..)
 
 import Dict
-import Scenes.Level.Model exposing (..)
-
-
-handleAddWalls : List Coord -> Model -> Model
-handleAddWalls walls model =
-    { model | board = model.board |> addWalls walls }
+import Data.Level.Types exposing (..)
 
 
 addWalls : List Coord -> Board -> Board
@@ -30,10 +25,10 @@ map fn block =
 
 
 fold : (TileState -> a) -> a -> Block -> a
-fold fn acc block =
+fold fn default block =
     case block of
         Wall ->
-            acc
+            default
 
         Space tileState ->
             fn tileState

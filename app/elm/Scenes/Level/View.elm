@@ -1,15 +1,15 @@
 module Scenes.Level.View exposing (..)
 
-import Html exposing (..)
-import Scenes.Level.Model exposing (..)
-import Model as MainModel
+import Html exposing (div, Html)
 import Views.Level.Board exposing (board, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)
 import Views.Level.TopBar exposing (topBar)
+import Model exposing (Model)
+import Scenes.Level.Model exposing (LevelMsg)
 
 
-level : MainModel.Model -> Html Msg
-level model =
+levelView : Model -> Html LevelMsg
+levelView model =
     div [ handleStop model.levelModel ]
         [ topBar model.levelModel
         , board model

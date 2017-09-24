@@ -1,10 +1,10 @@
-module Data.Move.Utils exposing (..)
+module Data.Level.Move.Utils exposing (..)
 
-import Data.Move.Type exposing (emptyMove)
-import Data.Board.Tile exposing (isCurrentMove, isDragging, moveOrder)
+import Data.Level.Move.Type exposing (emptyMove)
+import Data.Level.Board.Tile exposing (isCurrentMove, isDragging, moveOrder)
 import Dict
 import Dict.Extra
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 isUniqueMove : Move -> Board -> Bool

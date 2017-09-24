@@ -1,19 +1,20 @@
 module Views.Level.Board exposing (..)
 
-import Data.Board.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
+import Data.Level.Board.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
 import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
 import Helpers.Style exposing (classes, px, styles, translate, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter, onMouseUp)
-import Model as MainModel exposing (Style)
+import Model exposing (Style, Model)
+import Data.Level.Types exposing (..)
 import Scenes.Level.Model exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 
 
-board : MainModel.Model -> Html Msg
+board : Model -> Html LevelMsg
 board model =
     boardLayout model
         [ div [ class "relative z-5" ] <| renderTiles model
@@ -21,21 +22,21 @@ board model =
         ]
 
 
-renderTiles : MainModel.Model -> List (Html Msg)
+renderTiles : Model -> List (Html LevelMsg)
 renderTiles model =
     model.levelModel.board
         |> Dict.toList
         |> List.map (renderTile model)
 
 
-renderLines : Model -> List (Html Msg)
+renderLines : LevelModel -> List (Html LevelMsg)
 renderLines model =
     model.board
         |> Dict.toList
         |> List.map (renderLineLayer model)
 
 
-boardLayout : MainModel.Model -> List (Html Msg) -> Html Msg
+boardLayout : Model -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
@@ -46,7 +47,7 @@ boardLayout model =
         ]
 
 
-renderLineLayer : Model -> Move -> Html Msg
+renderLineLayer : LevelModel -> Move -> Html LevelMsg
 renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
@@ -60,7 +61,7 @@ renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-renderTile : MainModel.Model -> Move -> Html Msg
+renderTile : Model -> Move -> Html LevelMsg
 renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
@@ -78,7 +79,7 @@ renderTile model (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-handleStop : Model -> Attribute Msg
+handleStop : LevelModel -> Attribute LevelMsg
 handleStop model =
     if model.isDragging && model.moveShape /= Just Square then
         onMouseUp <| StopMove Line
@@ -86,7 +87,7 @@ handleStop model =
         emptyProperty
 
 
-hanldeMoveEvents : Model -> Move -> Attribute Msg
+hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
 hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
@@ -94,7 +95,7 @@ hanldeMoveEvents model move =
         onMouseDownPreventDefault <| StartMove move
 
 
-tracer : Model -> Move -> Html Msg
+tracer : LevelModel -> Move -> Html LevelMsg
 tracer model move =
     let
         extraStyles =
@@ -103,7 +104,7 @@ tracer model move =
         makeInnerTile extraStyles model move
 
 
-wall : Move -> Html Msg
+wall : Move -> Html LevelMsg
 wall move =
     div
         [ style <| wallStyles move
@@ -112,7 +113,7 @@ wall move =
         []
 
 
-innerTile : Model -> Move -> Html Msg
+innerTile : LevelModel -> Move -> Html LevelMsg
 innerTile model move =
     let
         extraStyles =
@@ -121,7 +122,7 @@ innerTile model move =
         makeInnerTile extraStyles model move
 
 
-makeInnerTile : List Style -> Model -> Move -> Html Msg
+makeInnerTile : List Style -> LevelModel -> Move -> Html LevelMsg
 makeInnerTile extraStyles model (( _, tile ) as move) =
     div
         [ class <| baseTileClasses tile
@@ -129,12 +130,13 @@ makeInnerTile extraStyles model (( _, tile ) as move) =
             styles
                 [ extraStyles
                 , baseTileStyles model move
+                , [ ( "will-change", "transform, opacity" ) ]
                 ]
         ]
         []
 
 
-baseTileStyles : Model -> Move -> List Style
+baseTileStyles : LevelModel -> Move -> List Style
 baseTileStyles model (( _, tile ) as move) =
     styles
         [ growingStyles move

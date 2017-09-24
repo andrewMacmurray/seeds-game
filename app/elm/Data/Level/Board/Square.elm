@@ -1,17 +1,9 @@
-module Data.Board.Square exposing (..)
+module Data.Level.Board.Square exposing (..)
 
-import Data.Move.Type exposing (currentMoveTileType)
-import Data.Board.Tile exposing (getTileType, setToDragging)
+import Data.Level.Move.Type exposing (currentMoveTileType)
+import Data.Level.Board.Tile exposing (getTileType, setToDragging)
 import Dict
-import Scenes.Level.Model exposing (..)
-
-
-handleSquareMove : Model -> Model
-handleSquareMove model =
-    { model
-        | moveShape = Just Square
-        , board = setAllTilesOfTypeToDragging model.board
-    }
+import Data.Level.Types exposing (..)
 
 
 setAllTilesOfTypeToDragging : Board -> Board

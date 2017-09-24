@@ -1,10 +1,10 @@
 module Data.Hub.Config exposing (..)
 
-import Data.Board.Walls exposing (corners, standardWalls)
+import Data.Level.Board.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
 import Dict
-import Model exposing (HubData, WorldData, WorldLevels)
-import Scenes.Level.Model exposing (..)
+import Data.Hub.Types exposing (HubData, WorldData, LevelData, WorldLevels)
+import Data.Level.Types exposing (..)
 
 
 hubData : HubData
@@ -72,7 +72,7 @@ world1levels =
           )
         , ( 4
           , { goal = 500
-            , tileProbabilities = noSun
+            , tileProbabilities = noRain
             , walls = corners
             }
           )
@@ -80,6 +80,7 @@ world1levels =
         ]
 
 
+level5 : LevelData
 level5 =
     { goal = 500
     , tileProbabilities = evenTiles
@@ -95,6 +96,11 @@ evenTiles =
 noSun : List TileProbability
 noSun =
     [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+
+
+noRain : List TileProbability
+noRain =
+    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Sun, 30 ) ]
 
 
 noWeather : List TileProbability

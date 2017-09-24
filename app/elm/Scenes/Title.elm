@@ -1,4 +1,4 @@
-module Scenes.Title.View exposing (..)
+module Scenes.Title exposing (..)
 
 import Data.Color exposing (darkYellow, gold, lightOrange, orange, white)
 import Helpers.Style exposing (backgroundColor, color, marginTop, px, widthStyle)
@@ -10,8 +10,8 @@ import Model exposing (..)
 import Views.Title.Seeds exposing (seeds)
 
 
-title : Model -> Html Msg
-title model =
+titleView : Model -> Html Msg
+titleView model =
     div [ class "relative z-5 tc" ]
         [ div
             [ style [ marginTop <| percentWindowHeight 17 model ] ]

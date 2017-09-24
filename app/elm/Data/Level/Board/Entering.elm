@@ -1,21 +1,10 @@
-module Data.Board.Entering exposing (..)
+module Data.Level.Board.Entering exposing (..)
 
-import Data.Board.Make exposing (tileGenerator)
-import Data.Board.Tile exposing (setEnteringToStatic)
+import Data.Level.Board.Make exposing (tileGenerator)
 import Dict
-import Helpers.Dict exposing (mapValues)
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
+import Scenes.Level.Model exposing (LevelMsg(..))
 import Random exposing (Generator)
-
-
-handleResetEntering : Model -> Model
-handleResetEntering model =
-    { model | board = model.board |> mapValues setEnteringToStatic }
-
-
-handleAddNewTiles : List TileType -> Model -> Model
-handleAddNewTiles tileList model =
-    { model | board = addNewTiles tileList model.board }
 
 
 addNewTiles : List TileType -> Board -> Board
@@ -30,10 +19,10 @@ addNewTiles newTiles board =
         Dict.union tilesToAdd board
 
 
-makeNewTiles : Model -> Cmd Msg
-makeNewTiles model =
-    (tileGenerator model.tileProbabilities)
-        |> Random.list (numberOfEmpties model.board)
+makeNewTiles : List TileProbability -> Board -> Cmd LevelMsg
+makeNewTiles prob board =
+    (tileGenerator prob)
+        |> Random.list (numberOfEmpties board)
         |> Random.generate AddTiles
 
 

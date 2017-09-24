@@ -2,15 +2,15 @@ module Views.DebugTile exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
-debugCoord : Coord -> Html Msg
+debugCoord : Coord -> Html msg
 debugCoord coord =
     p [ class debugClasses ] [ text <| toString coord ]
 
 
-debugTileState : TileState -> Html Msg
+debugTileState : TileState -> Html msg
 debugTileState tileState =
     p [ class debugClasses ] [ text <| toString tileState ]
 

@@ -1,14 +1,9 @@
-module Data.Board.Score exposing (..)
+module Data.Level.Score exposing (..)
 
-import Data.Move.Utils exposing (currentMoves)
-import Data.Move.Type exposing (currentMoveTileType)
+import Data.Level.Move.Utils exposing (currentMoves)
+import Data.Level.Move.Type exposing (currentMoveTileType)
 import Dict
-import Scenes.Level.Model exposing (..)
-
-
-handleAddScore : Model -> Model
-handleAddScore model =
-    { model | scores = addScoreFromMoves model.board model.scores }
+import Data.Level.Types exposing (..)
 
 
 addScoreFromMoves : Board -> Scores -> Scores

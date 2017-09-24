@@ -1,8 +1,8 @@
-module Data.Move.Type exposing (..)
+module Data.Level.Move.Type exposing (..)
 
-import Data.Board.Tile exposing (getTileType, isDragging)
+import Data.Level.Board.Tile exposing (getTileType, isDragging)
 import Dict.Extra
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
 
 
 currentMoveTileType : Board -> Maybe TileType
@@ -39,4 +39,4 @@ sameTileType ( _, t2 ) ( _, t1 ) =
 
 emptyMove : Move
 emptyMove =
-    ( ( -1, -1 ), Space Empty )
+    ( ( 0, 0 ), Space Empty )

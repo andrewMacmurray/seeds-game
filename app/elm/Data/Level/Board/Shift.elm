@@ -1,14 +1,9 @@
-module Data.Board.Shift exposing (..)
+module Data.Level.Board.Shift exposing (..)
 
-import Data.Board.Tile exposing (isLeaving)
+import Data.Level.Board.Tile exposing (isLeaving)
 import Dict
 import List.Extra exposing (groupWhile)
-import Scenes.Level.Model exposing (..)
-
-
-handleShiftBoard : Model -> Model
-handleShiftBoard model =
-    { model | board = model.board |> shiftBoard }
+import Data.Level.Types exposing (..)
 
 
 shiftBoard : Board -> Board

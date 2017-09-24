@@ -17,9 +17,9 @@ seeds =
         ]
         (List.map seedSpacing
             [ foxglove
-            , lupin
-            , sunflower
             , marigold
+            , sunflower
+            , lupin
             , rose
             ]
         )

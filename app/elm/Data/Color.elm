@@ -14,7 +14,7 @@ seedPodGradient_ =
         [ deg 90
         , lightGreen
         , gradientStop lightGreen 50
-        , gradientStop green 51
+        , gradientStop green 50
         , green
         ]
 
@@ -76,7 +76,7 @@ blockYellow =
 
 lightYellow : String
 lightYellow =
-    "rgb(255, 220, 115)"
+    "rgb(255, 251, 179)"
 
 
 washedYellow : String
@@ -117,6 +117,11 @@ lightGreen =
 lightBlue : String
 lightBlue =
     "rgb(38, 170, 224)"
+
+
+rainBlue : String
+rainBlue =
+    "rgb(97, 188, 255)"
 
 
 purple : String

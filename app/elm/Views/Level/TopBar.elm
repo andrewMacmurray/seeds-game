@@ -1,15 +1,16 @@
 module Views.Level.TopBar exposing (..)
 
-import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
-import Data.Board.Tile exposing (seedBackgrounds)
+import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Data.Level.Board.Tile exposing (seedBackgrounds)
 import Data.Color exposing (gold, washedYellow)
 import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Level.Model exposing (..)
+import Data.Level.Types exposing (..)
+import Scenes.Level.Model exposing (LevelModel)
 
 
-topBar : Model -> Html msg
+topBar : LevelModel -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -30,7 +31,7 @@ topBar model =
         ]
 
 
-renderScore : Model -> TileType -> Html msg
+renderScore : LevelModel -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
@@ -52,7 +53,7 @@ renderScore model tileType =
             ]
 
 
-renderScoreIcon : Model -> TileType -> Html msg
+renderScoreIcon : LevelModel -> TileType -> Html msg
 renderScoreIcon model tileType =
     case tileType of
         Sun ->
@@ -68,7 +69,7 @@ renderScoreIcon model tileType =
             span [] []
 
 
-scoreIcon : Model -> String -> Html msg
+scoreIcon : LevelModel -> String -> Html msg
 scoreIcon { scoreIconSize } url =
     div
         [ class "bg-center contain"

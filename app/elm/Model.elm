@@ -1,78 +1,33 @@
 module Model exposing (..)
 
-import Dict exposing (Dict)
 import Dom
 import Mouse
-import Scenes.Level.Model as Level exposing (Coord, SeedType, TileProbability)
+import Data.Hub.Types exposing (..)
+import Scenes.Level.Model exposing (LevelModel, LevelMsg)
 import Window
 
 
 type alias Model =
-    { scene : Scene
+    { levelModel : LevelModel
+    , scene : Scene
     , sceneTransition : Bool
-    , externalAnimations : String
+    , transitionBackground : TransitionBackground
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
     , hubData : HubData
-    , levelModel : Level.Model
     , window : Window.Size
     , mouse : Mouse.Position
-    }
-
-
-type Scene
-    = Level
-    | Hub
-    | Title
-
-
-type InfoWindow
-    = Visible LevelProgress
-    | Leaving LevelProgress
-    | Hidden
-
-
-type alias LevelProgress =
-    ( WorldNumber, LevelNumber )
-
-
-type alias WorldNumber =
-    Int
-
-
-type alias LevelNumber =
-    Int
-
-
-type alias HubData =
-    Dict Int WorldData
-
-
-type alias WorldData =
-    { levels : WorldLevels
-    , seedType : SeedType
-    , background : String
-    , textColor : String
-    , textCompleteColor : String
-    , textBackgroundColor : String
-    }
-
-
-type alias WorldLevels =
-    Dict Int LevelData
-
-
-type alias LevelData =
-    { tileProbabilities : List TileProbability
-    , walls : List Coord
-    , goal : Int
+    , externalAnimations : String
     }
 
 
 type Msg
-    = SetScene Scene
-    | Transition Bool
+    = LevelMsg LevelMsg
+    | SetScene Scene
+    | BeginSceneTransition
+    | EndSceneTransition
+    | RandomBackground TransitionBackground
     | ReceieveExternalAnimations String
     | StartLevel LevelProgress
     | SetCurrentLevel (Maybe LevelProgress)
@@ -85,7 +40,6 @@ type Msg
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())
-    | LevelMsg Level.Msg
     | WindowSize Window.Size
     | MousePosition Mouse.Position
 

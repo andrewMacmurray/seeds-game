@@ -8,7 +8,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model exposing (..)
-import Scenes.Level.Model exposing (SeedType(..))
+import Data.Level.Types exposing (SeedType(..))
+import Data.Hub.Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
