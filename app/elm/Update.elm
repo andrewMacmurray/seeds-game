@@ -44,7 +44,7 @@ update msg model =
             { model | scene = scene } ! []
 
         BeginSceneTransition ->
-            { model | sceneTransition = True } ! [ genRandomBackground RandomBackground ]
+            { model | sceneTransition = True } ! [ genRandomBackground ]
 
         EndSceneTransition ->
             { model | sceneTransition = False } ! []

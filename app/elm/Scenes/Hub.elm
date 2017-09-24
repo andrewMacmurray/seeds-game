@@ -1,4 +1,4 @@
-module Scenes.Hub.View exposing (..)
+module Scenes.Hub exposing (..)
 
 import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
 import Html exposing (..)
@@ -8,8 +8,11 @@ import Views.Hub.Info exposing (handleHideInfo, info)
 import Views.Hub.World exposing (renderWorlds)
 
 
-hub : Model -> Html Msg
-hub model =
+-- Hub State in top level Update
+
+
+hubView : Model -> Html Msg
+hubView model =
     div
         [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
         , id "hub"

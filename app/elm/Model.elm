@@ -8,14 +8,14 @@ import Window
 
 
 type alias Model =
-    { scene : Scene
+    { levelModel : LevelModel
+    , scene : Scene
     , sceneTransition : Bool
     , transitionBackground : TransitionBackground
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
     , hubData : HubData
-    , levelModel : LevelModel
     , window : Window.Size
     , mouse : Mouse.Position
     , externalAnimations : String
@@ -23,7 +23,8 @@ type alias Model =
 
 
 type Msg
-    = SetScene Scene
+    = LevelMsg LevelMsg
+    | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
     | RandomBackground TransitionBackground
@@ -39,7 +40,6 @@ type Msg
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())
-    | LevelMsg LevelMsg
     | WindowSize Window.Size
     | MousePosition Mouse.Position
 
