@@ -22,7 +22,7 @@ function hardBounceDown () {
       bounces: 5
     })
     .getKeyframeCSS({
-      name: 'hard-bounce-down'
+      name: 'bounce-down'
     })
 }
 
@@ -38,7 +38,7 @@ function hardBounceDowns (tileSize) {
         bounces: 2
       })
       .getKeyframeCSS({
-        name: 'hard-bounce-down-' + i
+        name: 'bounce-down-' + i
       })
 
     anims.push(b)

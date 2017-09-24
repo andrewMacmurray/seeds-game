@@ -68,7 +68,7 @@ enteringStyles ( _, block ) =
     in
         case tile of
             Entering tile ->
-                [ animationStyle "hard-bounce-down 1s linear"
+                [ animationStyle "bounce-down 1s linear"
                 ]
 
             _ ->
@@ -109,7 +109,7 @@ fallingStyles ( _, block ) =
     in
         case tile of
             Falling tile distance ->
-                [ animationStyle <| "hard-bounce-down-" ++ (toString (distance)) ++ " 0.9s linear"
+                [ animationStyle <| "bounce-down-" ++ (toString (distance)) ++ " 0.9s linear"
                 , fillModeStyle "forwards"
                 ]
 
