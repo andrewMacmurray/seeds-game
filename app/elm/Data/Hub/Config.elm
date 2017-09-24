@@ -72,7 +72,7 @@ world1levels =
           )
         , ( 4
           , { goal = 500
-            , tileProbabilities = noSun
+            , tileProbabilities = noRain
             , walls = corners
             }
           )
@@ -96,6 +96,11 @@ evenTiles =
 noSun : List TileProbability
 noSun =
     [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+
+
+noRain : List TileProbability
+noRain =
+    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Sun, 30 ) ]
 
 
 noWeather : List TileProbability

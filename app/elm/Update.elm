@@ -26,7 +26,7 @@ initialModel =
     { scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 2, 2 )
+    , progress = ( 3, 4 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , hubData = hubData
@@ -56,19 +56,15 @@ update msg model =
             { model | externalAnimations = animations } ! []
 
         StartLevel progress ->
-            let
-                levelConfig =
-                    getLevelConfig progress model
-            in
-                model
-                    ! [ sequenceMs
-                            [ ( 600, SetCurrentLevel <| Just progress )
-                            , ( 10, BeginSceneTransition )
-                            , ( 500, SetScene Level )
-                            , ( 0, LoadLevelData levelConfig )
-                            , ( 2500, EndSceneTransition )
-                            ]
-                      ]
+            model
+                ! [ sequenceMs
+                        [ ( 600, SetCurrentLevel <| Just progress )
+                        , ( 10, BeginSceneTransition )
+                        , ( 500, SetScene Level )
+                        , ( 0, LoadLevelData <| getLevelConfig progress model )
+                        , ( 2500, EndSceneTransition )
+                        ]
+                  ]
 
         GoToHub ->
             model

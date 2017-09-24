@@ -14,7 +14,7 @@ seedPodGradient_ =
         [ deg 90
         , lightGreen
         , gradientStop lightGreen 50
-        , gradientStop green 51
+        , gradientStop green 50
         , green
         ]
 
