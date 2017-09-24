@@ -3,6 +3,7 @@ module Data.Level.Board.Entering exposing (..)
 import Data.Level.Board.Make exposing (tileGenerator)
 import Dict
 import Data.Level.Types exposing (..)
+import Scenes.Level.Model exposing (LevelMsg(..))
 import Random exposing (Generator)
 
 
@@ -18,11 +19,11 @@ addNewTiles newTiles board =
         Dict.union tilesToAdd board
 
 
-makeNewTiles : List TileProbability -> Board -> (List TileType -> msg) -> Cmd msg
-makeNewTiles prob board msg =
+makeNewTiles : List TileProbability -> Board -> Cmd LevelMsg
+makeNewTiles prob board =
     (tileGenerator prob)
         |> Random.list (numberOfEmpties board)
-        |> Random.generate msg
+        |> Random.generate AddTiles
 
 
 numberOfEmpties : Board -> Int

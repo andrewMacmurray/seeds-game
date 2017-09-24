@@ -6,12 +6,12 @@ import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
 import Data.Level.Types exposing (..)
-import Scenes.Level.Model exposing (Model, Msg)
+import Scenes.Level.Model exposing (LevelModel, LevelMsg)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-renderLine : Model -> Move -> Html Msg
+renderLine : LevelModel -> Move -> Html LevelMsg
 renderLine model ( coord, block ) =
     let
         tileState =
@@ -34,7 +34,7 @@ renderLine model ( coord, block ) =
                 span [] []
 
 
-line_ : TileType -> MoveBearing -> Html Msg
+line_ : TileType -> MoveBearing -> Html LevelMsg
 line_ tileType bearing =
     svg
         [ width "50"

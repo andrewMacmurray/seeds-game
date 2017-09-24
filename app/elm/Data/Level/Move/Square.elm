@@ -7,14 +7,15 @@ import Data.Level.Board.Tile exposing (moveOrder)
 import Delay
 import Dict
 import Data.Level.Types exposing (..)
+import Scenes.Level.Model exposing (LevelMsg(..))
 import Time exposing (millisecond)
 import Helpers.List exposing (allTrue)
 
 
-triggerMoveIfSquare : Board -> msg -> Cmd msg
-triggerMoveIfSquare board msg =
+triggerMoveIfSquare : Board -> Cmd LevelMsg
+triggerMoveIfSquare board =
     if hasSquareTile board then
-        Delay.after 0 millisecond msg
+        Delay.after 0 millisecond SquareMove
     else
         Cmd.none
 

@@ -3,7 +3,7 @@ module Scenes.Level.Model exposing (..)
 import Data.Level.Types exposing (..)
 
 
-type alias Model =
+type alias LevelModel =
     { board : Board
     , scores : Scores
     , isDragging : Bool
@@ -17,7 +17,7 @@ type alias Model =
     }
 
 
-type Msg
+type LevelMsg
     = InitTiles (List Coord) (List TileType)
     | AddTiles (List TileType)
     | SquareMove

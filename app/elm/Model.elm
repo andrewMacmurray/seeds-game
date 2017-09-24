@@ -3,7 +3,7 @@ module Model exposing (..)
 import Dom
 import Mouse
 import Data.Hub.Types exposing (..)
-import Scenes.Level.Model as Level
+import Scenes.Level.Model exposing (LevelModel, LevelMsg)
 import Window
 
 
@@ -15,7 +15,7 @@ type alias Model =
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
     , hubData : HubData
-    , levelModel : Level.Model
+    , levelModel : LevelModel
     , window : Window.Size
     , mouse : Mouse.Position
     , externalAnimations : String
@@ -39,7 +39,7 @@ type Msg
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())
-    | LevelMsg Level.Msg
+    | LevelMsg LevelMsg
     | WindowSize Window.Size
     | MousePosition Mouse.Position
 

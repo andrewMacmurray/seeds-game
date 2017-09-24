@@ -76,7 +76,7 @@ blockYellow =
 
 lightYellow : String
 lightYellow =
-    "rgb(255, 220, 115)"
+    "rgb(255, 251, 179)"
 
 
 washedYellow : String
