@@ -1,8 +1,8 @@
 module Views.Level.Styles exposing (..)
 
-import Data.Board.Block exposing (getTileState)
-import Data.Board.Score exposing (scoreTileTypes)
-import Data.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
+import Data.Level.Board.Block exposing (getTileState)
+import Data.Level.Score exposing (scoreTileTypes)
+import Data.Level.Board.Tile exposing (getTileType, growingOrder, isDragging, isLeaving, leavingOrder, tileColorMap)
 import Data.Color exposing (blockYellow)
 import Dict exposing (Dict)
 import Helpers.Style exposing (animationStyle, backgroundColor, classes, displayStyle, emptyStyle, fillModeStyle, heightStyle, marginTop, ms, opacityStyle, px, scale, size, transformStyle, transitionDelayStyle, transitionStyle, translate, translateScale, widthStyle)

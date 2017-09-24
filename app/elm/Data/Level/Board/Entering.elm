@@ -1,6 +1,6 @@
-module Data.Board.Entering exposing (..)
+module Data.Level.Board.Entering exposing (..)
 
-import Data.Board.Make exposing (tileGenerator)
+import Data.Level.Board.Make exposing (tileGenerator)
 import Dict
 import Scenes.Level.Model exposing (..)
 import Random exposing (Generator)

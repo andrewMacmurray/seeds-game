@@ -1,11 +1,11 @@
-module Data.Move.Check exposing (..)
+module Data.Level.Move.Check exposing (..)
 
-import Data.Board.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
-import Data.Move.Bearing exposing (addBearings)
-import Data.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDirection)
-import Data.Move.Square exposing (isValidSquare, triggerMoveIfSquare)
-import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
+import Data.Level.Board.Tile exposing (addBearing, isCurrentMove, isDragging, moveOrder, setStaticToFirstMove, setToDragging)
+import Data.Level.Move.Bearing exposing (addBearings)
+import Data.Level.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDirection)
+import Data.Level.Move.Square exposing (isValidSquare, triggerMoveIfSquare)
+import Data.Level.Move.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Level.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
 import Dict
 import Scenes.Level.Model exposing (..)
 

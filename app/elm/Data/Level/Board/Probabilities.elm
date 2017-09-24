@@ -1,4 +1,4 @@
-module Data.Board.Probabilities exposing (..)
+module Data.Level.Board.Probabilities exposing (..)
 
 import Scenes.Level.Model exposing (..)
 

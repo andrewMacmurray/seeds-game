@@ -1,7 +1,7 @@
-module Data.Board.Falling exposing (..)
+module Data.Level.Board.Falling exposing (..)
 
-import Data.Board.Shift exposing (groupBoardByColumn, shiftBoard, yCoord)
-import Data.Board.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
+import Data.Level.Board.Shift exposing (groupBoardByColumn, shiftBoard, yCoord)
+import Data.Level.Board.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
 import Helpers.Dict exposing (filterValues, mapValues)
 import Scenes.Level.Model exposing (..)

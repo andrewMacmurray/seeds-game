@@ -1,9 +1,9 @@
-module Data.Move.Square exposing (..)
+module Data.Level.Move.Square exposing (..)
 
-import Data.Move.Direction exposing (validDirection)
-import Data.Move.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Move.Utils exposing (currentMoves)
-import Data.Board.Tile exposing (moveOrder)
+import Data.Level.Move.Direction exposing (validDirection)
+import Data.Level.Move.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Level.Move.Utils exposing (currentMoves)
+import Data.Level.Board.Tile exposing (moveOrder)
 import Delay
 import Dict
 import Scenes.Level.Model exposing (..)

@@ -1,4 +1,4 @@
-module Data.Move.Direction exposing (..)
+module Data.Level.Move.Direction exposing (..)
 
 import Scenes.Level.Model exposing (..)
 import Helpers.List exposing (anyTrue)

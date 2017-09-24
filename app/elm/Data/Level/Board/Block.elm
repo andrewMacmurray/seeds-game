@@ -1,4 +1,4 @@
-module Data.Board.Block exposing (..)
+module Data.Level.Board.Block exposing (..)
 
 import Dict
 import Scenes.Level.Model exposing (..)

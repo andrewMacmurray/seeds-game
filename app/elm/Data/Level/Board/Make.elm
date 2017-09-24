@@ -1,6 +1,6 @@
-module Data.Board.Make exposing (..)
+module Data.Level.Board.Make exposing (..)
 
-import Data.Board.Probabilities exposing (tileProbability)
+import Data.Level.Board.Probabilities exposing (tileProbability)
 import Dict
 import Model exposing (LevelData, WorldData)
 import Random exposing (..)

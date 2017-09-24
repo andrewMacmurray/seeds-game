@@ -1,6 +1,6 @@
-module Data.Move.Type exposing (..)
+module Data.Level.Move.Type exposing (..)
 
-import Data.Board.Tile exposing (getTileType, isDragging)
+import Data.Level.Board.Tile exposing (getTileType, isDragging)
 import Dict.Extra
 import Scenes.Level.Model exposing (..)
 
