@@ -9,6 +9,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model exposing (..)
 import Data.Level.Types exposing (SeedType(..))
+import Data.Hub.Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 

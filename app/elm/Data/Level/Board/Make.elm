@@ -2,7 +2,7 @@ module Data.Level.Board.Make exposing (..)
 
 import Data.Level.Board.Probabilities exposing (tileProbability)
 import Dict
-import Model exposing (LevelData, WorldData)
+import Data.Hub.Types exposing (LevelData, WorldData)
 import Random exposing (..)
 import Data.Level.Types exposing (..)
 

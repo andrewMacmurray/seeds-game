@@ -2,7 +2,8 @@ module Data.Hub.LoadLevel exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Score exposing (initialScores, initialScoresFromProbabilites)
-import Model as Main exposing (LevelData, WorldData)
+import Model as Main
+import Data.Hub.Types exposing (..)
 import Scenes.Level.Model as Level
 import Scenes.Level.Update exposing (initCmd)
 

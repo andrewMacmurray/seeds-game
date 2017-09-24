@@ -9,6 +9,7 @@ import Helpers.Delay exposing (sequenceMs)
 import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
+import Data.Hub.Types exposing (..)
 import Scenes.Level.Update as Level
 
 
@@ -43,7 +44,7 @@ update msg model =
             { model | scene = scene } ! []
 
         BeginSceneTransition ->
-            { model | sceneTransition = True } ! [ genRandomBackground ]
+            { model | sceneTransition = True } ! [ genRandomBackground RandomBackground ]
 
         EndSceneTransition ->
             { model | sceneTransition = False } ! []

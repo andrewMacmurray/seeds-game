@@ -9,6 +9,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model exposing (..)
 import Views.Seed.All exposing (renderSeed)
+import Data.Hub.Types exposing (..)
 
 
 info : Model -> Html Msg

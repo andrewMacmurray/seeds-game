@@ -1,5 +1,6 @@
 module View exposing (..)
 
+import Data.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)

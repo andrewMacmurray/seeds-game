@@ -3,7 +3,7 @@ module Data.Hub.Config exposing (..)
 import Data.Level.Board.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
 import Dict
-import Model exposing (HubData, WorldData, LevelData, WorldLevels)
+import Data.Hub.Types exposing (HubData, WorldData, LevelData, WorldLevels)
 import Data.Level.Types exposing (..)
 
 

@@ -1,14 +1,14 @@
 module Data.Hub.Transition exposing (..)
 
-import Model exposing (..)
+import Data.Hub.Types exposing (..)
 import Random exposing (..)
 
 
-genRandomBackground : Cmd Msg
-genRandomBackground =
+genRandomBackground : (TransitionBackground -> msg) -> Cmd msg
+genRandomBackground msg =
     Random.int 1 10
         |> Random.map backgroundEnum
-        |> Random.generate RandomBackground
+        |> Random.generate msg
 
 
 backgroundEnum : Int -> TransitionBackground
