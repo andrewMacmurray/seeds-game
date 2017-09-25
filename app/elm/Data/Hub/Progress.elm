@@ -4,10 +4,10 @@ import Data.Hub.Config exposing (level5, world1)
 import Dict
 import Data.Hub.Types exposing (..)
 import Data.Level.Types exposing (SeedType(..))
-import Model exposing (Model)
+import Scenes.Hub.Model exposing (HubModel)
 
 
-getSelectedProgress : Model -> Maybe LevelProgress
+getSelectedProgress : HubModel -> Maybe LevelProgress
 getSelectedProgress model =
     case model.infoWindow of
         Hidden ->
@@ -20,7 +20,7 @@ getSelectedProgress model =
             Just progress
 
 
-getLevelConfig : LevelProgress -> Model -> ( WorldData, LevelData )
+getLevelConfig : LevelProgress -> HubModel -> ( WorldData, LevelData )
 getLevelConfig ( w, l ) model =
     let
         worldData =
@@ -34,7 +34,7 @@ getLevelConfig ( w, l ) model =
         )
 
 
-currentLevelSeedType : Model -> SeedType
+currentLevelSeedType : HubModel -> SeedType
 currentLevelSeedType ({ hubData, currentLevel } as model) =
     currentLevel
         |> Maybe.map Tuple.first
@@ -43,7 +43,7 @@ currentLevelSeedType ({ hubData, currentLevel } as model) =
         |> Maybe.withDefault (currentProgressSeedType model)
 
 
-currentProgressSeedType : Model -> SeedType
+currentProgressSeedType : HubModel -> SeedType
 currentProgressSeedType { hubData, progress } =
     hubData
         |> Dict.get (Tuple.first progress)
@@ -51,12 +51,12 @@ currentProgressSeedType { hubData, progress } =
         |> Maybe.withDefault GreyedOut
 
 
-completedLevel : ( WorldNumber, LevelNumber ) -> Model -> Bool
+completedLevel : ( WorldNumber, LevelNumber ) -> HubModel -> Bool
 completedLevel ( world, level ) { progress, hubData } =
     getLevelNumber progress hubData > getLevelNumber ( world, level ) hubData
 
 
-reachedLevel : ( WorldNumber, LevelNumber ) -> Model -> Bool
+reachedLevel : ( WorldNumber, LevelNumber ) -> HubModel -> Bool
 reachedLevel ( world, level ) { progress, hubData } =
     getLevelNumber progress hubData >= getLevelNumber ( world, level ) hubData
 
@@ -76,7 +76,7 @@ worldSize world hubData =
         |> Maybe.withDefault 0
 
 
-handleIncrementProgress : Model -> Model
+handleIncrementProgress : HubModel -> HubModel
 handleIncrementProgress model =
     { model | progress = incrementProgress model.progress model.hubData }
 

@@ -7,12 +7,13 @@ import Helpers.Style exposing (animationStyle, background, backgroundColor, clas
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Model exposing (..)
+import Scenes.Hub.Model exposing (..)
 import Views.Seed.All exposing (renderSeed)
 import Data.Hub.Types exposing (..)
+import Model exposing (Msg(..))
 
 
-info : Model -> Html Msg
+info : HubModel -> Html Msg
 info model =
     case model.infoWindow of
         Hidden ->
@@ -57,7 +58,7 @@ info model =
                     ]
 
 
-infoContent : LevelProgress -> ( WorldData, LevelData ) -> Model -> List (Html Msg)
+infoContent : LevelProgress -> ( WorldData, LevelData ) -> HubModel -> List (Html Msg)
 infoContent ( world, level ) ( worldData, levelData ) model =
     [ p [] [ text <| toString <| getLevelNumber ( world, level ) model.hubData ]
     , div [ style [ widthStyle 35 ], class "center" ] [ renderSeed worldData.seedType ]
@@ -66,14 +67,14 @@ infoContent ( world, level ) ( worldData, levelData ) model =
     ]
 
 
-handleHideInfo : Model -> Attribute Msg
+handleHideInfo : HubModel -> Attribute Msg
 handleHideInfo model =
     case model.infoWindow of
         Hidden ->
             emptyProperty
 
         _ ->
-            onClick HideInfo
+            onClick <| HubMsg HideInfo
 
 
 infoContainer : InfoWindow -> List (Html Msg) -> Html Msg

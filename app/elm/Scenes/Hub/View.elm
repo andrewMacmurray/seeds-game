@@ -1,27 +1,26 @@
-module Scenes.Hub exposing (..)
+module Scenes.Hub.View exposing (..)
 
 import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (..)
+import Model exposing (Msg)
+import Scenes.Hub.Model exposing (HubModel)
 import Views.Hub.Info exposing (handleHideInfo, info)
 import Views.Hub.World exposing (renderWorlds)
+import Window exposing (Size)
 
 
--- Hub State in top level Update
-
-
-hubView : Model -> Html Msg
-hubView model =
+hubView : Size -> HubModel -> Html Msg
+hubView window model =
     div
         [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
         , id "hub"
-        , style [ heightStyle model.window.height ]
+        , style [ heightStyle window.height ]
         , handleHideInfo model
         ]
         (hubContent model)
 
 
-hubContent : Model -> List (Html Msg)
+hubContent : HubModel -> List (Html Msg)
 hubContent model =
     [ info model ] ++ renderWorlds model

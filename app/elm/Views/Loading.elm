@@ -19,11 +19,11 @@ loadingScreen model =
                 , transitionClasses model
                 ]
         , style
-            [ backgroundColor <| loadingBackground model.transitionBackground
+            [ backgroundColor <| loadingBackground model.hubModel.transitionBackground
             , transitionStyle "0.5s ease"
             ]
         ]
-        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model ] ]
+        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model.hubModel ] ]
 
 
 loadingBackground : TransitionBackground -> String
@@ -38,7 +38,7 @@ loadingBackground bg =
 
 transitionClasses : Model -> String
 transitionClasses model =
-    if model.sceneTransition then
+    if model.hubModel.sceneTransition then
         "o-100"
     else
         "o-0 touch-disabled"

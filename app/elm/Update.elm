@@ -1,36 +1,29 @@
 module Update exposing (..)
 
-import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
-import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Delay exposing (sequenceMs)
-import Helpers.Dom exposing (scrollHubToLevel)
 import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
 import Model exposing (..)
 import Data.Hub.Types exposing (..)
 import Scenes.Level.Update as Level
+import Scenes.Hub.Update as Hub
+import Scenes.Hub.Model exposing (HubMsg(..))
 
 
 init : ( Model, Cmd Msg )
 init =
-    initialModel
+    initialState
         ! [ getWindowSize
-          , getExternalAnimations initialModel.levelModel.tileSize.y
+          , getExternalAnimations initialState.levelModel.tileSize.y
           ]
 
 
-initialModel : Model
-initialModel =
-    { scene = Title
-    , sceneTransition = False
-    , transitionBackground = Orange
-    , progress = ( 3, 4 )
-    , currentLevel = Nothing
-    , infoWindow = Hidden
-    , hubData = hubData
-    , levelModel = Level.initialState
+initialState : Model
+initialState =
+    { levelModel = Level.initialState
+    , hubModel = Hub.initialState
     , window = { height = 0, width = 0 }
     , mouse = { x = 0, y = 0 }
     , externalAnimations = ""
@@ -40,77 +33,22 @@ initialModel =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetScene scene ->
-            { model | scene = scene } ! []
-
-        BeginSceneTransition ->
-            { model | sceneTransition = True } ! [ genRandomBackground ]
-
-        EndSceneTransition ->
-            { model | sceneTransition = False } ! []
-
-        SetCurrentLevel progress ->
-            { model | currentLevel = progress } ! []
-
         ReceieveExternalAnimations animations ->
             { model | externalAnimations = animations } ! []
 
         StartLevel progress ->
             model
                 ! [ sequenceMs
-                        [ ( 600, SetCurrentLevel <| Just progress )
-                        , ( 10, BeginSceneTransition )
-                        , ( 500, SetScene Level )
-                        , ( 0, LoadLevelData <| getLevelConfig progress model )
-                        , ( 2500, EndSceneTransition )
+                        [ ( 600, HubMsg <| SetCurrentLevel <| Just progress )
+                        , ( 10, HubMsg BeginSceneTransition )
+                        , ( 500, HubMsg <| SetScene Level )
+                        , ( 0, LoadLevelData <| getLevelConfig progress model.hubModel )
+                        , ( 2500, HubMsg EndSceneTransition )
                         ]
                   ]
-
-        GoToHub ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, BeginSceneTransition )
-                        , ( 500, SetScene Hub )
-                        , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
-                        , ( 2400, EndSceneTransition )
-                        ]
-                  ]
-
-        SetInfoState infoWindow ->
-            { model | infoWindow = infoWindow } ! []
-
-        ShowInfo levelProgress ->
-            { model | infoWindow = Visible levelProgress } ! []
-
-        HideInfo ->
-            let
-                selectedLevel =
-                    getSelectedProgress model |> Maybe.withDefault ( 1, 1 )
-            in
-                model
-                    ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Leaving selectedLevel )
-                            , ( 1000, SetInfoState Hidden )
-                            ]
-                      ]
-
-        RandomBackground background ->
-            { model | transitionBackground = background } ! []
 
         LoadLevelData levelData ->
             handleLoadLevel levelData model
-
-        IncrementProgress ->
-            (model |> handleIncrementProgress) ! []
-
-        ScrollToHubLevel level ->
-            model ! [ scrollToHubLevel level ]
-
-        ReceiveHubLevelOffset offset ->
-            model ! [ scrollHubToLevel offset model ]
-
-        DomNoOp _ ->
-            model ! []
 
         LevelMsg levelMsg ->
             let
@@ -118,6 +56,13 @@ update msg model =
                     Level.update levelMsg model.levelModel
             in
                 { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+
+        HubMsg hubMsg ->
+            let
+                ( hubModel, hubCmd ) =
+                    Hub.update model.window hubMsg model.hubModel
+            in
+                { model | hubModel = hubModel } ! [ hubCmd |> Cmd.map HubMsg ]
 
         WindowSize size ->
             { model | window = size } ! []
@@ -132,6 +77,6 @@ subscriptions model =
         [ trackWindowSize
         , trackMousePosition model
         , trackMouseDowns
-        , receiveHubLevelOffset ReceiveHubLevelOffset
         , receiveExternalAnimations ReceieveExternalAnimations
+        , Sub.map HubMsg (Hub.subscriptions model.hubModel)
         ]

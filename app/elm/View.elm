@@ -4,7 +4,7 @@ import Data.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Model exposing (..)
-import Scenes.Hub exposing (hubView)
+import Scenes.Hub.View exposing (hubView)
 import Scenes.Level.View exposing (levelView)
 import Scenes.Title exposing (titleView)
 import Views.Backdrop exposing (backdrop)
@@ -23,12 +23,12 @@ view model =
 
 renderScene : Model -> Html Msg
 renderScene model =
-    case model.scene of
+    case model.hubModel.scene of
         Level ->
             levelView model |> Html.map LevelMsg
 
         Hub ->
-            hubView model
+            hubView model.window model.hubModel
 
         Title ->
             titleView model
