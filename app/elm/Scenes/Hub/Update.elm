@@ -28,6 +28,10 @@ initialState =
     }
 
 
+
+-- Window Size needed as argument for hub scroll subscription
+
+
 update : Size -> HubMsg -> HubModel -> ( HubModel, Cmd HubMsg )
 update window msg model =
     case msg of

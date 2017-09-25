@@ -10,6 +10,7 @@ import Data.Hub.Types exposing (..)
 import Scenes.Level.Update as Level
 import Scenes.Hub.Update as Hub
 import Scenes.Hub.Model exposing (HubMsg(..))
+import Scenes.Level.Model exposing (LevelMsg)
 
 
 init : ( Model, Cmd Msg )
@@ -33,6 +34,12 @@ initialState =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        LevelMsg levelMsg ->
+            handleLevelMsg levelMsg model
+
+        HubMsg hubMsg ->
+            handleHubMsg hubMsg model
+
         ReceieveExternalAnimations animations ->
             { model | externalAnimations = animations } ! []
 
@@ -50,25 +57,29 @@ update msg model =
         LoadLevelData levelData ->
             handleLoadLevel levelData model
 
-        LevelMsg levelMsg ->
-            let
-                ( levelModel, levelCmd ) =
-                    Level.update levelMsg model.levelModel
-            in
-                { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
-
-        HubMsg hubMsg ->
-            let
-                ( hubModel, hubCmd ) =
-                    Hub.update model.window hubMsg model.hubModel
-            in
-                { model | hubModel = hubModel } ! [ hubCmd |> Cmd.map HubMsg ]
-
         WindowSize size ->
             { model | window = size } ! []
 
         MousePosition position ->
             { model | mouse = position } ! []
+
+
+handleLevelMsg : LevelMsg -> Model -> ( Model, Cmd Msg )
+handleLevelMsg levelMsg model =
+    let
+        ( levelModel, levelCmd ) =
+            Level.update levelMsg model.levelModel
+    in
+        { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+
+
+handleHubMsg : HubMsg -> Model -> ( Model, Cmd Msg )
+handleHubMsg hubMsg model =
+    let
+        ( hubModel, hubCmd ) =
+            Hub.update model.window hubMsg model.hubModel
+    in
+        { model | hubModel = hubModel } ! [ hubCmd |> Cmd.map HubMsg ]
 
 
 subscriptions : Model -> Sub Msg
@@ -78,5 +89,5 @@ subscriptions model =
         , trackMousePosition model
         , trackMouseDowns
         , receiveExternalAnimations ReceieveExternalAnimations
-        , Sub.map HubMsg (Hub.subscriptions model.hubModel)
+        , Sub.map HubMsg <| Hub.subscriptions model.hubModel
         ]
