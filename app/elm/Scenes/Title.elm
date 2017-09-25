@@ -7,6 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model exposing (..)
+import Scenes.Hub.Model exposing (..)
 import Views.Title.Seeds exposing (seeds)
 
 
@@ -23,7 +24,7 @@ titleView model =
             [ text "seeds" ]
         , button
             [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , onClick GoToHub
+            , onClick <| HubMsg GoToHub
             , style
                 [ ( "border", "none" )
                 , marginTop 15
