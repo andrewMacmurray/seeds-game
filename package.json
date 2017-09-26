@@ -16,7 +16,8 @@
     "prepare-assets": "npm run bundle && npm run compress",
     "add-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
     "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-publish": "git checkout gh-deploy && git merge master && npm run prepare-assets && npm run add-changes && npm run gh-pages-push && git checkout master"
+    "gh-pages-force-push": "git push origin `git subtree split --prefix public gh-deploy`:gh-pages --force",
+    "gh-publish": "git checkout gh-deploy && git merge master && npm run prepare-assets && npm run add-changes && npm run gh-pages-force-push && git checkout master"
   },
   "repository": {
     "type": "git",
