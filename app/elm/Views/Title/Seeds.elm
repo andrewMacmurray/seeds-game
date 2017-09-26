@@ -1,6 +1,6 @@
 module Views.Title.Seeds exposing (..)
 
-import Helpers.Style exposing (widthStyle)
+import Helpers.Style exposing (maxWidth)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (..)
@@ -12,8 +12,8 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 seeds : Html Msg
 seeds =
     div
-        [ style [ widthStyle 400 ]
-        , class "flex center"
+        [ style [ maxWidth 450 ]
+        , class "flex center ph3"
         ]
         (List.map seedSpacing
             [ foxglove

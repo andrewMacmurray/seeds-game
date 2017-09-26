@@ -24,7 +24,7 @@ renderWorlds model =
 
 renderWorld : HubModel -> ( WorldNumber, WorldData ) -> Html Msg
 renderWorld model (( _, worldData ) as world) =
-    div [ style [ backgroundColor worldData.background ], class "pa5" ]
+    div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
             [ style [ widthStyle 300 ], class "center" ]
             (worldData.levels

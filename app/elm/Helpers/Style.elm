@@ -89,6 +89,11 @@ widthStyle width =
     ( "width", px width )
 
 
+maxWidth : number -> Style
+maxWidth width =
+    ( "max-width", px width )
+
+
 heightStyle : number -> Style
 heightStyle height =
     ( "height", px height )
