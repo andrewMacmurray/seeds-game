@@ -1,10 +1,41 @@
 module Data.Level.Move.Utils exposing (..)
 
-import Data.Level.Move.Type exposing (emptyMove)
-import Data.Level.Board.Tile exposing (isCurrentMove, isDragging, moveOrder)
+import Data.Level.Board.Tile exposing (getTileType, isCurrentMove, isDragging, moveOrder)
+import Data.Level.Types exposing (..)
 import Dict
 import Dict.Extra
-import Data.Level.Types exposing (..)
+
+
+currentMoveTileType : Board -> Maybe TileType
+currentMoveTileType board =
+    board
+        |> Dict.Extra.find (\_ tile -> isDragging tile)
+        |> Maybe.andThen moveTileType
+
+
+moveShape : Move -> Maybe MoveShape
+moveShape ( _, block ) =
+    case block of
+        Space (Dragging _ _ _ moveShape) ->
+            Just moveShape
+
+        _ ->
+            Nothing
+
+
+moveTileType : Move -> Maybe TileType
+moveTileType ( _, block ) =
+    case block of
+        Space (Dragging tile _ _ _) ->
+            Just tile
+
+        _ ->
+            Nothing
+
+
+sameTileType : Move -> Move -> Bool
+sameTileType ( _, t2 ) ( _, t1 ) =
+    getTileType t1 == getTileType t2
 
 
 isUniqueMove : Move -> Board -> Bool
@@ -55,3 +86,8 @@ isDragging_ _ =
 moveOrder_ : Move -> Int
 moveOrder_ ( _, tileState ) =
     moveOrder tileState
+
+
+emptyMove : Move
+emptyMove =
+    ( ( 0, 0 ), Space Empty )

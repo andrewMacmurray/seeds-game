@@ -10,7 +10,7 @@ import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
-import Data.Level.Move.Type exposing (currentMoveTileType)
+import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Delay
 import Dict exposing (Dict)
 import Helpers.Delay exposing (sequenceMs)

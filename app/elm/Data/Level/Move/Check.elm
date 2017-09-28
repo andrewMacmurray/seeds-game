@@ -4,7 +4,7 @@ import Data.Level.Board.Tile exposing (addBearing, isCurrentMove, isDragging, mo
 import Data.Level.Move.Bearing exposing (addBearings)
 import Data.Level.Move.Direction exposing (isAbove, isBelow, isLeft, isRight, validDirection)
 import Data.Level.Move.Square exposing (isValidSquare, triggerMoveIfSquare)
-import Data.Level.Move.Type exposing (emptyMove, moveShape, sameTileType)
+import Data.Level.Move.Utils exposing (emptyMove, moveShape, sameTileType)
 import Data.Level.Move.Utils exposing (currentMoves, isUniqueMove, lastMove)
 import Dict
 import Data.Level.Types exposing (..)

@@ -1,15 +1,14 @@
 module Data.Level.Move.Square exposing (..)
 
-import Data.Level.Move.Direction exposing (validDirection)
-import Data.Level.Move.Type exposing (emptyMove, moveShape, sameTileType)
-import Data.Level.Move.Utils exposing (currentMoves)
 import Data.Level.Board.Tile exposing (moveOrder)
+import Data.Level.Move.Direction exposing (validDirection)
+import Data.Level.Move.Utils exposing (currentMoves, emptyMove, moveShape, sameTileType)
+import Data.Level.Types exposing (..)
 import Delay
 import Dict
-import Data.Level.Types exposing (..)
+import Helpers.List exposing (allTrue)
 import Scenes.Level.Model exposing (LevelMsg(..))
 import Time exposing (millisecond)
-import Helpers.List exposing (allTrue)
 
 
 triggerMoveIfSquare : Board -> Cmd LevelMsg

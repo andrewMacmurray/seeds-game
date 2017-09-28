@@ -1,9 +1,9 @@
 module Data.Level.Board.Square exposing (..)
 
-import Data.Level.Move.Type exposing (currentMoveTileType)
 import Data.Level.Board.Tile exposing (getTileType, setToDragging)
-import Dict
+import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Data.Level.Types exposing (..)
+import Dict
 
 
 setAllTilesOfTypeToDragging : Board -> Board
