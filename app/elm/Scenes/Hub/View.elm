@@ -4,13 +4,13 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (Msg)
-import Scenes.Hub.Model exposing (HubModel)
+import Scenes.Hub.Model exposing (Model)
 import Views.Hub.Info exposing (handleHideInfo, info)
 import Views.Hub.World exposing (renderWorlds)
 import Window exposing (Size)
 
 
-hubView : Size -> HubModel -> Html Msg
+hubView : Size -> Model -> Html Msg
 hubView window model =
     div
         [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
@@ -21,6 +21,6 @@ hubView window model =
         (hubContent model)
 
 
-hubContent : HubModel -> List (Html Msg)
+hubContent : Model -> List (Html Msg)
 hubContent model =
     [ info model ] ++ renderWorlds model

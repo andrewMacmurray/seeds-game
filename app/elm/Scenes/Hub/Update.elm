@@ -5,23 +5,22 @@ import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedPr
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Hub.Types exposing (..)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
-import Helpers.Delay exposing (sequenceMs)
-import Helpers.Dom exposing (scrollHubToLevel)
-import Scenes.Hub.Model exposing (..)
-import Window exposing (Size)
+import Helpers.Effect exposing (..)
+import Scenes.Hub.Model as Hub exposing (..)
+import Window
 
 
-init : ( HubModel, Cmd HubMsg )
+init : ( Hub.Model, Cmd Hub.Msg )
 init =
     initialState ! []
 
 
-initialState : HubModel
+initialState : Hub.Model
 initialState =
     { scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 2, 4 )
+    , progress = ( 1, 1 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , hubData = hubData
@@ -32,7 +31,7 @@ initialState =
 -- Window Size needed as argument for hub scroll subscription
 
 
-update : Size -> HubMsg -> HubModel -> ( HubModel, Cmd HubMsg )
+update : Window.Size -> Hub.Msg -> Hub.Model -> ( Hub.Model, Cmd Hub.Msg )
 update window msg model =
     case msg of
         SetScene scene ->
@@ -91,6 +90,6 @@ update window msg model =
             model ! []
 
 
-subscriptions : HubModel -> Sub HubMsg
+subscriptions : Hub.Model -> Sub Hub.Msg
 subscriptions _ =
     receiveHubLevelOffset ReceiveHubLevelOffset

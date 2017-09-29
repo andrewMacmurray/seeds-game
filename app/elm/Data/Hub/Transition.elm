@@ -5,7 +5,7 @@ import Scenes.Hub.Model exposing (..)
 import Random exposing (..)
 
 
-genRandomBackground : Cmd HubMsg
+genRandomBackground : Cmd Msg
 genRandomBackground =
     Random.int 1 10
         |> Random.map backgroundEnum

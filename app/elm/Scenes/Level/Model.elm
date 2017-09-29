@@ -1,9 +1,10 @@
 module Scenes.Level.Model exposing (..)
 
 import Data.Level.Types exposing (..)
+import Mouse
 
 
-type alias LevelModel =
+type alias Model =
     { board : Board
     , scores : Scores
     , isDragging : Bool
@@ -14,10 +15,11 @@ type alias LevelModel =
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
+    , mousePosition : Mouse.Position
     }
 
 
-type LevelMsg
+type Msg
     = InitTiles (List Coord) (List TileType)
     | AddTiles (List TileType)
     | SquareMove

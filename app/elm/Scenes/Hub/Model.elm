@@ -4,7 +4,7 @@ import Dom
 import Data.Hub.Types exposing (..)
 
 
-type alias HubModel =
+type alias Model =
     { scene : Scene
     , sceneTransition : Bool
     , transitionBackground : TransitionBackground
@@ -15,7 +15,7 @@ type alias HubModel =
     }
 
 
-type HubMsg
+type Msg
     = SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition

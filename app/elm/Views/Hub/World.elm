@@ -7,14 +7,14 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Model exposing (Msg(..))
-import Scenes.Hub.Model exposing (HubModel, HubMsg(..))
+import Model as Main exposing (Msg(..))
+import Scenes.Hub.Model as Hub exposing (Msg(..))
 import Data.Level.Types exposing (SeedType(..))
 import Data.Hub.Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
-renderWorlds : HubModel -> List (Html Msg)
+renderWorlds : Hub.Model -> List (Html Main.Msg)
 renderWorlds model =
     model.hubData
         |> Dict.toList
@@ -22,7 +22,7 @@ renderWorlds model =
         |> List.map (renderWorld model)
 
 
-renderWorld : HubModel -> ( WorldNumber, WorldData ) -> Html Msg
+renderWorld : Hub.Model -> ( WorldNumber, WorldData ) -> Html Main.Msg
 renderWorld model (( _, worldData ) as world) =
     div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
@@ -35,7 +35,7 @@ renderWorld model (( _, worldData ) as world) =
         ]
 
 
-renderLevel : HubModel -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelData ) -> Html Msg
+renderLevel : Hub.Model -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelData ) -> Html Main.Msg
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
         levelNumber =
@@ -57,7 +57,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             ]
 
 
-renderNumber : String -> ( WorldNumber, LevelNumber ) -> WorldData -> HubModel -> Html Msg
+renderNumber : String -> ( WorldNumber, LevelNumber ) -> WorldData -> Hub.Model -> Html Main.Msg
 renderNumber visibleLevelNumber currentLevel worldData model =
     if reachedLevel currentLevel model then
         div
@@ -74,7 +74,7 @@ renderNumber visibleLevelNumber currentLevel worldData model =
         p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 
 
-showInfo : LevelProgress -> HubModel -> Attribute Msg
+showInfo : LevelProgress -> Hub.Model -> Attribute Main.Msg
 showInfo currentLevel model =
     if reachedLevel currentLevel model then
         onClick <| HubMsg <| ShowInfo currentLevel
@@ -82,7 +82,7 @@ showInfo currentLevel model =
         emptyProperty
 
 
-handleStartLevel : LevelProgress -> HubModel -> Attribute Msg
+handleStartLevel : LevelProgress -> Hub.Model -> Attribute Main.Msg
 handleStartLevel currentLevel model =
     if reachedLevel currentLevel model then
         onClick <| StartLevel currentLevel
@@ -90,7 +90,7 @@ handleStartLevel currentLevel model =
         emptyProperty
 
 
-renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> HubModel -> Html Msg
+renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> Hub.Model -> Html Main.Msg
 renderIcon currentLevel seedType model =
     if completedLevel currentLevel model then
         renderSeed seedType

@@ -2,16 +2,15 @@ module Scenes.Title exposing (..)
 
 import Data.Color exposing (darkYellow, gold, lightOrange, orange, white)
 import Helpers.Style exposing (backgroundColor, color, marginTop, px, widthStyle)
-import Helpers.Window exposing (percentWindowHeight)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Model exposing (..)
+import Model as Main exposing (..)
 import Scenes.Hub.Model exposing (..)
 import Views.Title.Seeds exposing (seeds)
 
 
-titleView : Model -> Html Msg
+titleView : Main.Model -> Html Main.Msg
 titleView model =
     div [ class "relative z-5 tc" ]
         [ div
@@ -34,3 +33,8 @@ titleView model =
             ]
             [ text "PLAY" ]
         ]
+
+
+percentWindowHeight : Float -> HasWindow a -> Float
+percentWindowHeight percent model =
+    toFloat model.window.height / 100 * percent

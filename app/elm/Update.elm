@@ -3,17 +3,16 @@ module Update exposing (..)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
-import Helpers.Delay exposing (sequenceMs)
-import Helpers.Window exposing (getWindowSize, trackMouseDowns, trackMousePosition, trackWindowSize)
-import Model exposing (..)
+import Helpers.Effect exposing (..)
+import Model as Main exposing (..)
 import Data.Hub.Types exposing (..)
 import Scenes.Level.Update as Level
 import Scenes.Hub.Update as Hub
-import Scenes.Hub.Model exposing (HubMsg(..))
-import Scenes.Level.Model exposing (LevelMsg)
+import Scenes.Hub.Model as HubModel exposing (..)
+import Scenes.Level.Model as LevelModel
 
 
-init : ( Model, Cmd Msg )
+init : ( Main.Model, Cmd Main.Msg )
 init =
     initialState
         ! [ getWindowSize
@@ -21,7 +20,7 @@ init =
           ]
 
 
-initialState : Model
+initialState : Main.Model
 initialState =
     { levelModel = Level.initialState
     , hubModel = Hub.initialState
@@ -31,7 +30,7 @@ initialState =
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Main.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 update msg model =
     case msg of
         LevelMsg levelMsg ->
@@ -64,7 +63,7 @@ update msg model =
             { model | mouse = position } ! []
 
 
-handleLevelMsg : LevelMsg -> Model -> ( Model, Cmd Msg )
+handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
     let
         ( levelModel, levelCmd ) =
@@ -73,7 +72,7 @@ handleLevelMsg levelMsg model =
         { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
 
 
-handleHubMsg : HubMsg -> Model -> ( Model, Cmd Msg )
+handleHubMsg : HubModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleHubMsg hubMsg model =
     let
         ( hubModel, hubCmd ) =
@@ -82,7 +81,7 @@ handleHubMsg hubMsg model =
         { model | hubModel = hubModel } ! [ hubCmd |> Cmd.map HubMsg ]
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : Main.Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
         [ trackWindowSize

@@ -5,7 +5,7 @@ import Dict
 import Data.Hub.Types exposing (LevelData, WorldData)
 import Random exposing (..)
 import Data.Level.Types exposing (..)
-import Scenes.Level.Model exposing (LevelMsg(..))
+import Scenes.Level.Model as Level exposing (Msg(..))
 
 
 makeBoard : Int -> List TileType -> Board
@@ -31,7 +31,7 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-generateTiles : LevelData -> Int -> Cmd LevelMsg
+generateTiles : LevelData -> Int -> Cmd Level.Msg
 generateTiles levelData x =
     Random.list (x * x) (tileGenerator levelData.tileProbabilities)
         |> Random.generate (InitTiles levelData.walls)

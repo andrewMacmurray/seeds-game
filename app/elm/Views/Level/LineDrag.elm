@@ -5,14 +5,14 @@ import Data.Level.Move.Utils exposing (currentMoves, lastMove, currentMoveTileTy
 import Data.Level.Board.Tile exposing (strokeColors)
 import Helpers.Style exposing (px)
 import Html exposing (Html, span)
-import Scenes.Level.Model exposing (..)
+import Scenes.Level.Model as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Model exposing (Model)
+import Model as Main
 import Views.Level.Styles exposing (boardOffsetTop, boardWidth)
 
 
-handleLineDrag : Model -> Html LevelMsg
+handleLineDrag : Main.Model -> Html Level.Msg
 handleLineDrag model =
     if model.levelModel.isDragging && hasSquareTile model.levelModel.board |> not then
         lineDrag model
@@ -20,7 +20,7 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : Model -> Html LevelMsg
+lineDrag : Main.Model -> Html Level.Msg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -53,7 +53,7 @@ lineDrag ({ window } as model) =
             ]
 
 
-lastMoveOrigin : Model -> ( Float, Float )
+lastMoveOrigin : Main.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
         tileSize =
