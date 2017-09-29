@@ -8,19 +8,18 @@ import Html exposing (Html, span)
 import Scenes.Level.Model as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Model as Main
 import Views.Level.Styles exposing (boardOffsetTop, boardWidth)
 
 
-handleLineDrag : Main.Model -> Html Level.Msg
+handleLineDrag : Level.Model -> Html Level.Msg
 handleLineDrag model =
-    if model.levelModel.isDragging && hasSquareTile model.levelModel.board |> not then
+    if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
     else
         span [] []
 
 
-lineDrag : Main.Model -> Html Level.Msg
+lineDrag : Level.Model -> Html Level.Msg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -30,7 +29,7 @@ lineDrag ({ window } as model) =
             lastMoveOrigin model
 
         colorClass =
-            currentMoveTileType model.levelModel.board
+            currentMoveTileType model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault ""
     in
@@ -53,14 +52,14 @@ lineDrag ({ window } as model) =
             ]
 
 
-lastMoveOrigin : Main.Model -> ( Float, Float )
+lastMoveOrigin : Level.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
         tileSize =
-            model.levelModel.tileSize
+            model.tileSize
 
         ( ( y, x ), _ ) =
-            lastMove model.levelModel.board
+            lastMove model.board
 
         y1 =
             toFloat y
@@ -78,7 +77,7 @@ lastMoveOrigin ({ window } as model) =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - (boardWidth model.levelModel)) // 2 |> toFloat
+            (window.width - (boardWidth model)) // 2 |> toFloat
     in
         ( ((y1 + 1) * sY) + offsetY - (sY / 2)
         , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

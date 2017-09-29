@@ -2,14 +2,16 @@ module Update exposing (..)
 
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Data.Hub.Types exposing (..)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (..)
 import Model as Main exposing (..)
-import Data.Hub.Types exposing (..)
-import Scenes.Level.Update as Level
-import Scenes.Hub.Update as Hub
+import Mouse
 import Scenes.Hub.Model as HubModel exposing (..)
+import Scenes.Hub.Update as Hub
 import Scenes.Level.Model as LevelModel
+import Scenes.Level.Update as Level
+import Window
 
 
 init : ( Main.Model, Cmd Main.Msg )
@@ -24,8 +26,6 @@ initialState : Main.Model
 initialState =
     { levelModel = Level.initialState
     , hubModel = Hub.initialState
-    , window = { height = 0, width = 0 }
-    , mouse = { x = 0, y = 0 }
     , externalAnimations = ""
     }
 
@@ -57,10 +57,29 @@ update msg model =
             handleLoadLevel levelData model
 
         WindowSize size ->
-            { model | window = size } ! []
+            { model
+                | levelModel = addWindowSizeToLevel size model
+                , hubModel = addWindowSizeToHub size model
+            }
+                ! []
 
         MousePosition position ->
-            { model | mouse = position } ! []
+            { model | levelModel = addMousePositionToLevel position model } ! []
+
+
+addMousePositionToLevel : Mouse.Position -> Main.Model -> LevelModel.Model
+addMousePositionToLevel position { levelModel } =
+    { levelModel | mouse = position }
+
+
+addWindowSizeToLevel : Window.Size -> Main.Model -> LevelModel.Model
+addWindowSizeToLevel window { levelModel } =
+    { levelModel | window = window }
+
+
+addWindowSizeToHub : Window.Size -> Main.Model -> HubModel.Model
+addWindowSizeToHub window { hubModel } =
+    { hubModel | window = window }
 
 
 handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
@@ -76,7 +95,7 @@ handleHubMsg : HubModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleHubMsg hubMsg model =
     let
         ( hubModel, hubCmd ) =
-            Hub.update model.window hubMsg model.hubModel
+            Hub.update hubMsg model.hubModel
     in
         { model | hubModel = hubModel } ! [ hubCmd |> Cmd.map HubMsg ]
 

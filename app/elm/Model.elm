@@ -10,8 +10,6 @@ import Window
 type alias Model =
     { levelModel : Level.Model
     , hubModel : Hub.Model
-    , window : Window.Size
-    , mouse : Mouse.Position
     , externalAnimations : String
     }
 
@@ -27,14 +25,7 @@ type Msg
 
 
 type alias HasWindow a =
-    { a | window : { height : Int, width : Int } }
-
-
-type alias Positions a =
-    { a
-        | window : { height : Int, width : Int }
-        , mouse : { y : Int, x : Int }
-    }
+    { a | window : Window.Size }
 
 
 type alias Style =

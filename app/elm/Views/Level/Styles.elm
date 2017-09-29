@@ -11,14 +11,14 @@ import Data.Level.Types exposing (..)
 import Scenes.Level.Model as Level exposing (..)
 
 
-boardMarginTop : Main.Model -> Style
+boardMarginTop : Level.Model -> Style
 boardMarginTop model =
     marginTop <| boardOffsetTop model
 
 
-boardOffsetTop : Main.Model -> Int
+boardOffsetTop : Level.Model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model.levelModel) // 2 + model.levelModel.topBarHeight // 2
+    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
 
 
 boardHeight : Level.Model -> Int
@@ -117,7 +117,7 @@ fallingStyles ( _, block ) =
                 []
 
 
-leavingStyles : Main.Model -> Move -> List Style
+leavingStyles : Level.Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
         [ transitionStyle "0.8s ease"
@@ -129,7 +129,7 @@ leavingStyles model (( _, tile ) as move) =
         []
 
 
-handleExitDirection : Move -> Main.Model -> Style
+handleExitDirection : Move -> Level.Model -> Style
 handleExitDirection ( coord, block ) model =
     let
         tile =
@@ -149,25 +149,25 @@ handleExitDirection ( coord, block ) model =
                 emptyStyle
 
 
-getLeavingStyle : TileType -> Main.Model -> String
+getLeavingStyle : TileType -> Level.Model -> String
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (toString tileType)
         |> Maybe.withDefault ""
 
 
-newLeavingStyles : Main.Model -> Dict String String
+newLeavingStyles : Level.Model -> Dict String String
 newLeavingStyles model =
-    model.levelModel.tileProbabilities
+    model.tileProbabilities
         |> scoreTileTypes
         |> List.indexedMap (prepareLeavingStyle model)
         |> Dict.fromList
 
 
-prepareLeavingStyle : Main.Model -> Int -> TileType -> ( String, String )
+prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, String )
 prepareLeavingStyle model i tileType =
     ( toString tileType
-    , translateScale (exitXDistance i model.levelModel) -(exitYdistance model) 0.5
+    , translateScale (exitXDistance i model) -(exitYdistance model) 0.5
     )
 
 
@@ -186,7 +186,7 @@ exitXDistance n model =
         baseOffset + (n * scoreWidth) + (model.scoreIconSize + 3)
 
 
-exitYdistance : Main.Model -> Int
+exitYdistance : Level.Model -> Int
 exitYdistance model =
     (boardOffsetTop model) - 9
 

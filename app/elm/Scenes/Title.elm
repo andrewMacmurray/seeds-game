@@ -6,11 +6,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Model as Main exposing (..)
-import Scenes.Hub.Model exposing (..)
+import Scenes.Hub.Model as Hub exposing (..)
 import Views.Title.Seeds exposing (seeds)
 
 
-titleView : Main.Model -> Html Main.Msg
+titleView : Hub.Model -> Html Main.Msg
 titleView model =
     div [ class "relative z-5 tc" ]
         [ div

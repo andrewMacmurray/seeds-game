@@ -25,10 +25,10 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.hubModel.scene of
         Level ->
-            levelView model |> Html.map LevelMsg
+            levelView model.levelModel |> Html.map LevelMsg
 
         Hub ->
-            hubView model.window model.hubModel
+            hubView model.hubModel
 
         Title ->
-            titleView model
+            titleView model.hubModel

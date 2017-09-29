@@ -7,7 +7,6 @@ import Data.Hub.Types exposing (..)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (..)
 import Scenes.Hub.Model as Hub exposing (..)
-import Window
 
 
 init : ( Hub.Model, Cmd Hub.Msg )
@@ -24,15 +23,12 @@ initialState =
     , currentLevel = Nothing
     , infoWindow = Hidden
     , hubData = hubData
+    , window = { height = 0, width = 0 }
     }
 
 
-
--- Window Size needed as argument for hub scroll subscription
-
-
-update : Window.Size -> Hub.Msg -> Hub.Model -> ( Hub.Model, Cmd Hub.Msg )
-update window msg model =
+update : Hub.Msg -> Hub.Model -> ( Hub.Model, Cmd Hub.Msg )
+update msg model =
     case msg of
         SetScene scene ->
             { model | scene = scene } ! []
@@ -84,7 +80,7 @@ update window msg model =
             model ! [ scrollToHubLevel level ]
 
         ReceiveHubLevelOffset offset ->
-            model ! [ scrollHubToLevel offset window ]
+            model ! [ scrollHubToLevel offset model.window ]
 
         DomNoOp _ ->
             model ! []

@@ -1,7 +1,8 @@
 module Scenes.Hub.Model exposing (..)
 
-import Dom
 import Data.Hub.Types exposing (..)
+import Dom
+import Window
 
 
 type alias Model =
@@ -12,6 +13,7 @@ type alias Model =
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
     , hubData : HubData
+    , window : Window.Size
     }
 
 

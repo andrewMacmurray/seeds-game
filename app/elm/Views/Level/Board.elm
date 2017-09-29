@@ -14,17 +14,17 @@ import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 
 
-board : Main.Model -> Html Level.Msg
+board : Level.Model -> Html Level.Msg
 board model =
     boardLayout model
         [ div [ class "relative z-5" ] <| renderTiles model
-        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model.levelModel
+        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
         ]
 
 
-renderTiles : Main.Model -> List (Html Level.Msg)
+renderTiles : Level.Model -> List (Html Level.Msg)
 renderTiles model =
-    model.levelModel.board
+    model.board
         |> Dict.toList
         |> List.map (renderTile model)
 
@@ -36,12 +36,12 @@ renderLines model =
         |> List.map (renderLineLayer model)
 
 
-boardLayout : Main.Model -> List (Html Level.Msg) -> Html Level.Msg
+boardLayout : Level.Model -> List (Html Level.Msg) -> Html Level.Msg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ widthStyle <| boardWidth model.levelModel
+            [ widthStyle <| boardWidth model
             , boardMarginTop model
             ]
         ]
@@ -61,20 +61,20 @@ renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-renderTile : Main.Model -> Move -> Html Level.Msg
+renderTile : Level.Model -> Move -> Html Level.Msg
 renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
             styles
-                [ tileWidthHeightStyles model.levelModel
-                , tileCoordsStyles model.levelModel coord
+                [ tileWidthHeightStyles model
+                , tileCoordsStyles model coord
                 , leavingStyles model move
                 ]
         , class "dib absolute pointer"
-        , hanldeMoveEvents model.levelModel move
+        , hanldeMoveEvents model move
         ]
-        [ innerTile model.levelModel move
-        , tracer model.levelModel move
+        [ innerTile model move
+        , tracer model move
         , wall move
         ]
 

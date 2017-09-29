@@ -2,6 +2,7 @@ module Scenes.Level.Model exposing (..)
 
 import Data.Level.Types exposing (..)
 import Mouse
+import Window
 
 
 type alias Model =
@@ -15,7 +16,8 @@ type alias Model =
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
-    , mousePosition : Mouse.Position
+    , mouse : Mouse.Position
+    , window : Window.Size
     }
 
 

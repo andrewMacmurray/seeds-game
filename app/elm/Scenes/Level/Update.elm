@@ -17,7 +17,7 @@ import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs)
-import Model as Main exposing (Positions)
+import Model as Main
 import Scenes.Level.Model as Level exposing (..)
 import Time exposing (millisecond)
 
@@ -43,7 +43,8 @@ initialState =
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
-    , mousePosition = { y = 0, x = 0 }
+    , mouse = { y = 0, x = 0 }
+    , window = { height = 0, width = 0 }
     }
 
 
