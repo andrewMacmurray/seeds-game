@@ -2,7 +2,7 @@ module Helpers.Effect exposing (..)
 
 import Delay
 import Dom.Scroll exposing (toY)
-import Scenes.Hub.Model as Main exposing (..)
+import Scenes.Hub.Types as Main exposing (..)
 import Mouse exposing (downs, moves)
 import Task
 import Time exposing (millisecond)

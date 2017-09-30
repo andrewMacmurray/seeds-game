@@ -6,8 +6,8 @@ import Data.Level.Board.Tile exposing (..)
 import Data.Color exposing (blockYellow)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
-import Data.Level.Types exposing (..)
-import Scenes.Level.Model as Level exposing (..)
+import Scenes.Level.Types exposing (..)
+import Scenes.Level.Types as Level exposing (..)
 
 
 boardMarginTop : Level.Model -> Style

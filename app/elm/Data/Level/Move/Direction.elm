@@ -1,6 +1,6 @@
 module Data.Level.Move.Direction exposing (..)
 
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import List exposing (any)
 
 

@@ -6,8 +6,8 @@ import Data.Color exposing (gold, washedYellow)
 import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Data.Level.Types exposing (..)
-import Scenes.Level.Model as Level
+import Scenes.Level.Types exposing (..)
+import Scenes.Level.Types as Level
 
 
 topBar : Level.Model -> Html msg

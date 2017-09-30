@@ -1,16 +1,16 @@
-module Main exposing (..)
+module App exposing (main)
 
-import Scenes.Hub.Model exposing (Model, Msg)
-import Scenes.Hub.Update exposing (update, subscriptions, init)
-import Scenes.Router exposing (view)
+import Scenes.Hub.Types exposing (Model, Msg)
+import Scenes.Hub.State as Hub
+import Scenes.Router as Router
 import Html exposing (program)
 
 
 main : Program Never Model Msg
 main =
     program
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
+        { init = Hub.init
+        , update = Hub.update
+        , view = Router.view
+        , subscriptions = Hub.subscriptions
         }

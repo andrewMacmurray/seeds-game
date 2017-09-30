@@ -1,7 +1,7 @@
 module Scenes.Level.View exposing (..)
 
 import Html exposing (Html, div)
-import Scenes.Level.Model as Level
+import Scenes.Level.Types as Level
 import Views.Backdrop exposing (backdrop)
 import Views.Level.Board exposing (board, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)

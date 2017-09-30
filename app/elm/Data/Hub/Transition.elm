@@ -1,7 +1,7 @@
 module Data.Hub.Transition exposing (..)
 
-import Data.Hub.Types exposing (..)
-import Scenes.Hub.Model exposing (..)
+import Scenes.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 import Random exposing (..)
 
 

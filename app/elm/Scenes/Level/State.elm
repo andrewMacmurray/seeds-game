@@ -1,6 +1,6 @@
-module Scenes.Level.Update exposing (..)
+module Scenes.Level.State exposing (..)
 
-import Data.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Entering exposing (addNewTiles, makeNewTiles)
 import Data.Level.Board.Falling exposing (setFallingTiles)
@@ -12,13 +12,13 @@ import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Data.Level.Score exposing (addScoreFromMoves, initialScores)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs)
-import Scenes.Hub.Model as Main
-import Scenes.Level.Model as Level exposing (..)
+import Scenes.Hub.Types as Main
+import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
 
 

@@ -2,10 +2,10 @@ module Data.Level.Board.Make exposing (..)
 
 import Data.Level.Board.Probabilities exposing (tileProbability)
 import Dict
-import Data.Hub.Types exposing (LevelData, WorldData)
+import Scenes.Hub.Types exposing (LevelData, WorldData)
 import Random exposing (..)
-import Data.Level.Types exposing (..)
-import Scenes.Level.Model as Level exposing (Msg(..))
+import Scenes.Level.Types exposing (..)
+import Scenes.Level.Types as Level exposing (Msg(..))
 
 
 makeBoard : Int -> List TileType -> Board

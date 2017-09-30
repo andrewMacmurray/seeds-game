@@ -5,8 +5,8 @@ import Data.Level.Board.Tile exposing (strokeColors)
 import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
-import Data.Level.Types exposing (..)
-import Scenes.Level.Model as Level
+import Scenes.Level.Types exposing (..)
+import Scenes.Level.Types as Level
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

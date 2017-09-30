@@ -2,10 +2,10 @@ module Data.Hub.LoadLevel exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Score exposing (initialScores, initialScoresFromProbabilites)
-import Scenes.Hub.Model as Main
-import Data.Hub.Types exposing (..)
-import Scenes.Level.Model as Level
-import Scenes.Level.Update exposing (initCmd)
+import Scenes.Hub.Types as Main
+import Scenes.Hub.Types exposing (..)
+import Scenes.Level.Types as Level
+import Scenes.Level.State exposing (initCmd)
 
 
 handleLoadLevel : ( WorldData, LevelData ) -> Main.Model -> ( Main.Model, Cmd Main.Msg )

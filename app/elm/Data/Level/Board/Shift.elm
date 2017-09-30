@@ -3,7 +3,7 @@ module Data.Level.Board.Shift exposing (..)
 import Data.Level.Board.Tile exposing (isLeaving)
 import Dict
 import List.Extra exposing (groupWhile)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 
 
 shiftBoard : Board -> Board

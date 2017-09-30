@@ -1,7 +1,7 @@
 module Data.Level.Board.Block exposing (..)
 
 import Dict
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 
 
 addWalls : List Coord -> Board -> Board

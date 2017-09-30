@@ -5,9 +5,9 @@ import Data.Hub.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Hub.Model as Hub exposing (..)
+import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Data.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 
 
 loadingScreen : Hub.Model -> Html msg

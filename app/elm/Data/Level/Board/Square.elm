@@ -2,7 +2,7 @@ module Data.Level.Board.Square exposing (..)
 
 import Data.Level.Board.Tile exposing (getTileType, setToDragging)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import Dict
 
 

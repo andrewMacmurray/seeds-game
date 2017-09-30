@@ -1,9 +1,9 @@
 module Scenes.Router exposing (..)
 
-import Data.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
-import Scenes.Hub.Model as Hub exposing (..)
+import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Hub.View exposing (hubView, titleView)
 import Scenes.Level.View exposing (levelView)
 import Views.Backdrop exposing (backdrop)

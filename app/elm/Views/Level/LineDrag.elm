@@ -5,7 +5,7 @@ import Data.Level.Move.Utils exposing (currentMoves, lastMove, currentMoveTileTy
 import Data.Level.Board.Tile exposing (strokeColors)
 import Helpers.Style exposing (px)
 import Html exposing (Html, span)
-import Scenes.Level.Model as Level exposing (..)
+import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (boardOffsetTop, boardWidth)

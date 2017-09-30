@@ -1,7 +1,7 @@
 module Data.Level.Move.Utils exposing (..)
 
 import Data.Level.Board.Tile exposing (getTileType, isCurrentMove, isDragging, moveOrder)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import Dict
 import Dict.Extra
 

@@ -2,9 +2,9 @@ module Data.Hub.Progress exposing (..)
 
 import Data.Hub.Config exposing (level5, world1)
 import Dict
-import Data.Hub.Types exposing (..)
-import Data.Level.Types exposing (SeedType(..))
-import Scenes.Hub.Model exposing (Model)
+import Scenes.Hub.Types exposing (..)
+import Scenes.Level.Types exposing (SeedType(..))
+import Scenes.Hub.Types exposing (Model)
 
 
 getSelectedProgress : Model -> Maybe LevelProgress

@@ -1,10 +1,11 @@
-module Scenes.Hub.Model exposing (..)
+module Scenes.Hub.Types exposing (..)
 
-import Data.Hub.Types exposing (..)
-import Mouse
-import Scenes.Level.Model as Level
-import Window
+import Scenes.Level.Types exposing (..)
+import Dict exposing (Dict)
 import Dom
+import Mouse
+import Scenes.Level.Types as Level
+import Window
 
 
 type alias Model =
@@ -42,3 +43,57 @@ type Msg
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | MousePosition Mouse.Position
+
+
+type Scene
+    = Level
+    | Hub
+    | Title
+
+
+type InfoWindow
+    = Visible LevelProgress
+    | Leaving LevelProgress
+    | Hidden
+
+
+type TransitionBackground
+    = Orange
+    | Blue
+
+
+type alias LevelProgress =
+    ( WorldNumber, LevelNumber )
+
+
+type alias WorldNumber =
+    Int
+
+
+type alias LevelNumber =
+    Int
+
+
+type alias HubData =
+    Dict Int WorldData
+
+
+type alias WorldData =
+    { levels : WorldLevels
+    , seedType : SeedType
+    , background : String
+    , textColor : String
+    , textCompleteColor : String
+    , textBackgroundColor : String
+    }
+
+
+type alias WorldLevels =
+    Dict Int LevelData
+
+
+type alias LevelData =
+    { tileProbabilities : List TileProbability
+    , walls : List Coord
+    , goal : Int
+    }

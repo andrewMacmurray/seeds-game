@@ -7,9 +7,9 @@ import Helpers.Style exposing (animationStyle, background, backgroundColor, clas
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Model as Main exposing (..)
+import Scenes.Hub.Types as Main exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Data.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 
 
 info : Main.Model -> Html Main.Msg
