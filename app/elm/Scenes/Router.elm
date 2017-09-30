@@ -1,34 +1,33 @@
-module View exposing (..)
+module Scenes.Router exposing (..)
 
 import Data.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
-import Model exposing (..)
-import Scenes.Hub.View exposing (hubView)
+import Scenes.Hub.Model as Hub exposing (..)
+import Scenes.Hub.View exposing (hubView, titleView)
 import Scenes.Level.View exposing (levelView)
-import Scenes.Title exposing (titleView)
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
 
-view : Model -> Html Msg
+view : Hub.Model -> Html Hub.Msg
 view model =
     div []
-        [ embeddedAnimations model
+        [ embeddedAnimations model.externalAnimations
         , loadingScreen model
         , renderScene model
-        , backdrop model.levelModel |> Html.map LevelMsg
+        , backdrop
         ]
 
 
-renderScene : Model -> Html Msg
+renderScene : Hub.Model -> Html Hub.Msg
 renderScene model =
-    case model.hubModel.scene of
+    case model.scene of
         Level ->
             levelView model.levelModel |> Html.map LevelMsg
 
         Hub ->
-            hubView model.hubModel
+            hubView model
 
         Title ->
-            titleView model.hubModel
+            titleView model

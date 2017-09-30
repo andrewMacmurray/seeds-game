@@ -1,12 +1,16 @@
 module Scenes.Hub.Model exposing (..)
 
 import Data.Hub.Types exposing (..)
-import Dom
+import Mouse
+import Scenes.Level.Model as Level
 import Window
+import Dom
 
 
 type alias Model =
-    { scene : Scene
+    { levelModel : Level.Model
+    , externalAnimations : String
+    , scene : Scene
     , sceneTransition : Bool
     , transitionBackground : TransitionBackground
     , progress : LevelProgress
@@ -14,11 +18,15 @@ type alias Model =
     , infoWindow : InfoWindow
     , hubData : HubData
     , window : Window.Size
+    , mouse : Mouse.Position
     }
 
 
 type Msg
-    = SetScene Scene
+    = LevelMsg Level.Msg
+    | StartLevel LevelProgress
+    | LoadLevelData ( WorldData, LevelData )
+    | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
     | RandomBackground TransitionBackground
@@ -30,4 +38,7 @@ type Msg
     | IncrementProgress
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
+    | ReceieveExternalAnimations String
     | DomNoOp (Result Dom.Error ())
+    | WindowSize Window.Size
+    | MousePosition Mouse.Position

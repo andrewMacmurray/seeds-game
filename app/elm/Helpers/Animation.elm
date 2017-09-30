@@ -5,18 +5,17 @@ import Helpers.Style exposing (keyframesAnimation, opacity_, scale_, step, step_
 import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode as Encode
-import Model exposing (Model)
 
 
-embeddedAnimations : Model -> Html msg
-embeddedAnimations model =
-    node "style" [ property "textContent" <| encodedAnimations model ] []
+embeddedAnimations : String -> Html msg
+embeddedAnimations animations =
+    node "style" [ property "textContent" <| encodedAnimations animations ] []
 
 
-encodedAnimations : Model -> Encode.Value
-encodedAnimations model =
+encodedAnimations : String -> Encode.Value
+encodedAnimations animations =
     [ internalAnimations
-    , model.externalAnimations
+    , animations
     ]
         |> String.join " "
         |> Encode.string

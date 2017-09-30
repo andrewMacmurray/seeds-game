@@ -2,9 +2,8 @@ module Helpers.Effect exposing (..)
 
 import Delay
 import Dom.Scroll exposing (toY)
-import Model as Main exposing (..)
+import Scenes.Hub.Model as Main exposing (..)
 import Mouse exposing (downs, moves)
-import Scenes.Hub.Model as Hub exposing (..)
 import Task
 import Time exposing (millisecond)
 import Window exposing (Size, resizes, size)
@@ -22,7 +21,7 @@ sequenceMs steps =
 -- Dom Scroll Helpers
 
 
-scrollHubToLevel : Float -> Size -> Cmd Hub.Msg
+scrollHubToLevel : Float -> Size -> Cmd Main.Msg
 scrollHubToLevel offset window =
     let
         targetDistance =

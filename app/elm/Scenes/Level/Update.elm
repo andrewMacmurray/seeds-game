@@ -17,7 +17,7 @@ import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs)
-import Model as Main
+import Scenes.Hub.Model as Main
 import Scenes.Level.Model as Level exposing (..)
 import Time exposing (millisecond)
 

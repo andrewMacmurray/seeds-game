@@ -1,8 +1,8 @@
 module Main exposing (..)
 
-import Model exposing (..)
-import Update exposing (..)
-import View exposing (..)
+import Scenes.Hub.Model exposing (Model, Msg)
+import Scenes.Hub.Update exposing (update, subscriptions, init)
+import Scenes.Router exposing (view)
 import Html exposing (program)
 
 

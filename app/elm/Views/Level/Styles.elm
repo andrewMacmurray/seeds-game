@@ -6,7 +6,6 @@ import Data.Level.Board.Tile exposing (..)
 import Data.Color exposing (blockYellow)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
-import Model as Main exposing (Style)
 import Data.Level.Types exposing (..)
 import Scenes.Level.Model as Level exposing (..)
 
