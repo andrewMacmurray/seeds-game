@@ -3,8 +3,8 @@ module Data.Hub.Config exposing (..)
 import Data.Level.Board.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
 import Dict
-import Data.Hub.Types exposing (HubData, WorldData, LevelData, WorldLevels)
-import Data.Level.Types exposing (..)
+import Scenes.Hub.Types exposing (HubData, WorldData, LevelData, WorldLevels)
+import Scenes.Level.Types exposing (..)
 
 
 hubData : HubData
@@ -95,12 +95,12 @@ evenTiles =
 
 noSun : List TileProbability
 noSun =
-    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+    [ ( Seed, 33 ), ( SeedPod, 33 ), ( Rain, 33 ) ]
 
 
 noRain : List TileProbability
 noRain =
-    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Sun, 30 ) ]
+    [ ( Seed, 33 ), ( SeedPod, 33 ), ( Sun, 33 ) ]
 
 
 noWeather : List TileProbability

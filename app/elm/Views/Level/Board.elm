@@ -3,51 +3,50 @@ module Views.Level.Board exposing (..)
 import Data.Level.Board.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
 import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
-import Helpers.Style exposing (classes, px, styles, translate, widthStyle)
+import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter, onMouseUp)
-import Model exposing (Style, Model)
-import Data.Level.Types exposing (..)
-import Scenes.Level.Model exposing (..)
+import Scenes.Level.Types exposing (..)
+import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
 
 
-board : Model -> Html LevelMsg
+board : Level.Model -> Html Level.Msg
 board model =
     boardLayout model
         [ div [ class "relative z-5" ] <| renderTiles model
-        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model.levelModel
+        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
         ]
 
 
-renderTiles : Model -> List (Html LevelMsg)
+renderTiles : Level.Model -> List (Html Level.Msg)
 renderTiles model =
-    model.levelModel.board
+    model.board
         |> Dict.toList
         |> List.map (renderTile model)
 
 
-renderLines : LevelModel -> List (Html LevelMsg)
+renderLines : Level.Model -> List (Html Level.Msg)
 renderLines model =
     model.board
         |> Dict.toList
         |> List.map (renderLineLayer model)
 
 
-boardLayout : Model -> List (Html LevelMsg) -> Html LevelMsg
+boardLayout : Level.Model -> List (Html Level.Msg) -> Html Level.Msg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ widthStyle <| boardWidth model.levelModel
+            [ widthStyle <| boardWidth model
             , boardMarginTop model
             ]
         ]
 
 
-renderLineLayer : LevelModel -> Move -> Html LevelMsg
+renderLineLayer : Level.Model -> Move -> Html Level.Msg
 renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
@@ -61,25 +60,25 @@ renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-renderTile : Model -> Move -> Html LevelMsg
+renderTile : Level.Model -> Move -> Html Level.Msg
 renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ style <|
             styles
-                [ tileWidthHeightStyles model.levelModel
-                , tileCoordsStyles model.levelModel coord
+                [ tileWidthHeightStyles model
+                , tileCoordsStyles model coord
                 , leavingStyles model move
                 ]
         , class "dib absolute pointer"
-        , hanldeMoveEvents model.levelModel move
+        , hanldeMoveEvents model move
         ]
-        [ innerTile model.levelModel move
-        , tracer model.levelModel move
+        [ innerTile model move
+        , tracer model move
         , wall move
         ]
 
 
-handleStop : LevelModel -> Attribute LevelMsg
+handleStop : Level.Model -> Attribute Level.Msg
 handleStop model =
     if model.isDragging && model.moveShape /= Just Square then
         onMouseUp <| StopMove Line
@@ -87,7 +86,7 @@ handleStop model =
         emptyProperty
 
 
-hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
+hanldeMoveEvents : Level.Model -> Move -> Attribute Level.Msg
 hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
@@ -95,7 +94,7 @@ hanldeMoveEvents model move =
         onMouseDownPreventDefault <| StartMove move
 
 
-tracer : LevelModel -> Move -> Html LevelMsg
+tracer : Level.Model -> Move -> Html Level.Msg
 tracer model move =
     let
         extraStyles =
@@ -104,7 +103,7 @@ tracer model move =
         makeInnerTile extraStyles model move
 
 
-wall : Move -> Html LevelMsg
+wall : Move -> Html Level.Msg
 wall move =
     div
         [ style <| wallStyles move
@@ -113,7 +112,7 @@ wall move =
         []
 
 
-innerTile : LevelModel -> Move -> Html LevelMsg
+innerTile : Level.Model -> Move -> Html Level.Msg
 innerTile model move =
     let
         extraStyles =
@@ -122,7 +121,7 @@ innerTile model move =
         makeInnerTile extraStyles model move
 
 
-makeInnerTile : List Style -> LevelModel -> Move -> Html LevelMsg
+makeInnerTile : List Style -> Level.Model -> Move -> Html Level.Msg
 makeInnerTile extraStyles model (( _, tile ) as move) =
     div
         [ class <| baseTileClasses tile
@@ -136,7 +135,7 @@ makeInnerTile extraStyles model (( _, tile ) as move) =
         []
 
 
-baseTileStyles : LevelModel -> Move -> List Style
+baseTileStyles : Level.Model -> Move -> List Style
 baseTileStyles model (( _, tile ) as move) =
     styles
         [ growingStyles move

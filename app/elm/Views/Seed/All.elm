@@ -1,7 +1,7 @@
 module Views.Seed.All exposing (..)
 
 import Html exposing (Html)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (greyedOut, rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)

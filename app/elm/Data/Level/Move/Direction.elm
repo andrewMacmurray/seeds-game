@@ -1,7 +1,7 @@
 module Data.Level.Move.Direction exposing (..)
 
-import Data.Level.Types exposing (..)
-import Helpers.List exposing (anyTrue)
+import Scenes.Level.Types exposing (..)
+import List exposing (any)
 
 
 isLeft : Coord -> Coord -> Bool
@@ -41,4 +41,4 @@ check a b fn =
 validDirection : Move -> Move -> Bool
 validDirection ( c2, _ ) ( c1, _ ) =
     List.map (check c2 c1) directionsToCheck
-        |> anyTrue
+        |> (any identity)

@@ -5,12 +5,12 @@ import Data.Hub.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Model exposing (..)
+import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Data.Hub.Types exposing (..)
+import Scenes.Hub.Types exposing (..)
 
 
-loadingScreen : Model -> Html Msg
+loadingScreen : Hub.Model -> Html msg
 loadingScreen model =
     div
         [ class <|
@@ -19,11 +19,11 @@ loadingScreen model =
                 , transitionClasses model
                 ]
         , style
-            [ backgroundColor <| loadingBackground model.hubModel.transitionBackground
+            [ backgroundColor <| loadingBackground model.transitionBackground
             , transitionStyle "0.5s ease"
             ]
         ]
-        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model.hubModel ] ]
+        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model ] ]
 
 
 loadingBackground : TransitionBackground -> String
@@ -36,9 +36,9 @@ loadingBackground bg =
             gold
 
 
-transitionClasses : Model -> String
+transitionClasses : Hub.Model -> String
 transitionClasses model =
-    if model.hubModel.sceneTransition then
+    if model.sceneTransition then
         "o-100"
     else
         "o-0 touch-disabled"

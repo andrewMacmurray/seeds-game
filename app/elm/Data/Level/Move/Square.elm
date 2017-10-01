@@ -3,15 +3,15 @@ module Data.Level.Move.Square exposing (..)
 import Data.Level.Board.Tile exposing (moveOrder)
 import Data.Level.Move.Direction exposing (validDirection)
 import Data.Level.Move.Utils exposing (currentMoves, emptyMove, moveShape, sameTileType)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 import Delay
 import Dict
-import Helpers.List exposing (allTrue)
-import Scenes.Level.Model exposing (LevelMsg(..))
+import List exposing (all)
+import Scenes.Level.Types as Level exposing (Msg(..))
 import Time exposing (millisecond)
 
 
-triggerMoveIfSquare : Board -> Cmd LevelMsg
+triggerMoveIfSquare : Board -> Cmd Level.Msg
 triggerMoveIfSquare board =
     if hasSquareTile board then
         Delay.after 0 millisecond SquareMove
@@ -28,7 +28,7 @@ isValidSquare first board =
         second =
             List.head moves |> Maybe.withDefault emptyMove
     in
-        allTrue
+        all identity
             [ moveLongEnough moves
             , validDirection first second
             , sameTileType first second

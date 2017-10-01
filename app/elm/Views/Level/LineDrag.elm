@@ -5,22 +5,21 @@ import Data.Level.Move.Utils exposing (currentMoves, lastMove, currentMoveTileTy
 import Data.Level.Board.Tile exposing (strokeColors)
 import Helpers.Style exposing (px)
 import Html exposing (Html, span)
-import Scenes.Level.Model exposing (..)
+import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Model exposing (Model)
 import Views.Level.Styles exposing (boardOffsetTop, boardWidth)
 
 
-handleLineDrag : Model -> Html LevelMsg
+handleLineDrag : Level.Model -> Html Level.Msg
 handleLineDrag model =
-    if model.levelModel.isDragging && hasSquareTile model.levelModel.board |> not then
+    if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
     else
         span [] []
 
 
-lineDrag : Model -> Html LevelMsg
+lineDrag : Level.Model -> Html Level.Msg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -30,7 +29,7 @@ lineDrag ({ window } as model) =
             lastMoveOrigin model
 
         colorClass =
-            currentMoveTileType model.levelModel.board
+            currentMoveTileType model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault ""
     in
@@ -38,7 +37,7 @@ lineDrag ({ window } as model) =
             [ width <| px window.width
             , height <| px window.height
             , viewBox vb
-            , class "fixed top-0 right-0 z-1 touch-disabled"
+            , class "fixed top-0 right-0 z-2 touch-disabled"
             ]
             [ line
                 [ Svg.Attributes.style colorClass
@@ -53,14 +52,14 @@ lineDrag ({ window } as model) =
             ]
 
 
-lastMoveOrigin : Model -> ( Float, Float )
+lastMoveOrigin : Level.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
         tileSize =
-            model.levelModel.tileSize
+            model.tileSize
 
         ( ( y, x ), _ ) =
-            lastMove model.levelModel.board
+            lastMove model.board
 
         y1 =
             toFloat y
@@ -78,7 +77,7 @@ lastMoveOrigin ({ window } as model) =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - (boardWidth model.levelModel)) // 2 |> toFloat
+            (window.width - (boardWidth model)) // 2 |> toFloat
     in
         ( ((y1 + 1) * sY) + offsetY - (sY / 2)
         , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

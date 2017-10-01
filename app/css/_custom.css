@@ -44,3 +44,7 @@ div {
 .momentum-scroll {
   -webkit-overflow-scrolling: touch;
 }
+
+.z-2 {
+  z-index: 2;
+}

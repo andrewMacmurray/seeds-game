@@ -1,7 +1,10 @@
 module Helpers.Style exposing (..)
 
 import Formatting exposing (..)
-import Model exposing (Style)
+
+
+type alias Style =
+    ( String, String )
 
 
 classes : List String -> String

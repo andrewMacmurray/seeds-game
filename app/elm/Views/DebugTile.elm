@@ -2,7 +2,7 @@ module Views.DebugTile exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Data.Level.Types exposing (..)
+import Scenes.Level.Types exposing (..)
 
 
 debugCoord : Coord -> Html msg

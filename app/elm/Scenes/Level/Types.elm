@@ -1,6 +1,42 @@
-module Data.Level.Types exposing (..)
+module Scenes.Level.Types exposing (..)
 
 import Dict exposing (Dict)
+import Mouse
+import Window
+
+
+type alias Model =
+    { board : Board
+    , scores : Scores
+    , isDragging : Bool
+    , moveShape : Maybe MoveShape
+    , seedType : SeedType
+    , tileProbabilities : List TileProbability
+    , boardScale : Int
+    , scoreIconSize : Int
+    , tileSize : TileSize
+    , topBarHeight : Int
+    , mouse : Mouse.Position
+    , window : Window.Size
+    }
+
+
+type Msg
+    = InitTiles (List Coord) (List TileType)
+    | AddTiles (List TileType)
+    | SquareMove
+    | StopMove MoveShape
+    | StartMove Move
+    | CheckMove Move
+    | SetLeavingTiles
+    | SetFallingTiles
+    | SetGrowingSeedPods
+    | GrowPodsToSeeds
+    | ResetGrowingSeeds
+    | MakeNewTiles
+    | ResetEntering
+    | ShiftBoard
+    | ResetMove
 
 
 type alias Scores =

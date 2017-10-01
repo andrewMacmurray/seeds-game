@@ -1,24 +1,24 @@
-module Scenes.Level.Update exposing (..)
+module Scenes.Level.State exposing (..)
 
+import Scenes.Hub.Types exposing (..)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Entering exposing (addNewTiles, makeNewTiles)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Make exposing (generateTiles, makeBoard)
-import Data.Level.Score exposing (addScoreFromMoves, initialScores)
 import Data.Level.Board.Shift exposing (shiftBoard)
 import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
+import Data.Level.Score exposing (addScoreFromMoves, initialScores)
+import Scenes.Level.Types exposing (..)
 import Delay
 import Dict exposing (Dict)
-import Helpers.Delay exposing (sequenceMs)
 import Helpers.Dict exposing (mapValues)
-import Model as Main
-import Data.Hub.Types exposing (..)
-import Scenes.Level.Model exposing (..)
-import Data.Level.Types exposing (..)
+import Helpers.Effect exposing (sequenceMs)
+import Scenes.Hub.Types as Main
+import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
 
 
@@ -31,7 +31,7 @@ initCmd config model =
         |> Cmd.map Main.LevelMsg
 
 
-initialState : LevelModel
+initialState : Level.Model
 initialState =
     { board = Dict.empty
     , scores = Dict.empty
@@ -43,10 +43,12 @@ initialState =
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
+    , mouse = { y = 0, x = 0 }
+    , window = { height = 0, width = 0 }
     }
 
 
-update : LevelMsg -> LevelModel -> ( LevelModel, Cmd LevelMsg )
+update : Level.Msg -> Level.Model -> ( Level.Model, Cmd Level.Msg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -117,7 +119,7 @@ update msg model =
 -- SEQUENCES
 
 
-growSeedPodsSequence : Cmd LevelMsg
+growSeedPodsSequence : Cmd Level.Msg
 growSeedPodsSequence =
     sequenceMs
         [ ( 0, SetGrowingSeedPods )
@@ -127,7 +129,7 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : MoveShape -> Cmd LevelMsg
+removeTilesSequence : MoveShape -> Cmd Level.Msg
 removeTilesSequence moveShape =
     sequenceMs
         [ ( 0, SetLeavingTiles )
@@ -151,27 +153,27 @@ fallDelay moveShape =
 -- UPDATE HELPERS
 
 
-handleGenerateTiles : LevelData -> LevelModel -> Cmd LevelMsg
+handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
 handleGenerateTiles levelData { boardScale } =
     generateTiles levelData boardScale
 
 
-handleMakeBoard : List TileType -> LevelModel -> LevelModel
+handleMakeBoard : List TileType -> Level.Model -> Level.Model
 handleMakeBoard tileList ({ boardScale } as model) =
     { model | board = makeBoard boardScale tileList }
 
 
-handleAddNewTiles : List TileType -> LevelModel -> LevelModel
+handleAddNewTiles : List TileType -> Level.Model -> Level.Model
 handleAddNewTiles tileList =
     transformBoard <| addNewTiles tileList
 
 
-handleAddScore : LevelModel -> LevelModel
+handleAddScore : Level.Model -> Level.Model
 handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-mapBoard : (Block -> Block) -> LevelModel -> LevelModel
+mapBoard : (Block -> Block) -> Level.Model -> Level.Model
 mapBoard f model =
     { model | board = (mapValues f) model.board }
 
@@ -181,7 +183,7 @@ transformBoard fn model =
     { model | board = fn model.board }
 
 
-handleStopMove : LevelModel -> LevelModel
+handleStopMove : Level.Model -> Level.Model
 handleStopMove model =
     { model
         | isDragging = False
@@ -189,7 +191,7 @@ handleStopMove model =
     }
 
 
-handleStartMove : Move -> LevelModel -> LevelModel
+handleStartMove : Move -> Level.Model -> Level.Model
 handleStartMove move model =
     { model
         | isDragging = True
@@ -198,7 +200,7 @@ handleStartMove move model =
     }
 
 
-handleCheckMove : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg )
+handleCheckMove : Move -> Level.Model -> ( Level.Model, Cmd Level.Msg )
 handleCheckMove move model =
     let
         newModel =
@@ -207,7 +209,7 @@ handleCheckMove move model =
         newModel ! [ triggerMoveIfSquare newModel.board ]
 
 
-handleCheckMove_ : Move -> LevelModel -> LevelModel
+handleCheckMove_ : Move -> Level.Model -> Level.Model
 handleCheckMove_ move model =
     if model.isDragging then
         { model | board = addToMove move model.board }
@@ -215,7 +217,7 @@ handleCheckMove_ move model =
         model
 
 
-handleSquareMove : LevelModel -> LevelModel
+handleSquareMove : Level.Model -> Level.Model
 handleSquareMove model =
     { model
         | moveShape = Just Square
