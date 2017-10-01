@@ -1,4 +1,4 @@
-module Scenes.Router exposing (..)
+module View exposing (..)
 
 import Scenes.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)

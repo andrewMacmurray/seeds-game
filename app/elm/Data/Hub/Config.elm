@@ -95,12 +95,12 @@ evenTiles =
 
 noSun : List TileProbability
 noSun =
-    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Rain, 30 ) ]
+    [ ( Seed, 33 ), ( SeedPod, 33 ), ( Rain, 33 ) ]
 
 
 noRain : List TileProbability
 noRain =
-    [ ( Seed, 30 ), ( SeedPod, 30 ), ( Sun, 30 ) ]
+    [ ( Seed, 33 ), ( SeedPod, 33 ), ( Sun, 33 ) ]
 
 
 noWeather : List TileProbability

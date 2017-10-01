@@ -3,7 +3,7 @@ var animations = require('./bounce.js');
 
 function init() {
   var node = document.getElementById('main');
-  var app = Elm.Main.embed(node);
+  var app = Elm.App.embed(node);
 
   app.ports.scrollToHubLevel.subscribe(function (level) {
     var levelOffset = document.getElementById('level-' + level).offsetTop

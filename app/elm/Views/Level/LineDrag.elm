@@ -37,7 +37,7 @@ lineDrag ({ window } as model) =
             [ width <| px window.width
             , height <| px window.height
             , viewBox vb
-            , class "fixed top-0 right-0 z-1 touch-disabled"
+            , class "fixed top-0 right-0 z-2 touch-disabled"
             ]
             [ line
                 [ Svg.Attributes.style colorClass
