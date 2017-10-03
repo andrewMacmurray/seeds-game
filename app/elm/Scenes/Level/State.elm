@@ -1,6 +1,5 @@
 module Scenes.Level.State exposing (..)
 
-import Scenes.Hub.Types exposing (..)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Entering exposing (addNewTiles, makeNewTiles)
 import Data.Level.Board.Falling exposing (setFallingTiles)
@@ -11,18 +10,14 @@ import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnt
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
-import Data.Level.Score exposing (addScoreFromMoves, initialScores)
-import Scenes.Level.Types exposing (..)
+import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
-import Helpers.Effect exposing (sequenceMs)
-import Scenes.Hub.Types as Main
+import Helpers.Effect exposing (sequenceMs, trigger)
+import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
-
-
--- STATE
 
 
 initCmd : LevelData -> Main.Model -> Cmd Main.Msg
@@ -38,11 +33,12 @@ initialState =
     , isDragging = False
     , moveShape = Nothing
     , seedType = Sunflower
-    , tileProbabilities = []
+    , tileSettings = []
     , boardScale = 8
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
+    , exitSequenceTriggered = False
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
@@ -97,7 +93,7 @@ update msg model =
             (model |> mapBoard setGrowingToStatic) ! []
 
         MakeNewTiles ->
-            model ! [ makeNewTiles model.tileProbabilities model.board ]
+            model ! [ makeNewTiles model.tileSettings model.board ]
 
         ResetEntering ->
             (model |> transformBoard (mapValues setEnteringToStatic)) ! []
@@ -110,6 +106,13 @@ update msg model =
 
         CheckMove move ->
             handleCheckMove move model
+
+        CheckLevelComplete ->
+            handleCheckLevelComplete model
+
+        ExitLevel ->
+            -- top level update checks for this message and transitions scene
+            model ! []
 
         SquareMove ->
             (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
@@ -136,6 +139,7 @@ removeTilesSequence moveShape =
         , ( 0, ResetMove )
         , ( fallDelay moveShape, SetFallingTiles )
         , ( 500, ShiftBoard )
+        , ( 0, CheckLevelComplete )
         , ( 0, MakeNewTiles )
         , ( 500, ResetEntering )
         ]
@@ -223,3 +227,11 @@ handleSquareMove model =
         | moveShape = Just Square
         , board = setAllTilesOfTypeToDragging model.board
     }
+
+
+handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg )
+handleCheckLevelComplete model =
+    if levelComplete model.scores && not model.exitSequenceTriggered then
+        { model | exitSequenceTriggered = True } ! [ trigger ExitLevel ]
+    else
+        model ! []

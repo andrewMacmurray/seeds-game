@@ -7,12 +7,12 @@ import Helpers.Style exposing (animationStyle, background, backgroundColor, clas
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types as Main exposing (..)
+import Levels exposing (allLevels)
+import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Scenes.Hub.Types exposing (..)
 
 
-info : Main.Model -> Html Main.Msg
+info : Hub.Model -> Html Hub.Msg
 info model =
     case model.infoWindow of
         Hidden ->
@@ -57,16 +57,16 @@ info model =
                     ]
 
 
-infoContent : LevelProgress -> ( WorldData, LevelData ) -> Main.Model -> List (Html Main.Msg)
+infoContent : LevelProgress -> ( WorldData, LevelData ) -> Hub.Model -> List (Html Hub.Msg)
 infoContent ( world, level ) ( worldData, levelData ) model =
-    [ p [] [ text <| toString <| getLevelNumber ( world, level ) model.hubData ]
+    [ p [] [ text <| toString <| getLevelNumber ( world, level ) allLevels ]
     , div [ style [ widthStyle 35 ], class "center" ] [ renderSeed worldData.seedType ]
     , p [] [ text "collect the seeds" ]
     , p [ class "tracked-mega", style [ marginTop 50 ] ] [ text "PLAY" ]
     ]
 
 
-handleHideInfo : Main.Model -> Attribute Main.Msg
+handleHideInfo : Hub.Model -> Attribute Hub.Msg
 handleHideInfo model =
     case model.infoWindow of
         Hidden ->
@@ -76,7 +76,7 @@ handleHideInfo model =
             onClick HideInfo
 
 
-infoContainer : InfoWindow -> List (Html Main.Msg) -> Html Main.Msg
+infoContainer : InfoWindow -> List (Html Hub.Msg) -> Html Hub.Msg
 infoContainer infoWindow =
     case infoWindow of
         Leaving _ ->

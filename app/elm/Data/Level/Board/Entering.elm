@@ -19,7 +19,7 @@ addNewTiles newTiles board =
         Dict.union tilesToAdd board
 
 
-makeNewTiles : List TileProbability -> Board -> Cmd Level.Msg
+makeNewTiles : List TileSetting -> Board -> Cmd Level.Msg
 makeNewTiles prob board =
     (tileGenerator prob)
         |> Random.list (numberOfEmpties board)

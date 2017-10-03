@@ -3,23 +3,23 @@ module Data.Level.Board.Probabilities exposing (..)
 import Scenes.Level.Types exposing (..)
 
 
-tileProbability : List TileProbability -> Int -> TileType
-tileProbability probabilities n =
-    probabilities
-        |> List.sortBy Tuple.second
+tileProbability : List TileSetting -> Int -> TileType
+tileProbability tileSettings n =
+    tileSettings
+        |> List.sortBy .probability
         |> List.foldl (handleProb n) ( Nothing, 0 )
         |> Tuple.first
         |> Maybe.withDefault SeedPod
 
 
-handleProb : Int -> TileProbability -> ( Maybe TileType, Int ) -> ( Maybe TileType, Int )
-handleProb n ( tileType, prob ) ( val, accProb ) =
+handleProb : Int -> TileSetting -> ( Maybe TileType, Int ) -> ( Maybe TileType, Int )
+handleProb n { tileType, probability } ( val, accProb ) =
     case val of
         Nothing ->
-            if n < prob + accProb then
-                ( Just tileType, prob )
+            if n < probability + accProb then
+                ( Just tileType, probability )
             else
-                ( Nothing, prob + accProb )
+                ( Nothing, probability + accProb )
 
         Just tileType ->
-            ( Just tileType, prob )
+            ( Just tileType, probability )

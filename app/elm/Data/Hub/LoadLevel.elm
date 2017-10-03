@@ -1,7 +1,7 @@
 module Data.Hub.LoadLevel exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
-import Data.Level.Score exposing (initialScores, initialScoresFromProbabilites)
+import Data.Level.Score exposing (initialScores)
 import Scenes.Hub.Types as Main
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types as Level
@@ -12,16 +12,17 @@ handleLoadLevel : ( WorldData, LevelData ) -> Main.Model -> ( Main.Model, Cmd Ma
 handleLoadLevel (( _, levelData ) as config) model =
     let
         newModel =
-            { model | levelModel = addLevelData config model.levelModel }
+            { model | levelModel = initWithLevelData config model.levelModel }
     in
         newModel ! [ initCmd levelData newModel ]
 
 
-addLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
-addLevelData ( worldData, { tileProbabilities, walls } ) model =
+initWithLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
+initWithLevelData ( worldData, { tileSettings, walls } ) model =
     { model
-        | scores = initialScoresFromProbabilites tileProbabilities
+        | scores = initialScores tileSettings
         , board = addWalls walls model.board
-        , tileProbabilities = tileProbabilities
+        , tileSettings = tileSettings
         , seedType = worldData.seedType
+        , exitSequenceTriggered = False
     }

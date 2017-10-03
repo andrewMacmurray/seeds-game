@@ -157,7 +157,7 @@ getLeavingStyle tileType model =
 
 newLeavingStyles : Level.Model -> Dict String String
 newLeavingStyles model =
-    model.tileProbabilities
+    model.tileSettings
         |> scoreTileTypes
         |> List.indexedMap (prepareLeavingStyle model)
         |> Dict.fromList
@@ -177,7 +177,7 @@ exitXDistance n model =
             model.scoreIconSize * 2
 
         scoreBarWidth =
-            (List.length model.tileProbabilities) * scoreWidth
+            (List.length model.tileSettings) * scoreWidth
 
         baseOffset =
             (boardWidth model - scoreBarWidth) // 2

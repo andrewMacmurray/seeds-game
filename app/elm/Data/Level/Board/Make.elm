@@ -33,11 +33,11 @@ makeRange n =
 
 generateTiles : LevelData -> Int -> Cmd Level.Msg
 generateTiles levelData x =
-    Random.list (x * x) (tileGenerator levelData.tileProbabilities)
+    Random.list (x * x) (tileGenerator levelData.tileSettings)
         |> Random.generate (InitTiles levelData.walls)
 
 
-tileGenerator : List TileProbability -> Generator TileType
+tileGenerator : List TileSetting -> Generator TileType
 tileGenerator probabilities =
     Random.int 1 100
         |> Random.map (tileProbability probabilities)

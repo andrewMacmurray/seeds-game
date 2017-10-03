@@ -6,15 +6,17 @@ function init() {
   var app = Elm.App.embed(node);
 
   app.ports.scrollToHubLevel.subscribe(function (level) {
-    var levelOffset = document.getElementById('level-' + level).offsetTop
-    app.ports.receiveHubLevelOffset.send(levelOffset)
+    var levelEl = document.getElementById('level-' + level)
+    if (levelEl) {
+      app.ports.receiveHubLevelOffset.send(levelEl.offsetTop)
+    }
   })
 
   app.ports.getExternalAnimations.subscribe(function (tileSize) {
     var anims = [
       animations.elasticBounceIn(),
-      animations.hardBounceDown(),
-      animations.hardBounceDowns(tileSize)
+      animations.bounceDown(),
+      animations.bounceDowns(tileSize)
     ]
     .join(' ')
 

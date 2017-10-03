@@ -13,7 +13,7 @@ function elasticBounceIn () {
     })
 }
 
-function hardBounceDown () {
+function bounceDown () {
   return new Bounce()
     .translate({
       from: { x: 0, y: -200 },
@@ -27,7 +27,7 @@ function hardBounceDown () {
 }
 
 
-function hardBounceDowns (tileSize) {
+function bounceDowns (tileSize) {
   var anims = []
   for (var i = 1; i <= 8; i++) {
     var b = new Bounce()
@@ -49,6 +49,6 @@ function hardBounceDowns (tileSize) {
 
 module.exports = {
   elasticBounceIn,
-  hardBounceDown,
-  hardBounceDowns
+  bounceDown,
+  bounceDowns
 }

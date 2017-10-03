@@ -17,6 +17,11 @@ sequenceMs steps =
     Delay.sequence <| Delay.withUnit millisecond <| steps
 
 
+trigger : msg -> Cmd msg
+trigger msg =
+    Delay.after 0 millisecond msg
+
+
 
 -- Dom Scroll Helpers
 
