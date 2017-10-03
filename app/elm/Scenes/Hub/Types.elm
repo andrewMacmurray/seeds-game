@@ -16,7 +16,6 @@ type alias Model =
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
     , infoWindow : InfoWindow
-    , hubData : HubData
     , window : Window.Size
     , mouse : Mouse.Position
     }
@@ -74,7 +73,7 @@ type alias LevelNumber =
     Int
 
 
-type alias HubData =
+type alias AllLevels =
     Dict Int WorldData
 
 

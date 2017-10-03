@@ -12,16 +12,17 @@ handleLoadLevel : ( WorldData, LevelData ) -> Main.Model -> ( Main.Model, Cmd Ma
 handleLoadLevel (( _, levelData ) as config) model =
     let
         newModel =
-            { model | levelModel = addLevelData config model.levelModel }
+            { model | levelModel = initWithLevelData config model.levelModel }
     in
         newModel ! [ initCmd levelData newModel ]
 
 
-addLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
-addLevelData ( worldData, { tileSettings, walls } ) model =
+initWithLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
+initWithLevelData ( worldData, { tileSettings, walls } ) model =
     { model
         | scores = initialScores tileSettings
         , board = addWalls walls model.board
         , tileSettings = tileSettings
         , seedType = worldData.seedType
+        , exitSequenceTriggered = False
     }

@@ -38,6 +38,7 @@ initialState =
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
+    , exitSequenceTriggered = False
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
@@ -230,7 +231,7 @@ handleSquareMove model =
 
 handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg )
 handleCheckLevelComplete model =
-    if levelComplete model.scores then
-        model ! [ trigger ExitLevel ]
+    if levelComplete model.scores && not model.exitSequenceTriggered then
+        { model | exitSequenceTriggered = True } ! [ trigger ExitLevel ]
     else
         model ! []

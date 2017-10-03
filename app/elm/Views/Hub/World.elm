@@ -7,15 +7,15 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types as Hub exposing (Msg(..))
+import Levels exposing (allLevels)
+import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
-import Scenes.Hub.Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
 renderWorlds : Hub.Model -> List (Html Hub.Msg)
 renderWorlds model =
-    model.hubData
+    allLevels
         |> Dict.toList
         |> List.reverse
         |> List.map (renderWorld model)
@@ -38,7 +38,7 @@ renderLevel : Hub.Model -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelDat
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
         levelNumber =
-            getLevelNumber ( world, level ) model.hubData |> toString
+            getLevelNumber ( world, level ) allLevels |> toString
     in
         div
             [ showInfo ( world, level ) model

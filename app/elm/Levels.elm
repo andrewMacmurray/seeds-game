@@ -1,14 +1,14 @@
-module Data.Hub.Config exposing (..)
+module Levels exposing (..)
 
 import Data.Level.Board.Walls exposing (corners, standardWalls)
 import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
-import Dict
-import Scenes.Hub.Types exposing (HubData, WorldData, LevelData, WorldLevels)
+import Dict exposing (Dict)
+import Scenes.Hub.Types exposing (AllLevels, WorldData, LevelData, WorldLevels)
 import Scenes.Level.Types exposing (..)
 
 
-hubData : HubData
-hubData =
+allLevels : AllLevels
+allLevels =
     Dict.fromList
         [ ( 1, world1 )
         , ( 2, world2 )
@@ -96,7 +96,7 @@ noRain =
 noWeather : List TileSetting
 noWeather =
     [ ( Seed, 25, Just 150 )
-    , ( SeedPod, 75, Nothing )
+    , ( SeedPod, 7, Nothing )
     ]
         |> List.map addTargetScore
 

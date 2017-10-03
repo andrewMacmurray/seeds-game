@@ -16,6 +16,7 @@ type alias Model =
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
+    , exitSequenceTriggered : Bool
     , mouse : Mouse.Position
     , window : Window.Size
     }

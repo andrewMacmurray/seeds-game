@@ -1,11 +1,11 @@
 module Scenes.Hub.State exposing (..)
 
-import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
+import Levels exposing (allLevels)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
@@ -28,10 +28,9 @@ initialState =
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 1, 5 )
+    , progress = ( 1, 1 )
     , currentLevel = Nothing
     , infoWindow = Hidden
-    , hubData = hubData
     , window = { height = 0, width = 0 }
     , mouse = { y = 0, x = 0 }
     }
@@ -164,7 +163,7 @@ handleLevelMsg levelMsg model =
 
 levelNumber : Main.Model -> Int
 levelNumber model =
-    getLevelNumber model.progress model.hubData
+    getLevelNumber model.progress allLevels
 
 
 subscriptions : Main.Model -> Sub Main.Msg
