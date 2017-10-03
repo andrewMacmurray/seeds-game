@@ -4,13 +4,12 @@ import Data.Hub.Config exposing (hubData)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Hub.Transition exposing (genRandomBackground)
-import Scenes.Hub.Types exposing (..)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
-import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize)
+import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
-import Scenes.Level.Types as LevelModel
 import Scenes.Level.State as Level
+import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
 import Window
 
 
@@ -29,7 +28,7 @@ initialState =
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 2, 4 )
+    , progress = ( 1, 5 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , hubData = hubData
@@ -58,6 +57,18 @@ update msg model =
                         ]
                   ]
 
+        EndLevel ->
+            model
+                ! [ sequenceMs
+                        [ ( 0, SetCurrentLevel Nothing )
+                        , ( 0, IncrementProgress )
+                        , ( 10, BeginSceneTransition )
+                        , ( 500, SetScene Hub )
+                        , ( 1000, ScrollToHubLevel <| (levelNumber model) + 1 )
+                        , ( 1500, EndSceneTransition )
+                        ]
+                  ]
+
         LoadLevelData levelData ->
             handleLoadLevel levelData model
 
@@ -78,7 +89,7 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 100, ScrollToHubLevel <| getLevelNumber model.progress model.hubData )
+                        , ( 100, ScrollToHubLevel <| levelNumber model )
                         , ( 2400, EndSceneTransition )
                         ]
                   ]
@@ -139,11 +150,21 @@ addWindowSizeToLevel window { levelModel } =
 
 handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
-    let
-        ( levelModel, levelCmd ) =
-            Level.update levelMsg model.levelModel
-    in
-        { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+    case levelMsg of
+        ExitLevel ->
+            model ! [ trigger EndLevel ]
+
+        _ ->
+            let
+                ( levelModel, levelCmd ) =
+                    Level.update levelMsg model.levelModel
+            in
+                { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+
+
+levelNumber : Main.Model -> Int
+levelNumber model =
+    getLevelNumber model.progress model.hubData
 
 
 subscriptions : Main.Model -> Sub Main.Msg

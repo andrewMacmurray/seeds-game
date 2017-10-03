@@ -11,7 +11,7 @@ type alias Model =
     , isDragging : Bool
     , moveShape : Maybe MoveShape
     , seedType : SeedType
-    , tileProbabilities : List TileProbability
+    , tileSettings : List TileSetting
     , boardScale : Int
     , scoreIconSize : Int
     , tileSize : TileSize
@@ -28,6 +28,8 @@ type Msg
     | StopMove MoveShape
     | StartMove Move
     | CheckMove Move
+    | CheckLevelComplete
+    | ExitLevel
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -40,7 +42,13 @@ type Msg
 
 
 type alias Scores =
-    Dict String Int
+    Dict String Score
+
+
+type alias Score =
+    { target : Int
+    , current : Int
+    }
 
 
 type alias TileSize =
@@ -49,8 +57,11 @@ type alias TileSize =
     }
 
 
-type alias TileProbability =
-    ( TileType, Int )
+type alias TileSetting =
+    { tileType : TileType
+    , probability : Int
+    , targetScore : Maybe Int
+    }
 
 
 type alias Move =

@@ -1,7 +1,7 @@
 module Data.Hub.LoadLevel exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
-import Data.Level.Score exposing (initialScores, initialScoresFromProbabilites)
+import Data.Level.Score exposing (initialScores)
 import Scenes.Hub.Types as Main
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types as Level
@@ -18,10 +18,10 @@ handleLoadLevel (( _, levelData ) as config) model =
 
 
 addLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
-addLevelData ( worldData, { tileProbabilities, walls } ) model =
+addLevelData ( worldData, { tileSettings, walls } ) model =
     { model
-        | scores = initialScoresFromProbabilites tileProbabilities
+        | scores = initialScores tileSettings
         , board = addWalls walls model.board
-        , tileProbabilities = tileProbabilities
+        , tileSettings = tileSettings
         , seedType = worldData.seedType
     }

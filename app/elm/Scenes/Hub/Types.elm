@@ -1,10 +1,9 @@
 module Scenes.Hub.Types exposing (..)
 
-import Scenes.Level.Types exposing (..)
 import Dict exposing (Dict)
 import Dom
 import Mouse
-import Scenes.Level.Types as Level
+import Scenes.Level.Types as Level exposing (..)
 import Window
 
 
@@ -26,6 +25,7 @@ type alias Model =
 type Msg
     = LevelMsg Level.Msg
     | StartLevel LevelProgress
+    | EndLevel
     | LoadLevelData ( WorldData, LevelData )
     | SetScene Scene
     | BeginSceneTransition
@@ -93,7 +93,6 @@ type alias WorldLevels =
 
 
 type alias LevelData =
-    { tileProbabilities : List TileProbability
+    { tileSettings : List TileSetting
     , walls : List Coord
-    , goal : Int
     }

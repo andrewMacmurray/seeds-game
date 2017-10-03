@@ -27,7 +27,7 @@ topBar model =
                 ]
             , class "flex justify-center"
             ]
-            (List.map (renderScore model) (scoreTileTypes model.tileProbabilities))
+            (List.map (renderScore model) (scoreTileTypes model.tileSettings))
         ]
 
 
