@@ -7,7 +7,7 @@ import Helpers.Style exposing (animationStyle, background, backgroundColor, clas
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Levels exposing (allLevels)
+import Config.Level exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
@@ -80,7 +80,7 @@ infoContainer : InfoWindow -> List (Html Hub.Msg) -> Html Hub.Msg
 infoContainer infoWindow =
     case infoWindow of
         Leaving _ ->
-            div [ class <| classes [ "touch-disabled", infoContainerBaseClasses ] ]
+            div [ classes [ "touch-disabled", infoContainerBaseClasses ] ]
 
         _ ->
             div [ class infoContainerBaseClasses ]

@@ -1,15 +1,17 @@
 module Scenes.Hub.State exposing (..)
 
+import Config.Level exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
-import Levels exposing (allLevels)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
+import Scenes.Tutorial.State as Tutorial
+import Scenes.Tutorial.Types as TutorialModel exposing (Msg(StartSequence, ExitTutorial))
 import Window
 
 
@@ -24,6 +26,7 @@ init =
 initialState : Main.Model
 initialState =
     { levelModel = Level.initialState
+    , tutorialModel = Tutorial.initialState
     , externalAnimations = ""
     , scene = Title
     , sceneTransition = False
@@ -42,19 +45,36 @@ update msg model =
         LevelMsg levelMsg ->
             handleLevelMsg levelMsg model
 
+        TutorialMsg tutorialMsg ->
+            handleTutorialMsg tutorialMsg model
+
         ReceieveExternalAnimations animations ->
             { model | externalAnimations = animations } ! []
 
         StartLevel level ->
-            model
-                ! [ sequenceMs
-                        [ ( 600, SetCurrentLevel <| Just level )
-                        , ( 10, BeginSceneTransition )
-                        , ( 500, SetScene Level )
-                        , ( 0, LoadLevelData <| getLevelConfig level model )
-                        , ( 2500, EndSceneTransition )
-                        ]
-                  ]
+            case level of
+                ( 1, 1 ) ->
+                    model
+                        ! [ sequenceMs
+                                [ ( 600, SetCurrentLevel <| Just level )
+                                , ( 10, BeginSceneTransition )
+                                , ( 500, SetScene Tutorial )
+                                , ( 0, LoadLevelData <| getLevelConfig level model )
+                                , ( 2500, EndSceneTransition )
+                                , ( 500, TutorialMsg StartSequence )
+                                ]
+                          ]
+
+                level ->
+                    model
+                        ! [ sequenceMs
+                                [ ( 600, SetCurrentLevel <| Just level )
+                                , ( 10, BeginSceneTransition )
+                                , ( 500, SetScene Level )
+                                , ( 0, LoadLevelData <| getLevelConfig level model )
+                                , ( 2500, EndSceneTransition )
+                                ]
+                          ]
 
         EndLevel ->
             model
@@ -153,12 +173,26 @@ handleLevelMsg levelMsg model =
         ExitLevel ->
             model ! [ trigger EndLevel ]
 
-        _ ->
+        levelMsg ->
             let
                 ( levelModel, levelCmd ) =
                     Level.update levelMsg model.levelModel
             in
                 { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+
+
+handleTutorialMsg : TutorialModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleTutorialMsg tutorialMsg model =
+    case tutorialMsg of
+        ExitTutorial ->
+            { model | scene = Level } ! []
+
+        levelMsg ->
+            let
+                ( tutorialModel, tutorialCmd ) =
+                    Tutorial.update tutorialMsg model.tutorialModel
+            in
+                { model | tutorialModel = tutorialModel } ! [ tutorialCmd |> Cmd.map TutorialMsg ]
 
 
 levelNumber : Main.Model -> Int

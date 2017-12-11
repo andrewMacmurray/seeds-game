@@ -1,6 +1,5 @@
 module Views.Level.Board exposing (..)
 
-import Data.Level.Board.Tile exposing (growingOrder, isLeaving, leavingOrder, tileColorMap, tileSizeMap)
 import Dict
 import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
 import Helpers.Style exposing (..)
@@ -11,6 +10,7 @@ import Scenes.Level.Types exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
+import Views.Level.Tile exposing (..)
 
 
 board : Level.Model -> Html Level.Msg
@@ -28,11 +28,11 @@ renderTiles model =
         |> List.map (renderTile model)
 
 
-renderLines : Level.Model -> List (Html Level.Msg)
+renderLines : BoardConfig model -> List (Html msg)
 renderLines model =
     model.board
         |> Dict.toList
-        |> List.map (renderLineLayer model)
+        |> List.map (renderLineLayer model.tileSize)
 
 
 boardLayout : Level.Model -> List (Html Level.Msg) -> Html Level.Msg
@@ -40,41 +40,22 @@ boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ widthStyle <| boardWidth model
+            [ widthStyle <| boardWidth model.tileSize model.boardScale
             , boardMarginTop model
             ]
         ]
 
 
-renderLineLayer : Level.Model -> Move -> Html Level.Msg
-renderLineLayer model (( ( y, x ) as coord, tile ) as move) =
+renderLineLayer : TileSize -> Move -> Html msg
+renderLineLayer tileSize (( coord, _ ) as move) =
     div
-        [ style <|
-            styles
-                [ tileWidthHeightStyles model
-                , tileCoordsStyles model coord
-                ]
+        [ styles
+            [ tileWidthHeightStyles tileSize
+            , tileCoordsStyles tileSize coord
+            ]
         , class "dib absolute touch-disabled"
         ]
-        [ renderLine model move
-        ]
-
-
-renderTile : Level.Model -> Move -> Html Level.Msg
-renderTile model (( ( y, x ) as coord, tile ) as move) =
-    div
-        [ style <|
-            styles
-                [ tileWidthHeightStyles model
-                , tileCoordsStyles model coord
-                , leavingStyles model move
-                ]
-        , class "dib absolute pointer"
-        , hanldeMoveEvents model move
-        ]
-        [ innerTile model move
-        , tracer model move
-        , wall move
+        [ renderLine move
         ]
 
 
@@ -84,71 +65,3 @@ handleStop model =
         onMouseUp <| StopMove Line
     else
         emptyProperty
-
-
-hanldeMoveEvents : Level.Model -> Move -> Attribute Level.Msg
-hanldeMoveEvents model move =
-    if model.isDragging then
-        onMouseEnter <| CheckMove move
-    else
-        onMouseDownPreventDefault <| StartMove move
-
-
-tracer : Level.Model -> Move -> Html Level.Msg
-tracer model move =
-    let
-        extraStyles =
-            moveTracerStyles model move
-    in
-        makeInnerTile extraStyles model move
-
-
-wall : Move -> Html Level.Msg
-wall move =
-    div
-        [ style <| wallStyles move
-        , class centerBlock
-        ]
-        []
-
-
-innerTile : Level.Model -> Move -> Html Level.Msg
-innerTile model move =
-    let
-        extraStyles =
-            draggingStyles model move
-    in
-        makeInnerTile extraStyles model move
-
-
-makeInnerTile : List Style -> Level.Model -> Move -> Html Level.Msg
-makeInnerTile extraStyles model (( _, tile ) as move) =
-    div
-        [ class <| baseTileClasses tile
-        , style <|
-            styles
-                [ extraStyles
-                , baseTileStyles model move
-                , [ ( "will-change", "transform, opacity" ) ]
-                ]
-        ]
-        []
-
-
-baseTileStyles : Level.Model -> Move -> List Style
-baseTileStyles model (( _, tile ) as move) =
-    styles
-        [ growingStyles move
-        , enteringStyles move
-        , fallingStyles move
-        , tileSizeMap tile
-        , tileColorMap model.seedType tile
-        ]
-
-
-baseTileClasses : Block -> String
-baseTileClasses tile =
-    classes
-        [ "br-100"
-        , centerBlock
-        ]

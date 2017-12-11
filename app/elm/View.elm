@@ -1,11 +1,11 @@
 module View exposing (..)
 
-import Scenes.Hub.Types exposing (..)
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Hub.View exposing (hubView, titleView)
 import Scenes.Level.View exposing (levelView)
+import Scenes.Tutorial.View exposing (tutorialView)
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
@@ -31,3 +31,9 @@ renderScene model =
 
         Title ->
             titleView model
+
+        Tutorial ->
+            div []
+                [ tutorialView model.tutorialModel |> Html.map TutorialMsg
+                , levelView model.levelModel |> Html.map LevelMsg
+                ]

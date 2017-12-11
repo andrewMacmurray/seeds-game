@@ -4,11 +4,13 @@ import Dict exposing (Dict)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
+import Scenes.Tutorial.Types as Tutorial
 import Window
 
 
 type alias Model =
     { levelModel : Level.Model
+    , tutorialModel : Tutorial.Model
     , externalAnimations : String
     , scene : Scene
     , sceneTransition : Bool
@@ -23,6 +25,7 @@ type alias Model =
 
 type Msg
     = LevelMsg Level.Msg
+    | TutorialMsg Tutorial.Msg
     | StartLevel LevelProgress
     | EndLevel
     | LoadLevelData ( WorldData, LevelData )
@@ -48,6 +51,7 @@ type Scene
     = Level
     | Hub
     | Title
+    | Tutorial
 
 
 type InfoWindow

@@ -22,6 +22,15 @@ trigger msg =
     Delay.after 0 millisecond msg
 
 
+pause : Float -> List ( Float, msg ) -> List ( Float, msg )
+pause n xs =
+    xs
+        |> List.head
+        |> Maybe.map (\( y, m ) -> ( y + n, m ))
+        |> Maybe.map (\z -> [ z ] ++ (List.drop 1 xs))
+        |> Maybe.withDefault []
+
+
 
 -- Dom Scroll Helpers
 
