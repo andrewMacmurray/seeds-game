@@ -1,6 +1,15 @@
-module Data.Level.Board.Walls exposing (..)
+module Config.Wall exposing (..)
 
 import Scenes.Level.Types exposing (Coord)
+
+
+moreWalls : List Coord
+moreWalls =
+    combineWalls
+        [ standardWalls
+        , topCenter
+        , bottomCenter
+        ]
 
 
 standardWalls : List Coord
@@ -47,6 +56,20 @@ bottomRight =
     [ ( 7, 7 )
     , ( 6, 7 )
     , ( 7, 6 )
+    ]
+
+
+bottomCenter : List Coord
+bottomCenter =
+    [ ( 7, 3 )
+    , ( 7, 4 )
+    ]
+
+
+topCenter : List Coord
+topCenter =
+    [ ( 0, 3 )
+    , ( 0, 4 )
     ]
 
 

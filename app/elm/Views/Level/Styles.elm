@@ -1,13 +1,13 @@
 module Views.Level.Styles exposing (..)
 
-import Data.Level.Board.Block exposing (getTileState)
-import Data.Level.Score exposing (scoreTileTypes)
-import Data.Level.Board.Tile exposing (..)
 import Data.Color exposing (blockYellow)
+import Data.Level.Board.Block exposing (getTileState)
+import Data.Level.Board.Tile exposing (..)
+import Data.Level.Score exposing (scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
-import Scenes.Level.Types exposing (..)
 import Scenes.Level.Types as Level exposing (..)
+import Window
 
 
 boardMarginTop : Level.Model -> Style
@@ -15,34 +15,43 @@ boardMarginTop model =
     marginTop <| boardOffsetTop model
 
 
-boardOffsetTop : Level.Model -> Int
+type alias ScaleConfig a =
+    { a
+        | tileSize : TileSize
+        , window : Window.Size
+        , boardScale : Int
+        , topBarHeight : Int
+    }
+
+
+boardOffsetTop : ScaleConfig model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
+    (model.window.height - boardHeight model.tileSize model.boardScale) // 2 + model.topBarHeight // 2
 
 
-boardHeight : Level.Model -> Int
-boardHeight model =
-    round model.tileSize.y * model.boardScale
+boardHeight : TileSize -> Int -> Int
+boardHeight tileSize boardScale =
+    round tileSize.y * boardScale
 
 
-boardWidth : Level.Model -> Int
-boardWidth { tileSize, boardScale } =
+boardWidth : TileSize -> Int -> Int
+boardWidth tileSize boardScale =
     round tileSize.x * boardScale
 
 
-tileCoordsStyles : Level.Model -> Coord -> List Style
-tileCoordsStyles model coord =
+tileCoordsStyles : TileSize -> Coord -> List Style
+tileCoordsStyles tileSize coord =
     let
         ( y, x ) =
-            tilePosition model coord
+            tilePosition tileSize coord
     in
         [ transformStyle <| translate x y ]
 
 
-tilePosition : Level.Model -> Coord -> ( Float, Float )
-tilePosition model ( y, x ) =
-    ( (toFloat y) * model.tileSize.y
-    , (toFloat x) * model.tileSize.x
+tilePosition : TileSize -> Coord -> ( Float, Float )
+tilePosition tileSize ( y, x ) =
+    ( (toFloat y) * tileSize.y
+    , (toFloat x) * tileSize.x
     )
 
 
@@ -128,6 +137,16 @@ leavingStyles model (( _, tile ) as move) =
         []
 
 
+releasingStyles : Move -> List Style
+releasingStyles ( _, tile ) =
+    if isReleasing tile then
+        [ transitionStyle "0.3s"
+        , transformStyle <| scale 1
+        ]
+    else
+        []
+
+
 handleExitDirection : Move -> Level.Model -> Style
 handleExitDirection ( coord, block ) model =
     let
@@ -136,23 +155,24 @@ handleExitDirection ( coord, block ) model =
     in
         case tile of
             Leaving Rain _ ->
-                transformStyle <| getLeavingStyle Rain model
+                getLeavingStyle Rain model
 
             Leaving Sun _ ->
-                transformStyle <| getLeavingStyle Sun model
+                getLeavingStyle Sun model
 
             Leaving Seed _ ->
-                transformStyle <| getLeavingStyle Seed model
+                getLeavingStyle Seed model
 
             _ ->
                 emptyStyle
 
 
-getLeavingStyle : TileType -> Level.Model -> String
+getLeavingStyle : TileType -> Level.Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (toString tileType)
         |> Maybe.withDefault ""
+        |> transformStyle
 
 
 newLeavingStyles : Level.Model -> Dict String String
@@ -180,7 +200,7 @@ exitXDistance n model =
             (List.length model.tileSettings) * scoreWidth
 
         baseOffset =
-            (boardWidth model - scoreBarWidth) // 2
+            (boardWidth model.tileSize model.boardScale - scoreBarWidth) // 2
     in
         baseOffset + (n * scoreWidth) + (model.scoreIconSize + 3)
 
@@ -190,22 +210,20 @@ exitYdistance model =
     (boardOffsetTop model) - 9
 
 
-moveTracerStyles : Level.Model -> Move -> List Style
-moveTracerStyles model (( coord, tile ) as move) =
+moveTracerStyles : Move -> List Style
+moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
         [ animationStyle "bulge-fade 0.8s ease"
         , fillModeStyle "forwards"
         ]
-    else if isLeaving tile then
+    else
         [ displayStyle "none"
         ]
-    else
-        []
 
 
-draggingStyles : Level.Model -> Move -> List Style
-draggingStyles model ( _, tileState ) =
-    if model.moveShape == Just Square then
+draggingStyles : Maybe MoveShape -> Move -> List Style
+draggingStyles moveShape ( _, tileState ) =
+    if moveShape == Just Square then
         [ transitionStyle "0.5s ease"
         ]
     else if isLeaving tileState then
@@ -219,10 +237,17 @@ draggingStyles model ( _, tileState ) =
         []
 
 
-tileWidthHeightStyles : Level.Model -> List Style
-tileWidthHeightStyles { tileSize } =
-    [ widthStyle tileSize.x
-    , heightStyle tileSize.y
+tileWidthHeightStyles : TileSize -> List Style
+tileWidthHeightStyles { x, y } =
+    [ widthStyle x
+    , heightStyle y
+    ]
+
+
+baseTileClasses : List String
+baseTileClasses =
+    [ "br-100"
+    , centerBlock
     ]
 
 

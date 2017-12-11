@@ -20,8 +20,8 @@ import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
 
 
-initCmd : LevelData -> Main.Model -> Cmd Main.Msg
-initCmd config model =
+levelInit : LevelData -> Main.Model -> Cmd Main.Msg
+levelInit config model =
     handleGenerateTiles config model.levelModel
         |> Cmd.map Main.LevelMsg
 
@@ -162,7 +162,7 @@ handleGenerateTiles levelData { boardScale } =
     generateTiles levelData boardScale
 
 
-handleMakeBoard : List TileType -> Level.Model -> Level.Model
+handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
 handleMakeBoard tileList ({ boardScale } as model) =
     { model | board = makeBoard boardScale tileList }
 
@@ -177,7 +177,7 @@ handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-mapBoard : (Block -> Block) -> Level.Model -> Level.Model
+mapBoard : (Block -> Block) -> HasBoard model -> HasBoard model
 mapBoard f model =
     { model | board = (mapValues f) model.board }
 

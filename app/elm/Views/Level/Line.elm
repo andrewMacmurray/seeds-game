@@ -11,8 +11,8 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-renderLine : Level.Model -> Move -> Html Level.Msg
-renderLine model ( coord, block ) =
+renderLine : Move -> Html msg
+renderLine ( coord, block ) =
     let
         tileState =
             getTileState block
@@ -34,7 +34,7 @@ renderLine model ( coord, block ) =
                 span [] []
 
 
-line_ : TileType -> MoveBearing -> Html Level.Msg
+line_ : TileType -> MoveBearing -> Html msg
 line_ tileType bearing =
     svg
         [ width "50"

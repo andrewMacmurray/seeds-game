@@ -4,7 +4,7 @@ import Dict
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Scenes.Hub.Types exposing (Model)
-import Levels exposing (allLevels, level5, world1)
+import Config.Level exposing (allLevels, level5, world1)
 
 
 getSelectedProgress : Model -> Maybe LevelProgress

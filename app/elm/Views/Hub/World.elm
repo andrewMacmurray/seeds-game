@@ -7,7 +7,7 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Levels exposing (allLevels)
+import Config.Level exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Views.Seed.All exposing (renderSeed)

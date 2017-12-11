@@ -52,6 +52,26 @@ type alias Score =
     }
 
 
+type alias BoardConfig a =
+    { a
+        | board : Board
+        , boardScale : Int
+        , tileSize : TileSize
+    }
+
+
+type alias HasBoard a =
+    { a | board : Board }
+
+
+type alias TileConfig a =
+    { a
+        | moveShape : Maybe MoveShape
+        , tileSize : TileSize
+        , seedType : SeedType
+    }
+
+
 type alias TileSize =
     { y : Float
     , x : Float
@@ -126,6 +146,7 @@ type TileState
     | Falling TileType FallingDistance
     | Entering TileType
     | Growing TileType GrowingOrder
+    | Releasing TileType
     | Empty
 
 

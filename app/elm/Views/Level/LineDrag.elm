@@ -77,7 +77,7 @@ lastMoveOrigin ({ window } as model) =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - (boardWidth model)) // 2 |> toFloat
+            (window.width - (boardWidth model.tileSize model.boardScale)) // 2 |> toFloat
     in
         ( ((y1 + 1) * sY) + offsetY - (sY / 2)
         , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

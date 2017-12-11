@@ -1,20 +1,22 @@
 module Helpers.Style exposing (..)
 
 import Formatting exposing (..)
+import Html exposing (Attribute)
+import Html.Attributes exposing (class, style)
 
 
 type alias Style =
     ( String, String )
 
 
-classes : List String -> String
+classes : List String -> Attribute msg
 classes =
-    String.join " "
+    class << String.join " "
 
 
-styles : List (List Style) -> List Style
+styles : List (List Style) -> Attribute msg
 styles =
-    List.concat
+    style << List.concat
 
 
 svgStyles : List String -> String

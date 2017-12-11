@@ -5,7 +5,7 @@ import Data.Level.Score exposing (initialScores)
 import Scenes.Hub.Types as Main
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types as Level
-import Scenes.Level.State exposing (initCmd)
+import Scenes.Level.State exposing (levelInit)
 
 
 handleLoadLevel : ( WorldData, LevelData ) -> Main.Model -> ( Main.Model, Cmd Main.Msg )
@@ -14,7 +14,7 @@ handleLoadLevel (( _, levelData ) as config) model =
         newModel =
             { model | levelModel = initWithLevelData config model.levelModel }
     in
-        newModel ! [ initCmd levelData newModel ]
+        newModel ! [ levelInit levelData newModel ]
 
 
 initWithLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model

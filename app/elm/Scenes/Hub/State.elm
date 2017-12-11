@@ -5,11 +5,13 @@ import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedPr
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
-import Levels exposing (allLevels)
+import Config.Level exposing (allLevels)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
+import Scenes.Tutorial.State as Tutorial
+import Scenes.Tutorial.Types as TutorialModel
 import Window
 
 
@@ -24,8 +26,9 @@ init =
 initialState : Main.Model
 initialState =
     { levelModel = Level.initialState
+    , tutorialModel = Tutorial.initialState
     , externalAnimations = ""
-    , scene = Title
+    , scene = Tutorial
     , sceneTransition = False
     , transitionBackground = Orange
     , progress = ( 1, 1 )
@@ -41,6 +44,9 @@ update msg model =
     case msg of
         LevelMsg levelMsg ->
             handleLevelMsg levelMsg model
+
+        TutorialMsg tutorialMsg ->
+            handleTutorialMsg tutorialMsg model
 
         ReceieveExternalAnimations animations ->
             { model | externalAnimations = animations } ! []
@@ -153,12 +159,21 @@ handleLevelMsg levelMsg model =
         ExitLevel ->
             model ! [ trigger EndLevel ]
 
-        _ ->
+        levelMsg ->
             let
                 ( levelModel, levelCmd ) =
                     Level.update levelMsg model.levelModel
             in
                 { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+
+
+handleTutorialMsg : TutorialModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleTutorialMsg tutorialMsg model =
+    let
+        ( tutorialModel, tutorialCmd ) =
+            Tutorial.update tutorialMsg model.tutorialModel
+    in
+        { model | tutorialModel = tutorialModel } ! [ tutorialCmd |> Cmd.map TutorialMsg ]
 
 
 levelNumber : Main.Model -> Int
