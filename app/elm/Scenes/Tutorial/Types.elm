@@ -1,25 +1,38 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize)
+import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize, TileType)
 
 
 type alias Model =
     { board : Board
     , boardHidden : Bool
+    , textHidden : Bool
+    , seedBankHidden : Bool
+    , containerHidden : Bool
     , moveShape : Maybe MoveShape
     , tileSize : TileSize
     , seedType : SeedType
     , boardScale : Int
+    , text : String
     }
 
 
 type Msg
-    = DragTile Coord Int
-    | GrowSeedPodsSequence
+    = DragTile Coord
+    | StartSequence
     | SetGrowingPods
+    | SetLeavingSeeds
     | GrowPods
     | ResetGrowingPods
-    | DragSequence
-    | ShowBoard
+    | ResetLeaving
+    | AddNewTiles (List TileType)
+    | BoardScale Int
     | HideBoard
-    | ResetBoard
+    | ShowBoard
+    | HideText
+    | ShowText
+    | HideSeedBank
+    | ShowSeedBank
+    | HideContainer
+    | ResetBoard Board
+    | TutorialText Int

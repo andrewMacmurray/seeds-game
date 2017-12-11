@@ -1,11 +1,11 @@
 module Scenes.Tutorial.State exposing (..)
 
-import Config.Tutorial exposing (tutorialBoard1)
-import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setDraggingToReleasing, setGrowingToStatic, setReleasingToStatic)
+import Config.Tutorial exposing (..)
+import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
-import Helpers.Effect exposing (sequenceMs)
-import Scenes.Level.State exposing (mapBoard)
+import Helpers.Effect exposing (pause, sequenceMs)
+import Scenes.Level.State exposing (handleAddNewTiles, mapBoard, transformBoard)
 import Scenes.Level.Types exposing (..)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
@@ -14,63 +14,130 @@ initialState : Tutorial.Model
 initialState =
     { board = tutorialBoard1
     , boardHidden = False
+    , textHidden = False
+    , seedBankHidden = True
+    , containerHidden = False
     , moveShape = Just Line
     , tileSize = { y = 51, x = 55 }
     , seedType = Sunflower
     , boardScale = 2
+    , text = getText 1
     }
 
 
 update : Tutorial.Msg -> Tutorial.Model -> ( Tutorial.Model, Cmd Tutorial.Msg )
 update msg model =
     case msg of
-        DragTile coord order ->
-            (model |> handleDragTile coord order) ! []
+        StartSequence ->
+            model ! [ sequenceMs tutorialSequence ]
 
-        GrowSeedPodsSequence ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, SetGrowingPods )
-                        , ( 800, GrowPods )
-                        , ( 600, ResetGrowingPods )
-                        , ( 1000, HideBoard )
-                        , ( 500, ResetBoard )
-                        , ( 50, ShowBoard )
-                        ]
-                  ]
+        DragTile coord ->
+            handleDragTile coord model ! []
 
         SetGrowingPods ->
-            (model |> mapBoard setDraggingToGrowing) ! []
+            mapBoard setDraggingToGrowing model ! []
+
+        SetLeavingSeeds ->
+            mapBoard setToLeaving model ! []
 
         GrowPods ->
-            (model |> mapBoard growSeedPod) ! []
+            mapBoard growSeedPod model ! []
 
         ResetGrowingPods ->
-            (model |> mapBoard setGrowingToStatic) ! []
+            mapBoard setGrowingToStatic model ! []
 
-        DragSequence ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, DragTile ( 0, 0 ) 0 )
-                        , ( 400, DragTile ( 0, 1 ) 0 )
-                        , ( 400, DragTile ( 1, 1 ) 0 )
-                        , ( 400, DragTile ( 1, 0 ) 0 )
-                        , ( 1500, GrowSeedPodsSequence )
-                        ]
-                  ]
+        AddNewTiles tiles ->
+            handleAddNewTiles tiles model ! []
 
-        ShowBoard ->
-            { model | boardHidden = False } ! []
+        ResetLeaving ->
+            mapBoard setLeavingToEmpty model ! []
+
+        BoardScale n ->
+            { model | boardScale = n } ! []
 
         HideBoard ->
             { model | boardHidden = True } ! []
 
-        ResetBoard ->
-            { model | board = tutorialBoard1 } ! []
+        ShowBoard ->
+            { model | boardHidden = False } ! []
+
+        HideText ->
+            { model | textHidden = True } ! []
+
+        ShowText ->
+            { model | textHidden = False } ! []
+
+        HideSeedBank ->
+            { model | seedBankHidden = True } ! []
+
+        ShowSeedBank ->
+            { model | seedBankHidden = False } ! []
+
+        HideContainer ->
+            { model | containerHidden = True } ! []
+
+        ResetBoard board ->
+            { model | board = board } ! []
+
+        TutorialText n ->
+            { model | text = getText n } ! []
 
 
-handleDragTile : Coord -> Int -> Tutorial.Model -> Tutorial.Model
-handleDragTile coord order model =
+tutorialSequence : List ( Float, Tutorial.Msg )
+tutorialSequence =
+    List.concat
+        [ dragSequence1
+        , pause 1500 <| growSeedPodsSequence
+        , pause 1500 <| nextBoardSequence
+        , pause 1500 <| dragSequence2
+        ]
+
+
+growSeedPodsSequence : List ( Float, Tutorial.Msg )
+growSeedPodsSequence =
+    [ ( 0, SetGrowingPods )
+    , ( 800, GrowPods )
+    , ( 600, ResetGrowingPods )
+    ]
+
+
+nextBoardSequence : List ( Float, Tutorial.Msg )
+nextBoardSequence =
+    [ ( 0, HideBoard )
+    , ( 1000, HideText )
+    , ( 500, BoardScale 3 )
+    , ( 50, TutorialText 2 )
+    , ( 50, ResetBoard tutorialBoard2 )
+    , ( 450, ShowBoard )
+    , ( 0, ShowText )
+    ]
+
+
+dragSequence2 : List ( Float, Tutorial.Msg )
+dragSequence2 =
+    [ ( 0, DragTile ( 0, 0 ) )
+    , ( 400, DragTile ( 0, 1 ) )
+    , ( 400, DragTile ( 1, 1 ) )
+    , ( 400, DragTile ( 2, 1 ) )
+    , ( 100, ShowSeedBank )
+    , ( 1500, SetLeavingSeeds )
+    , ( 1500, ResetLeaving )
+    , ( 400, AddNewTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
+    , ( 2000, HideContainer )
+    ]
+
+
+dragSequence1 : List ( Float, Tutorial.Msg )
+dragSequence1 =
+    [ ( 0, DragTile ( 0, 0 ) )
+    , ( 400, DragTile ( 0, 1 ) )
+    , ( 400, DragTile ( 1, 1 ) )
+    , ( 400, DragTile ( 1, 0 ) )
+    ]
+
+
+handleDragTile : Coord -> Tutorial.Model -> Tutorial.Model
+handleDragTile coord model =
     let
         tile =
             Dict.get coord model.board |> Maybe.withDefault (Space (Static Seed))

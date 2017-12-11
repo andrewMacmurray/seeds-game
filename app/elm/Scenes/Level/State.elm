@@ -167,7 +167,7 @@ handleMakeBoard tileList ({ boardScale } as model) =
     { model | board = makeBoard boardScale tileList }
 
 
-handleAddNewTiles : List TileType -> Level.Model -> Level.Model
+handleAddNewTiles : List TileType -> HasBoard model -> HasBoard model
 handleAddNewTiles tileList =
     transformBoard <| addNewTiles tileList
 

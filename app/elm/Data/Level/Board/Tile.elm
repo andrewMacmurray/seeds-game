@@ -96,6 +96,30 @@ isReleasingTile tileState =
             False
 
 
+hasLine : Block -> Bool
+hasLine =
+    Block.fold hasLineTile False
+
+
+hasLineTile : TileState -> Bool
+hasLineTile tileState =
+    case tileState of
+        Dragging _ _ Left _ ->
+            True
+
+        Dragging _ _ Right _ ->
+            True
+
+        Dragging _ _ Up _ ->
+            True
+
+        Dragging _ _ Down _ ->
+            True
+
+        _ ->
+            False
+
+
 moveOrder : Block -> Int
 moveOrder =
     Block.fold moveOrderTile 0
