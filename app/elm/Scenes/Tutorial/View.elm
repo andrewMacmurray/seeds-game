@@ -4,10 +4,9 @@ import Data.Color exposing (darkYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging, tileSize)
 import Dict
-import Helpers.Style exposing (Style, animationStyle, displayStyle, fillModeStyle, heightStyle, marginTop, opacityStyle, pc, transformStyle, transitionDelayStyle, transitionStyle, translate, widthStyle)
+import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Scenes.Level.Types exposing (Move, TileSize, TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
 import Views.Level.Board exposing (renderLineLayer, renderLines)
@@ -19,14 +18,17 @@ import Views.Seed.All exposing (renderSeed)
 tutorialView : Model -> Html Msg
 tutorialView model =
     div
-        [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-999"
-        , style [ ( "background-color", "rgba(255, 252, 227, 0.95)" ) ]
-        , onClick StartSequence
+        [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
+        , style [ ( "background-color", "rgba(255, 252, 227, 0.98)" ), transitionStyle "1.5s linear" ]
+        , classList
+            [ ( "o-0", model.canvasHidden )
+            , ( "o-100", not model.canvasHidden )
+            ]
         ]
         [ div
             [ style
                 [ ( "margin-top", pc -5 )
-                , transitionStyle "1.5s ease"
+                , transitionStyle "1s linear"
                 ]
             , classList
                 [ ( "o-0", model.containerHidden )

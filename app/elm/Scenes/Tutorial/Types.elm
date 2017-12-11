@@ -9,6 +9,7 @@ type alias Model =
     , textHidden : Bool
     , seedBankHidden : Bool
     , containerHidden : Bool
+    , canvasHidden : Bool
     , moveShape : Maybe MoveShape
     , tileSize : TileSize
     , seedType : SeedType
@@ -34,5 +35,8 @@ type Msg
     | HideSeedBank
     | ShowSeedBank
     | HideContainer
+    | ShowContainer
+    | HideCanvas
     | ResetBoard Board
     | TutorialText Int
+    | ExitTutorial

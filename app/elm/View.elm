@@ -33,4 +33,7 @@ renderScene model =
             titleView model
 
         Tutorial ->
-            tutorialView model.tutorialModel |> Html.map TutorialMsg
+            div []
+                [ tutorialView model.tutorialModel |> Html.map TutorialMsg
+                , levelView model.levelModel |> Html.map LevelMsg
+                ]

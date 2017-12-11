@@ -16,7 +16,8 @@ initialState =
     , boardHidden = False
     , textHidden = False
     , seedBankHidden = True
-    , containerHidden = False
+    , containerHidden = True
+    , canvasHidden = False
     , moveShape = Just Line
     , tileSize = { y = 51, x = 55 }
     , seedType = Sunflower
@@ -76,21 +77,38 @@ update msg model =
         HideContainer ->
             { model | containerHidden = True } ! []
 
+        ShowContainer ->
+            { model | containerHidden = False } ! []
+
+        HideCanvas ->
+            { model | canvasHidden = True } ! []
+
         ResetBoard board ->
             { model | board = board } ! []
 
         TutorialText n ->
             { model | text = getText n } ! []
 
+        ExitTutorial ->
+            -- hub intercepts this message
+            model ! []
+
 
 tutorialSequence : List ( Float, Tutorial.Msg )
 tutorialSequence =
     List.concat
-        [ dragSequence1
+        [ appearSequence
+        , pause 1200 <| dragSequence1
         , pause 1500 <| growSeedPodsSequence
         , pause 1500 <| nextBoardSequence
         , pause 1500 <| dragSequence2
         ]
+
+
+appearSequence : List ( Float, Tutorial.Msg )
+appearSequence =
+    [ ( 0, ShowContainer )
+    ]
 
 
 growSeedPodsSequence : List ( Float, Tutorial.Msg )
@@ -123,7 +141,8 @@ dragSequence2 =
     , ( 1500, SetLeavingSeeds )
     , ( 1500, ResetLeaving )
     , ( 400, AddNewTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
-    , ( 2000, HideContainer )
+    , ( 2000, HideCanvas )
+    , ( 1500, ExitTutorial )
     ]
 
 
