@@ -1,4 +1,4 @@
-module Views.Level.Line exposing (..)
+module Views.Board.Line exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (strokeColors)

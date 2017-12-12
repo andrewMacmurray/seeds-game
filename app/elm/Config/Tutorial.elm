@@ -14,7 +14,7 @@ tutorialText : Dict Int String
 tutorialText =
     Dict.fromList
         [ ( 1, "Connect seed pods to grow seeds" )
-        , ( 2, "Fill the seed bank with seeds" )
+        , ( 2, "Collect enough seeds for the seed bank" )
         ]
 
 

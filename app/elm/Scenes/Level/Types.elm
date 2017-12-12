@@ -72,6 +72,15 @@ type alias TileConfig a =
     }
 
 
+type alias ScaleConfig a =
+    { a
+        | tileSize : TileSize
+        , window : Window.Size
+        , boardScale : Int
+        , topBarHeight : Int
+    }
+
+
 type alias TileSize =
     { y : Float
     , x : Float

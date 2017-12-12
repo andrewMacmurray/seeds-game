@@ -97,8 +97,8 @@ update msg model =
 tutorialSequence : List ( Float, Tutorial.Msg )
 tutorialSequence =
     List.concat
-        [ appearSequence
-        , pause 1200 <| dragSequence1
+        [ pause 500 <| appearSequence
+        , pause 1500 <| dragSequence1
         , pause 1500 <| growSeedPodsSequence
         , pause 1500 <| nextBoardSequence
         , pause 1500 <| dragSequence2
