@@ -1,4 +1,4 @@
-module Views.Level.Tile exposing (..)
+module Views.Board.Tile exposing (..)
 
 import Data.Level.Board.Tile exposing (tileColorMap, tileSize, tileSizeMap)
 import Helpers.Html exposing (onMouseDownPreventDefault)
@@ -7,7 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter)
 import Scenes.Level.Types as Level exposing (..)
-import Views.Level.Styles exposing (..)
+import Views.Board.Styles exposing (..)
 
 
 renderTile : Level.Model -> Move -> Html Level.Msg

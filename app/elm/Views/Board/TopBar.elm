@@ -1,4 +1,4 @@
-module Views.Level.TopBar exposing (..)
+module Views.Board.TopBar exposing (..)
 
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Level.Board.Tile exposing (seedBackgrounds)

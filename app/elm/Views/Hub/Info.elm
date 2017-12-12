@@ -1,14 +1,17 @@
 module Views.Hub.Info exposing (..)
 
-import Data.Color exposing (gold, purple, seedPodGradient, white)
+import Config.Level exposing (allLevels)
+import Data.Color exposing (gold, lightBlue, orange, purple, seedPodGradient, white)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
+import Data.Hub.Text exposing (infoText)
+import Data.Level.Score exposing (scoreTileTypes)
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (animationStyle, background, backgroundColor, classes, color, fillModeStyle, marginTop, transformStyle, transitionStyle, translateY, widthStyle)
+import Helpers.Style exposing (animationStyle, background, backgroundColor, classes, color, fillModeStyle, heightStyle, marginLeft, marginRight, marginTop, pc, transformStyle, transitionStyle, translateY, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Config.Level exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
+import Scenes.Level.Types exposing (SeedType, TileConfig, TileSetting, TileType, TileType(..))
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -57,13 +60,68 @@ info model =
                     ]
 
 
-infoContent : LevelProgress -> ( WorldData, LevelData ) -> Hub.Model -> List (Html Hub.Msg)
+infoContent : LevelProgress -> ( WorldData, LevelData ) -> Hub.Model -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) model =
     [ p [] [ text <| toString <| getLevelNumber ( world, level ) allLevels ]
-    , div [ style [ widthStyle 35 ], class "center" ] [ renderSeed worldData.seedType ]
-    , p [] [ text "collect the seeds" ]
+    , infoIcons levelData worldData.seedType
+    , p [] [ text <| getInfoText levelData ]
     , p [ class "tracked-mega", style [ marginTop 50 ] ] [ text "PLAY" ]
     ]
+
+
+getInfoText : LevelData -> String
+getInfoText levelData =
+    levelData.tileSettings
+        |> scoreTileTypes
+        |> infoText
+
+
+infoIcons : LevelData -> SeedType -> Html msg
+infoIcons levelData seedType =
+    levelData.tileSettings
+        |> scoreTileTypes
+        |> List.map (renderIcon seedType)
+        |> infoIconsContainer
+
+
+infoIconsContainer : List (Html msg) -> Html msg
+infoIconsContainer =
+    div [ class "flex items-center justify-center center", style [ ( "width", pc 60 ) ] ]
+
+
+renderIcon : SeedType -> TileType -> Html msg
+renderIcon seedType tileType =
+    let
+        inner =
+            case tileType of
+                Rain ->
+                    renderWeather lightBlue
+
+                Sun ->
+                    renderWeather orange
+
+                Seed ->
+                    div [ style [ widthStyle 35 ] ] [ renderSeed seedType ]
+
+                _ ->
+                    span [] []
+    in
+        div [ class "center" ] [ inner ]
+
+
+renderWeather : String -> Html msg
+renderWeather color =
+    div
+        [ style
+            [ widthStyle 19
+            , heightStyle 19
+            , marginLeft 8
+            , marginRight 8
+            , background color
+            ]
+        , classes [ "br-100" ]
+        ]
+        []
 
 
 handleHideInfo : Hub.Model -> Attribute Hub.Msg

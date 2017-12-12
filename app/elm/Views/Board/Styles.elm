@@ -1,4 +1,4 @@
-module Views.Level.Styles exposing (..)
+module Views.Board.Styles exposing (..)
 
 import Data.Color exposing (blockYellow)
 import Data.Level.Board.Block exposing (getTileState)
@@ -13,15 +13,6 @@ import Window
 boardMarginTop : Level.Model -> Style
 boardMarginTop model =
     marginTop <| boardOffsetTop model
-
-
-type alias ScaleConfig a =
-    { a
-        | tileSize : TileSize
-        , window : Window.Size
-        , boardScale : Int
-        , topBarHeight : Int
-    }
 
 
 boardOffsetTop : ScaleConfig model -> Int

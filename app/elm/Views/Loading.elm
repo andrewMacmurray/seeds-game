@@ -7,7 +7,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Scenes.Hub.Types exposing (..)
 
 
 loadingScreen : Hub.Model -> Html msg

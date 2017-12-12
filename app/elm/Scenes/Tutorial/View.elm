@@ -9,9 +9,9 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types exposing (Move, TileSize, TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
-import Views.Level.Board exposing (renderLineLayer, renderLines)
-import Views.Level.Styles exposing (boardHeight, boardWidth)
-import Views.Level.Tile exposing (renderTile_)
+import Views.Board.Layout exposing (renderLineLayer, renderLines)
+import Views.Board.Styles exposing (boardHeight, boardWidth)
+import Views.Board.Tile exposing (renderTile_)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -19,7 +19,7 @@ tutorialView : Model -> Html Msg
 tutorialView model =
     div
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
-        , style [ ( "background-color", "rgba(255, 252, 227, 0.98)" ), transitionStyle "1.5s linear" ]
+        , style [ ( "background-color", "rgba(255, 252, 227, 0.98)" ), transitionStyle "1.2s linear" ]
         , classList
             [ ( "o-0", model.canvasHidden )
             , ( "o-100", not model.canvasHidden )
@@ -28,7 +28,7 @@ tutorialView model =
         [ div
             [ style
                 [ ( "margin-top", pc -5 )
-                , transitionStyle "1s linear"
+                , transitionStyle "0.8s linear"
                 ]
             , classList
                 [ ( "o-0", model.containerHidden )

@@ -67,28 +67,28 @@ level5 =
 
 evenTiles : List TileSetting
 evenTiles =
-    [ ( Seed, 25, Just 100 )
-    , ( SeedPod, 25, Nothing )
-    , ( Rain, 25, Just 40 )
+    [ ( Rain, 25, Just 40 )
+    , ( Seed, 25, Just 100 )
     , ( Sun, 25, Just 40 )
+    , ( SeedPod, 25, Nothing )
     ]
         |> List.map addTargetScore
 
 
 noSun : List TileSetting
 noSun =
-    [ ( Seed, 33, Just 100 )
+    [ ( Rain, 33, Just 50 )
+    , ( Seed, 33, Just 100 )
     , ( SeedPod, 33, Nothing )
-    , ( Rain, 33, Just 50 )
     ]
         |> List.map addTargetScore
 
 
 noRain : List TileSetting
 noRain =
-    [ ( Seed, 33, Just 100 )
+    [ ( Sun, 33, Just 50 )
+    , ( Seed, 33, Just 100 )
     , ( SeedPod, 33, Nothing )
-    , ( Sun, 33, Just 50 )
     ]
         |> List.map addTargetScore
 
