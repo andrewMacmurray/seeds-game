@@ -113,10 +113,10 @@ renderWeather : String -> Html msg
 renderWeather color =
     div
         [ style
-            [ widthStyle 19
-            , heightStyle 19
-            , marginLeft 8
-            , marginRight 8
+            [ widthStyle 25
+            , heightStyle 25
+            , marginLeft 2.5
+            , marginRight 2.5
             , background color
             ]
         , classes [ "br-100" ]
