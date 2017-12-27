@@ -1,6 +1,7 @@
 module Scenes.Tutorial.Types exposing (..)
 
 import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize, TileType)
+import Window
 
 
 type alias Model =
@@ -14,7 +15,9 @@ type alias Model =
     , tileSize : TileSize
     , seedType : SeedType
     , boardScale : Int
+    , topBarHeight : Int
     , text : String
+    , window : Window.Size
     }
 
 

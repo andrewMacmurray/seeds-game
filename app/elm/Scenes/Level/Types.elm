@@ -52,6 +52,10 @@ type alias Score =
     }
 
 
+type alias HasBoard a =
+    { a | board : Board }
+
+
 type alias BoardConfig a =
     { a
         | board : Board
@@ -60,21 +64,11 @@ type alias BoardConfig a =
     }
 
 
-type alias HasBoard a =
-    { a | board : Board }
-
-
 type alias TileConfig a =
     { a
         | moveShape : Maybe MoveShape
         , tileSize : TileSize
         , seedType : SeedType
-    }
-
-
-type alias ScaleConfig a =
-    { a
-        | tileSize : TileSize
         , window : Window.Size
         , boardScale : Int
         , topBarHeight : Int

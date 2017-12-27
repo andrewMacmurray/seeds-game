@@ -2,60 +2,65 @@ module Views.Board.Line exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (strokeColors)
+import Data.Level.Scale exposing (tileScaleFactor)
 import Formatting exposing ((<>), print, s)
 import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
-import Scenes.Level.Types exposing (..)
-import Scenes.Level.Types as Level
+import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Window
 
 
-renderLine : Move -> Html msg
-renderLine ( coord, block ) =
+renderLine : Window.Size -> Move -> Html msg
+renderLine window ( coord, block ) =
     let
         tileState =
             getTileState block
     in
         case tileState of
             Dragging tileType _ Left _ ->
-                line_ tileType Left
+                line_ window tileType Left
 
             Dragging tileType _ Right _ ->
-                line_ tileType Right
+                line_ window tileType Right
 
             Dragging tileType _ Up _ ->
-                line_ tileType Up
+                line_ window tileType Up
 
             Dragging tileType _ Down _ ->
-                line_ tileType Down
+                line_ window tileType Down
 
             _ ->
                 span [] []
 
 
-line_ : TileType -> MoveBearing -> Html msg
-line_ tileType bearing =
-    svg
-        [ width "50"
-        , height "9"
-        , Svg.Attributes.style <|
-            svgStyles
-                [ transformMap bearing
-                , "margin: auto"
-                ]
-        , class "absolute bottom-0 right-0 left-0 top-0 z-0"
-        ]
-        [ line
-            [ strokeWidth "11"
-            , x1 "0"
-            , y1 "0"
-            , x2 "50"
-            , y2 "0"
-            , Svg.Attributes.style <| strokeColors tileType
+line_ : Window.Size -> TileType -> MoveBearing -> Html msg
+line_ window tileType bearing =
+    let
+        scale =
+            tileScaleFactor window
+    in
+        svg
+            [ width <| toString (50 * scale)
+            , height <| toString (9 * scale)
+            , Svg.Attributes.style <|
+                svgStyles
+                    [ transformMap bearing
+                    , "margin: auto"
+                    ]
+            , class "absolute bottom-0 right-0 left-0 top-0 z-0"
             ]
-            []
-        ]
+            [ line
+                [ strokeWidth <| toString (11 * scale)
+                , x1 "0"
+                , y1 "0"
+                , x2 <| toString (50 * scale)
+                , y2 "0"
+                , Svg.Attributes.style <| strokeColors tileType
+                ]
+                []
+            ]
 
 
 transformMap : MoveBearing -> String

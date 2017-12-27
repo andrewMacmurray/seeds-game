@@ -4,6 +4,7 @@ import Config.Level exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Hub.Transition exposing (genRandomBackground)
+import Data.Level.Scale exposing (tileScaleFactor)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
 import Mouse
@@ -11,7 +12,7 @@ import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
 import Scenes.Tutorial.State as Tutorial
-import Scenes.Tutorial.Types as TutorialModel exposing (Msg(StartSequence, ExitTutorial))
+import Scenes.Tutorial.Types as TutorialModel exposing (Msg(..))
 import Window
 
 
@@ -28,10 +29,10 @@ initialState =
     { levelModel = Level.initialState
     , tutorialModel = Tutorial.initialState
     , externalAnimations = ""
-    , scene = Title
+    , scene = Hub
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 1, 1 )
+    , progress = ( 1, 5 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }
@@ -149,9 +150,10 @@ update msg model =
         WindowSize size ->
             { model
                 | levelModel = addWindowSizeToLevel size model
+                , tutorialModel = addWindowSizeToTutorial size model
                 , window = size
             }
-                ! []
+                ! [ getExternalAnimations <| model.levelModel.tileSize.y * tileScaleFactor size ]
 
         MousePosition position ->
             { model | levelModel = addMousePositionToLevel position model } ! []
@@ -165,6 +167,11 @@ addMousePositionToLevel position { levelModel } =
 addWindowSizeToLevel : Window.Size -> Main.Model -> LevelModel.Model
 addWindowSizeToLevel window { levelModel } =
     { levelModel | window = window }
+
+
+addWindowSizeToTutorial : Window.Size -> Main.Model -> TutorialModel.Model
+addWindowSizeToTutorial window { tutorialModel } =
+    { tutorialModel | window = window }
 
 
 handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )

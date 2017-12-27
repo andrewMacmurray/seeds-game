@@ -3,11 +3,11 @@ module Views.Board.Styles exposing (..)
 import Data.Color exposing (blockYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
+import Data.Level.Scale exposing (tileScaleFactor)
 import Data.Level.Score exposing (scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
-import Window
 
 
 boardMarginTop : Level.Model -> Style
@@ -15,34 +15,34 @@ boardMarginTop model =
     marginTop <| boardOffsetTop model
 
 
-boardOffsetTop : ScaleConfig model -> Int
+boardOffsetTop : TileConfig model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model.tileSize model.boardScale) // 2 + model.topBarHeight // 2
+    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
 
 
-boardHeight : TileSize -> Int -> Int
-boardHeight tileSize boardScale =
-    round tileSize.y * boardScale
+boardHeight : TileConfig model -> Int
+boardHeight model =
+    round (model.tileSize.y * tileScaleFactor model.window) * model.boardScale
 
 
-boardWidth : TileSize -> Int -> Int
-boardWidth tileSize boardScale =
-    round tileSize.x * boardScale
+boardWidth : TileConfig model -> Int
+boardWidth model =
+    round (model.tileSize.x * tileScaleFactor model.window) * model.boardScale
 
 
-tileCoordsStyles : TileSize -> Coord -> List Style
-tileCoordsStyles tileSize coord =
+tileCoordsStyles : TileConfig model -> Coord -> List Style
+tileCoordsStyles model coord =
     let
         ( y, x ) =
-            tilePosition tileSize coord
+            tilePosition model coord
     in
         [ transformStyle <| translate x y ]
 
 
-tilePosition : TileSize -> Coord -> ( Float, Float )
-tilePosition tileSize ( y, x ) =
-    ( (toFloat y) * tileSize.y
-    , (toFloat x) * tileSize.x
+tilePosition : TileConfig model -> Coord -> ( Float, Float )
+tilePosition model ( y, x ) =
+    ( (toFloat y) * model.tileSize.y * tileScaleFactor model.window
+    , (toFloat x) * model.tileSize.x * tileScaleFactor model.window
     )
 
 
@@ -108,7 +108,7 @@ fallingStyles ( _, block ) =
     in
         case tile of
             Falling tile distance ->
-                [ animationStyle <| "bounce-down-" ++ (toString (distance)) ++ " 0.9s linear"
+                [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
                 , fillModeStyle "forwards"
                 ]
 
@@ -191,7 +191,7 @@ exitXDistance n model =
             (List.length model.tileSettings) * scoreWidth
 
         baseOffset =
-            (boardWidth model.tileSize model.boardScale - scoreBarWidth) // 2
+            (boardWidth model - scoreBarWidth) // 2
     in
         baseOffset + (n * scoreWidth) + (model.scoreIconSize + 3)
 
@@ -228,10 +228,10 @@ draggingStyles moveShape ( _, tileState ) =
         []
 
 
-tileWidthHeightStyles : TileSize -> List Style
-tileWidthHeightStyles { x, y } =
-    [ widthStyle x
-    , heightStyle y
+tileWidthHeightStyles : TileConfig model -> List Style
+tileWidthHeightStyles { tileSize, window } =
+    [ widthStyle (tileSize.x * tileScaleFactor window)
+    , heightStyle (tileSize.y * tileScaleFactor window)
     ]
 
 

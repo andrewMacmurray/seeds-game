@@ -22,7 +22,9 @@ initialState =
     , tileSize = { y = 51, x = 55 }
     , seedType = Sunflower
     , boardScale = 2
+    , topBarHeight = 0
     , text = getText 1
+    , window = { height = 0, width = 0 }
     }
 
 

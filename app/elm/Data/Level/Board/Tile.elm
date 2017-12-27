@@ -400,14 +400,14 @@ tileColorMap_ seedType =
     tileStyleMap <| tileColors seedType
 
 
-tileSizeMap : Block -> List Style
+tileSizeMap : Block -> Float
 tileSizeMap =
-    Block.fold tileSizeMap_ []
+    Block.fold tileSizeMap_ 0
 
 
-tileSizeMap_ : TileState -> List Style
+tileSizeMap_ : TileState -> Float
 tileSizeMap_ =
-    tileStyleMap tileSize
+    tileTypeMap 0 tileSize
 
 
 strokeColors : TileType -> String
@@ -461,20 +461,20 @@ seedBackgrounds seedType =
             ""
 
 
-tileSize : TileType -> List Style
+tileSize : TileType -> Float
 tileSize tile =
     case tile of
         Rain ->
-            size 18
+            18
 
         Sun ->
-            size 18
+            18
 
         SeedPod ->
-            size 26
+            26
 
         Seed ->
-            size 35
+            35
 
 
 tileClassMap : (TileType -> String) -> TileState -> String
