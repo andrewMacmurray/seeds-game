@@ -3,7 +3,7 @@ module Views.Board.Tile exposing (..)
 import Data.Level.Board.Tile exposing (tileColorMap, tileSize, tileSizeMap)
 import Data.Level.Scale exposing (tileScaleFactor)
 import Helpers.Html exposing (onMouseDownPreventDefault)
-import Helpers.Style exposing (Style, classes, styles, widthHeight)
+import Helpers.Style exposing (Style, classes, styles, widthHeight, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter)
@@ -33,7 +33,7 @@ renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
         ]
         [ innerTile config.window config.seedType config.moveShape move
         , tracer config.window config.seedType move
-        , wall move
+        , wall config.window move
         ]
 
 
@@ -50,9 +50,9 @@ tracer window seedType move =
     makeInnerTile (moveTracerStyles move) window seedType move
 
 
-wall : Move -> Html msg
-wall move =
-    div [ style <| wallStyles move, class centerBlock ] []
+wall : Window.Size -> Move -> Html msg
+wall window move =
+    div [ style <| wallStyles window move, class centerBlock ] []
 
 
 innerTile : Window.Size -> SeedType -> Maybe MoveShape -> Move -> Html msg
@@ -76,6 +76,6 @@ baseTileStyles window seedType (( _, tile ) as move) =
         , enteringStyles move
         , fallingStyles move
         , releasingStyles move
-        , widthHeight <| ((*) (tileScaleFactor window)) <| tileSizeMap tile
+        , widthHeight <| round <| tileSizeMap tile * tileScaleFactor window
         , tileColorMap seedType tile
         ]

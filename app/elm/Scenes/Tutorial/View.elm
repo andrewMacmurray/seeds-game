@@ -3,6 +3,7 @@ module Scenes.Tutorial.View exposing (..)
 import Data.Color exposing (darkYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging, tileSize)
+import Data.Level.Scale exposing (tileScaleFactor)
 import Dict
 import Helpers.Style exposing (..)
 import Html exposing (..)
@@ -64,19 +65,23 @@ tutorialBoard model =
 
 renderSeedBank : Model -> Html msg
 renderSeedBank model =
-    div
-        [ style
-            [ transitionStyle "0.8s ease"
-            , transformStyle <| translate model.tileSize.x -100
-            , widthStyle model.tileSize.x
-            , heightStyle model.tileSize.y
+    let
+        ts =
+            tileScaleFactor model.window
+    in
+        div
+            [ style
+                [ transitionStyle "0.8s ease"
+                , transformStyle <| translate (model.tileSize.x * ts) -100
+                , widthStyle (model.tileSize.x * ts)
+                , heightStyle (model.tileSize.y * ts)
+                ]
+            , classList
+                [ ( "o-0", model.seedBankHidden )
+                , ( "o-100", not model.seedBankHidden )
+                ]
             ]
-        , classList
-            [ ( "o-0", model.seedBankHidden )
-            , ( "o-100", not model.seedBankHidden )
-            ]
-        ]
-        [ renderSeed model.seedType ]
+            [ renderSeed model.seedType ]
 
 
 renderLines_ : Model -> List (Html msg)
@@ -106,18 +111,21 @@ renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model.tileSize mv) model mv)
+        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model mv)
 
 
-leavingStyles : TileSize -> Move -> List Style
-leavingStyles tileSize (( _, block ) as move) =
+leavingStyles : Model -> Move -> List Style
+leavingStyles model (( _, block ) as move) =
     let
         tileState =
             getTileState block
+
+        ts =
+            tileScaleFactor model.window
     in
         case tileState of
             Leaving Seed order ->
-                [ transformStyle <| translate (tileSize.x) -100
+                [ transformStyle <| translate (model.tileSize.x * ts) -100
                 , transitionStyle "0.5s ease"
                 , transitionDelayStyle <| (order % 5) * 80
                 ]

@@ -1,13 +1,12 @@
 module Views.Board.TopBar exposing (..)
 
-import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
-import Data.Level.Board.Tile exposing (seedBackgrounds)
 import Data.Color exposing (gold, washedYellow)
+import Data.Level.Board.Tile exposing (seedBackgrounds)
+import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Level.Types exposing (..)
-import Scenes.Level.Types as Level
+import Scenes.Level.Types as Level exposing (..)
 
 
 topBar : Level.Model -> Html msg

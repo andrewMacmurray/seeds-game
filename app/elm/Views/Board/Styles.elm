@@ -8,6 +8,7 @@ import Data.Level.Score exposing (scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
+import Window
 
 
 boardMarginTop : Level.Model -> Style
@@ -41,22 +42,30 @@ tileCoordsStyles model coord =
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
 tilePosition model ( y, x ) =
-    ( (toFloat y) * model.tileSize.y * tileScaleFactor model.window
-    , (toFloat x) * model.tileSize.x * tileScaleFactor model.window
-    )
+    let
+        ts =
+            tileScaleFactor model.window
+    in
+        ( (toFloat y) * model.tileSize.y * ts
+        , (toFloat x) * model.tileSize.x * ts
+        )
 
 
-wallStyles : Move -> List Style
-wallStyles ( _, block ) =
-    case block of
-        Wall ->
-            [ backgroundColor blockYellow
-            , widthStyle 45
-            , heightStyle 45
-            ]
+wallStyles : Window.Size -> Move -> List Style
+wallStyles window ( _, block ) =
+    let
+        wallSize =
+            tileScaleFactor window * 45
+    in
+        case block of
+            Wall ->
+                [ backgroundColor blockYellow
+                , widthStyle wallSize
+                , heightStyle wallSize
+                ]
 
-        _ ->
-            []
+            _ ->
+                []
 
 
 enteringStyles : Move -> List Style
@@ -81,7 +90,7 @@ growingStyles ( coord, block ) =
             getTileState block
 
         transitionDelay =
-            ((growingOrder block) % 5) * 70
+            growingOrder block % 5 * 70
     in
         case tile of
             Growing SeedPod _ ->
@@ -181,7 +190,7 @@ prepareLeavingStyle model i tileType =
     )
 
 
-exitXDistance : Int -> Level.Model -> Int
+exitXDistance : Int -> Level.Model -> Float
 exitXDistance n model =
     let
         scoreWidth =
@@ -192,8 +201,16 @@ exitXDistance n model =
 
         baseOffset =
             (boardWidth model - scoreBarWidth) // 2
+
+        offset =
+            exitOffsetFunction model.tileSize <| tileScaleFactor model.window
     in
-        baseOffset + (n * scoreWidth) + (model.scoreIconSize + 3)
+        toFloat (baseOffset + (n * scoreWidth) + model.scoreIconSize) + offset
+
+
+exitOffsetFunction : TileSize -> Float -> Float
+exitOffsetFunction tileSize x =
+    25 * (x ^ 2) - (75 * x) + tileSize.x
 
 
 exitYdistance : Level.Model -> Int
