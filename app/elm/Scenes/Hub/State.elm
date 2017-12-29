@@ -4,7 +4,7 @@ import Config.Level exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
 import Data.Hub.Transition exposing (genRandomBackground)
-import Data.Level.Scale exposing (tileScaleFactor)
+import Helpers.Scale exposing (tileScaleFactor)
 import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
 import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
 import Mouse

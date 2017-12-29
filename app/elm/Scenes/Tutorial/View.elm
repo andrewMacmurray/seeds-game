@@ -3,7 +3,7 @@ module Scenes.Tutorial.View exposing (..)
 import Data.Color exposing (darkYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging, tileSize)
-import Data.Level.Scale exposing (tileScaleFactor)
+import Helpers.Scale exposing (tileScaleFactor)
 import Dict
 import Helpers.Style exposing (..)
 import Html exposing (..)
@@ -21,20 +21,11 @@ tutorialView model =
     div
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
         , style [ ( "background-color", "rgba(255, 252, 227, 0.98)" ), transitionStyle "1.2s linear" ]
-        , classList
-            [ ( "o-0", model.canvasHidden )
-            , ( "o-100", not model.canvasHidden )
-            ]
+        , classList <| showIf <| not model.canvasHidden
         ]
         [ div
-            [ style
-                [ ( "margin-top", pc -5 )
-                , transitionStyle "0.8s linear"
-                ]
-            , classList
-                [ ( "o-0", model.containerHidden )
-                , ( "o-100", not model.containerHidden )
-                ]
+            [ style [ ( "margin-top", pc -5 ), transitionStyle "0.8s linear" ]
+            , classList <| showIf <| not model.containerHidden
             ]
             [ tutorialBoard model
             , p
@@ -50,7 +41,7 @@ tutorialBoard : Model -> Html msg
 tutorialBoard model =
     div
         [ class "center relative"
-        , classList [ ( "o-0", model.boardHidden ), ( "0-100", not model.boardHidden ) ]
+        , classList <| showIf <| not model.boardHidden
         , style
             [ widthStyle <| boardWidth model
             , heightStyle <| boardHeight model
@@ -64,24 +55,21 @@ tutorialBoard model =
 
 
 renderSeedBank : Model -> Html msg
-renderSeedBank model =
+renderSeedBank { window, tileSize, seedBankHidden, seedType } =
     let
-        ts =
-            tileScaleFactor model.window
+        tileScale =
+            tileScaleFactor window
     in
         div
             [ style
                 [ transitionStyle "0.8s ease"
-                , transformStyle <| translate (model.tileSize.x * ts) -100
-                , widthStyle (model.tileSize.x * ts)
-                , heightStyle (model.tileSize.y * ts)
+                , transformStyle <| translate (tileSize.x * tileScale) -100
+                , widthStyle (tileSize.x * tileScale)
+                , heightStyle (tileSize.y * tileScale)
                 ]
-            , classList
-                [ ( "o-0", model.seedBankHidden )
-                , ( "o-100", not model.seedBankHidden )
-                ]
+            , classList <| showIf <| not seedBankHidden
             ]
-            [ renderSeed model.seedType ]
+            [ renderSeed seedType ]
 
 
 renderLines_ : Model -> List (Html msg)
@@ -93,16 +81,13 @@ renderLines_ model =
 
 fadeLine : TileConfig model -> Move -> Html msg
 fadeLine model (( _, tile ) as move) =
-    if hasLine tile then
+    let
+        visible =
+            hasLine tile
+    in
         div
             [ style [ transitionStyle "0.5s ease" ]
-            , class "o-100"
-            ]
-            [ renderLineLayer model move ]
-    else
-        div
-            [ style [ transitionStyle "0.5s ease" ]
-            , class "o-0"
+            , classList <| showIf visible
             ]
             [ renderLineLayer model move ]
 
@@ -132,3 +117,10 @@ leavingStyles model (( _, block ) as move) =
 
             _ ->
                 []
+
+
+showIf : Bool -> List ( String, Bool )
+showIf visible =
+    [ ( "o-100", visible )
+    , ( "o-0", not visible )
+    ]

@@ -3,7 +3,7 @@ module Views.Board.Styles exposing (..)
 import Data.Color exposing (blockYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
-import Data.Level.Scale exposing (tileScaleFactor)
+import Helpers.Scale exposing (tileScaleFactor)
 import Data.Level.Score exposing (scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
@@ -41,13 +41,13 @@ tileCoordsStyles model coord =
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
-tilePosition model ( y, x ) =
+tilePosition { window, tileSize } ( y, x ) =
     let
-        ts =
-            tileScaleFactor model.window
+        tileScale =
+            tileScaleFactor window
     in
-        ( (toFloat y) * model.tileSize.y * ts
-        , (toFloat x) * model.tileSize.x * ts
+        ( (toFloat y) * tileSize.y * tileScale
+        , (toFloat x) * tileSize.x * tileScale
         )
 
 
@@ -70,59 +70,44 @@ wallStyles window ( _, block ) =
 
 enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
-    let
-        tile =
-            getTileState block
-    in
-        case tile of
-            Entering tile ->
-                [ animationStyle "bounce-down 1s linear"
-                ]
+    case getTileState block of
+        Entering tile ->
+            [ animationStyle "bounce-down 1s linear"
+            ]
 
-            _ ->
-                []
+        _ ->
+            []
 
 
 growingStyles : Move -> List Style
 growingStyles ( coord, block ) =
-    let
-        tile =
-            getTileState block
+    case getTileState block of
+        Growing SeedPod _ ->
+            [ transformStyle <| scale 4
+            , transitionStyle "0.4s ease"
+            , opacityStyle 0
+            , transitionDelayStyle <| growingOrder block % 5 * 70
+            , ( "pointer-events", "none" )
+            ]
 
-        transitionDelay =
-            growingOrder block % 5 * 70
-    in
-        case tile of
-            Growing SeedPod _ ->
-                [ transformStyle <| scale 4
-                , transitionStyle "0.4s ease"
-                , opacityStyle 0
-                , transitionDelayStyle transitionDelay
-                , ( "pointer-events", "none" )
-                ]
+        Growing Seed _ ->
+            [ animationStyle "bulge 0.5s ease"
+            ]
 
-            Growing Seed _ ->
-                [ animationStyle "bulge 0.5s ease"
-                ]
-
-            _ ->
-                []
+        _ ->
+            []
 
 
 fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
-    let
-        tile =
-            getTileState block
-    in
-        case tile of
-            Falling tile distance ->
-                [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
-                , fillModeStyle "forwards"
-                ]
+    case getTileState block of
+        Falling tile distance ->
+            [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
+            , fillModeStyle "forwards"
+            ]
 
-            _ ->
-                []
+        _ ->
+            []
 
 
 leavingStyles : Level.Model -> Move -> List Style
@@ -149,22 +134,18 @@ releasingStyles ( _, tile ) =
 
 handleExitDirection : Move -> Level.Model -> Style
 handleExitDirection ( coord, block ) model =
-    let
-        tile =
-            getTileState block
-    in
-        case tile of
-            Leaving Rain _ ->
-                getLeavingStyle Rain model
+    case getTileState block of
+        Leaving Rain _ ->
+            getLeavingStyle Rain model
 
-            Leaving Sun _ ->
-                getLeavingStyle Sun model
+        Leaving Sun _ ->
+            getLeavingStyle Sun model
 
-            Leaving Seed _ ->
-                getLeavingStyle Seed model
+        Leaving Seed _ ->
+            getLeavingStyle Seed model
 
-            _ ->
-                emptyStyle
+        _ ->
+            emptyStyle
 
 
 getLeavingStyle : TileType -> Level.Model -> Style
@@ -247,9 +228,13 @@ draggingStyles moveShape ( _, tileState ) =
 
 tileWidthHeightStyles : TileConfig model -> List Style
 tileWidthHeightStyles { tileSize, window } =
-    [ widthStyle (tileSize.x * tileScaleFactor window)
-    , heightStyle (tileSize.y * tileScaleFactor window)
-    ]
+    let
+        tileScale =
+            tileScaleFactor window
+    in
+        [ widthStyle <| tileSize.x * tileScale
+        , heightStyle <| tileSize.y * tileScale
+        ]
 
 
 baseTileClasses : List String

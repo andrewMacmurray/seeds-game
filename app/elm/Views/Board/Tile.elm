@@ -1,7 +1,7 @@
 module Views.Board.Tile exposing (..)
 
 import Data.Level.Board.Tile exposing (tileColorMap, tileSize, tileSizeMap)
-import Data.Level.Scale exposing (tileScaleFactor)
+import Helpers.Scale exposing (tileScaleFactor)
 import Helpers.Html exposing (onMouseDownPreventDefault)
 import Helpers.Style exposing (Style, classes, styles, widthHeight, widthStyle)
 import Html exposing (..)

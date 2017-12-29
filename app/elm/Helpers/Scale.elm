@@ -1,4 +1,4 @@
-module Data.Level.Scale exposing (..)
+module Helpers.Scale exposing (..)
 
 import Window exposing (Size)
 
