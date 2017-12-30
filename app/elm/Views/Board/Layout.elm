@@ -28,11 +28,11 @@ renderTiles model =
         |> List.map (renderTile model)
 
 
-renderLines : BoardConfig model -> List (Html msg)
+renderLines : Level.Model -> List (Html msg)
 renderLines model =
     model.board
         |> Dict.toList
-        |> List.map (renderLineLayer model.tileSize)
+        |> List.map (renderLineLayer model)
 
 
 boardLayout : Level.Model -> List (Html Level.Msg) -> Html Level.Msg
@@ -40,22 +40,22 @@ boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
         , style
-            [ widthStyle <| boardWidth model.tileSize model.boardScale
+            [ widthStyle <| boardWidth model
             , boardMarginTop model
             ]
         ]
 
 
-renderLineLayer : TileSize -> Move -> Html msg
-renderLineLayer tileSize (( coord, _ ) as move) =
+renderLineLayer : TileConfig model -> Move -> Html msg
+renderLineLayer model (( coord, _ ) as move) =
     div
         [ styles
-            [ tileWidthHeightStyles tileSize
-            , tileCoordsStyles tileSize coord
+            [ tileWidthHeightStyles model
+            , tileCoordsStyles model coord
             ]
         , class "dib absolute touch-disabled"
         ]
-        [ renderLine move
+        [ renderLine model.window move
         ]
 
 

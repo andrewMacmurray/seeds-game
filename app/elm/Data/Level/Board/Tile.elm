@@ -81,21 +81,6 @@ isFallingTile tileState =
             False
 
 
-isReleasing : Block -> Bool
-isReleasing =
-    Block.fold isReleasingTile False
-
-
-isReleasingTile : TileState -> Bool
-isReleasingTile tileState =
-    case tileState of
-        Releasing _ ->
-            True
-
-        _ ->
-            False
-
-
 hasLine : Block -> Bool
 hasLine =
     Block.fold hasLineTile False
@@ -208,36 +193,6 @@ setGrowingToStaticTile tileState =
     case tileState of
         Growing Seed _ ->
             Static Seed
-
-        x ->
-            x
-
-
-setDraggingToReleasing : Block -> Block
-setDraggingToReleasing =
-    Block.map setDraggingToReleasingTile
-
-
-setDraggingToReleasingTile : TileState -> TileState
-setDraggingToReleasingTile tileState =
-    case tileState of
-        Dragging tile _ _ _ ->
-            Releasing tile
-
-        x ->
-            x
-
-
-setReleasingToStatic : Block -> Block
-setReleasingToStatic =
-    Block.map setReleasingToStaticTile
-
-
-setReleasingToStaticTile : TileState -> TileState
-setReleasingToStaticTile tileState =
-    case tileState of
-        Releasing tile ->
-            Static tile
 
         x ->
             x
@@ -383,9 +338,6 @@ getTileType_ tileState =
         Growing tile _ ->
             Just tile
 
-        Releasing tile ->
-            Just tile
-
         _ ->
             Nothing
 
@@ -400,14 +352,14 @@ tileColorMap_ seedType =
     tileStyleMap <| tileColors seedType
 
 
-tileSizeMap : Block -> List Style
+tileSizeMap : Block -> Float
 tileSizeMap =
-    Block.fold tileSizeMap_ []
+    Block.fold tileSizeMap_ 0
 
 
-tileSizeMap_ : TileState -> List Style
+tileSizeMap_ : TileState -> Float
 tileSizeMap_ =
-    tileStyleMap tileSize
+    tileTypeMap 0 tileSize
 
 
 strokeColors : TileType -> String
@@ -461,20 +413,20 @@ seedBackgrounds seedType =
             ""
 
 
-tileSize : TileType -> List Style
+tileSize : TileType -> Float
 tileSize tile =
     case tile of
         Rain ->
-            size 18
+            18
 
         Sun ->
-            size 18
+            18
 
         SeedPod ->
-            size 26
+            26
 
         Seed ->
-            size 35
+            35
 
 
 tileClassMap : (TileType -> String) -> TileState -> String

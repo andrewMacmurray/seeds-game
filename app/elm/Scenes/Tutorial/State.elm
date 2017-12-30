@@ -22,7 +22,9 @@ initialState =
     , tileSize = { y = 51, x = 55 }
     , seedType = Sunflower
     , boardScale = 2
+    , topBarHeight = 0
     , text = getText 1
+    , window = { height = 0, width = 0 }
     }
 
 
@@ -139,7 +141,7 @@ dragSequence2 =
     , ( 400, DragTile ( 2, 1 ) )
     , ( 100, ShowSeedBank )
     , ( 1500, SetLeavingSeeds )
-    , ( 1500, ResetLeaving )
+    , ( 500, ResetLeaving )
     , ( 400, AddNewTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
     , ( 2000, HideCanvas )
     , ( 1500, ExitTutorial )

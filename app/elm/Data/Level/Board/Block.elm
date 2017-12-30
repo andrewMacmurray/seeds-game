@@ -4,9 +4,14 @@ import Dict
 import Scenes.Level.Types exposing (..)
 
 
-addWalls : List Coord -> Board -> Board
+addWalls : List ( WallColor, Coord ) -> Board -> Board
 addWalls coords board =
-    List.foldl (\coords currentBoard -> Dict.update coords (Maybe.map (always Wall)) currentBoard) board coords
+    List.foldl
+        (\( wallColor, coord ) currentBoard ->
+            Dict.update coord (Maybe.map (always <| Wall wallColor)) currentBoard
+        )
+        board
+        coords
 
 
 getTileState : Block -> TileState
@@ -14,20 +19,30 @@ getTileState =
     fold identity Empty
 
 
+isWall : Block -> Bool
+isWall block =
+    case block of
+        Wall _ ->
+            True
+
+        _ ->
+            False
+
+
 map : (TileState -> TileState) -> Block -> Block
 map fn block =
     case block of
-        Wall ->
-            Wall
-
         Space tileState ->
             Space <| fn tileState
+
+        wall ->
+            wall
 
 
 fold : (TileState -> a) -> a -> Block -> a
 fold fn default block =
     case block of
-        Wall ->
+        Wall _ ->
             default
 
         Space tileState ->

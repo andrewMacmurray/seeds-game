@@ -1,7 +1,7 @@
 module Config.Level exposing (..)
 
-import Config.Wall exposing (corners, moreWalls, standardWalls)
-import Data.Color exposing (darkYellow, gold, lightBrown, purple, softRed, washedYellow, white, yellow)
+import Config.Wall exposing (..)
+import Data.Color exposing (..)
 import Dict exposing (Dict)
 import Scenes.Hub.Types exposing (AllLevels, LevelData, WorldData, WorldLevels)
 import Scenes.Level.Types exposing (..)
@@ -52,10 +52,10 @@ world1 =
 world1levels : WorldLevels
 world1levels =
     Dict.fromList
-        [ ( 1, { tileSettings = noWeather, walls = standardWalls } )
-        , ( 2, { tileSettings = noSun, walls = standardWalls } )
-        , ( 3, { tileSettings = noSun, walls = moreWalls } )
-        , ( 4, { tileSettings = noRain, walls = corners } )
+        [ ( 1, { tileSettings = noWeather, walls = withColor blockYellow standardWalls } )
+        , ( 2, { tileSettings = noSun, walls = withColor blockYellow standardWalls } )
+        , ( 3, { tileSettings = noSun, walls = withColor blockYellow moreWalls } )
+        , ( 4, { tileSettings = noRain, walls = withColor blockYellow corners } )
         , ( 5, level5 )
         ]
 

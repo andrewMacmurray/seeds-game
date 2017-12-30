@@ -82,8 +82,8 @@ background =
     (,) "background"
 
 
-size : number -> List Style
-size n =
+widthHeight : number -> List Style
+widthHeight n =
     [ widthStyle n
     , heightStyle n
     ]

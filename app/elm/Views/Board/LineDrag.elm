@@ -1,8 +1,9 @@
 module Views.Board.LineDrag exposing (..)
 
-import Data.Level.Move.Square exposing (hasSquareTile)
-import Data.Level.Move.Utils exposing (currentMoves, lastMove, currentMoveTileType)
 import Data.Level.Board.Tile exposing (strokeColors)
+import Data.Level.Move.Square exposing (hasSquareTile)
+import Data.Level.Move.Utils exposing (currentMoveTileType, currentMoves, lastMove)
+import Helpers.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (px)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
@@ -32,6 +33,9 @@ lineDrag ({ window } as model) =
             currentMoveTileType model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault ""
+
+        tileScale =
+            tileScaleFactor window
     in
         svg
             [ width <| px window.width
@@ -41,7 +45,7 @@ lineDrag ({ window } as model) =
             ]
             [ line
                 [ Svg.Attributes.style colorClass
-                , strokeWidth "6"
+                , strokeWidth <| toString <| 6 * tileScale
                 , strokeLinecap "round"
                 , x1 <| toString oX
                 , y1 <| toString oY
@@ -55,6 +59,9 @@ lineDrag ({ window } as model) =
 lastMoveOrigin : Level.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
+        tileScale =
+            tileScaleFactor window
+
         tileSize =
             model.tileSize
 
@@ -68,16 +75,16 @@ lastMoveOrigin ({ window } as model) =
             toFloat x
 
         sY =
-            tileSize.y
+            tileSize.y * tileScale
 
         sX =
-            tileSize.x
+            tileSize.x * tileScale
 
         offsetY =
             boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - (boardWidth model.tileSize model.boardScale)) // 2 |> toFloat
+            (window.width - (boardWidth model)) // 2 |> toFloat
     in
         ( ((y1 + 1) * sY) + offsetY - (sY / 2)
         , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

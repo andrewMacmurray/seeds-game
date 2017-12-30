@@ -1,6 +1,11 @@
 module Config.Wall exposing (..)
 
-import Scenes.Level.Types exposing (Coord)
+import Scenes.Level.Types exposing (..)
+
+
+withColor : WallColor -> List Coord -> List ( WallColor, Coord )
+withColor color =
+    List.map ((,) color)
 
 
 moreWalls : List Coord

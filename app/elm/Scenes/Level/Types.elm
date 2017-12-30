@@ -23,7 +23,7 @@ type alias Model =
 
 
 type Msg
-    = InitTiles (List Coord) (List TileType)
+    = InitTiles (List ( WallColor, Coord )) (List TileType)
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape
@@ -52,6 +52,10 @@ type alias Score =
     }
 
 
+type alias HasBoard a =
+    { a | board : Board }
+
+
 type alias BoardConfig a =
     { a
         | board : Board
@@ -60,21 +64,11 @@ type alias BoardConfig a =
     }
 
 
-type alias HasBoard a =
-    { a | board : Board }
-
-
 type alias TileConfig a =
     { a
         | moveShape : Maybe MoveShape
         , tileSize : TileSize
         , seedType : SeedType
-    }
-
-
-type alias ScaleConfig a =
-    { a
-        | tileSize : TileSize
         , window : Window.Size
         , boardScale : Int
         , topBarHeight : Int
@@ -144,8 +138,12 @@ type MoveBearing
 
 
 type Block
-    = Wall
+    = Wall WallColor
     | Space TileState
+
+
+type alias WallColor =
+    String
 
 
 type TileState
@@ -155,7 +153,6 @@ type TileState
     | Falling TileType FallingDistance
     | Entering TileType
     | Growing TileType GrowingOrder
-    | Releasing TileType
     | Empty
 
 
