@@ -141,7 +141,7 @@ dragSequence2 =
     , ( 400, DragTile ( 2, 1 ) )
     , ( 100, ShowSeedBank )
     , ( 1500, SetLeavingSeeds )
-    , ( 1500, ResetLeaving )
+    , ( 500, ResetLeaving )
     , ( 400, AddNewTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
     , ( 2000, HideCanvas )
     , ( 1500, ExitTutorial )

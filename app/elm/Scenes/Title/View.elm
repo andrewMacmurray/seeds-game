@@ -69,7 +69,7 @@ withAnimations delay seed =
     div
         [ style
             [ opacityStyle 0
-            , animationStyle "1s fade-in linear forwards"
+            , animationStyle "3s fade-in linear forwards"
             , animationDelayStyle <| ms delay
             ]
         , class "mh2"
