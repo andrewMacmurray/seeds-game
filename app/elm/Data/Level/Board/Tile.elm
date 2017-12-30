@@ -81,21 +81,6 @@ isFallingTile tileState =
             False
 
 
-isReleasing : Block -> Bool
-isReleasing =
-    Block.fold isReleasingTile False
-
-
-isReleasingTile : TileState -> Bool
-isReleasingTile tileState =
-    case tileState of
-        Releasing _ ->
-            True
-
-        _ ->
-            False
-
-
 hasLine : Block -> Bool
 hasLine =
     Block.fold hasLineTile False
@@ -208,36 +193,6 @@ setGrowingToStaticTile tileState =
     case tileState of
         Growing Seed _ ->
             Static Seed
-
-        x ->
-            x
-
-
-setDraggingToReleasing : Block -> Block
-setDraggingToReleasing =
-    Block.map setDraggingToReleasingTile
-
-
-setDraggingToReleasingTile : TileState -> TileState
-setDraggingToReleasingTile tileState =
-    case tileState of
-        Dragging tile _ _ _ ->
-            Releasing tile
-
-        x ->
-            x
-
-
-setReleasingToStatic : Block -> Block
-setReleasingToStatic =
-    Block.map setReleasingToStaticTile
-
-
-setReleasingToStaticTile : TileState -> TileState
-setReleasingToStaticTile tileState =
-    case tileState of
-        Releasing tile ->
-            Static tile
 
         x ->
             x
@@ -381,9 +336,6 @@ getTileType_ tileState =
             Just tile
 
         Growing tile _ ->
-            Just tile
-
-        Releasing tile ->
             Just tile
 
         _ ->

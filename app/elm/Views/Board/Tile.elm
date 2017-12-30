@@ -75,7 +75,6 @@ baseTileStyles window seedType (( _, tile ) as move) =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , releasingStyles move
         , widthHeight <| round <| tileSizeMap tile * tileScaleFactor window
         , tileColorMap seedType tile
         ]

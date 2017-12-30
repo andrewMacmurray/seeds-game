@@ -23,7 +23,7 @@ type alias Model =
 
 
 type Msg
-    = InitTiles (List Coord) (List TileType)
+    = InitTiles (List ( WallColor, Coord )) (List TileType)
     | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape
@@ -138,8 +138,12 @@ type MoveBearing
 
 
 type Block
-    = Wall
+    = Wall WallColor
     | Space TileState
+
+
+type alias WallColor =
+    String
 
 
 type TileState
@@ -149,7 +153,6 @@ type TileState
     | Falling TileType FallingDistance
     | Entering TileType
     | Growing TileType GrowingOrder
-    | Releasing TileType
     | Empty
 
 

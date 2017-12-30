@@ -1,6 +1,5 @@
 module Views.Board.Styles exposing (..)
 
-import Data.Color exposing (blockYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
 import Helpers.Scale exposing (tileScaleFactor)
@@ -58,8 +57,8 @@ wallStyles window ( _, block ) =
             tileScaleFactor window * 45
     in
         case block of
-            Wall ->
-                [ backgroundColor blockYellow
+            Wall color ->
+                [ backgroundColor color
                 , widthStyle wallSize
                 , heightStyle wallSize
                 ]
@@ -117,16 +116,6 @@ leavingStyles model (( _, tile ) as move) =
         , opacityStyle 0.2
         , transitionDelayStyle <| ((leavingOrder tile) % 5) * 80
         , handleExitDirection move model
-        ]
-    else
-        []
-
-
-releasingStyles : Move -> List Style
-releasingStyles ( _, tile ) =
-    if isReleasing tile then
-        [ transitionStyle "0.3s"
-        , transformStyle <| scale 1
         ]
     else
         []
