@@ -24,7 +24,6 @@ type alias Model =
 
 type Msg
     = InitTiles (List ( WallColor, Coord )) (List TileType)
-    | AddTiles (List TileType)
     | SquareMove
     | StopMove MoveShape
     | StartMove Move
@@ -35,8 +34,10 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
+    | InsertGrowingSeeds (List TileType)
     | ResetGrowingSeeds
-    | MakeNewTiles
+    | GenerateEnteringTiles
+    | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard
     | ResetMove
@@ -160,7 +161,7 @@ type TileType
     = Rain
     | Sun
     | SeedPod
-    | Seed
+    | Seed SeedType
 
 
 type SeedType

@@ -4,7 +4,7 @@ import Dict
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Scenes.Hub.Types exposing (Model)
-import Config.Level exposing (allLevels, level5, world1)
+import Config.Level exposing (allLevels, defaultLevel, world1)
 
 
 getSelectedProgress : Model -> Maybe LevelProgress
@@ -30,7 +30,7 @@ getLevelConfig ( w, l ) model =
             worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
     in
         ( worldData |> Maybe.withDefault world1
-        , levelData |> Maybe.withDefault level5
+        , levelData |> Maybe.withDefault defaultLevel
         )
 
 

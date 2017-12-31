@@ -89,7 +89,7 @@ growingStyles ( coord, block ) =
             , ( "pointer-events", "none" )
             ]
 
-        Growing Seed _ ->
+        Growing (Seed _) _ ->
             [ animationStyle "bulge 0.5s ease"
             ]
 
@@ -130,8 +130,8 @@ handleExitDirection ( coord, block ) model =
         Leaving Sun _ ->
             getLeavingStyle Sun model
 
-        Leaving Seed _ ->
-            getLeavingStyle Seed model
+        Leaving (Seed seedType) _ ->
+            getLeavingStyle (Seed seedType) model
 
         _ ->
             emptyStyle

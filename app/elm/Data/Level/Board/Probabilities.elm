@@ -16,7 +16,7 @@ handleProb : Int -> TileSetting -> ( Maybe TileType, Int ) -> ( Maybe TileType, 
 handleProb n { tileType, probability } ( val, accProb ) =
     case val of
         Nothing ->
-            if n < probability + accProb then
+            if n <= probability + accProb then
                 ( Just tileType, probability )
             else
                 ( Nothing, probability + accProb )

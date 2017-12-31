@@ -3,9 +3,12 @@ module Config.Wall exposing (..)
 import Scenes.Level.Types exposing (..)
 
 
-withColor : WallColor -> List Coord -> List ( WallColor, Coord )
-withColor color =
-    List.map ((,) color)
+centerColumns : List Coord
+centerColumns =
+    combineWalls
+        [ column 3
+        , column 4
+        ]
 
 
 moreWalls : List Coord
@@ -32,11 +35,6 @@ corners =
         [ topLeft
         , bottomRight
         ]
-
-
-combineWalls : List (List Coord) -> List Coord
-combineWalls =
-    List.concat
 
 
 centerFour : List Coord
@@ -90,3 +88,18 @@ rightCenter =
     [ ( 3, 7 )
     , ( 4, 7 )
     ]
+
+
+withColor : WallColor -> List Coord -> List ( WallColor, Coord )
+withColor color =
+    List.map ((,) color)
+
+
+combineWalls : List (List Coord) -> List Coord
+combineWalls =
+    List.concat
+
+
+column : Int -> List Coord
+column y =
+    List.range 0 7 |> List.map (\x -> ( x, y ))

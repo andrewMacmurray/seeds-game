@@ -29,7 +29,7 @@ type Msg
     | GrowPods
     | ResetGrowingPods
     | ResetLeaving
-    | AddNewTiles (List TileType)
+    | EnteringTiles (List TileType)
     | BoardScale Int
     | HideBoard
     | ShowBoard

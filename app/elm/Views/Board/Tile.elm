@@ -31,8 +31,8 @@ renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
             ]
         , class "dib absolute"
         ]
-        [ innerTile config.window config.seedType config.moveShape move
-        , tracer config.window config.seedType move
+        [ innerTile config.window config.moveShape move
+        , tracer config.window move
         , wall config.window move
         ]
 
@@ -45,9 +45,9 @@ hanldeMoveEvents model move =
         onMouseDownPreventDefault <| StartMove move
 
 
-tracer : Window.Size -> SeedType -> Move -> Html msg
-tracer window seedType move =
-    makeInnerTile (moveTracerStyles move) window seedType move
+tracer : Window.Size -> Move -> Html msg
+tracer window move =
+    makeInnerTile (moveTracerStyles move) window move
 
 
 wall : Window.Size -> Move -> Html msg
@@ -55,26 +55,26 @@ wall window move =
     div [ style <| wallStyles window move, class centerBlock ] []
 
 
-innerTile : Window.Size -> SeedType -> Maybe MoveShape -> Move -> Html msg
-innerTile window seedType moveShape move =
-    makeInnerTile (draggingStyles moveShape move) window seedType move
+innerTile : Window.Size -> Maybe MoveShape -> Move -> Html msg
+innerTile window moveShape move =
+    makeInnerTile (draggingStyles moveShape move) window move
 
 
-makeInnerTile : List Style -> Window.Size -> SeedType -> Move -> Html msg
-makeInnerTile extraStyles window seedType (( _, tile ) as move) =
+makeInnerTile : List Style -> Window.Size -> Move -> Html msg
+makeInnerTile extraStyles window (( _, tile ) as move) =
     div
         [ classes baseTileClasses
-        , styles [ extraStyles, baseTileStyles window seedType move ]
+        , styles [ extraStyles, baseTileStyles window move ]
         ]
         []
 
 
-baseTileStyles : Window.Size -> SeedType -> Move -> List Style
-baseTileStyles window seedType (( _, tile ) as move) =
+baseTileStyles : Window.Size -> Move -> List Style
+baseTileStyles window (( _, tile ) as move) =
     List.concat
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
         , widthHeight <| round <| tileSizeMap tile * tileScaleFactor window
-        , tileColorMap seedType tile
+        , tileColorMap tile
         ]
