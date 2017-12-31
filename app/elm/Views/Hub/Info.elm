@@ -80,7 +80,7 @@ infoIcons : LevelData -> SeedType -> Html msg
 infoIcons levelData seedType =
     levelData.tileSettings
         |> scoreTileTypes
-        |> List.map (renderIcon seedType)
+        |> List.map renderIcon
         |> infoIconsContainer
 
 
@@ -89,8 +89,8 @@ infoIconsContainer =
     div [ class "flex items-center justify-center center", style [ ( "width", pc 60 ) ] ]
 
 
-renderIcon : SeedType -> TileType -> Html msg
-renderIcon seedType tileType =
+renderIcon : TileType -> Html msg
+renderIcon tileType =
     let
         inner =
             case tileType of
@@ -100,7 +100,7 @@ renderIcon seedType tileType =
                 Sun ->
                     renderWeather orange
 
-                Seed ->
+                Seed seedType ->
                     div [ style [ widthStyle 35 ] ] [ renderSeed seedType ]
 
                 _ ->

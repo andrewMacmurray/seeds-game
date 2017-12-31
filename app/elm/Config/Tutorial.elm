@@ -1,6 +1,6 @@
 module Config.Tutorial exposing (..)
 
-import Data.Level.Board.Make exposing (makeBoard)
+import Data.Level.Board.Generate exposing (makeBoard)
 import Dict exposing (Dict)
 import Scenes.Level.Types exposing (..)
 
@@ -26,10 +26,10 @@ tutorialBoard1 =
 tutorialBoard2 : Board
 tutorialBoard2 =
     seedPodBoard 3
-        |> Dict.insert ( 0, 0 ) (space Seed)
-        |> Dict.insert ( 0, 1 ) (space Seed)
-        |> Dict.insert ( 1, 1 ) (space Seed)
-        |> Dict.insert ( 2, 1 ) (space Seed)
+        |> Dict.insert ( 0, 0 ) (space <| Seed Sunflower)
+        |> Dict.insert ( 0, 1 ) (space <| Seed Sunflower)
+        |> Dict.insert ( 1, 1 ) (space <| Seed Sunflower)
+        |> Dict.insert ( 2, 1 ) (space <| Seed Sunflower)
 
 
 space : TileType -> Block

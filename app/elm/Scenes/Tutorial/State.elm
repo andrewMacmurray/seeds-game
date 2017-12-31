@@ -5,7 +5,7 @@ import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
-import Scenes.Level.State exposing (handleAddNewTiles, mapBoard, transformBoard)
+import Scenes.Level.State exposing (handleInsertEnteringTiles, mapBoard, transformBoard)
 import Scenes.Level.Types exposing (..)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
@@ -44,13 +44,13 @@ update msg model =
             mapBoard setToLeaving model ! []
 
         GrowPods ->
-            mapBoard growSeedPod model ! []
+            mapBoard (growSeedPod Sunflower) model ! []
 
         ResetGrowingPods ->
             mapBoard setGrowingToStatic model ! []
 
-        AddNewTiles tiles ->
-            handleAddNewTiles tiles model ! []
+        EnteringTiles tiles ->
+            handleInsertEnteringTiles tiles model ! []
 
         ResetLeaving ->
             mapBoard setLeavingToEmpty model ! []
@@ -142,7 +142,7 @@ dragSequence2 =
     , ( 100, ShowSeedBank )
     , ( 1500, SetLeavingSeeds )
     , ( 500, ResetLeaving )
-    , ( 400, AddNewTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
+    , ( 400, EnteringTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
     , ( 2000, HideCanvas )
     , ( 1500, ExitTutorial )
     ]
@@ -161,6 +161,6 @@ handleDragTile : Coord -> Tutorial.Model -> Tutorial.Model
 handleDragTile coord model =
     let
         tile =
-            Dict.get coord model.board |> Maybe.withDefault (Space (Static Seed))
+            Dict.get coord model.board |> Maybe.withDefault (Space (Static (Seed Sunflower)))
     in
         { model | board = addBearings ( coord, tile ) model.board }

@@ -109,7 +109,7 @@ leavingStyles model (( _, block ) as move) =
             tileScaleFactor model.window
     in
         case tileState of
-            Leaving Seed order ->
+            Leaving (Seed _) order ->
                 [ transformStyle <| translate (model.tileSize.x * ts) -100
                 , transitionStyle "0.5s ease"
                 , transitionDelayStyle <| (order % 5) * 80

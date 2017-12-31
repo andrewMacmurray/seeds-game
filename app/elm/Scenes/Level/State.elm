@@ -1,9 +1,8 @@
 module Scenes.Level.State exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
-import Data.Level.Board.Entering exposing (addNewTiles, makeNewTiles)
 import Data.Level.Board.Falling exposing (setFallingTiles)
-import Data.Level.Board.Make exposing (generateTiles, makeBoard)
+import Data.Level.Board.Generate exposing (generateEnteringTiles, generateInitialTiles, generateNewSeeds, insertNewEnteringTiles, insertNewSeeds, makeBoard)
 import Data.Level.Board.Shift exposing (shiftBoard)
 import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
@@ -54,9 +53,6 @@ update msg model =
             )
                 ! []
 
-        AddTiles tiles ->
-            (model |> handleAddNewTiles tiles) ! []
-
         StopMove moveShape ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
@@ -87,13 +83,19 @@ update msg model =
             (model |> mapBoard setDraggingToGrowing) ! []
 
         GrowPodsToSeeds ->
-            (model |> mapBoard growSeedPod) ! []
+            model ! [ generateNewSeeds model.tileSettings model.board ]
+
+        InsertGrowingSeeds tiles ->
+            handleInsertNewSeeds tiles model ! []
 
         ResetGrowingSeeds ->
             (model |> mapBoard setGrowingToStatic) ! []
 
-        MakeNewTiles ->
-            model ! [ makeNewTiles model.tileSettings model.board ]
+        GenerateEnteringTiles ->
+            model ! [ generateEnteringTiles model.tileSettings model.board ]
+
+        InsertEnteringTiles tiles ->
+            (model |> handleInsertEnteringTiles tiles) ! []
 
         ResetEntering ->
             (model |> transformBoard (mapValues setEnteringToStatic)) ! []
@@ -140,7 +142,7 @@ removeTilesSequence moveShape =
         , ( fallDelay moveShape, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
-        , ( 0, MakeNewTiles )
+        , ( 0, GenerateEnteringTiles )
         , ( 500, ResetEntering )
         ]
 
@@ -159,7 +161,7 @@ fallDelay moveShape =
 
 handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
 handleGenerateTiles levelData { boardScale } =
-    generateTiles levelData boardScale
+    generateInitialTiles levelData boardScale
 
 
 handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
@@ -167,9 +169,14 @@ handleMakeBoard tileList ({ boardScale } as model) =
     { model | board = makeBoard boardScale tileList }
 
 
-handleAddNewTiles : List TileType -> HasBoard model -> HasBoard model
-handleAddNewTiles tileList =
-    transformBoard <| addNewTiles tileList
+handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
+handleInsertEnteringTiles tileList =
+    transformBoard <| insertNewEnteringTiles tileList
+
+
+handleInsertNewSeeds : List TileType -> HasBoard model -> HasBoard model
+handleInsertNewSeeds tileList =
+    transformBoard <| insertNewSeeds tileList
 
 
 handleAddScore : Level.Model -> Level.Model

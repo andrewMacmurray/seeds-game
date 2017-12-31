@@ -3,8 +3,9 @@ module Config.Level exposing (..)
 import Config.Wall exposing (..)
 import Data.Color exposing (..)
 import Dict exposing (Dict)
-import Scenes.Hub.Types exposing (AllLevels, LevelData, WorldData, WorldLevels)
+import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)
+import Data.Hub.World exposing (..)
 
 
 allLevels : AllLevels
@@ -19,7 +20,7 @@ allLevels =
 world3 : WorldData
 world3 =
     { seedType = Lupin
-    , levels = world1levels
+    , levels = world3levels
     , background = washedYellow
     , textColor = gold
     , textCompleteColor = white
@@ -27,15 +28,74 @@ world3 =
     }
 
 
+world3levels : WorldLevels
+world3levels =
+    makeWorldLevels
+        [ { walls = []
+          , tileSettings =
+                [ rain 20 30
+                , seed Lupin 50 30
+                , seedPod 30
+                ]
+          }
+        , { walls = withColor blockYellow corners
+          , tileSettings =
+                [ seed Sunflower 25 30
+                , seed Lupin 25 30
+                , rain 25 40
+                , seedPod 25
+                ]
+          }
+        , { walls = []
+          , tileSettings =
+                [ seed Foxglove 25 30
+                , seed Lupin 25 30
+                , seed Sunflower 25 30
+                , rain 25 30
+                , seedPod 25
+                ]
+          }
+        ]
+
+
 world2 : WorldData
 world2 =
     { seedType = Foxglove
-    , levels = world1levels
+    , levels = world2levels
     , background = gold
     , textColor = white
     , textCompleteColor = yellow
     , textBackgroundColor = softRed
     }
+
+
+world2levels : WorldLevels
+world2levels =
+    makeWorldLevels
+        [ { walls = withColor blockYellow corners
+          , tileSettings =
+                [ seed Foxglove 50 30
+                , sun 20 30
+                , seedPod 30
+                ]
+          }
+        , { walls = []
+          , tileSettings =
+                [ seed Sunflower 25 30
+                , seed Foxglove 25 30
+                , rain 25 40
+                , seedPod 25
+                ]
+          }
+        , { walls = withColor blockYellow centerColumns
+          , tileSettings =
+                [ seed Sunflower 25 30
+                , seed Foxglove 25 30
+                , sun 25 40
+                , seedPod 25
+                ]
+          }
+        ]
 
 
 world1 : WorldData
@@ -51,56 +111,52 @@ world1 =
 
 world1levels : WorldLevels
 world1levels =
-    Dict.fromList
-        [ ( 1, { tileSettings = noWeather, walls = withColor blockYellow standardWalls } )
-        , ( 2, { tileSettings = noSun, walls = withColor blockYellow standardWalls } )
-        , ( 3, { tileSettings = noSun, walls = withColor blockYellow moreWalls } )
-        , ( 4, { tileSettings = noRain, walls = withColor blockYellow corners } )
-        , ( 5, level5 )
+    makeWorldLevels
+        [ { walls = withColor blockYellow standardWalls
+          , tileSettings =
+                [ seed Sunflower 20 150
+                , seedPod 50
+                ]
+          }
+        , { walls = withColor blockYellow standardWalls
+          , tileSettings =
+                [ seed Sunflower 33 100
+                , rain 33 50
+                , seedPod 33
+                ]
+          }
+        , { walls = withColor blockYellow centerColumns
+          , tileSettings =
+                [ seed Sunflower 33 100
+                , rain 33 50
+                , seedPod 33
+                ]
+          }
+        , { walls = withColor blockYellow corners
+          , tileSettings =
+                [ seed Sunflower 33 100
+                , sun 33 50
+                , seedPod 33
+                ]
+          }
+        , { walls = []
+          , tileSettings =
+                [ rain 25 50
+                , seed Sunflower 25 100
+                , sun 25 50
+                , seedPod 25
+                ]
+          }
         ]
 
 
-level5 : LevelData
-level5 =
-    { tileSettings = evenTiles, walls = [] }
-
-
-evenTiles : List TileSetting
-evenTiles =
-    [ ( Rain, 25, Just 40 )
-    , ( Seed, 25, Just 100 )
-    , ( Sun, 25, Just 40 )
-    , ( SeedPod, 25, Nothing )
-    ]
-        |> List.map addTargetScore
-
-
-noSun : List TileSetting
-noSun =
-    [ ( Rain, 33, Just 50 )
-    , ( Seed, 33, Just 100 )
-    , ( SeedPod, 33, Nothing )
-    ]
-        |> List.map addTargetScore
-
-
-noRain : List TileSetting
-noRain =
-    [ ( Sun, 33, Just 50 )
-    , ( Seed, 33, Just 100 )
-    , ( SeedPod, 33, Nothing )
-    ]
-        |> List.map addTargetScore
-
-
-noWeather : List TileSetting
-noWeather =
-    [ ( Seed, 25, Just 150 )
-    , ( SeedPod, 7, Nothing )
-    ]
-        |> List.map addTargetScore
-
-
-addTargetScore : ( TileType, Int, Maybe Int ) -> TileSetting
-addTargetScore ( tileType, prob, targetScore ) =
-    TileSetting tileType prob targetScore
+defaultLevel : LevelData
+defaultLevel =
+    { walls = []
+    , tileSettings =
+        [ rain 25 50
+        , seed Sunflower 25 100
+        , sun 25 50
+        , seedPod 25
+        ]
+    }

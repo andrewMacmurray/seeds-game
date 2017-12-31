@@ -66,6 +66,21 @@ isDraggingTile tileState =
             False
 
 
+isGrowing : Block -> Bool
+isGrowing =
+    Block.fold isGrowingTile False
+
+
+isGrowingTile : TileState -> Bool
+isGrowingTile tileState =
+    case tileState of
+        Growing _ _ ->
+            True
+
+        _ ->
+            False
+
+
 isFalling : Block -> Bool
 isFalling =
     Block.fold isFallingTile False
@@ -135,6 +150,16 @@ isCurrentMoveTile tileState =
             False
 
 
+isSeedTile : TileType -> Bool
+isSeedTile tileType =
+    case tileType of
+        Seed _ ->
+            True
+
+        _ ->
+            False
+
+
 setToDragging : MoveOrder -> Block -> Block
 setToDragging moveOrder =
     Block.map <| setToDraggingTile moveOrder
@@ -191,23 +216,23 @@ setGrowingToStatic =
 setGrowingToStaticTile : TileState -> TileState
 setGrowingToStaticTile tileState =
     case tileState of
-        Growing Seed _ ->
-            Static Seed
+        Growing (Seed seedType) _ ->
+            Static (Seed seedType)
 
         x ->
             x
 
 
-growSeedPod : Block -> Block
-growSeedPod =
-    Block.map growSeedPodTile
+growSeedPod : SeedType -> Block -> Block
+growSeedPod seedType =
+    Block.map (growSeedPodTile seedType)
 
 
-growSeedPodTile : TileState -> TileState
-growSeedPodTile tileState =
+growSeedPodTile : SeedType -> TileState -> TileState
+growSeedPodTile seedType tileState =
     case tileState of
         Growing SeedPod n ->
-            Growing Seed n
+            Growing (Seed seedType) n
 
         x ->
             x
@@ -305,8 +330,8 @@ setToLeavingTile tileState =
         Dragging Sun order _ _ ->
             Leaving Sun order
 
-        Dragging Seed order _ _ ->
-            Leaving Seed order
+        Dragging (Seed seedType) order _ _ ->
+            Leaving (Seed seedType) order
 
         x ->
             x
@@ -342,14 +367,14 @@ getTileType_ tileState =
             Nothing
 
 
-tileColorMap : SeedType -> Block -> List Style
-tileColorMap seedType =
-    Block.fold (tileColorMap_ seedType) []
+tileColorMap : Block -> List Style
+tileColorMap =
+    Block.fold tileColorMap_ []
 
 
-tileColorMap_ : SeedType -> TileState -> List Style
-tileColorMap_ seedType =
-    tileStyleMap <| tileColors seedType
+tileColorMap_ : TileState -> List Style
+tileColorMap_ =
+    tileStyleMap tileColors
 
 
 tileSizeMap : Block -> Float
@@ -374,12 +399,12 @@ strokeColors tile =
         SeedPod ->
             svgStyle "stroke" green
 
-        Seed ->
+        Seed _ ->
             svgStyle "stroke" darkBrown
 
 
-tileColors : SeedType -> TileType -> List Style
-tileColors seedType tile =
+tileColors : TileType -> List Style
+tileColors tile =
     case tile of
         Rain ->
             [ backgroundColor lightBlue ]
@@ -390,7 +415,7 @@ tileColors seedType tile =
         SeedPod ->
             [ background seedPodGradient ]
 
-        Seed ->
+        Seed seedType ->
             [ backgroundImage <| seedBackgrounds seedType ] ++ frameBackground
 
 
@@ -425,7 +450,7 @@ tileSize tile =
         SeedPod ->
             26
 
-        Seed ->
+        Seed _ ->
             35
 
 

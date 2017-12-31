@@ -1,5 +1,6 @@
 module Data.Hub.Text exposing (..)
 
+import Data.Level.Board.Tile exposing (isSeedTile)
 import Scenes.Level.Types exposing (TileType(..))
 
 
@@ -20,7 +21,7 @@ infoText types =
 allThree : List TileType -> Bool
 allThree types =
     allPass types
-        [ contains Seed
+        [ containsSeed
         , contains Rain
         , contains Sun
         ]
@@ -29,7 +30,7 @@ allThree types =
 sunAndSeeds : List TileType -> Bool
 sunAndSeeds types =
     allPass types
-        [ contains Seed
+        [ containsSeed
         , contains Sun
         , not << contains Rain
         ]
@@ -38,7 +39,7 @@ sunAndSeeds types =
 rainAndSeeds : List TileType -> Bool
 rainAndSeeds types =
     allPass types
-        [ contains Seed
+        [ containsSeed
         , contains Rain
         , not << contains Sun
         ]
@@ -47,10 +48,15 @@ rainAndSeeds types =
 onlySeeds : List TileType -> Bool
 onlySeeds types =
     allPass types
-        [ contains Seed
+        [ containsSeed
         , not << contains Sun
         , not << contains Rain
         ]
+
+
+containsSeed : List TileType -> Bool
+containsSeed =
+    List.any isSeedTile
 
 
 allPass : List TileType -> List (List TileType -> Bool) -> Bool

@@ -61,8 +61,8 @@ renderScoreIcon model tileType =
         Rain ->
             scoreIcon model "img/rain.svg"
 
-        Seed ->
-            scoreIcon model <| seedBackgrounds model.seedType
+        Seed seedType ->
+            scoreIcon model <| seedBackgrounds seedType
 
         _ ->
             span [] []
