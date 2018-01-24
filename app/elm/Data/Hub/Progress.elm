@@ -1,15 +1,14 @@
 module Data.Hub.Progress exposing (..)
 
+import Config.Level exposing (allLevels, defaultLevel, world1)
 import Dict
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
-import Scenes.Hub.Types exposing (Model)
-import Config.Level exposing (allLevels, defaultLevel, world1)
 
 
-getSelectedProgress : Model -> Maybe LevelProgress
-getSelectedProgress model =
-    case model.infoWindow of
+getSelectedProgress : InfoWindow -> Maybe LevelProgress
+getSelectedProgress infoWindow =
+    case infoWindow of
         Hidden ->
             Nothing
 
@@ -78,15 +77,30 @@ worldSize world allLevels =
 
 handleIncrementProgress : Model -> Model
 handleIncrementProgress model =
-    { model | progress = incrementProgress model.progress allLevels }
+    { model | progress = incrementProgress model.currentLevel model.progress allLevels }
 
 
-incrementProgress : LevelProgress -> AllLevels -> LevelProgress
-incrementProgress (( world, level ) as currentProgress) allLevels =
+incrementProgress : Maybe LevelProgress -> LevelProgress -> AllLevels -> LevelProgress
+incrementProgress currentLevel (( world, level ) as currentProgress) allLevels =
     allLevels
         |> Dict.get world
-        |> Maybe.map (handleIncrement currentProgress)
+        |> Maybe.map (compareLevels allLevels currentLevel currentProgress)
         |> Maybe.withDefault currentProgress
+
+
+compareLevels : AllLevels -> Maybe LevelProgress -> LevelProgress -> WorldData -> LevelProgress
+compareLevels allLevels currentLevel progress worldData =
+    let
+        curr =
+            getLevelNumber (Maybe.withDefault ( 1, 1 ) currentLevel) allLevels
+
+        prog =
+            getLevelNumber progress allLevels
+    in
+        if curr >= prog then
+            handleIncrement progress worldData
+        else
+            progress
 
 
 handleIncrement : LevelProgress -> WorldData -> LevelProgress
