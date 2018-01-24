@@ -32,7 +32,7 @@ world3levels : WorldLevels
 world3levels =
     makeWorldLevels
         [ { walls = []
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ rain 20 30
                 , seed Lupin 50 30
@@ -40,7 +40,7 @@ world3levels =
                 ]
           }
         , { walls = withColor blockYellow corners
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ seed Sunflower 25 30
                 , seed Lupin 25 30
@@ -49,7 +49,7 @@ world3levels =
                 ]
           }
         , { walls = []
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ seed Foxglove 25 30
                 , seed Lupin 25 30
@@ -76,7 +76,7 @@ world2levels : WorldLevels
 world2levels =
     makeWorldLevels
         [ { walls = withColor blockYellow corners
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ seed Foxglove 50 30
                 , sun 20 30
@@ -84,7 +84,7 @@ world2levels =
                 ]
           }
         , { walls = []
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ seed Sunflower 25 30
                 , seed Foxglove 25 30
@@ -93,7 +93,7 @@ world2levels =
                 ]
           }
         , { walls = withColor blockYellow centerColumns
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ seed Sunflower 25 30
                 , seed Foxglove 25 30
@@ -119,14 +119,14 @@ world1levels : WorldLevels
 world1levels =
     makeWorldLevels
         [ { walls = []
-          , boardScale = { x = 5, y = 5 }
+          , boardDimensions = { x = 5, y = 5 }
           , tileSettings =
                 [ seed Sunflower 20 150
                 , seedPod 50
                 ]
           }
         , { walls = withColor blockYellow standardWalls
-          , boardScale = { x = 5, y = 5 }
+          , boardDimensions = { x = 5, y = 5 }
           , tileSettings =
                 [ seed Sunflower 33 100
                 , rain 33 50
@@ -134,7 +134,7 @@ world1levels =
                 ]
           }
         , { walls = withColor blockYellow centerColumns
-          , boardScale = { x = 6, y = 6 }
+          , boardDimensions = { x = 6, y = 6 }
           , tileSettings =
                 [ seed Sunflower 33 100
                 , rain 33 50
@@ -142,7 +142,7 @@ world1levels =
                 ]
           }
         , { walls = withColor blockYellow corners
-          , boardScale = { x = 7, y = 7 }
+          , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
                 [ seed Sunflower 33 100
                 , sun 33 50
@@ -150,7 +150,7 @@ world1levels =
                 ]
           }
         , { walls = []
-          , boardScale = { x = 8, y = 8 }
+          , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ rain 25 50
                 , seed Sunflower 25 100
@@ -164,7 +164,7 @@ world1levels =
 defaultLevel : LevelData
 defaultLevel =
     { walls = []
-    , boardScale = { x = 8, y = 8 }
+    , boardDimensions = { x = 8, y = 8 }
     , tileSettings =
         [ rain 25 50
         , seed Sunflower 25 100

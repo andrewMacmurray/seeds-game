@@ -37,6 +37,6 @@ space =
     Space << Static
 
 
-seedPodBoard : BoardScale -> Board
+seedPodBoard : BoardDimensions -> Board
 seedPodBoard ({ x, y } as scale) =
     makeBoard scale <| List.repeat (x * y) SeedPod

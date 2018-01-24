@@ -101,7 +101,7 @@ filterEmpties board =
 -- Generate Board
 
 
-makeBoard : BoardScale -> List TileType -> Board
+makeBoard : BoardDimensions -> List TileType -> Board
 makeBoard scale tiles =
     tiles
         |> List.map (Static >> Space)
@@ -109,7 +109,7 @@ makeBoard scale tiles =
         |> Dict.fromList
 
 
-makeCoords : BoardScale -> List Coord
+makeCoords : BoardDimensions -> List Coord
 makeCoords { y, x } =
     List.concatMap (rangeToCoord y) (makeRange x)
 
@@ -124,7 +124,7 @@ makeRange n =
     List.range 0 (n - 1)
 
 
-generateInitialTiles : LevelData -> BoardScale -> Cmd Level.Msg
+generateInitialTiles : LevelData -> BoardDimensions -> Cmd Level.Msg
 generateInitialTiles levelData { x, y } =
     Random.list (x * y) (tileGenerator levelData.tileSettings)
         |> Random.generate (InitTiles levelData.walls)

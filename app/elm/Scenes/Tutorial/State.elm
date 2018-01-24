@@ -21,7 +21,7 @@ initialState =
     , moveShape = Just Line
     , tileSize = { y = 51, x = 55 }
     , seedType = Sunflower
-    , boardScale = { y = 2, x = 2 }
+    , boardDimensions = { y = 2, x = 2 }
     , topBarHeight = 0
     , text = getText 1
     , window = { height = 0, width = 0 }
@@ -55,8 +55,8 @@ update msg model =
         ResetLeaving ->
             mapBoard setLeavingToEmpty model ! []
 
-        SetBoardScale n ->
-            { model | boardScale = n } ! []
+        SetBoardDimensions n ->
+            { model | boardDimensions = n } ! []
 
         HideBoard ->
             { model | boardHidden = True } ! []
@@ -125,7 +125,7 @@ nextBoardSequence : List ( Float, Tutorial.Msg )
 nextBoardSequence =
     [ ( 0, HideBoard )
     , ( 1000, HideText )
-    , ( 500, SetBoardScale { x = 3, y = 3 } )
+    , ( 500, SetBoardDimensions { x = 3, y = 3 } )
     , ( 50, TutorialText 2 )
     , ( 50, ResetBoard tutorialBoard2 )
     , ( 450, ShowBoard )

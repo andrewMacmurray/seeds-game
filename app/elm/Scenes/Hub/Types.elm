@@ -98,5 +98,5 @@ type alias WorldLevels =
 type alias LevelData =
     { tileSettings : List TileSetting
     , walls : List ( WallColor, Coord )
-    , boardScale : BoardScale
+    , boardDimensions : BoardDimensions
     }

@@ -1,6 +1,6 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize, TileType, BoardScale)
+import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize, TileType, BoardDimensions)
 import Window
 
 
@@ -14,7 +14,7 @@ type alias Model =
     , moveShape : Maybe MoveShape
     , tileSize : TileSize
     , seedType : SeedType
-    , boardScale : BoardScale
+    , boardDimensions : BoardDimensions
     , topBarHeight : Int
     , text : String
     , window : Window.Size
@@ -30,7 +30,7 @@ type Msg
     | ResetGrowingPods
     | ResetLeaving
     | EnteringTiles (List TileType)
-    | SetBoardScale BoardScale
+    | SetBoardDimensions BoardDimensions
     | HideBoard
     | ShowBoard
     | HideText

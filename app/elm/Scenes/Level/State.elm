@@ -33,7 +33,7 @@ initialState =
     , moveShape = Nothing
     , seedType = Sunflower
     , tileSettings = []
-    , boardScale = { y = 8, x = 8 }
+    , boardDimensions = { y = 8, x = 8 }
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
@@ -160,13 +160,13 @@ fallDelay moveShape =
 
 
 handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
-handleGenerateTiles levelData { boardScale } =
-    generateInitialTiles levelData boardScale
+handleGenerateTiles levelData { boardDimensions } =
+    generateInitialTiles levelData boardDimensions
 
 
 handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
-handleMakeBoard tileList ({ boardScale } as model) =
-    { model | board = makeBoard boardScale tileList }
+handleMakeBoard tileList ({ boardDimensions } as model) =
+    { model | board = makeBoard boardDimensions tileList }
 
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
