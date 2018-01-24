@@ -32,7 +32,7 @@ initialState =
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 1, 1 )
+    , progress = ( 2, 3 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }

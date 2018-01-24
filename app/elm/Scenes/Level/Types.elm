@@ -12,7 +12,7 @@ type alias Model =
     , moveShape : Maybe MoveShape
     , seedType : SeedType
     , tileSettings : List TileSetting
-    , boardScale : Int
+    , boardScale : BoardScale
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
@@ -53,6 +53,12 @@ type alias Score =
     }
 
 
+type alias BoardScale =
+    { x : Int
+    , y : Int
+    }
+
+
 type alias HasBoard a =
     { a | board : Board }
 
@@ -60,7 +66,7 @@ type alias HasBoard a =
 type alias BoardConfig a =
     { a
         | board : Board
-        , boardScale : Int
+        , boardScale : BoardScale
         , tileSize : TileSize
     }
 
@@ -71,7 +77,7 @@ type alias TileConfig a =
         , tileSize : TileSize
         , seedType : SeedType
         , window : Window.Size
-        , boardScale : Int
+        , boardScale : BoardScale
         , topBarHeight : Int
     }
 

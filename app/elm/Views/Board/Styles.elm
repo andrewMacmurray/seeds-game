@@ -22,12 +22,12 @@ boardOffsetTop model =
 
 boardHeight : TileConfig model -> Int
 boardHeight model =
-    round (model.tileSize.y * tileScaleFactor model.window) * model.boardScale
+    round (model.tileSize.y * tileScaleFactor model.window) * model.boardScale.y
 
 
 boardWidth : TileConfig model -> Int
 boardWidth model =
-    round (model.tileSize.x * tileScaleFactor model.window) * model.boardScale
+    round (model.tileSize.x * tileScaleFactor model.window) * model.boardScale.x
 
 
 tileCoordsStyles : TileConfig model -> Coord -> List Style

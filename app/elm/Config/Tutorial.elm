@@ -20,12 +20,12 @@ tutorialText =
 
 tutorialBoard1 : Board
 tutorialBoard1 =
-    seedPodBoard 2
+    seedPodBoard { x = 2, y = 2 }
 
 
 tutorialBoard2 : Board
 tutorialBoard2 =
-    seedPodBoard 3
+    seedPodBoard { x = 3, y = 3 }
         |> Dict.insert ( 0, 0 ) (space <| Seed Sunflower)
         |> Dict.insert ( 0, 1 ) (space <| Seed Sunflower)
         |> Dict.insert ( 1, 1 ) (space <| Seed Sunflower)
@@ -37,6 +37,6 @@ space =
     Space << Static
 
 
-seedPodBoard : Int -> Board
-seedPodBoard n =
-    makeBoard n <| List.repeat (n * n) SeedPod
+seedPodBoard : BoardScale -> Board
+seedPodBoard ({ x, y } as scale) =
+    makeBoard scale <| List.repeat (x * y) SeedPod

@@ -33,7 +33,7 @@ initialState =
     , moveShape = Nothing
     , seedType = Sunflower
     , tileSettings = []
-    , boardScale = 8
+    , boardScale = { y = 8, x = 8 }
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
@@ -69,7 +69,7 @@ update msg model =
                 ! []
 
         SetFallingTiles ->
-            (model |> transformBoard setFallingTiles) ! []
+            transformBoard setFallingTiles model ! []
 
         ShiftBoard ->
             (model
@@ -80,7 +80,7 @@ update msg model =
                 ! []
 
         SetGrowingSeedPods ->
-            (model |> mapBoard setDraggingToGrowing) ! []
+            mapBoard setDraggingToGrowing model ! []
 
         GrowPodsToSeeds ->
             model ! [ generateRandomSeedType model.tileSettings ]
@@ -89,22 +89,22 @@ update msg model =
             handleInsertNewSeeds seedType model ! []
 
         ResetGrowingSeeds ->
-            (model |> mapBoard setGrowingToStatic) ! []
+            mapBoard setGrowingToStatic model ! []
 
         GenerateEnteringTiles ->
             model ! [ generateEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
-            (model |> handleInsertEnteringTiles tiles) ! []
+            handleInsertEnteringTiles tiles model ! []
 
         ResetEntering ->
-            (model |> transformBoard (mapValues setEnteringToStatic)) ! []
+            transformBoard (mapValues setEnteringToStatic) model ! []
 
         ResetMove ->
-            (model |> handleStopMove) ! []
+            handleStopMove model ! []
 
         StartMove move ->
-            (model |> handleStartMove move) ! []
+            handleStartMove move model ! []
 
         CheckMove move ->
             handleCheckMove move model
@@ -117,7 +117,7 @@ update msg model =
             model ! []
 
         SquareMove ->
-            (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
+            handleSquareMove model ! [ Delay.after 600 millisecond <| StopMove Square ]
 
 
 
