@@ -2,11 +2,11 @@ module Scenes.Hub.State exposing (..)
 
 import Config.Level exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
-import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Helpers.Scale exposing (tileScaleFactor)
-import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
-import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
+import Data.Ports exposing (..)
+import Helpers.Effect exposing (..)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
@@ -80,8 +80,8 @@ update msg model =
         EndLevel ->
             model
                 ! [ sequenceMs
-                        [ ( 0, SetCurrentLevel Nothing )
-                        , ( 0, IncrementProgress )
+                        [ ( 0, IncrementProgress )
+                        , ( 0, SetCurrentLevel Nothing )
                         , ( 10, BeginSceneTransition )
                         , ( 500, SetScene Hub )
                         , ( 1000, ScrollToHubLevel <| (levelNumber model) + 1 )
@@ -123,7 +123,7 @@ update msg model =
         HideInfo ->
             let
                 selectedLevel =
-                    getSelectedProgress model |> Maybe.withDefault ( 1, 1 )
+                    getSelectedProgress model.infoWindow |> Maybe.withDefault ( 1, 1 )
             in
                 model
                     ! [ sequenceMs

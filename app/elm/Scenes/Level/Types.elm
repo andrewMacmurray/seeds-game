@@ -34,7 +34,7 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
-    | InsertGrowingSeeds (List TileType)
+    | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | GenerateEnteringTiles
     | InsertEnteringTiles (List TileType)

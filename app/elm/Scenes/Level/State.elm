@@ -2,10 +2,10 @@ module Scenes.Level.State exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
-import Data.Level.Board.Generate exposing (generateEnteringTiles, generateInitialTiles, generateNewSeeds, insertNewEnteringTiles, insertNewSeeds, makeBoard)
+import Data.Level.Board.Generate exposing (..)
 import Data.Level.Board.Shift exposing (shiftBoard)
 import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
-import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
+import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
@@ -83,10 +83,10 @@ update msg model =
             (model |> mapBoard setDraggingToGrowing) ! []
 
         GrowPodsToSeeds ->
-            model ! [ generateNewSeeds model.tileSettings model.board ]
+            model ! [ generateRandomSeedType model.tileSettings ]
 
-        InsertGrowingSeeds tiles ->
-            handleInsertNewSeeds tiles model ! []
+        InsertGrowingSeeds seedType ->
+            handleInsertNewSeeds seedType model ! []
 
         ResetGrowingSeeds ->
             (model |> mapBoard setGrowingToStatic) ! []
@@ -174,9 +174,9 @@ handleInsertEnteringTiles tileList =
     transformBoard <| insertNewEnteringTiles tileList
 
 
-handleInsertNewSeeds : List TileType -> HasBoard model -> HasBoard model
-handleInsertNewSeeds tileList =
-    transformBoard <| insertNewSeeds tileList
+handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
+handleInsertNewSeeds seedType =
+    transformBoard <| insertNewSeeds seedType
 
 
 handleAddScore : Level.Model -> Level.Model
