@@ -127,11 +127,11 @@ renderWeather color =
 handleHideInfo : Hub.Model -> Attribute Hub.Msg
 handleHideInfo model =
     case model.infoWindow of
-        Hidden ->
-            emptyProperty
+        Visible _ ->
+            onClick HideInfo
 
         _ ->
-            onClick HideInfo
+            emptyProperty
 
 
 infoContainer : InfoWindow -> List (Html Hub.Msg) -> Html Hub.Msg

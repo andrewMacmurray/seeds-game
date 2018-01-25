@@ -75,7 +75,7 @@ renderNumber visibleLevelNumber currentLevel worldData model =
 
 showInfo : LevelProgress -> Hub.Model -> Attribute Hub.Msg
 showInfo currentLevel model =
-    if reachedLevel currentLevel model then
+    if reachedLevel currentLevel model && model.infoWindow == Hidden then
         onClick <| ShowInfo currentLevel
     else
         emptyProperty

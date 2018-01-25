@@ -20,17 +20,19 @@ titleView model =
             [ seeds ]
         , p
             [ class "f3 tracked-mega"
-            , style [ color darkYellow, marginTop 45 ]
+            , styles [ [ color darkYellow, marginTop 45 ], fadeStyles 1500 500 ]
             ]
             [ text "seeds" ]
         , button
             [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
             , onClick GoToHub
-            , style
-                [ ( "border", "none" )
-                , marginTop 15
-                , color white
-                , backgroundColor lightOrange
+            , styles
+                [ [ ( "border", "none" )
+                  , marginTop 15
+                  , color white
+                  , backgroundColor lightOrange
+                  ]
+                , fadeStyles 800 3500
                 ]
             ]
             [ text "PLAY" ]
@@ -48,7 +50,7 @@ seeds =
         [ style [ maxWidth 450 ]
         , class "flex center ph3"
         ]
-        (List.map2 withAnimations
+        (List.map2 fadeSeeds
             (seedDelays 500)
             [ foxglove
             , marigold
@@ -64,14 +66,18 @@ seedDelays interval =
     [ 3, 2, 1, 2, 3 ] |> List.map ((*) interval)
 
 
-withAnimations : Float -> Html msg -> Html msg
-withAnimations delay seed =
+fadeSeeds : Float -> Html msg -> Html msg
+fadeSeeds delay seed =
     div
-        [ style
-            [ opacityStyle 0
-            , animationStyle "2s fade-in linear forwards"
-            , animationDelayStyle <| ms delay
-            ]
+        [ style <| fadeStyles 1000 delay
         , class "mh2"
         ]
         [ seed ]
+
+
+fadeStyles : Float -> Float -> List Style
+fadeStyles duration delay =
+    [ opacityStyle 0
+    , animationStyle <| ms duration ++ " fade-in linear forwards"
+    , animationDelayStyle <| ms delay
+    ]
