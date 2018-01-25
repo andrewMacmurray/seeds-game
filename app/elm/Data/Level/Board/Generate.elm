@@ -111,7 +111,7 @@ makeBoard scale tiles =
 
 makeCoords : BoardDimensions -> List Coord
 makeCoords { y, x } =
-    List.concatMap (rangeToCoord y) (makeRange x)
+    List.concatMap (rangeToCoord x) (makeRange y)
 
 
 rangeToCoord : Int -> Int -> List Coord
