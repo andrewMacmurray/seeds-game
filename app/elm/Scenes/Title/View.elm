@@ -32,7 +32,7 @@ titleView model =
                   , color white
                   , backgroundColor lightOrange
                   ]
-                , fadeStyles 800 3500
+                , fadeStyles 800 2500
                 ]
             ]
             [ text "PLAY" ]
@@ -78,6 +78,7 @@ fadeSeeds delay seed =
 fadeStyles : Float -> Float -> List Style
 fadeStyles duration delay =
     [ opacityStyle 0
-    , animationStyle <| ms duration ++ " fade-in linear forwards"
-    , animationDelayStyle <| ms delay
+    , animationStyle <| ms duration ++ " fade-in linear"
+    , fillForwards
+    , animationDelayStyle delay
     ]

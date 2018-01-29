@@ -1,6 +1,6 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.Level exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
@@ -32,7 +32,7 @@ initialState =
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 2, 3 )
+    , progress = ( 1, 1 )
     , currentLevel = Nothing
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }
@@ -81,11 +81,11 @@ update msg model =
             model
                 ! [ sequenceMs
                         [ ( 0, IncrementProgress )
-                        , ( 0, SetCurrentLevel Nothing )
                         , ( 10, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 1000, ScrollToHubLevel <| (levelNumber model) + 1 )
+                        , ( 1000, ScrollToHubLevel <| scrollLevelNumber model )
                         , ( 1500, EndSceneTransition )
+                        , ( 500, SetCurrentLevel Nothing )
                         ]
                   ]
 
@@ -109,7 +109,7 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 100, ScrollToHubLevel <| levelNumber model )
+                        , ( 100, ScrollToHubLevel <| scrollLevelNumber model )
                         , ( 2400, EndSceneTransition )
                         ]
                   ]
@@ -202,9 +202,12 @@ handleTutorialMsg tutorialMsg model =
                 { model | tutorialModel = tutorialModel } ! [ tutorialCmd |> Cmd.map TutorialMsg ]
 
 
-levelNumber : Main.Model -> Int
-levelNumber model =
-    getLevelNumber model.progress allLevels
+scrollLevelNumber : Main.Model -> Int
+scrollLevelNumber model =
+    if shouldIncrement model.currentLevel model.progress then
+        (getLevelNumber model.progress allLevels) + 1
+    else
+        getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels
 
 
 subscriptions : Main.Model -> Sub Main.Msg

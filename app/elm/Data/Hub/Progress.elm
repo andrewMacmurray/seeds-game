@@ -1,6 +1,6 @@
 module Data.Hub.Progress exposing (..)
 
-import Config.Level exposing (allLevels, defaultLevel, world1)
+import Config.Levels exposing (allLevels, defaultLevel, world1)
 import Dict
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
@@ -77,19 +77,27 @@ worldSize world allLevels =
 
 handleIncrementProgress : Model -> Model
 handleIncrementProgress model =
-    { model | progress = incrementProgress model.currentLevel model.progress allLevels }
+    { model | progress = incrementProgress model.currentLevel model.progress }
 
 
-incrementProgress : Maybe LevelProgress -> LevelProgress -> AllLevels -> LevelProgress
-incrementProgress currentLevel (( world, level ) as currentProgress) allLevels =
+incrementProgress : Maybe LevelProgress -> LevelProgress -> LevelProgress
+incrementProgress currentLevel (( world, level ) as currentProgress) =
     allLevels
         |> Dict.get world
-        |> Maybe.map (compareLevels allLevels currentLevel currentProgress)
+        |> Maybe.map (compareLevels currentLevel currentProgress)
         |> Maybe.withDefault currentProgress
 
 
-compareLevels : AllLevels -> Maybe LevelProgress -> LevelProgress -> WorldData -> LevelProgress
-compareLevels allLevels currentLevel progress worldData =
+compareLevels : Maybe LevelProgress -> LevelProgress -> WorldData -> LevelProgress
+compareLevels currentLevel progress worldData =
+    if shouldIncrement currentLevel progress then
+        handleIncrement progress worldData
+    else
+        progress
+
+
+shouldIncrement : Maybe LevelProgress -> LevelProgress -> Bool
+shouldIncrement currentLevel progress =
     let
         curr =
             getLevelNumber (Maybe.withDefault ( 1, 1 ) currentLevel) allLevels
@@ -97,10 +105,7 @@ compareLevels allLevels currentLevel progress worldData =
         prog =
             getLevelNumber progress allLevels
     in
-        if curr >= prog then
-            handleIncrement progress worldData
-        else
-            progress
+        curr >= prog
 
 
 handleIncrement : LevelProgress -> WorldData -> LevelProgress

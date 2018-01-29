@@ -1,6 +1,6 @@
 module ProgressSpec exposing (..)
 
-import Config.Level exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.Hub.Progress exposing (incrementProgress)
 import Expect
 import Test exposing (..)

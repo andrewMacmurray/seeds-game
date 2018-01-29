@@ -90,9 +90,17 @@ type alias TileSize =
 
 type alias TileSetting =
     { tileType : TileType
-    , probability : Int
-    , targetScore : Maybe Int
+    , probability : Probability
+    , targetScore : Maybe TargetScore
     }
+
+
+type TargetScore
+    = TargetScore Int
+
+
+type Probability
+    = Probability Int
 
 
 type alias Move =

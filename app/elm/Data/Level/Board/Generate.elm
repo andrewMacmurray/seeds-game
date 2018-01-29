@@ -152,4 +152,5 @@ totalProbability : List TileSetting -> Int
 totalProbability tileSettings =
     tileSettings
         |> List.map .probability
+        |> List.map (\(Probability p) -> p)
         |> List.sum

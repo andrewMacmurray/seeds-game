@@ -3,10 +3,11 @@ module Views.Board.TopBar exposing (..)
 import Data.Color exposing (gold, washedYellow)
 import Data.Level.Board.Tile exposing (seedBackgrounds)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
-import Helpers.Style exposing (backgroundColor, backgroundImage, color, heightStyle, marginLeft, marginRight, marginTop, px, widthStyle)
+import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
+import Views.Icons.Tick exposing (tickBackground)
 
 
 topBar : Level.Model -> Html msg
@@ -48,8 +49,36 @@ renderScore model tileType =
                 [ class "ma0 absolute left-0 right-0 f6"
                 , style [ ( "bottom", "-1.5em" ) ]
                 ]
-                [ text <| scoreToString tileType model.scores ]
+                [ renderScoreText model.scores tileType ]
             ]
+
+
+renderScoreText : Scores -> TileType -> Html msg
+renderScoreText scores tileType =
+    if getScoreFor tileType scores == Just 0 then
+        div [ class "relative" ]
+            [ div
+                [ style
+                    [ topStyle 1
+                    , transformStyle <| scale 0
+                    , animationStyle "bulge 0.6s ease"
+                    , fillForwards
+                    , animationDelayStyle 800
+                    ]
+                , class "absolute top-0 left-0 right-0"
+                ]
+                [ tickBackground ]
+            , div
+                [ style
+                    [ animationStyle "fade-out 0.5s linear"
+                    , fillForwards
+                    , opacityStyle 1
+                    ]
+                ]
+                [ text <| scoreToString tileType scores ]
+            ]
+    else
+        text <| scoreToString tileType scores
 
 
 renderScoreIcon : Level.Model -> TileType -> Html msg

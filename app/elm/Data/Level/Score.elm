@@ -58,29 +58,29 @@ updateScore n score =
 
 
 scoreTileTypes : List TileSetting -> List TileType
-scoreTileTypes tileProbabilities =
-    tileProbabilities
-        |> List.filter countable
+scoreTileTypes tileSettings =
+    tileSettings
+        |> List.filter collectable
         |> List.map .tileType
 
 
 initialScores : List TileSetting -> Scores
 initialScores tileSettings =
     tileSettings
-        |> List.filter countable
+        |> List.filter collectable
         |> List.map initScore
         |> Dict.fromList
 
 
-countable : TileSetting -> Bool
-countable { targetScore } =
+collectable : TileSetting -> Bool
+collectable { targetScore } =
     targetScore /= Nothing
 
 
 initScore : TileSetting -> ( String, Score )
 initScore { tileType, targetScore } =
     let
-        target =
-            Maybe.withDefault 0 targetScore
+        (TargetScore t) =
+            Maybe.withDefault (TargetScore 0) targetScore
     in
-        ( toString tileType, Score target 0 )
+        ( toString tileType, Score t 0 )

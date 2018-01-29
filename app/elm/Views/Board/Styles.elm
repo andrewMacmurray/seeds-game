@@ -2,9 +2,9 @@ module Views.Board.Styles exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
-import Helpers.Scale exposing (tileScaleFactor)
-import Data.Level.Score exposing (scoreTileTypes)
+import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Dict exposing (Dict)
+import Helpers.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Window
@@ -102,7 +102,7 @@ fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
             [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
-            , fillModeStyle "forwards"
+            , fillForwards
             ]
 
         _ ->
@@ -167,7 +167,10 @@ exitXDistance n model =
             model.scoreIconSize * 2
 
         scoreBarWidth =
-            (List.length model.tileSettings) * scoreWidth
+            model.tileSettings
+                |> List.filter collectable
+                |> List.length
+                |> (*) scoreWidth
 
         baseOffset =
             (boardWidth model - scoreBarWidth) // 2
@@ -175,7 +178,7 @@ exitXDistance n model =
         offset =
             exitOffsetFunction model.tileSize <| tileScaleFactor model.window
     in
-        toFloat (baseOffset + (n * scoreWidth) + model.scoreIconSize) + offset
+        toFloat (baseOffset + n * scoreWidth) + offset
 
 
 exitOffsetFunction : TileSize -> Float -> Float
@@ -192,7 +195,7 @@ moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
         [ animationStyle "bulge-fade 0.8s ease"
-        , fillModeStyle "forwards"
+        , fillForwards
         ]
     else
         [ displayStyle "none"

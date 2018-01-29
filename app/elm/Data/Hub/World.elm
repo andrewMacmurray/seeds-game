@@ -13,16 +13,8 @@ makeWorldLevels levels =
 
 
 addNumbers : List a -> List ( Int, a )
-addNumbers xs =
-    xs |> List.indexedMap (\i x -> ( i + 1, x ))
-
-
-type alias Probability =
-    Int
-
-
-type alias TargetScore =
-    Int
+addNumbers =
+    List.indexedMap (\i x -> ( i + 1, x ))
 
 
 rain : Probability -> TargetScore -> TileSetting
