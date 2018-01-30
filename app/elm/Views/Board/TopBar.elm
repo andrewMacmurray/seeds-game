@@ -82,29 +82,39 @@ renderScoreText scores tileType =
 
 
 renderScoreIcon : Level.Model -> TileType -> Html msg
-renderScoreIcon model tileType =
-    case tileType of
-        Sun ->
-            scoreIcon model "img/sun.svg"
+renderScoreIcon { scoreIconSize } tileType =
+    scoreIcon tileType scoreIconSize
 
-        Rain ->
-            scoreIcon model "img/rain.svg"
 
-        Seed seedType ->
-            scoreIcon model <| seedBackgrounds seedType
+scoreIcon : TileType -> number -> Html msg
+scoreIcon tileType scoreIconSize =
+    case scoreIconUrl tileType of
+        Just url ->
+            div
+                [ class "bg-center contain"
+                , style
+                    [ backgroundImage url
+                    , widthStyle scoreIconSize
+                    , heightStyle scoreIconSize
+                    ]
+                ]
+                []
 
-        _ ->
+        Nothing ->
             span [] []
 
 
-scoreIcon : Level.Model -> String -> Html msg
-scoreIcon { scoreIconSize } url =
-    div
-        [ class "bg-center contain"
-        , style
-            [ backgroundImage url
-            , widthStyle scoreIconSize
-            , heightStyle scoreIconSize
-            ]
-        ]
-        []
+scoreIconUrl : TileType -> Maybe String
+scoreIconUrl tileType =
+    case tileType of
+        Sun ->
+            Just "img/sun.svg"
+
+        Rain ->
+            Just "img/rain.svg"
+
+        Seed seedType ->
+            Just <| seedBackgrounds seedType
+
+        _ ->
+            Nothing

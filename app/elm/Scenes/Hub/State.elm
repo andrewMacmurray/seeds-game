@@ -53,8 +53,8 @@ update msg model =
             { model | externalAnimations = animations } ! []
 
         StartLevel level ->
-            case level of
-                ( 1, 1 ) ->
+            case tutorialData model level of
+                Just config ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -62,11 +62,11 @@ update msg model =
                                 , ( 500, SetScene Tutorial )
                                 , ( 0, LoadLevelData <| getLevelConfig level model )
                                 , ( 2500, EndSceneTransition )
-                                , ( 500, TutorialMsg StartSequence )
+                                , ( 500, TutorialMsg <| StartSequence config )
                                 ]
                           ]
 
-                level ->
+                Nothing ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -159,6 +159,15 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
+tutorialData : Main.Model -> LevelProgress -> Maybe TutorialModel.InitConfig
+tutorialData model level =
+    let
+        ( _, levelData ) =
+            getLevelConfig level model
+    in
+        levelData.tutorial
+
+
 addMousePositionToLevel : Mouse.Position -> Main.Model -> LevelModel.Model
 addMousePositionToLevel position { levelModel } =
     { levelModel | mouse = position }
@@ -176,30 +185,42 @@ addWindowSizeToTutorial window { tutorialModel } =
 
 handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
-    case levelMsg of
-        ExitLevel ->
-            model ! [ trigger EndLevel ]
+    let
+        ( levelModel, levelCmd_ ) =
+            Level.update levelMsg model.levelModel
 
-        levelMsg ->
-            let
-                ( levelModel, levelCmd ) =
-                    Level.update levelMsg model.levelModel
-            in
-                { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+        newModel =
+            { model | levelModel = levelModel }
+
+        levelCmd =
+            Cmd.map LevelMsg levelCmd_
+    in
+        case levelMsg of
+            ExitLevel ->
+                newModel ! [ trigger EndLevel, levelCmd ]
+
+            _ ->
+                newModel ! [ levelCmd ]
 
 
 handleTutorialMsg : TutorialModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleTutorialMsg tutorialMsg model =
-    case tutorialMsg of
-        ExitTutorial ->
-            { model | scene = Level } ! []
+    let
+        ( tutorialModel, tutorialCmd_ ) =
+            Tutorial.update tutorialMsg model.tutorialModel
 
-        levelMsg ->
-            let
-                ( tutorialModel, tutorialCmd ) =
-                    Tutorial.update tutorialMsg model.tutorialModel
-            in
-                { model | tutorialModel = tutorialModel } ! [ tutorialCmd |> Cmd.map TutorialMsg ]
+        newModel =
+            { model | tutorialModel = tutorialModel }
+
+        tutorialCmd =
+            Cmd.map TutorialMsg tutorialCmd_
+    in
+        case tutorialMsg of
+            ExitTutorial ->
+                { newModel | scene = Level } ! [ tutorialCmd ]
+
+            _ ->
+                newModel ! [ tutorialCmd ]
 
 
 scrollLevelNumber : Main.Model -> Int

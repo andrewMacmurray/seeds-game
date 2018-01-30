@@ -75,7 +75,6 @@ type alias TileConfig a =
     { a
         | moveShape : Maybe MoveShape
         , tileSize : TileSize
-        , seedType : SeedType
         , window : Window.Size
         , boardDimensions : BoardDimensions
         , topBarHeight : Int

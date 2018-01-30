@@ -6,6 +6,8 @@ import Dict exposing (Dict)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)
 import Data.Hub.World exposing (..)
+import Config.Tutorial.Seed as SeedTutorial
+import Config.Tutorial.Rain as RainTutorial
 
 
 allLevels : AllLevels
@@ -33,6 +35,7 @@ world3levels =
     makeWorldLevels
         [ { walls = []
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ rain
                     (Probability 20)
@@ -47,6 +50,7 @@ world3levels =
           }
         , { walls = withColor blockYellow corners
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ seed
                     Sunflower
@@ -65,6 +69,7 @@ world3levels =
           }
         , { walls = []
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ seed
                     Foxglove
@@ -104,6 +109,7 @@ world2levels =
     makeWorldLevels
         [ { walls = withColor blockYellow moreWalls
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ seed
                     Foxglove
@@ -118,6 +124,7 @@ world2levels =
           }
         , { walls = withColor blockYellow corners
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ seed
                     Sunflower
@@ -136,6 +143,7 @@ world2levels =
           }
         , { walls = withColor blockYellow centerColumns
           , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
           , tileSettings =
                 [ seed
                     Sunflower
@@ -171,15 +179,17 @@ world1levels =
     makeWorldLevels
         [ { walls = []
           , boardDimensions = { x = 5, y = 5 }
+          , tutorial = Just SeedTutorial.initConfig
           , tileSettings =
                 [ seed
                     Sunflower
                     (Probability 20)
-                    (TargetScore 60)
+                    (TargetScore 50)
                 ]
           }
         , { walls = []
-          , boardDimensions = { x = 5, y = 5 }
+          , boardDimensions = { x = 5, y = 6 }
+          , tutorial = Just RainTutorial.initConfig
           , tileSettings =
                 [ seed
                     Sunflower
@@ -192,6 +202,7 @@ world1levels =
           }
         , { walls = []
           , boardDimensions = { x = 6, y = 6 }
+          , tutorial = Nothing
           , tileSettings =
                 [ rain
                     (Probability 33)
@@ -206,6 +217,7 @@ world1levels =
                 ]
           }
         , { walls = []
+          , tutorial = Nothing
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
                 [ seed
@@ -220,6 +232,7 @@ world1levels =
                 ]
           }
         , { walls = []
+          , tutorial = Nothing
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
                 [ seed
@@ -234,6 +247,7 @@ world1levels =
                 ]
           }
         , { walls = []
+          , tutorial = Nothing
           , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ rain
@@ -257,6 +271,7 @@ defaultLevel : LevelData
 defaultLevel =
     { walls = []
     , boardDimensions = { x = 8, y = 8 }
+    , tutorial = Nothing
     , tileSettings =
         [ rain
             (Probability 25)

@@ -1,6 +1,5 @@
 module Scenes.Tutorial.State exposing (..)
 
-import Config.Tutorial exposing (..)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
@@ -12,18 +11,19 @@ import Scenes.Tutorial.Types as Tutorial exposing (..)
 
 initialState : Tutorial.Model
 initialState =
-    { board = tutorialBoard1
-    , boardHidden = False
-    , textHidden = False
-    , seedBankHidden = True
-    , containerHidden = True
-    , canvasHidden = False
+    { board = Dict.empty
+    , boardVisible = True
+    , textVisible = True
+    , resourceBankVisible = False
+    , containerVisible = False
+    , canvasVisible = True
     , moveShape = Just Line
     , tileSize = { y = 51, x = 55 }
-    , seedType = Sunflower
+    , resourceBank = Seed Sunflower
     , boardDimensions = { y = 2, x = 2 }
     , topBarHeight = 0
-    , text = getText 1
+    , currentText = 1
+    , text = Dict.empty
     , window = { height = 0, width = 0 }
     }
 
@@ -31,8 +31,8 @@ initialState =
 update : Tutorial.Msg -> Tutorial.Model -> ( Tutorial.Model, Cmd Tutorial.Msg )
 update msg model =
     case msg of
-        StartSequence ->
-            model ! [ sequenceMs tutorialSequence ]
+        StartSequence config ->
+            handleInit config model ! [ sequenceMs config.sequence ]
 
         DragTile coord ->
             handleDragTile coord model ! []
@@ -59,102 +59,63 @@ update msg model =
             { model | boardDimensions = n } ! []
 
         HideBoard ->
-            { model | boardHidden = True } ! []
+            { model | boardVisible = False } ! []
 
         ShowBoard ->
-            { model | boardHidden = False } ! []
+            { model | boardVisible = True } ! []
 
         HideText ->
-            { model | textHidden = True } ! []
+            { model | textVisible = False } ! []
 
         ShowText ->
-            { model | textHidden = False } ! []
+            { model | textVisible = True } ! []
 
-        HideSeedBank ->
-            { model | seedBankHidden = True } ! []
+        HideResourceBank ->
+            { model | resourceBankVisible = False } ! []
 
-        ShowSeedBank ->
-            { model | seedBankHidden = False } ! []
+        ShowResourceBank ->
+            { model | resourceBankVisible = True } ! []
 
         HideContainer ->
-            { model | containerHidden = True } ! []
+            { model | containerVisible = False } ! []
 
         ShowContainer ->
-            { model | containerHidden = False } ! []
+            { model | containerVisible = True } ! []
 
         HideCanvas ->
-            { model | canvasHidden = True } ! []
+            { model | canvasVisible = False } ! []
 
         ResetBoard board ->
             { model | board = board } ! []
 
-        TutorialText n ->
-            { model | text = getText n } ! []
+        NextText ->
+            { model | currentText = model.currentText + 1 } ! []
 
         ExitTutorial ->
             -- hub intercepts this message
-            model ! []
+            resetVisibilities model ! []
 
 
-tutorialSequence : List ( Float, Tutorial.Msg )
-tutorialSequence =
-    List.concat
-        [ pause 500 <| appearSequence
-        , pause 1500 <| dragSequence1
-        , pause 1500 <| growSeedPodsSequence
-        , pause 1500 <| nextBoardSequence
-        , pause 1500 <| dragSequence2
-        ]
+handleInit : InitConfig -> Tutorial.Model -> Tutorial.Model
+handleInit config model =
+    { model
+        | boardDimensions = config.boardDimensions
+        , board = config.board
+        , text = config.text
+        , resourceBank = config.resourceBank
+        , currentText = 1
+    }
 
 
-appearSequence : List ( Float, Tutorial.Msg )
-appearSequence =
-    [ ( 0, ShowContainer )
-    ]
-
-
-growSeedPodsSequence : List ( Float, Tutorial.Msg )
-growSeedPodsSequence =
-    [ ( 0, SetGrowingPods )
-    , ( 800, GrowPods )
-    , ( 600, ResetGrowingPods )
-    ]
-
-
-nextBoardSequence : List ( Float, Tutorial.Msg )
-nextBoardSequence =
-    [ ( 0, HideBoard )
-    , ( 1000, HideText )
-    , ( 500, SetBoardDimensions { x = 3, y = 3 } )
-    , ( 50, TutorialText 2 )
-    , ( 50, ResetBoard tutorialBoard2 )
-    , ( 450, ShowBoard )
-    , ( 0, ShowText )
-    ]
-
-
-dragSequence2 : List ( Float, Tutorial.Msg )
-dragSequence2 =
-    [ ( 0, DragTile ( 0, 0 ) )
-    , ( 400, DragTile ( 0, 1 ) )
-    , ( 400, DragTile ( 1, 1 ) )
-    , ( 400, DragTile ( 2, 1 ) )
-    , ( 100, ShowSeedBank )
-    , ( 1500, SetLeavingSeeds )
-    , ( 500, ResetLeaving )
-    , ( 400, EnteringTiles [ SeedPod, SeedPod, SeedPod, SeedPod ] )
-    , ( 2000, HideCanvas )
-    , ( 1500, ExitTutorial )
-    ]
-
-
-dragSequence1 : List ( Float, Tutorial.Msg )
-dragSequence1 =
-    [ ( 0, DragTile ( 0, 0 ) )
-    , ( 400, DragTile ( 0, 1 ) )
-    , ( 400, DragTile ( 1, 1 ) )
-    , ( 400, DragTile ( 1, 0 ) )
-    ]
+resetVisibilities : Tutorial.Model -> Tutorial.Model
+resetVisibilities model =
+    { model
+        | boardVisible = True
+        , textVisible = True
+        , resourceBankVisible = False
+        , containerVisible = False
+        , canvasVisible = True
+    }
 
 
 handleDragTile : Coord -> Tutorial.Model -> Tutorial.Model
