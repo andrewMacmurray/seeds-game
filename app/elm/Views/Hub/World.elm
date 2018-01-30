@@ -45,7 +45,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             , class "tc center pointer"
             , id <| "level-" ++ levelNumber
             , style
-                [ widthStyle 40
+                [ widthStyle 35
                 , marginTop 50
                 , marginBottom 50
                 , color worldData.textColor
@@ -64,11 +64,11 @@ renderNumber visibleLevelNumber currentLevel worldData model =
             , style
                 [ backgroundColor worldData.textBackgroundColor
                 , marginTop 10
-                , widthStyle 30
-                , heightStyle 30
+                , widthStyle 25
+                , heightStyle 25
                 ]
             ]
-            [ p [ style [ color worldData.textCompleteColor ] ] [ text visibleLevelNumber ] ]
+            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text visibleLevelNumber ] ]
     else
         p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 

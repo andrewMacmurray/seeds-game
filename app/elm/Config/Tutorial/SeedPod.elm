@@ -29,7 +29,7 @@ boardDimensions =
 text : Dict Int String
 text =
     Dict.fromList
-        [ ( 1, "These pods need to be grown into seeds" )
+        [ ( 1, "Green pods can be grown into seeds" )
         ]
 
 

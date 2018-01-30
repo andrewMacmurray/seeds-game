@@ -83,7 +83,7 @@ update msg model =
                         [ ( 0, IncrementProgress )
                         , ( 10, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 1000, ScrollToHubLevel <| scrollLevelNumber model )
+                        , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
                         , ( 1500, EndSceneTransition )
                         , ( 500, SetCurrentLevel Nothing )
                         ]
@@ -109,7 +109,7 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 100, ScrollToHubLevel <| scrollLevelNumber model )
+                        , ( 100, ScrollToHubLevel <| scrollToProgress model )
                         , ( 2400, EndSceneTransition )
                         ]
                   ]
@@ -223,10 +223,15 @@ handleTutorialMsg tutorialMsg model =
                 newModel ! [ tutorialCmd ]
 
 
-scrollLevelNumber : Main.Model -> Int
-scrollLevelNumber model =
+scrollToProgress : Main.Model -> Int
+scrollToProgress model =
+    getLevelNumber model.progress allLevels
+
+
+levelCompleteScrollNumber : Main.Model -> Int
+levelCompleteScrollNumber model =
     if shouldIncrement model.currentLevel model.progress then
-        (getLevelNumber model.progress allLevels) + 1
+        scrollToProgress model + 1
     else
         getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels
 
