@@ -387,6 +387,16 @@ tileSizeMap_ =
     tileTypeMap 0 tileSize
 
 
+getSeedType : TileType -> Maybe SeedType
+getSeedType tileType =
+    case tileType of
+        Seed seedType ->
+            Just seedType
+
+        _ ->
+            Nothing
+
+
 strokeColors : TileType -> String
 strokeColors tile =
     case tile of

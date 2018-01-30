@@ -1,12 +1,12 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.Level exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
-import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber, getSelectedProgress, handleIncrementProgress)
+import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Helpers.Scale exposing (tileScaleFactor)
-import Data.Ports exposing (getExternalAnimations, receiveExternalAnimations, receiveHubLevelOffset, scrollToHubLevel)
-import Helpers.Effect exposing (getWindowSize, scrollHubToLevel, sequenceMs, trackMouseDowns, trackMousePosition, trackWindowSize, trigger)
+import Data.Ports exposing (..)
+import Helpers.Effect exposing (..)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
@@ -53,8 +53,8 @@ update msg model =
             { model | externalAnimations = animations } ! []
 
         StartLevel level ->
-            case level of
-                ( 1, 1 ) ->
+            case tutorialData model level of
+                Just config ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -62,11 +62,11 @@ update msg model =
                                 , ( 500, SetScene Tutorial )
                                 , ( 0, LoadLevelData <| getLevelConfig level model )
                                 , ( 2500, EndSceneTransition )
-                                , ( 500, TutorialMsg StartSequence )
+                                , ( 500, TutorialMsg <| StartSequence config )
                                 ]
                           ]
 
-                level ->
+                Nothing ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -80,12 +80,12 @@ update msg model =
         EndLevel ->
             model
                 ! [ sequenceMs
-                        [ ( 0, SetCurrentLevel Nothing )
-                        , ( 0, IncrementProgress )
+                        [ ( 0, IncrementProgress )
                         , ( 10, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 1000, ScrollToHubLevel <| (levelNumber model) + 1 )
+                        , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
                         , ( 1500, EndSceneTransition )
+                        , ( 500, SetCurrentLevel Nothing )
                         ]
                   ]
 
@@ -109,7 +109,7 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, BeginSceneTransition )
                         , ( 500, SetScene Hub )
-                        , ( 100, ScrollToHubLevel <| levelNumber model )
+                        , ( 100, ScrollToHubLevel <| scrollToProgress model )
                         , ( 2400, EndSceneTransition )
                         ]
                   ]
@@ -123,7 +123,7 @@ update msg model =
         HideInfo ->
             let
                 selectedLevel =
-                    getSelectedProgress model |> Maybe.withDefault ( 1, 1 )
+                    getSelectedProgress model.infoWindow |> Maybe.withDefault ( 1, 1 )
             in
                 model
                     ! [ sequenceMs
@@ -159,6 +159,15 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
+tutorialData : Main.Model -> LevelProgress -> Maybe TutorialModel.InitConfig
+tutorialData model level =
+    let
+        ( _, levelData ) =
+            getLevelConfig level model
+    in
+        levelData.tutorial
+
+
 addMousePositionToLevel : Mouse.Position -> Main.Model -> LevelModel.Model
 addMousePositionToLevel position { levelModel } =
     { levelModel | mouse = position }
@@ -176,35 +185,55 @@ addWindowSizeToTutorial window { tutorialModel } =
 
 handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
-    case levelMsg of
-        ExitLevel ->
-            model ! [ trigger EndLevel ]
+    let
+        ( levelModel, levelCmd_ ) =
+            Level.update levelMsg model.levelModel
 
-        levelMsg ->
-            let
-                ( levelModel, levelCmd ) =
-                    Level.update levelMsg model.levelModel
-            in
-                { model | levelModel = levelModel } ! [ levelCmd |> Cmd.map LevelMsg ]
+        newModel =
+            { model | levelModel = levelModel }
+
+        levelCmd =
+            Cmd.map LevelMsg levelCmd_
+    in
+        case levelMsg of
+            ExitLevel ->
+                newModel ! [ trigger EndLevel, levelCmd ]
+
+            _ ->
+                newModel ! [ levelCmd ]
 
 
 handleTutorialMsg : TutorialModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleTutorialMsg tutorialMsg model =
-    case tutorialMsg of
-        ExitTutorial ->
-            { model | scene = Level } ! []
+    let
+        ( tutorialModel, tutorialCmd_ ) =
+            Tutorial.update tutorialMsg model.tutorialModel
 
-        levelMsg ->
-            let
-                ( tutorialModel, tutorialCmd ) =
-                    Tutorial.update tutorialMsg model.tutorialModel
-            in
-                { model | tutorialModel = tutorialModel } ! [ tutorialCmd |> Cmd.map TutorialMsg ]
+        newModel =
+            { model | tutorialModel = tutorialModel }
+
+        tutorialCmd =
+            Cmd.map TutorialMsg tutorialCmd_
+    in
+        case tutorialMsg of
+            ExitTutorial ->
+                { newModel | scene = Level } ! [ tutorialCmd ]
+
+            _ ->
+                newModel ! [ tutorialCmd ]
 
 
-levelNumber : Main.Model -> Int
-levelNumber model =
+scrollToProgress : Main.Model -> Int
+scrollToProgress model =
     getLevelNumber model.progress allLevels
+
+
+levelCompleteScrollNumber : Main.Model -> Int
+levelCompleteScrollNumber model =
+    if shouldIncrement model.currentLevel model.progress then
+        scrollToProgress model + 1
+    else
+        getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels
 
 
 subscriptions : Main.Model -> Sub Main.Msg

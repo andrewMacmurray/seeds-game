@@ -2,10 +2,10 @@ module Scenes.Level.State exposing (..)
 
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
-import Data.Level.Board.Generate exposing (generateEnteringTiles, generateInitialTiles, generateNewSeeds, insertNewEnteringTiles, insertNewSeeds, makeBoard)
+import Data.Level.Board.Generate exposing (..)
 import Data.Level.Board.Shift exposing (shiftBoard)
 import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
-import Data.Level.Board.Tile exposing (growSeedPod, setDraggingToGrowing, setEnteringToStatic, setFallingToStatic, setGrowingToStatic, setLeavingToEmpty, setToLeaving)
+import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
@@ -33,7 +33,7 @@ initialState =
     , moveShape = Nothing
     , seedType = Sunflower
     , tileSettings = []
-    , boardScale = 8
+    , boardDimensions = { y = 8, x = 8 }
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
@@ -69,7 +69,7 @@ update msg model =
                 ! []
 
         SetFallingTiles ->
-            (model |> transformBoard setFallingTiles) ! []
+            transformBoard setFallingTiles model ! []
 
         ShiftBoard ->
             (model
@@ -80,31 +80,31 @@ update msg model =
                 ! []
 
         SetGrowingSeedPods ->
-            (model |> mapBoard setDraggingToGrowing) ! []
+            mapBoard setDraggingToGrowing model ! []
 
         GrowPodsToSeeds ->
-            model ! [ generateNewSeeds model.tileSettings model.board ]
+            model ! [ generateRandomSeedType model.tileSettings ]
 
-        InsertGrowingSeeds tiles ->
-            handleInsertNewSeeds tiles model ! []
+        InsertGrowingSeeds seedType ->
+            handleInsertNewSeeds seedType model ! []
 
         ResetGrowingSeeds ->
-            (model |> mapBoard setGrowingToStatic) ! []
+            mapBoard setGrowingToStatic model ! []
 
         GenerateEnteringTiles ->
             model ! [ generateEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
-            (model |> handleInsertEnteringTiles tiles) ! []
+            handleInsertEnteringTiles tiles model ! []
 
         ResetEntering ->
-            (model |> transformBoard (mapValues setEnteringToStatic)) ! []
+            transformBoard (mapValues setEnteringToStatic) model ! []
 
         ResetMove ->
-            (model |> handleStopMove) ! []
+            handleStopMove model ! []
 
         StartMove move ->
-            (model |> handleStartMove move) ! []
+            handleStartMove move model ! []
 
         CheckMove move ->
             handleCheckMove move model
@@ -117,7 +117,7 @@ update msg model =
             model ! []
 
         SquareMove ->
-            (model |> handleSquareMove) ! [ Delay.after 600 millisecond <| StopMove Square ]
+            handleSquareMove model ! [ Delay.after 600 millisecond <| StopMove Square ]
 
 
 
@@ -160,13 +160,13 @@ fallDelay moveShape =
 
 
 handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
-handleGenerateTiles levelData { boardScale } =
-    generateInitialTiles levelData boardScale
+handleGenerateTiles levelData { boardDimensions } =
+    generateInitialTiles levelData boardDimensions
 
 
 handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
-handleMakeBoard tileList ({ boardScale } as model) =
-    { model | board = makeBoard boardScale tileList }
+handleMakeBoard tileList ({ boardDimensions } as model) =
+    { model | board = makeBoard boardDimensions tileList }
 
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
@@ -174,9 +174,9 @@ handleInsertEnteringTiles tileList =
     transformBoard <| insertNewEnteringTiles tileList
 
 
-handleInsertNewSeeds : List TileType -> HasBoard model -> HasBoard model
-handleInsertNewSeeds tileList =
-    transformBoard <| insertNewSeeds tileList
+handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
+handleInsertNewSeeds seedType =
+    transformBoard <| insertNewSeeds seedType
 
 
 handleAddScore : Level.Model -> Level.Model

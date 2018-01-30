@@ -12,7 +12,7 @@ type alias Model =
     , moveShape : Maybe MoveShape
     , seedType : SeedType
     , tileSettings : List TileSetting
-    , boardScale : Int
+    , boardDimensions : BoardDimensions
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
@@ -34,7 +34,7 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
-    | InsertGrowingSeeds (List TileType)
+    | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | GenerateEnteringTiles
     | InsertEnteringTiles (List TileType)
@@ -53,6 +53,12 @@ type alias Score =
     }
 
 
+type alias BoardDimensions =
+    { x : Int
+    , y : Int
+    }
+
+
 type alias HasBoard a =
     { a | board : Board }
 
@@ -60,7 +66,7 @@ type alias HasBoard a =
 type alias BoardConfig a =
     { a
         | board : Board
-        , boardScale : Int
+        , boardDimensions : BoardDimensions
         , tileSize : TileSize
     }
 
@@ -69,9 +75,8 @@ type alias TileConfig a =
     { a
         | moveShape : Maybe MoveShape
         , tileSize : TileSize
-        , seedType : SeedType
         , window : Window.Size
-        , boardScale : Int
+        , boardDimensions : BoardDimensions
         , topBarHeight : Int
     }
 
@@ -84,9 +89,17 @@ type alias TileSize =
 
 type alias TileSetting =
     { tileType : TileType
-    , probability : Int
-    , targetScore : Maybe Int
+    , probability : Probability
+    , targetScore : Maybe TargetScore
     }
+
+
+type TargetScore
+    = TargetScore Int
+
+
+type Probability
+    = Probability Int
 
 
 type alias Move =

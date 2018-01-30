@@ -1,17 +1,16 @@
 module Views.Hub.Info exposing (..)
 
-import Config.Level exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.Color exposing (..)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
-import Data.Hub.Text exposing (infoText)
-import Data.Level.Score exposing (scoreTileTypes)
+import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
-import Scenes.Level.Types exposing (SeedType, TileConfig, TileSetting, TileType, TileType(..))
+import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileConfig, TileSetting, TileType, TileType(..))
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -53,7 +52,7 @@ info model =
                             , color white
                             , widthStyle 380
                             , animationStyle "exit-down 0.7s cubic-bezier(0.93, -0.36, 0.57, 0.96)"
-                            , fillModeStyle "forwards"
+                            , fillForwards
                             ]
                         ]
                         (infoContent ( world, level ) config model)
@@ -62,37 +61,40 @@ info model =
 
 infoContent : LevelProgress -> ( WorldData, LevelData ) -> Hub.Model -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) model =
-    [ p [] [ text <| toString <| getLevelNumber ( world, level ) allLevels ]
-    , infoIcons levelData worldData.seedType
-    , p [] [ text <| getInfoText levelData ]
-    , p [ class "tracked-mega", style [ marginTop 50 ] ] [ text "PLAY" ]
-    ]
-
-
-getInfoText : LevelData -> String
-getInfoText levelData =
-    levelData.tileSettings
-        |> scoreTileTypes
-        |> infoText
+    let
+        levelText =
+            allLevels
+                |> getLevelNumber ( world, level )
+                |> toString
+                |> (++) "Level "
+    in
+        [ p [ class "f5 tracked", style [ marginTop 20 ] ] [ text levelText ]
+        , infoIcons levelData worldData.seedType
+        , p
+            [ class "tracked-mega pv2 ph3 dib br4"
+            , style [ backgroundColor gold, marginBottom 20, marginTop 15 ]
+            ]
+            [ text "PLAY" ]
+        ]
 
 
 infoIcons : LevelData -> SeedType -> Html msg
 infoIcons levelData seedType =
     levelData.tileSettings
-        |> scoreTileTypes
+        |> List.filter collectable
         |> List.map renderIcon
         |> infoIconsContainer
 
 
 infoIconsContainer : List (Html msg) -> Html msg
 infoIconsContainer =
-    div [ class "flex items-center justify-center center", style [ ( "width", pc 60 ) ] ]
+    div [ class "flex justify-center items-end", style [ marginTop 25, marginBottom 15 ] ]
 
 
-renderIcon : TileType -> Html msg
-renderIcon tileType =
+renderIcon : TileSetting -> Html msg
+renderIcon { targetScore, tileType } =
     let
-        inner =
+        tileIcon =
             case tileType of
                 Rain ->
                     renderWeather lightBlue
@@ -101,12 +103,27 @@ renderIcon tileType =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ style [ widthStyle 35 ] ] [ renderSeed seedType ]
+                    div [ style [ widthStyle 35, heightStyle 53 ] ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
     in
-        div [ class "center" ] [ inner ]
+        div [ class "dib mh3" ]
+            [ div [ class "center flex flex-column" ]
+                [ tileIcon
+                , renderTargetScore targetScore
+                ]
+            ]
+
+
+renderTargetScore : Maybe TargetScore -> Html msg
+renderTargetScore ts =
+    case ts of
+        Just (TargetScore t) ->
+            p [ class "f6 mb0", style [ marginTop 10 ] ] [ text <| toString t ]
+
+        Nothing ->
+            span [] []
 
 
 renderWeather : String -> Html msg
@@ -117,6 +134,7 @@ renderWeather color =
             , heightStyle 25
             , marginLeft 2.5
             , marginRight 2.5
+            , marginBottom 5
             , background color
             ]
         , classes [ "br-100" ]
@@ -127,11 +145,11 @@ renderWeather color =
 handleHideInfo : Hub.Model -> Attribute Hub.Msg
 handleHideInfo model =
     case model.infoWindow of
-        Hidden ->
-            emptyProperty
+        Visible _ ->
+            onClick HideInfo
 
         _ ->
-            onClick HideInfo
+            emptyProperty
 
 
 infoContainer : InfoWindow -> List (Html Hub.Msg) -> Html Hub.Msg

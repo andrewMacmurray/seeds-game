@@ -44,6 +44,11 @@ marginTop n =
     ( "margin-top", px n )
 
 
+topStyle : number -> Style
+topStyle n =
+    ( "top", px n )
+
+
 marginLeft : number -> Style
 marginLeft n =
     ( "margin-left", px n )
@@ -129,9 +134,14 @@ animationStyle =
     (,) "animation"
 
 
-animationDelayStyle : String -> Style
-animationDelayStyle =
-    (,) "animation-delay"
+animationDelayStyle : number -> Style
+animationDelayStyle delay =
+    ( "animation-delay", ms delay )
+
+
+fillForwards : Style
+fillForwards =
+    fillModeStyle "forwards"
 
 
 fillModeStyle : String -> Style

@@ -7,7 +7,7 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Config.Level exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Views.Seed.All exposing (renderSeed)
@@ -45,7 +45,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             , class "tc center pointer"
             , id <| "level-" ++ levelNumber
             , style
-                [ widthStyle 40
+                [ widthStyle 35
                 , marginTop 50
                 , marginBottom 50
                 , color worldData.textColor
@@ -64,18 +64,18 @@ renderNumber visibleLevelNumber currentLevel worldData model =
             , style
                 [ backgroundColor worldData.textBackgroundColor
                 , marginTop 10
-                , widthStyle 30
-                , heightStyle 30
+                , widthStyle 25
+                , heightStyle 25
                 ]
             ]
-            [ p [ style [ color worldData.textCompleteColor ] ] [ text visibleLevelNumber ] ]
+            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text visibleLevelNumber ] ]
     else
         p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 
 
 showInfo : LevelProgress -> Hub.Model -> Attribute Hub.Msg
 showInfo currentLevel model =
-    if reachedLevel currentLevel model then
+    if reachedLevel currentLevel model && model.infoWindow == Hidden then
         onClick <| ShowInfo currentLevel
     else
         emptyProperty
