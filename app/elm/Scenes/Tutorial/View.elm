@@ -15,7 +15,6 @@ import Views.Board.Layout exposing (renderLineLayer, renderLines)
 import Views.Board.Styles exposing (boardHeight, boardWidth)
 import Views.Board.Tile exposing (renderTile_)
 import Views.Board.TopBar exposing (scoreIcon)
-import Views.Seed.All exposing (renderSeed)
 
 
 tutorialView : Model -> Html Msg

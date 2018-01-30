@@ -40,8 +40,11 @@ update msg model =
         SetGrowingPods ->
             mapBoard setDraggingToGrowing model ! []
 
-        SetLeavingSeeds ->
+        SetLeaving ->
             mapBoard setToLeaving model ! []
+
+        ResetLeaving ->
+            mapBoard setLeavingToEmpty model ! []
 
         GrowPods ->
             mapBoard (growSeedPod Sunflower) model ! []
@@ -51,9 +54,6 @@ update msg model =
 
         EnteringTiles tiles ->
             handleInsertEnteringTiles tiles model ! []
-
-        ResetLeaving ->
-            mapBoard setLeavingToEmpty model ! []
 
         SetBoardDimensions n ->
             { model | boardDimensions = n } ! []
@@ -121,7 +121,10 @@ resetVisibilities model =
 handleDragTile : Coord -> Tutorial.Model -> Tutorial.Model
 handleDragTile coord model =
     let
+        sunflower =
+            Seed Sunflower |> Static |> Space
+
         tile =
-            Dict.get coord model.board |> Maybe.withDefault (Space (Static (Seed Sunflower)))
+            Dict.get coord model.board |> Maybe.withDefault sunflower
     in
         { model | board = addBearings ( coord, tile ) model.board }

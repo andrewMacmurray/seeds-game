@@ -35,7 +35,7 @@ sequence =
     , ( 400, DragTile ( 1, 1 ) )
     , ( 400, DragTile ( 1, 0 ) )
     , ( 100, ShowResourceBank )
-    , ( 1500, SetLeavingSeeds )
+    , ( 1500, SetLeaving )
     , ( 500, ResetLeaving )
     , ( 400
       , EnteringTiles

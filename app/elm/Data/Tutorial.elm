@@ -15,6 +15,11 @@ addBlock coord tileType board =
     board |> Dict.insert coord (Space (Static tileType))
 
 
+sunBoard : BoardDimensions -> Board
+sunBoard =
+    monoBoard Sun
+
+
 rainBoard : BoardDimensions -> Board
 rainBoard =
     monoBoard Rain

@@ -1,6 +1,6 @@
-module Config.Tutorial.Rain exposing (..)
+module Config.Tutorial.Sun exposing (..)
 
-import Data.Tutorial exposing (addBlock, rainBoard)
+import Data.Tutorial exposing (addBlock, sunBoard)
 import Dict exposing (Dict)
 import Scenes.Level.Types exposing (..)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
@@ -12,16 +12,16 @@ initConfig =
     , boardDimensions = boardDimensions
     , board = initialBoard
     , sequence = sequence
-    , resourceBank = Rain
+    , resourceBank = Sun
     }
 
 
 initialBoard : Board
 initialBoard =
-    rainBoard boardDimensions
+    sunBoard boardDimensions
         |> addBlock ( 0, 2 ) (Seed Sunflower)
         |> addBlock ( 1, 2 ) (Seed Sunflower)
-        |> addBlock ( 2, 2 ) (Seed Sunflower)
+        |> addBlock ( 2, 2 ) Rain
         |> addBlock ( 2, 0 ) (Seed Sunflower)
 
 
@@ -33,8 +33,7 @@ boardDimensions =
 text : Dict Int String
 text =
     Dict.fromList
-        [ ( 1, "Collect rain water for our seeds" )
-        , ( 2, "Collect all resources to complete the level" )
+        [ ( 1, "Harvest the sun's warmth for our seeds" )
         ]
 
 
@@ -48,10 +47,7 @@ sequence =
     , ( 100, ShowResourceBank )
     , ( 1500, SetLeaving )
     , ( 500, ResetLeaving )
-    , ( 400, EnteringTiles [ Rain, Rain, Rain, Rain ] )
-    , ( 1000, HideText )
-    , ( 500, NextText )
-    , ( 500, ShowText )
+    , ( 400, EnteringTiles [ Sun, Sun, Sun, Sun ] )
     , ( 2500, HideCanvas )
     , ( 1500, ExitTutorial )
     ]

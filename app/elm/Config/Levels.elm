@@ -8,6 +8,8 @@ import Scenes.Level.Types exposing (..)
 import Data.Hub.World exposing (..)
 import Config.Tutorial.Seed as SeedTutorial
 import Config.Tutorial.Rain as RainTutorial
+import Config.Tutorial.Sun as SunTutorial
+import Config.Tutorial.SeedPod as SeedPodTutorial
 
 
 allLevels : AllLevels
@@ -202,7 +204,7 @@ world1levels =
           }
         , { walls = []
           , boardDimensions = { x = 6, y = 6 }
-          , tutorial = Nothing
+          , tutorial = Just SunTutorial.initConfig
           , tileSettings =
                 [ rain
                     (Probability 33)
@@ -217,7 +219,7 @@ world1levels =
                 ]
           }
         , { walls = []
-          , tutorial = Nothing
+          , tutorial = Just SeedPodTutorial.initConfig
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
                 [ seed

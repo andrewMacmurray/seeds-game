@@ -40,10 +40,10 @@ type Msg
     = DragTile Coord
     | StartSequence InitConfig
     | SetGrowingPods
-    | SetLeavingSeeds
+    | SetLeaving
+    | ResetLeaving
     | GrowPods
     | ResetGrowingPods
-    | ResetLeaving
     | EnteringTiles (List TileType)
     | SetBoardDimensions BoardDimensions
     | HideBoard
