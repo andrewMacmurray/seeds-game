@@ -41,7 +41,7 @@ sequence =
     , ( 400, DragTile ( 1, 1 ) )
     , ( 400, DragTile ( 2, 1 ) )
     , ( 1500, SetGrowingPods )
-    , ( 800, GrowPods )
+    , ( 800, GrowPods Sunflower )
     , ( 600, ResetGrowingPods )
     , ( 1500, HideCanvas )
     , ( 1500, ExitTutorial )

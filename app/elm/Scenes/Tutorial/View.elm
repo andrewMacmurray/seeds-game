@@ -1,6 +1,6 @@
 module Scenes.Tutorial.View exposing (..)
 
-import Data.Color exposing (darkYellow)
+import Data.Color exposing (darkYellow, greyYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging, tileSize)
 import Data.Tutorial exposing (getText)
@@ -9,6 +9,7 @@ import Helpers.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Scenes.Level.Types exposing (Move, SeedType(..), TileConfig, TileSize, TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
 import Views.Board.Layout exposing (renderLineLayer, renderLines)
@@ -28,15 +29,21 @@ tutorialView model =
         , classList <| showIf model.canvasVisible
         ]
         [ div
-            [ style [ ( "margin-top", pc -5 ), transitionStyle "0.8s linear" ]
+            [ style [ ( "margin-top", pc 0 ), transitionStyle "0.8s linear" ]
             , classList <| showIf model.containerVisible
             ]
             [ tutorialBoard model
             , p
-                [ style [ ( "color", darkYellow ), transitionStyle "0.5s ease" ]
+                [ style [ color darkYellow, transitionStyle "0.5s ease" ]
                 , classList <| showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
+            , p
+                [ onClick SkipTutorial
+                , style [ color greyYellow, marginTop 70 ]
+                , class "pointer tc ttu tracked-mega f6"
+                ]
+                [ text "skip" ]
             ]
         ]
 

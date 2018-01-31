@@ -4,9 +4,9 @@ import Config.Levels exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
-import Helpers.Scale exposing (tileScaleFactor)
 import Data.Ports exposing (..)
 import Helpers.Effect exposing (..)
+import Helpers.Scale exposing (tileScaleFactor)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
@@ -28,7 +28,7 @@ initialState : Main.Model
 initialState =
     { levelModel = Level.initialState
     , tutorialModel = Tutorial.initialState
-    , externalAnimations = ""
+    , xAnimations = ""
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
@@ -50,7 +50,7 @@ update msg model =
             handleTutorialMsg tutorialMsg model
 
         ReceieveExternalAnimations animations ->
-            { model | externalAnimations = animations } ! []
+            { model | xAnimations = animations } ! []
 
         StartLevel level ->
             case tutorialData model level of
@@ -61,6 +61,7 @@ update msg model =
                                 , ( 10, BeginSceneTransition )
                                 , ( 500, SetScene Tutorial )
                                 , ( 0, LoadLevelData <| getLevelConfig level model )
+                                , ( 0, TutorialMsg ResetVisibilities )
                                 , ( 2500, EndSceneTransition )
                                 , ( 500, TutorialMsg <| StartSequence config )
                                 ]
@@ -215,12 +216,10 @@ handleTutorialMsg tutorialMsg model =
         tutorialCmd =
             Cmd.map TutorialMsg tutorialCmd_
     in
-        case tutorialMsg of
-            ExitTutorial ->
-                { newModel | scene = Level } ! [ tutorialCmd ]
-
-            _ ->
-                newModel ! [ tutorialCmd ]
+        if tutorialMsg == ExitTutorial && not newModel.tutorialModel.skipped then
+            { newModel | scene = Level } ! [ tutorialCmd ]
+        else
+            newModel ! [ tutorialCmd ]
 
 
 scrollToProgress : Main.Model -> Int

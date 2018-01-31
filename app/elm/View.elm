@@ -14,7 +14,7 @@ import Views.Loading exposing (loadingScreen)
 view : Hub.Model -> Html Hub.Msg
 view model =
     div []
-        [ embeddedAnimations model.externalAnimations
+        [ embeddedAnimations model.xAnimations
         , loadingScreen model
         , renderScene model
         , backdrop

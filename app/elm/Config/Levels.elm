@@ -1,15 +1,16 @@
 module Config.Levels exposing (..)
 
+import Config.Tutorial.Rain as RainTutorial
+import Config.Tutorial.Seed as SeedTutorial
+import Config.Tutorial.SeedPod as SeedPodTutorial
+import Config.Tutorial.Square as SquareTutorial
+import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
 import Data.Color exposing (..)
+import Data.Hub.World exposing (..)
 import Dict exposing (Dict)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)
-import Data.Hub.World exposing (..)
-import Config.Tutorial.Seed as SeedTutorial
-import Config.Tutorial.Rain as RainTutorial
-import Config.Tutorial.Sun as SunTutorial
-import Config.Tutorial.SeedPod as SeedPodTutorial
 
 
 allLevels : AllLevels
@@ -216,6 +217,19 @@ world1levels =
                 , sun
                     (Probability 33)
                     (TargetScore 30)
+                ]
+          }
+        , { walls = withColor blockYellow <| column 3
+          , boardDimensions = { x = 7, y = 7 }
+          , tutorial = Just SquareTutorial.initConfig
+          , tileSettings =
+                [ seed
+                    Sunflower
+                    (Probability 20)
+                    (TargetScore 60)
+                , rain
+                    (Probability 20)
+                    (TargetScore 60)
                 ]
           }
         , { walls = []

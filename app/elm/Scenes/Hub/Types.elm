@@ -11,7 +11,7 @@ import Window
 type alias Model =
     { levelModel : Level.Model
     , tutorialModel : Tutorial.Model
-    , externalAnimations : String
+    , xAnimations : String
     , scene : Scene
     , sceneTransition : Bool
     , transitionBackground : TransitionBackground

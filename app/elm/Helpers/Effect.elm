@@ -23,11 +23,11 @@ trigger msg =
 
 
 pause : Float -> List ( Float, msg ) -> List ( Float, msg )
-pause n xs =
-    xs
+pause pauseDuration steps =
+    steps
         |> List.head
-        |> Maybe.map (\( y, m ) -> ( y + n, m ))
-        |> Maybe.map (\z -> [ z ] ++ (List.drop 1 xs))
+        |> Maybe.map (\( n, msg ) -> ( n + pauseDuration, msg ))
+        |> Maybe.map (\newDelay -> [ newDelay ] ++ (List.drop 1 steps))
         |> Maybe.withDefault []
 
 

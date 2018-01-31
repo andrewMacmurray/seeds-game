@@ -12,6 +12,7 @@ type alias Model =
     , resourceBankVisible : Bool
     , containerVisible : Bool
     , canvasVisible : Bool
+    , skipped : Bool
     , moveShape : Maybe MoveShape
     , tileSize : TileSize
     , resourceBank : TileType
@@ -42,9 +43,12 @@ type Msg
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving
-    | GrowPods
+    | GrowPods SeedType
     | ResetGrowingPods
     | EnteringTiles (List TileType)
+    | TriggerSquare
+    | FallTiles
+    | ShiftBoard
     | SetBoardDimensions BoardDimensions
     | HideBoard
     | ShowBoard
@@ -56,5 +60,8 @@ type Msg
     | ShowContainer
     | HideCanvas
     | ResetBoard Board
+    | ResetVisibilities
     | NextText
+    | SkipTutorial
+    | DisableTutorial
     | ExitTutorial

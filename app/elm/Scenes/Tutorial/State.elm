@@ -1,15 +1,18 @@
 module Scenes.Tutorial.State exposing (..)
 
+import Data.Level.Board.Falling exposing (setFallingTiles)
+import Data.Level.Board.Shift exposing (shiftBoard)
+import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
 import Scenes.Level.State exposing (handleInsertEnteringTiles, mapBoard, transformBoard)
-import Scenes.Level.Types exposing (..)
-import Scenes.Tutorial.Types as Tutorial exposing (..)
+import Scenes.Level.Types exposing (Block(..), Coord, MoveShape(..), SeedType(..), TileState(..), TileType(..))
+import Scenes.Tutorial.Types exposing (..)
 
 
-initialState : Tutorial.Model
+initialState : Model
 initialState =
     { board = Dict.empty
     , boardVisible = True
@@ -17,6 +20,7 @@ initialState =
     , resourceBankVisible = False
     , containerVisible = False
     , canvasVisible = True
+    , skipped = False
     , moveShape = Just Line
     , tileSize = { y = 51, x = 55 }
     , resourceBank = Seed Sunflower
@@ -28,7 +32,7 @@ initialState =
     }
 
 
-update : Tutorial.Msg -> Tutorial.Model -> ( Tutorial.Model, Cmd Tutorial.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         StartSequence config ->
@@ -46,14 +50,28 @@ update msg model =
         ResetLeaving ->
             mapBoard setLeavingToEmpty model ! []
 
-        GrowPods ->
-            mapBoard (growSeedPod Sunflower) model ! []
+        GrowPods seedType ->
+            mapBoard (growSeedPod seedType) model ! []
 
         ResetGrowingPods ->
             mapBoard setGrowingToStatic model ! []
 
         EnteringTiles tiles ->
             handleInsertEnteringTiles tiles model ! []
+
+        TriggerSquare ->
+            handleSquareMove model ! []
+
+        FallTiles ->
+            transformBoard setFallingTiles model ! []
+
+        ShiftBoard ->
+            (model
+                |> transformBoard shiftBoard
+                |> mapBoard setFallingToStatic
+                |> mapBoard setLeavingToEmpty
+            )
+                ! []
 
         SetBoardDimensions n ->
             { model | boardDimensions = n } ! []
@@ -91,12 +109,21 @@ update msg model =
         NextText ->
             { model | currentText = model.currentText + 1 } ! []
 
-        ExitTutorial ->
-            -- hub intercepts this message
+        SkipTutorial ->
+            model ! [ skipSequence ]
+
+        DisableTutorial ->
+            { model | skipped = True } ! []
+
+        ResetVisibilities ->
             resetVisibilities model ! []
 
+        ExitTutorial ->
+            -- hub intercepts this message
+            model ! []
 
-handleInit : InitConfig -> Tutorial.Model -> Tutorial.Model
+
+handleInit : InitConfig -> Model -> Model
 handleInit config model =
     { model
         | boardDimensions = config.boardDimensions
@@ -104,10 +131,11 @@ handleInit config model =
         , text = config.text
         , resourceBank = config.resourceBank
         , currentText = 1
+        , skipped = False
     }
 
 
-resetVisibilities : Tutorial.Model -> Tutorial.Model
+resetVisibilities : Model -> Model
 resetVisibilities model =
     { model
         | boardVisible = True
@@ -118,7 +146,21 @@ resetVisibilities model =
     }
 
 
-handleDragTile : Coord -> Tutorial.Model -> Tutorial.Model
+skipSequence : Cmd Msg
+skipSequence =
+    sequenceMs
+        [ ( 0, HideCanvas )
+        , ( 1500, ExitTutorial )
+        , ( 0, DisableTutorial )
+        ]
+
+
+handleSquareMove : Model -> Model
+handleSquareMove model =
+    { model | board = setAllTilesOfTypeToDragging model.board }
+
+
+handleDragTile : Coord -> Model -> Model
 handleDragTile coord model =
     let
         sunflower =

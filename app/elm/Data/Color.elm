@@ -84,6 +84,11 @@ washedYellow =
     "rgb(255, 254, 224)"
 
 
+greyYellow : String
+greyYellow =
+    "rgba(195, 167, 82, 0.47)"
+
+
 lightBrown : String
 lightBrown =
     "rgb(167, 123, 82)"
