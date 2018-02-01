@@ -7,7 +7,7 @@ import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Config.Levels exposing (allLevels)
+import Config.AllLevels exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Views.Seed.All exposing (renderSeed)
@@ -74,7 +74,7 @@ renderNumber visibleLevelNumber currentLevel worldData model =
         p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
 
 
-showInfo : LevelProgress -> Hub.Model -> Attribute Hub.Msg
+showInfo : Progress -> Hub.Model -> Attribute Hub.Msg
 showInfo currentLevel model =
     if reachedLevel currentLevel model && model.infoWindow == Hidden then
         onClick <| ShowInfo currentLevel
@@ -82,7 +82,7 @@ showInfo currentLevel model =
         emptyProperty
 
 
-handleStartLevel : LevelProgress -> Hub.Model -> Attribute Hub.Msg
+handleStartLevel : Progress -> Hub.Model -> Attribute Hub.Msg
 handleStartLevel currentLevel model =
     if reachedLevel currentLevel model then
         onClick <| StartLevel currentLevel

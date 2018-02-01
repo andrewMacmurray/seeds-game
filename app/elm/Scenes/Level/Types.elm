@@ -44,9 +44,9 @@ type Msg
     | ShiftBoard
     | ResetMove
     | CheckLevelComplete
-    | ShowMessage
-    | ExitMessage
-    | HideMessage
+    | ShowInfo
+    | RemoveInfo
+    | InfoHidden
     | ExitLevel
 
 

@@ -15,7 +15,7 @@ import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
-import Scenes.Hub.Types as Main exposing (..)
+import Scenes.Hub.Types as Main exposing (LevelData, Progress)
 import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
 import Types exposing (InfoWindow(..))
@@ -125,13 +125,13 @@ update msg model =
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
-        ShowMessage ->
+        ShowInfo ->
             { model | levelInfoWindow = Visible model.successMessage } ! []
 
-        ExitMessage ->
-            { model | levelInfoWindow = Exiting model.successMessage } ! []
+        RemoveInfo ->
+            { model | levelInfoWindow = Hiding model.successMessage } ! []
 
-        HideMessage ->
+        InfoHidden ->
             { model | levelInfoWindow = Hidden } ! []
 
         ExitLevel ->
@@ -266,8 +266,8 @@ handleCheckLevelComplete model =
 exitSequence : Cmd Level.Msg
 exitSequence =
     sequenceMs
-        [ ( 500, ShowMessage )
-        , ( 2000, ExitMessage )
-        , ( 1000, HideMessage )
+        [ ( 500, ShowInfo )
+        , ( 2000, RemoveInfo )
+        , ( 1000, InfoHidden )
         , ( 0, ExitLevel )
         ]

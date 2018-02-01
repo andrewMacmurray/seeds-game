@@ -1,6 +1,6 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.Levels exposing (allLevels)
+import Config.AllLevels exposing (allLevels)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
@@ -129,7 +129,7 @@ update msg model =
             in
                 model
                     ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Exiting selectedLevel )
+                            [ ( 0, SetInfoState <| Hiding selectedLevel )
                             , ( 1000, SetInfoState Hidden )
                             ]
                       ]
@@ -161,7 +161,7 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
-tutorialData : Main.Model -> LevelProgress -> Maybe TutorialModel.InitConfig
+tutorialData : Main.Model -> Progress -> Maybe TutorialModel.InitConfig
 tutorialData model level =
     let
         ( _, levelData ) =

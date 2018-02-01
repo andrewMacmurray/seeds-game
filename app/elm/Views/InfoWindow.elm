@@ -27,7 +27,7 @@ infoContainer infoWindow content =
                     [ content ]
                 ]
 
-        Exiting _ ->
+        Hiding _ ->
             infoContainer_ infoWindow
                 [ div
                     [ class "pa3 br3 tc relative"
@@ -46,7 +46,7 @@ infoContainer infoWindow content =
 infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     case infoWindow of
-        Exiting _ ->
+        Hiding _ ->
             div [ classes [ "touch-disabled", infoContainerBaseClasses ] ]
 
         _ ->

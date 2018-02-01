@@ -16,9 +16,9 @@ type alias Model =
     , scene : Scene
     , sceneTransition : Bool
     , transitionBackground : TransitionBackground
-    , progress : LevelProgress
-    , currentLevel : Maybe LevelProgress
-    , infoWindow : InfoWindow LevelProgress
+    , progress : Progress
+    , currentLevel : Maybe Progress
+    , infoWindow : InfoWindow Progress
     , window : Window.Size
     , mouse : Mouse.Position
     }
@@ -27,18 +27,18 @@ type alias Model =
 type Msg
     = LevelMsg Level.Msg
     | TutorialMsg Tutorial.Msg
-    | StartLevel LevelProgress
+    | StartLevel Progress
     | EndLevel
     | LoadLevelData ( WorldData, LevelData )
     | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
     | RandomBackground TransitionBackground
-    | SetCurrentLevel (Maybe LevelProgress)
+    | SetCurrentLevel (Maybe Progress)
     | GoToHub
-    | ShowInfo LevelProgress
+    | ShowInfo Progress
     | HideInfo
-    | SetInfoState (InfoWindow LevelProgress)
+    | SetInfoState (InfoWindow Progress)
     | IncrementProgress
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
@@ -60,7 +60,7 @@ type TransitionBackground
     | Blue
 
 
-type alias LevelProgress =
+type alias Progress =
     ( WorldNumber, LevelNumber )
 
 
