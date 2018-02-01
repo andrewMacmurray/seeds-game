@@ -25,5 +25,5 @@ initWithLevelData ( worldData, { tileSettings, walls, boardDimensions } ) model 
         , boardDimensions = boardDimensions
         , tileSettings = tileSettings
         , seedType = worldData.seedType
-        , exitSequenceTriggered = False
+        , levelComplete = False
     }

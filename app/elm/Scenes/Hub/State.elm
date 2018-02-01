@@ -14,6 +14,7 @@ import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as TutorialModel exposing (Msg(..))
 import Window
+import Types exposing (..)
 
 
 init : ( Main.Model, Cmd Main.Msg )
@@ -128,7 +129,7 @@ update msg model =
             in
                 model
                     ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Leaving selectedLevel )
+                            [ ( 0, SetInfoState <| Exiting selectedLevel )
                             , ( 1000, SetInfoState Hidden )
                             ]
                       ]

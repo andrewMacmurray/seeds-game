@@ -2,6 +2,7 @@ module Scenes.Level.Types exposing (..)
 
 import Dict exposing (Dict)
 import Mouse
+import Types exposing (InfoWindow)
 import Window
 
 
@@ -16,7 +17,9 @@ type alias Model =
     , scoreIconSize : Int
     , tileSize : TileSize
     , topBarHeight : Int
-    , exitSequenceTriggered : Bool
+    , levelComplete : Bool
+    , levelInfoWindow : InfoWindow String
+    , successMessage : String
     , mouse : Mouse.Position
     , window : Window.Size
     }
@@ -28,8 +31,6 @@ type Msg
     | StopMove MoveShape
     | StartMove Move
     | CheckMove Move
-    | CheckLevelComplete
-    | ExitLevel
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -37,10 +38,16 @@ type Msg
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | GenerateEnteringTiles
+    | GenerateSuccessMessage String
     | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard
     | ResetMove
+    | CheckLevelComplete
+    | ShowMessage
+    | ExitMessage
+    | HideMessage
+    | ExitLevel
 
 
 type alias Scores =

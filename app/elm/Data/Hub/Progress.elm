@@ -3,10 +3,11 @@ module Data.Hub.Progress exposing (..)
 import Config.Levels exposing (allLevels, defaultLevel, world1)
 import Dict
 import Scenes.Hub.Types exposing (..)
+import Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 
 
-getSelectedProgress : InfoWindow -> Maybe LevelProgress
+getSelectedProgress : InfoWindow LevelProgress -> Maybe LevelProgress
 getSelectedProgress infoWindow =
     case infoWindow of
         Hidden ->
@@ -15,7 +16,7 @@ getSelectedProgress infoWindow =
         Visible progress ->
             Just progress
 
-        Leaving progress ->
+        Exiting progress ->
             Just progress
 
 

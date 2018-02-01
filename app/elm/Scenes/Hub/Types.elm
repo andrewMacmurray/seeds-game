@@ -6,6 +6,7 @@ import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
 import Window
+import Types exposing (..)
 
 
 type alias Model =
@@ -17,7 +18,7 @@ type alias Model =
     , transitionBackground : TransitionBackground
     , progress : LevelProgress
     , currentLevel : Maybe LevelProgress
-    , infoWindow : InfoWindow
+    , infoWindow : InfoWindow LevelProgress
     , window : Window.Size
     , mouse : Mouse.Position
     }
@@ -37,7 +38,7 @@ type Msg
     | GoToHub
     | ShowInfo LevelProgress
     | HideInfo
-    | SetInfoState InfoWindow
+    | SetInfoState (InfoWindow LevelProgress)
     | IncrementProgress
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
@@ -52,12 +53,6 @@ type Scene
     | Hub
     | Title
     | Tutorial
-
-
-type InfoWindow
-    = Visible LevelProgress
-    | Leaving LevelProgress
-    | Hidden
 
 
 type TransitionBackground

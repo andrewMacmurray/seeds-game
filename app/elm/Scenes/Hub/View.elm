@@ -4,7 +4,7 @@ import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Hub.Types as Hub
-import Views.Hub.Info exposing (handleHideInfo, info)
+import Views.Hub.InfoWindow exposing (handleHideInfo, info)
 import Views.Hub.World exposing (renderWorlds)
 
 
