@@ -86,7 +86,7 @@ washedYellow =
 
 greyYellow : String
 greyYellow =
-    "rgba(195, 167, 82, 0.47)"
+    "rgba(195, 167, 82, 0.65)"
 
 
 lightBrown : String

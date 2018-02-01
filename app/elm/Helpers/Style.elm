@@ -49,6 +49,11 @@ topStyle n =
     ( "top", px n )
 
 
+bottomStyle : number -> Style
+bottomStyle n =
+    ( "bottom", px n )
+
+
 marginLeft : number -> Style
 marginLeft n =
     ( "margin-left", px n )
