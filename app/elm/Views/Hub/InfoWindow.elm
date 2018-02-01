@@ -1,4 +1,4 @@
-module Views.Hub.Info exposing (..)
+module Views.Hub.InfoWindow exposing (..)
 
 import Config.Levels exposing (allLevels)
 import Data.Color exposing (..)
@@ -11,6 +11,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileConfig, TileSetting, TileType, TileType(..))
+import Types exposing (..)
+import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -20,47 +22,25 @@ info model =
         Hidden ->
             span [] []
 
-        Visible ( world, level ) ->
+        Visible progress ->
             let
-                config =
-                    getLevelConfig ( world, level ) model
+                content =
+                    getLevelConfig progress model |> infoContent model progress
             in
-                infoContainer model.infoWindow
-                    [ div
-                        [ class "pa3 br3 tc relative"
-                        , style
-                            [ background seedPodGradient
-                            , color white
-                            , animationStyle "elastic-bounce-in 2s linear"
-                            , widthStyle 380
-                            ]
-                        , onClick <| StartLevel ( world, level )
-                        ]
-                        (infoContent ( world, level ) config model)
-                    ]
+                infoContainer model.infoWindow <|
+                    div [ onClick <| StartLevel progress ] content
 
-        Leaving ( world, level ) ->
+        Exiting progress ->
             let
-                config =
-                    getLevelConfig ( world, level ) model
+                content =
+                    getLevelConfig progress model |> infoContent model progress
             in
-                infoContainer model.infoWindow
-                    [ div
-                        [ class "pa3 br3 tc relative"
-                        , style
-                            [ background seedPodGradient
-                            , color white
-                            , widthStyle 380
-                            , animationStyle "exit-down 0.7s cubic-bezier(0.93, -0.36, 0.57, 0.96)"
-                            , fillForwards
-                            ]
-                        ]
-                        (infoContent ( world, level ) config model)
-                    ]
+                infoContainer model.infoWindow <|
+                    div [] content
 
 
-infoContent : LevelProgress -> ( WorldData, LevelData ) -> Hub.Model -> List (Html msg)
-infoContent ( world, level ) ( worldData, levelData ) model =
+infoContent : Hub.Model -> LevelProgress -> ( WorldData, LevelData ) -> List (Html msg)
+infoContent model ( world, level ) ( worldData, levelData ) =
     let
         levelText =
             allLevels
@@ -150,18 +130,3 @@ handleHideInfo model =
 
         _ ->
             emptyProperty
-
-
-infoContainer : InfoWindow -> List (Html Hub.Msg) -> Html Hub.Msg
-infoContainer infoWindow =
-    case infoWindow of
-        Leaving _ ->
-            div [ classes [ "touch-disabled", infoContainerBaseClasses ] ]
-
-        _ ->
-            div [ class infoContainerBaseClasses ]
-
-
-infoContainerBaseClasses : String
-infoContainerBaseClasses =
-    "pointer fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center z-3 ph3"

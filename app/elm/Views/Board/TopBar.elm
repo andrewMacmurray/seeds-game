@@ -49,36 +49,41 @@ renderScore model tileType =
                 [ class "ma0 absolute left-0 right-0 f6"
                 , style [ ( "bottom", "-1.5em" ) ]
                 ]
-                [ renderScoreText model.scores tileType ]
+                [ scoreContent tileType model.scores ]
             ]
 
 
-renderScoreText : Scores -> TileType -> Html msg
-renderScoreText scores tileType =
+scoreContent : TileType -> Scores -> Html msg
+scoreContent tileType scores =
     if getScoreFor tileType scores == Just 0 then
-        div [ class "relative" ]
-            [ div
-                [ style
-                    [ topStyle 1
-                    , transformStyle <| scale 0
-                    , animationStyle "bulge 0.6s ease"
-                    , fillForwards
-                    , animationDelayStyle 800
-                    ]
-                , class "absolute top-0 left-0 right-0"
-                ]
-                [ tickBackground ]
-            , div
-                [ style
-                    [ animationStyle "fade-out 0.5s linear"
-                    , fillForwards
-                    , opacityStyle 1
-                    ]
-                ]
-                [ text <| scoreToString tileType scores ]
-            ]
+        tickFadeIn tileType scores
     else
         text <| scoreToString tileType scores
+
+
+tickFadeIn : TileType -> Scores -> Html msg
+tickFadeIn tileType scores =
+    div [ class "relative" ]
+        [ div
+            [ style
+                [ topStyle 1
+                , transformStyle <| scale 0
+                , animationStyle "bulge 0.6s ease"
+                , fillForwards
+                , animationDelayStyle 800
+                ]
+            , class "absolute top-0 left-0 right-0"
+            ]
+            [ tickBackground ]
+        , div
+            [ style
+                [ animationStyle "fade-out 0.5s linear"
+                , fillForwards
+                , opacityStyle 1
+                ]
+            ]
+            [ text <| scoreToString tileType scores ]
+        ]
 
 
 renderScoreIcon : Level.Model -> TileType -> Html msg

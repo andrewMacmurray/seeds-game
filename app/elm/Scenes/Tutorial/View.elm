@@ -29,7 +29,7 @@ tutorialView model =
         , classList <| showIf model.canvasVisible
         ]
         [ div
-            [ style [ ( "margin-top", pc 0 ), transitionStyle "0.8s linear" ]
+            [ style [ ( "margin-top", pc -3 ), transitionStyle "0.8s linear" ]
             , classList <| showIf model.containerVisible
             ]
             [ tutorialBoard model
@@ -38,13 +38,19 @@ tutorialView model =
                 , classList <| showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
-            , p
-                [ onClick SkipTutorial
-                , style [ color greyYellow, marginTop 70 ]
-                , class "pointer tc ttu tracked-mega f6"
-                ]
-                [ text "skip" ]
             ]
+        , p
+            [ onClick SkipTutorial
+            , style
+                [ color greyYellow
+                , bottomStyle 30
+                , transitionStyle "0.8s linear"
+                , transitionDelayStyle 800
+                ]
+            , classList <| showIf model.containerVisible
+            , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
+            ]
+            [ text "skip" ]
         ]
 
 

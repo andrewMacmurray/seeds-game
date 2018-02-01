@@ -1,5 +1,6 @@
 module Scenes.Level.State exposing (..)
 
+import Config.Text exposing (getSuccessMessage, randomSuccessMessage)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
@@ -17,11 +18,15 @@ import Helpers.Effect exposing (sequenceMs, trigger)
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
+import Types exposing (InfoWindow(..))
 
 
 levelInit : LevelData -> Main.Model -> Cmd Main.Msg
 levelInit config model =
-    handleGenerateTiles config model.levelModel
+    Cmd.batch
+        [ handleGenerateTiles config model.levelModel
+        , randomSuccessMessage GenerateSuccessMessage
+        ]
         |> Cmd.map Main.LevelMsg
 
 
@@ -37,7 +42,9 @@ initialState =
     , scoreIconSize = 32
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
-    , exitSequenceTriggered = False
+    , levelComplete = False
+    , successMessage = getSuccessMessage 0
+    , levelInfoWindow = Hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
@@ -94,6 +101,9 @@ update msg model =
         GenerateEnteringTiles ->
             model ! [ generateEnteringTiles model.tileSettings model.board ]
 
+        GenerateSuccessMessage message ->
+            { model | successMessage = message } ! []
+
         InsertEnteringTiles tiles ->
             handleInsertEnteringTiles tiles model ! []
 
@@ -109,15 +119,24 @@ update msg model =
         CheckMove move ->
             handleCheckMove move model
 
+        SquareMove ->
+            handleSquareMove model ! [ Delay.after 600 millisecond <| StopMove Square ]
+
         CheckLevelComplete ->
             handleCheckLevelComplete model
+
+        ShowMessage ->
+            { model | levelInfoWindow = Visible model.successMessage } ! []
+
+        ExitMessage ->
+            { model | levelInfoWindow = Exiting model.successMessage } ! []
+
+        HideMessage ->
+            { model | levelInfoWindow = Hidden } ! []
 
         ExitLevel ->
             -- top level update checks for this message and transitions scene
             model ! []
-
-        SquareMove ->
-            handleSquareMove model ! [ Delay.after 600 millisecond <| StopMove Square ]
 
 
 
@@ -238,7 +257,17 @@ handleSquareMove model =
 
 handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg )
 handleCheckLevelComplete model =
-    if levelComplete model.scores && not model.exitSequenceTriggered then
-        { model | exitSequenceTriggered = True } ! [ trigger ExitLevel ]
+    if levelComplete model.scores && not model.levelComplete then
+        { model | levelComplete = True } ! [ exitSequence ]
     else
         model ! []
+
+
+exitSequence : Cmd Level.Msg
+exitSequence =
+    sequenceMs
+        [ ( 500, ShowMessage )
+        , ( 2000, ExitMessage )
+        , ( 1000, HideMessage )
+        , ( 0, ExitLevel )
+        ]

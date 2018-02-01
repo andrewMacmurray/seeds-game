@@ -11,6 +11,7 @@ import Config.Levels exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 import Views.Seed.All exposing (renderSeed)
+import Types exposing (..)
 
 
 renderWorlds : Hub.Model -> List (Html Hub.Msg)
