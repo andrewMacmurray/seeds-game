@@ -6,11 +6,11 @@ import Html.Attributes exposing (class)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Hub.View exposing (hubView)
 import Scenes.Level.View exposing (levelView)
+import Scenes.Summary.View exposing (summaryView)
 import Scenes.Title.View exposing (titleView)
 import Scenes.Tutorial.View exposing (tutorialView)
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
-import Views.Summary exposing (summaryView)
 
 
 view : Hub.Model -> Html Hub.Msg

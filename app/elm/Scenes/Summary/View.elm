@@ -1,4 +1,4 @@
-module Views.Summary exposing (..)
+module Scenes.Summary.View exposing (..)
 
 import Data.Color exposing (washedYellow)
 import Data.Level.Summary exposing (currentTotalScoresForWorld, percentComplete, totalTargetScoresForWorld)
