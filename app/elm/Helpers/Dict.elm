@@ -19,3 +19,10 @@ insertWith f k v dict =
         Dict.update k (Maybe.map (\x -> f v x)) dict
     else
         Dict.insert k v dict
+
+
+indexedDict : List a -> Dict Int a
+indexedDict xs =
+    xs
+        |> List.indexedMap (,)
+        |> Dict.fromList

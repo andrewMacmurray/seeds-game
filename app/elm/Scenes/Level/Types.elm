@@ -19,7 +19,7 @@ type alias Model =
     , topBarHeight : Int
     , levelComplete : Bool
     , levelInfoWindow : InfoWindow String
-    , successMessage : String
+    , successMessageIndex : Int
     , mouse : Mouse.Position
     , window : Window.Size
     }
@@ -38,7 +38,6 @@ type Msg
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | GenerateEnteringTiles
-    | GenerateSuccessMessage String
     | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard

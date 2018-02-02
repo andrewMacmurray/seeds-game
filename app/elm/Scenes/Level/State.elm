@@ -1,6 +1,6 @@
 module Scenes.Level.State exposing (..)
 
-import Config.Text exposing (getSuccessMessage, randomSuccessMessage)
+import Config.Text exposing (getSuccessMessage)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
@@ -23,10 +23,7 @@ import Types exposing (InfoWindow(..))
 
 levelInit : LevelData -> Main.Model -> Cmd Main.Msg
 levelInit config model =
-    Cmd.batch
-        [ handleGenerateTiles config model.levelModel
-        , randomSuccessMessage GenerateSuccessMessage
-        ]
+    handleGenerateTiles config model.levelModel
         |> Cmd.map Main.LevelMsg
 
 
@@ -43,7 +40,7 @@ initialState =
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
     , levelComplete = False
-    , successMessage = getSuccessMessage 0
+    , successMessageIndex = 0
     , levelInfoWindow = Hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
@@ -101,9 +98,6 @@ update msg model =
         GenerateEnteringTiles ->
             model ! [ generateEnteringTiles model.tileSettings model.board ]
 
-        GenerateSuccessMessage message ->
-            { model | successMessage = message } ! []
-
         InsertEnteringTiles tiles ->
             handleInsertEnteringTiles tiles model ! []
 
@@ -126,17 +120,17 @@ update msg model =
             handleCheckLevelComplete model
 
         ShowInfo ->
-            { model | levelInfoWindow = Visible model.successMessage } ! []
+            { model | levelInfoWindow = Visible <| getSuccessMessage model.successMessageIndex } ! []
 
         RemoveInfo ->
-            { model | levelInfoWindow = Hiding model.successMessage } ! []
+            { model | levelInfoWindow = Hiding <| getSuccessMessage model.successMessageIndex } ! []
 
         InfoHidden ->
             { model | levelInfoWindow = Hidden } ! []
 
         ExitLevel ->
             -- top level update checks for this message and transitions scene
-            model ! []
+            { model | successMessageIndex = model.successMessageIndex + 1 } ! []
 
 
 
