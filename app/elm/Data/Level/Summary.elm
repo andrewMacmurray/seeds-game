@@ -4,27 +4,58 @@ import Config.AllLevels exposing (allLevels)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
 import Scenes.Hub.Types exposing (Progress, WorldData)
-import Scenes.Level.Types exposing (TargetScore(..), TileSetting, TileType)
+import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileSetting, TileType)
 
 
-percentComplete : TileType -> Progress -> Float
-percentComplete tileType ( w, l ) =
+percentComplete : TileType -> Progress -> Maybe Progress -> Float
+percentComplete tileType ( w, l ) currentLevel =
     let
         target =
             totalTargetScoresForWorld w |> Maybe.andThen (Dict.get (toString tileType))
 
         current =
             currentTotalScoresForWorld ( w, l ) |> Maybe.andThen (Dict.get (toString tileType))
+
+        percent a b =
+            (toFloat b / toFloat a) * 100
     in
-        Maybe.map2 (\t c -> (toFloat c / toFloat t) * 100) target current
-            |> Maybe.withDefault 0
+        if worldComplete ( w, l ) currentLevel then
+            100
+        else
+            Maybe.map2 percent target current |> Maybe.withDefault 0
+
+
+primarySeedType : Progress -> Maybe Progress -> Maybe SeedType
+primarySeedType progress currentLevel =
+    if worldComplete progress currentLevel then
+        currentLevel |> Maybe.andThen worldSeedType
+    else
+        worldSeedType progress
+
+
+worldComplete : Progress -> Maybe Progress -> Bool
+worldComplete progress curr =
+    case curr of
+        Just ( w, _ ) ->
+            progress == ( w + 1, 1 )
+
+        Nothing ->
+            False
+
+
+worldSeedType : Progress -> Maybe SeedType
+worldSeedType =
+    getWorld >> Maybe.map .seedType
 
 
 currentTotalScoresForWorld : Progress -> Maybe (Dict String Int)
-currentTotalScoresForWorld ( worldNumber, levelNumber ) =
-    allLevels
-        |> Dict.get worldNumber
-        |> Maybe.map (scoresAtLevel levelNumber)
+currentTotalScoresForWorld (( worldNumber, levelNumber ) as progress) =
+    getWorld progress |> Maybe.map (scoresAtLevel levelNumber)
+
+
+getWorld : Progress -> Maybe WorldData
+getWorld ( w, _ ) =
+    Dict.get w allLevels
 
 
 totalTargetScoresForWorld : Int -> Maybe (Dict String Int)

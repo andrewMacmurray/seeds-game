@@ -1,7 +1,7 @@
 module Config.Text exposing (..)
 
 import Dict exposing (Dict)
-import Helpers.Dict exposing (indexedDict)
+import Helpers.Dict exposing (indexedDictFrom)
 
 
 getSuccessMessage : Int -> String
@@ -15,7 +15,7 @@ getSuccessMessage n =
 
 successMessages : Dict Int String
 successMessages =
-    indexedDict
+    indexedDictFrom 0
         [ "Amazing!"
         , "You're a Hero!"
         , "Incredible!"

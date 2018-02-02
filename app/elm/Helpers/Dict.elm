@@ -21,8 +21,8 @@ insertWith f k v dict =
         Dict.insert k v dict
 
 
-indexedDict : List a -> Dict Int a
-indexedDict xs =
+indexedDictFrom : Int -> List a -> Dict Int a
+indexedDictFrom n xs =
     xs
-        |> List.indexedMap (,)
+        |> List.indexedMap (\i x -> ( i + n, x ))
         |> Dict.fromList
