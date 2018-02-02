@@ -1,27 +1,26 @@
 module Views.Seed.Twin exposing (..)
 
 import Data.Color exposing (brown, chocolate, crimson, darkRed, gold, lightBrown)
-import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-sunflower : Html msg
+sunflower : Svg msg
 sunflower =
     twin ( chocolate, lightBrown )
 
 
-marigold : Html msg
+marigold : Svg msg
 marigold =
     twin ( gold, darkRed )
 
 
-lupin : Html msg
+lupin : Svg msg
 lupin =
     twin ( crimson, brown )
 
 
-twin : ( String, String ) -> Html msg
+twin : ( String, String ) -> Svg msg
 twin ( left, right ) =
     svg
         [ x "0px"

@@ -13,8 +13,8 @@ import Scenes.Level.State as Level
 import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as TutorialModel exposing (Msg(..))
-import Window
 import Types exposing (..)
+import Window
 
 
 init : ( Main.Model, Cmd Main.Msg )
@@ -82,8 +82,9 @@ update msg model =
         EndLevel ->
             model
                 ! [ sequenceMs
-                        [ ( 0, IncrementProgress )
-                        , ( 10, BeginSceneTransition )
+                        [ ( 0, SetScene Summary )
+                        , ( 2000, IncrementProgress )
+                        , ( 2500, BeginSceneTransition )
                         , ( 500, SetScene Hub )
                         , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
                         , ( 1500, EndSceneTransition )
@@ -138,7 +139,7 @@ update msg model =
             { model | transitionBackground = background } ! []
 
         IncrementProgress ->
-            (model |> handleIncrementProgress) ! []
+            handleIncrementProgress model ! []
 
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
@@ -221,6 +222,11 @@ handleTutorialMsg tutorialMsg model =
             { newModel | scene = Level } ! [ tutorialCmd ]
         else
             newModel ! [ tutorialCmd ]
+
+
+handleIncrementProgress : Model -> Model
+handleIncrementProgress model =
+    { model | progress = incrementProgress model.currentLevel model.progress }
 
 
 scrollToProgress : Main.Model -> Int

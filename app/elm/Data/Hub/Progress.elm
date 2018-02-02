@@ -76,11 +76,6 @@ worldSize world allLevels =
         |> Maybe.withDefault 0
 
 
-handleIncrementProgress : Model -> Model
-handleIncrementProgress model =
-    { model | progress = incrementProgress model.currentLevel model.progress }
-
-
 incrementProgress : Maybe Progress -> Progress -> Progress
 incrementProgress currentLevel (( world, level ) as currentProgress) =
     allLevels

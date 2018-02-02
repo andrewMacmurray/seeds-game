@@ -53,6 +53,7 @@ type Scene
     | Hub
     | Title
     | Tutorial
+    | Summary
 
 
 type TransitionBackground

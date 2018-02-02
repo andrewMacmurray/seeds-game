@@ -1,17 +1,16 @@
 module Views.Seed.Circle exposing (..)
 
 import Data.Color exposing (orange, purple)
-import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-foxglove : Html msg
+foxglove : Svg msg
 foxglove =
     circle ( purple, orange )
 
 
-circle : ( String, String ) -> Html msg
+circle : ( String, String ) -> Svg msg
 circle ( bgColor, circleColor ) =
     svg
         [ x "0px"
