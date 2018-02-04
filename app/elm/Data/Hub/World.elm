@@ -1,20 +1,13 @@
 module Data.Hub.World exposing (..)
 
-import Dict
+import Helpers.Dict exposing (indexedDictFrom)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)
 
 
 makeWorldLevels : List LevelData -> WorldLevels
-makeWorldLevels levels =
-    levels
-        |> addNumbers
-        |> Dict.fromList
-
-
-addNumbers : List a -> List ( Int, a )
-addNumbers =
-    List.indexedMap (\i x -> ( i + 1, x ))
+makeWorldLevels =
+    indexedDictFrom 1
 
 
 rain : Probability -> TargetScore -> TileSetting

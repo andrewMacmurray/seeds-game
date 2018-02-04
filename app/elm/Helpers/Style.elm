@@ -254,6 +254,16 @@ translate_ =
     s "translate(" <> px_ <> s ", " <> px_ <> s ")"
 
 
+svgTranslate : number -> number -> String
+svgTranslate =
+    print svgTranslate_
+
+
+svgTranslate_ : Format r (number -> number -> r)
+svgTranslate_ =
+    s "translate(" <> number <> s " " <> number <> s ")"
+
+
 scale : number -> String
 scale =
     print scale_

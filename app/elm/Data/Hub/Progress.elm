@@ -1,13 +1,13 @@
 module Data.Hub.Progress exposing (..)
 
-import Config.Levels exposing (allLevels, defaultLevel, world1)
+import Config.AllLevels exposing (allLevels, defaultLevel, defaultWorld)
 import Dict
 import Scenes.Hub.Types exposing (..)
 import Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
 
 
-getSelectedProgress : InfoWindow LevelProgress -> Maybe LevelProgress
+getSelectedProgress : InfoWindow Progress -> Maybe Progress
 getSelectedProgress infoWindow =
     case infoWindow of
         Hidden ->
@@ -16,11 +16,11 @@ getSelectedProgress infoWindow =
         Visible progress ->
             Just progress
 
-        Exiting progress ->
+        Hiding progress ->
             Just progress
 
 
-getLevelConfig : LevelProgress -> Model -> ( WorldData, LevelData )
+getLevelConfig : Progress -> Model -> ( WorldData, LevelData )
 getLevelConfig ( w, l ) model =
     let
         worldData =
@@ -29,7 +29,7 @@ getLevelConfig ( w, l ) model =
         levelData =
             worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
     in
-        ( worldData |> Maybe.withDefault world1
+        ( worldData |> Maybe.withDefault defaultWorld
         , levelData |> Maybe.withDefault defaultLevel
         )
 
@@ -61,7 +61,7 @@ reachedLevel ( world, level ) { progress } =
     getLevelNumber progress allLevels >= getLevelNumber ( world, level ) allLevels
 
 
-getLevelNumber : LevelProgress -> AllLevels -> Int
+getLevelNumber : Progress -> AllLevels -> Int
 getLevelNumber ( world, level ) allLevels =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w allLevels) 0
@@ -76,12 +76,7 @@ worldSize world allLevels =
         |> Maybe.withDefault 0
 
 
-handleIncrementProgress : Model -> Model
-handleIncrementProgress model =
-    { model | progress = incrementProgress model.currentLevel model.progress }
-
-
-incrementProgress : Maybe LevelProgress -> LevelProgress -> LevelProgress
+incrementProgress : Maybe Progress -> Progress -> Progress
 incrementProgress currentLevel (( world, level ) as currentProgress) =
     allLevels
         |> Dict.get world
@@ -89,7 +84,7 @@ incrementProgress currentLevel (( world, level ) as currentProgress) =
         |> Maybe.withDefault currentProgress
 
 
-compareLevels : Maybe LevelProgress -> LevelProgress -> WorldData -> LevelProgress
+compareLevels : Maybe Progress -> Progress -> WorldData -> Progress
 compareLevels currentLevel progress worldData =
     if shouldIncrement currentLevel progress then
         handleIncrement progress worldData
@@ -97,7 +92,7 @@ compareLevels currentLevel progress worldData =
         progress
 
 
-shouldIncrement : Maybe LevelProgress -> LevelProgress -> Bool
+shouldIncrement : Maybe Progress -> Progress -> Bool
 shouldIncrement currentLevel progress =
     let
         curr =
@@ -109,7 +104,7 @@ shouldIncrement currentLevel progress =
         curr >= prog
 
 
-handleIncrement : LevelProgress -> WorldData -> LevelProgress
+handleIncrement : Progress -> WorldData -> Progress
 handleIncrement (( _, level ) as currentProgress) worldData =
     if lastLevel worldData == level then
         incrementWorld currentProgress
@@ -122,11 +117,11 @@ lastLevel worldData =
     Dict.size worldData.levels
 
 
-incrementWorld : LevelProgress -> LevelProgress
+incrementWorld : Progress -> Progress
 incrementWorld ( world, _ ) =
     ( world + 1, 1 )
 
 
-incrementLevel : LevelProgress -> LevelProgress
+incrementLevel : Progress -> Progress
 incrementLevel ( world, level ) =
     ( world, level + 1 )

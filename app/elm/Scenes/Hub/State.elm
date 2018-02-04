@@ -1,6 +1,7 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.Levels exposing (allLevels)
+import Config.AllLevels exposing (allLevels)
+import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
@@ -10,11 +11,11 @@ import Helpers.Scale exposing (tileScaleFactor)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
-import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
+import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel, RandomSuccessMessageIndex))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as TutorialModel exposing (Msg(..))
-import Window
 import Types exposing (..)
+import Window
 
 
 init : ( Main.Model, Cmd Main.Msg )
@@ -22,6 +23,7 @@ init =
     initialState
         ! [ getWindowSize
           , getExternalAnimations initialState.levelModel.tileSize.y
+          , randomSuccessMessageIndex RandomSuccessMessageIndex |> Cmd.map LevelMsg
           ]
 
 
@@ -55,7 +57,7 @@ update msg model =
 
         StartLevel level ->
             case tutorialData model level of
-                Just config ->
+                Just tutorialConfig ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -64,7 +66,7 @@ update msg model =
                                 , ( 0, LoadLevelData <| getLevelConfig level model )
                                 , ( 0, TutorialMsg ResetVisibilities )
                                 , ( 2500, EndSceneTransition )
-                                , ( 500, TutorialMsg <| StartSequence config )
+                                , ( 500, TutorialMsg <| StartSequence tutorialConfig )
                                 ]
                           ]
 
@@ -80,16 +82,7 @@ update msg model =
                           ]
 
         EndLevel ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, IncrementProgress )
-                        , ( 10, BeginSceneTransition )
-                        , ( 500, SetScene Hub )
-                        , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
-                        , ( 1500, EndSceneTransition )
-                        , ( 500, SetCurrentLevel Nothing )
-                        ]
-                  ]
+            model ! [ sequenceMs <| endLevelSequence model ]
 
         LoadLevelData levelData ->
             handleLoadLevel levelData model
@@ -129,7 +122,7 @@ update msg model =
             in
                 model
                     ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Exiting selectedLevel )
+                            [ ( 0, SetInfoState <| Hiding selectedLevel )
                             , ( 1000, SetInfoState Hidden )
                             ]
                       ]
@@ -138,7 +131,7 @@ update msg model =
             { model | transitionBackground = background } ! []
 
         IncrementProgress ->
-            (model |> handleIncrementProgress) ! []
+            handleIncrementProgress model ! []
 
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
@@ -161,7 +154,7 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
-tutorialData : Main.Model -> LevelProgress -> Maybe TutorialModel.InitConfig
+tutorialData : Main.Model -> Progress -> Maybe TutorialModel.InitConfig
 tutorialData model level =
     let
         ( _, levelData ) =
@@ -223,9 +216,35 @@ handleTutorialMsg tutorialMsg model =
             newModel ! [ tutorialCmd ]
 
 
+handleIncrementProgress : Main.Model -> Main.Model
+handleIncrementProgress model =
+    { model | progress = incrementProgress model.currentLevel model.progress }
+
+
 scrollToProgress : Main.Model -> Int
 scrollToProgress model =
     getLevelNumber model.progress allLevels
+
+
+endLevelSequence : Main.Model -> List ( Float, Main.Msg )
+endLevelSequence model =
+    let
+        backToHub =
+            [ ( 500, SetScene Hub )
+            , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
+            , ( 1500, EndSceneTransition )
+            , ( 500, SetCurrentLevel Nothing )
+            ]
+    in
+        if shouldIncrement model.currentLevel model.progress then
+            [ ( 0, SetScene Summary )
+            , ( 2000, IncrementProgress )
+            , ( 2500, BeginSceneTransition )
+            ]
+                ++ backToHub
+        else
+            [ ( 0, BeginSceneTransition ) ]
+                ++ backToHub
 
 
 levelCompleteScrollNumber : Main.Model -> Int

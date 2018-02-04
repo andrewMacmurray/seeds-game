@@ -17,6 +17,6 @@ infoWindow model =
             infoContainer model.levelInfoWindow <|
                 div [ class "pv5 f3 tracked-mega" ] [ text message ]
 
-        Exiting message ->
+        Hiding message ->
             infoContainer model.levelInfoWindow <|
                 div [ class "pv5 f3 tracked-mega" ] [ text message ]

@@ -1,6 +1,6 @@
 module Scenes.Level.State exposing (..)
 
-import Config.Text exposing (getSuccessMessage, randomSuccessMessage)
+import Config.Text exposing (getSuccessMessage)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
@@ -15,7 +15,7 @@ import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
-import Scenes.Hub.Types as Main exposing (..)
+import Scenes.Hub.Types as Main exposing (LevelData, Progress)
 import Scenes.Level.Types as Level exposing (..)
 import Time exposing (millisecond)
 import Types exposing (InfoWindow(..))
@@ -23,10 +23,7 @@ import Types exposing (InfoWindow(..))
 
 levelInit : LevelData -> Main.Model -> Cmd Main.Msg
 levelInit config model =
-    Cmd.batch
-        [ handleGenerateTiles config model.levelModel
-        , randomSuccessMessage GenerateSuccessMessage
-        ]
+    handleGenerateTiles config model.levelModel
         |> Cmd.map Main.LevelMsg
 
 
@@ -43,7 +40,7 @@ initialState =
     , tileSize = { y = 51, x = 55 }
     , topBarHeight = 80
     , levelComplete = False
-    , successMessage = getSuccessMessage 0
+    , successMessageIndex = 0
     , levelInfoWindow = Hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
@@ -101,9 +98,6 @@ update msg model =
         GenerateEnteringTiles ->
             model ! [ generateEnteringTiles model.tileSettings model.board ]
 
-        GenerateSuccessMessage message ->
-            { model | successMessage = message } ! []
-
         InsertEnteringTiles tiles ->
             handleInsertEnteringTiles tiles model ! []
 
@@ -125,18 +119,21 @@ update msg model =
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
-        ShowMessage ->
-            { model | levelInfoWindow = Visible model.successMessage } ! []
+        RandomSuccessMessageIndex i ->
+            { model | successMessageIndex = i } ! []
 
-        ExitMessage ->
-            { model | levelInfoWindow = Exiting model.successMessage } ! []
+        ShowInfo ->
+            { model | levelInfoWindow = Visible <| getSuccessMessage model.successMessageIndex } ! []
 
-        HideMessage ->
+        RemoveInfo ->
+            { model | levelInfoWindow = Hiding <| getSuccessMessage model.successMessageIndex } ! []
+
+        InfoHidden ->
             { model | levelInfoWindow = Hidden } ! []
 
         ExitLevel ->
             -- top level update checks for this message and transitions scene
-            model ! []
+            { model | successMessageIndex = model.successMessageIndex + 1 } ! []
 
 
 
@@ -266,8 +263,8 @@ handleCheckLevelComplete model =
 exitSequence : Cmd Level.Msg
 exitSequence =
     sequenceMs
-        [ ( 500, ShowMessage )
-        , ( 2000, ExitMessage )
-        , ( 1000, HideMessage )
+        [ ( 500, ShowInfo )
+        , ( 2000, RemoveInfo )
+        , ( 1000, InfoHidden )
         , ( 0, ExitLevel )
         ]
