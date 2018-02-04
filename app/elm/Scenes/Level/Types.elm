@@ -43,6 +43,7 @@ type Msg
     | ShiftBoard
     | ResetMove
     | CheckLevelComplete
+    | RandomSuccessMessageIndex Int
     | ShowInfo
     | RemoveInfo
     | InfoHidden

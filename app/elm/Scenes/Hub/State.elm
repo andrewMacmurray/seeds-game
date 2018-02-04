@@ -1,6 +1,7 @@
 module Scenes.Hub.State exposing (..)
 
 import Config.AllLevels exposing (allLevels)
+import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
@@ -10,7 +11,7 @@ import Helpers.Scale exposing (tileScaleFactor)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
-import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel))
+import Scenes.Level.Types as LevelModel exposing (Msg(ExitLevel, RandomSuccessMessageIndex))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as TutorialModel exposing (Msg(..))
 import Types exposing (..)
@@ -22,6 +23,7 @@ init =
     initialState
         ! [ getWindowSize
           , getExternalAnimations initialState.levelModel.tileSize.y
+          , randomSuccessMessageIndex RandomSuccessMessageIndex |> Cmd.map LevelMsg
           ]
 
 

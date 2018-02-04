@@ -119,6 +119,9 @@ update msg model =
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
+        RandomSuccessMessageIndex i ->
+            { model | successMessageIndex = i } ! []
+
         ShowInfo ->
             { model | levelInfoWindow = Visible <| getSuccessMessage model.successMessageIndex } ! []
 
