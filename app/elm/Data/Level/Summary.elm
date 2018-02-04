@@ -54,7 +54,7 @@ secondaryResourceTypes_ { levels, seedType } =
         |> List.filter collectable
         |> List.map .tileType
         |> List.filter (secondaryResource seedType)
-        |> List.foldr uniqueMembers []
+        |> uniqueMembers
 
 
 secondaryResource : SeedType -> TileType -> Bool
@@ -67,12 +67,16 @@ secondaryResource seedType tileType =
             True
 
 
-uniqueMembers : a -> List a -> List a
-uniqueMembers a b =
-    if List.member a b then
-        b
-    else
-        a :: b
+uniqueMembers : List a -> List a
+uniqueMembers =
+    let
+        accum a b =
+            if List.member a b then
+                b
+            else
+                a :: b
+    in
+        List.foldr accum []
 
 
 worldComplete : Progress -> Maybe Progress -> Bool

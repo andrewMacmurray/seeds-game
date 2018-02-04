@@ -80,17 +80,7 @@ update msg model =
                           ]
 
         EndLevel ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, SetScene Summary )
-                        , ( 2000, IncrementProgress )
-                        , ( 2500, BeginSceneTransition )
-                        , ( 500, SetScene Hub )
-                        , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
-                        , ( 1500, EndSceneTransition )
-                        , ( 500, SetCurrentLevel Nothing )
-                        ]
-                  ]
+            model ! [ sequenceMs <| endLevelSequence model ]
 
         LoadLevelData levelData ->
             handleLoadLevel levelData model
@@ -224,7 +214,7 @@ handleTutorialMsg tutorialMsg model =
             newModel ! [ tutorialCmd ]
 
 
-handleIncrementProgress : Model -> Model
+handleIncrementProgress : Main.Model -> Main.Model
 handleIncrementProgress model =
     { model | progress = incrementProgress model.currentLevel model.progress }
 
@@ -232,6 +222,27 @@ handleIncrementProgress model =
 scrollToProgress : Main.Model -> Int
 scrollToProgress model =
     getLevelNumber model.progress allLevels
+
+
+endLevelSequence : Main.Model -> List ( Float, Main.Msg )
+endLevelSequence model =
+    let
+        backToHub =
+            [ ( 500, SetScene Hub )
+            , ( 1000, ScrollToHubLevel <| levelCompleteScrollNumber model )
+            , ( 1500, EndSceneTransition )
+            , ( 500, SetCurrentLevel Nothing )
+            ]
+    in
+        if shouldIncrement model.currentLevel model.progress then
+            [ ( 0, SetScene Summary )
+            , ( 2000, IncrementProgress )
+            , ( 2500, BeginSceneTransition )
+            ]
+                ++ backToHub
+        else
+            [ ( 0, BeginSceneTransition ) ]
+                ++ backToHub
 
 
 levelCompleteScrollNumber : Main.Model -> Int
