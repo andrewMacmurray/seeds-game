@@ -5,12 +5,12 @@ import Helpers.Dict exposing (indexedDictFrom)
 
 
 getSuccessMessage : Int -> String
-getSuccessMessage n =
+getSuccessMessage i =
     let
-        nn =
-            n % Dict.size successMessages
+        ii =
+            i % Dict.size successMessages
     in
-        Dict.get nn successMessages |> Maybe.withDefault "Amazing!"
+        Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
 
 
 successMessages : Dict Int String

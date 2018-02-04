@@ -55,7 +55,7 @@ update msg model =
 
         StartLevel level ->
             case tutorialData model level of
-                Just config ->
+                Just tutorialConfig ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
@@ -64,7 +64,7 @@ update msg model =
                                 , ( 0, LoadLevelData <| getLevelConfig level model )
                                 , ( 0, TutorialMsg ResetVisibilities )
                                 , ( 2500, EndSceneTransition )
-                                , ( 500, TutorialMsg <| StartSequence config )
+                                , ( 500, TutorialMsg <| StartSequence tutorialConfig )
                                 ]
                           ]
 

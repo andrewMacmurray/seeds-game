@@ -1,6 +1,8 @@
 module Data.Level.Summary exposing (..)
 
 import Config.AllLevels exposing (allLevels)
+import Data.Level.Board.Tile exposing (getSeedType)
+import Data.Level.Score exposing (collectable)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
 import Scenes.Hub.Types exposing (Progress, WorldData)
@@ -11,10 +13,12 @@ percentComplete : TileType -> Progress -> Maybe Progress -> Float
 percentComplete tileType ( w, l ) currentLevel =
     let
         target =
-            totalTargetScoresForWorld w |> Maybe.andThen (Dict.get (toString tileType))
+            totalTargetScoresForWorld w
+                |> Maybe.andThen (Dict.get (toString tileType))
 
         current =
-            currentTotalScoresForWorld ( w, l ) |> Maybe.andThen (Dict.get (toString tileType))
+            currentTotalScoresForWorld ( w, l )
+                |> Maybe.andThen (Dict.get (toString tileType))
 
         percent a b =
             (toFloat b / toFloat a) * 100
@@ -22,7 +26,8 @@ percentComplete tileType ( w, l ) currentLevel =
         if worldComplete ( w, l ) currentLevel then
             100
         else
-            Maybe.map2 percent target current |> Maybe.withDefault 0
+            Maybe.map2 percent target current
+                |> Maybe.withDefault 0
 
 
 primarySeedType : Progress -> Maybe Progress -> Maybe SeedType
@@ -31,6 +36,43 @@ primarySeedType progress currentLevel =
         currentLevel |> Maybe.andThen worldSeedType
     else
         worldSeedType progress
+
+
+secondaryResourceTypes : Maybe Progress -> Maybe (List TileType)
+secondaryResourceTypes currentLevel =
+    currentLevel
+        |> Maybe.andThen getWorld
+        |> Maybe.map secondaryResourceTypes_
+
+
+secondaryResourceTypes_ : WorldData -> List TileType
+secondaryResourceTypes_ { levels, seedType } =
+    levels
+        |> mapValues .tileSettings
+        |> Dict.values
+        |> List.concat
+        |> List.filter collectable
+        |> List.map .tileType
+        |> List.filter (secondaryResource seedType)
+        |> List.foldr uniqueMembers []
+
+
+secondaryResource : SeedType -> TileType -> Bool
+secondaryResource seedType tileType =
+    case getSeedType tileType of
+        Just seedType_ ->
+            not <| seedType == seedType_
+
+        Nothing ->
+            True
+
+
+uniqueMembers : a -> List a -> List a
+uniqueMembers a b =
+    if List.member a b then
+        b
+    else
+        a :: b
 
 
 worldComplete : Progress -> Maybe Progress -> Bool
@@ -85,8 +127,8 @@ scoresForWorld { levels } =
 
 
 totalScoresDict : List TileSetting -> Dict String Int
-totalScoresDict allSettings =
-    List.foldr accumSettings Dict.empty allSettings
+totalScoresDict =
+    List.foldr accumSettings Dict.empty
 
 
 accumSettings : TileSetting -> Dict String Int -> Dict String Int

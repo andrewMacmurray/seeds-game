@@ -15,8 +15,11 @@ import Views.Icons.SunBank exposing (sunBank)
 summaryView : Model -> Html Msg
 summaryView ({ progress, currentLevel } as model) =
     let
-        seedType =
+        primarySeed =
             primarySeedType progress currentLevel |> Maybe.withDefault Sunflower
+
+        resources =
+            secondaryResourceTypes currentLevel |> Maybe.withDefault []
     in
         div
             [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
@@ -26,21 +29,34 @@ summaryView ({ progress, currentLevel } as model) =
                 , animationStyle "fade-in 1s linear"
                 ]
             ]
-            [ div [ style [ heightStyle 107, ( "margin-top", pc -7 ) ] ]
+            [ div [ style [ ( "margin-top", pc -3 ) ] ]
                 [ div
-                    [ class "dib mh4"
-                    , style [ widthStyle 40 ]
+                    [ style [ widthStyle 65, marginBottom 45 ]
+                    , class "center"
                     ]
-                    [ rainBank <| percentComplete Rain progress currentLevel ]
-                , div
-                    [ class "dib mh4"
-                    , style [ widthStyle 70 ]
-                    ]
-                    [ seedBank seedType <| percentComplete (Seed seedType) progress currentLevel ]
-                , div
-                    [ class "dib mh4"
-                    , style [ widthStyle 50 ]
-                    ]
-                    [ sunBank <| percentComplete Sun progress currentLevel ]
+                    [ seedBank primarySeed <| percentComplete (Seed primarySeed) progress currentLevel ]
+                , div [ style [ heightStyle 107 ] ] <| List.map (renderResourceBank progress currentLevel) resources
                 ]
             ]
+
+
+renderResourceBank : Progress -> Maybe Progress -> TileType -> Html msg
+renderResourceBank progress currentLevel tileType =
+    case tileType of
+        Rain ->
+            div [ style [ widthStyle 40 ], class "dib ph1 mh4" ]
+                [ rainBank <| percentComplete Rain progress currentLevel
+                ]
+
+        Sun ->
+            div [ style [ widthStyle 40 ], class "dib mh4" ]
+                [ sunBank <| percentComplete Sun progress currentLevel
+                ]
+
+        Seed seedType ->
+            div [ style [ widthStyle 40 ], class "dib ph1 mh4" ]
+                [ seedBank seedType <| percentComplete (Seed seedType) progress currentLevel
+                ]
+
+        _ ->
+            span [] []

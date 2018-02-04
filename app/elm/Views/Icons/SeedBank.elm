@@ -1,6 +1,6 @@
 module Views.Icons.SeedBank exposing (..)
 
-import Helpers.Style exposing (svgTranslate)
+import Helpers.Style exposing (pc, svgTranslate)
 import Html exposing (Html)
 import Scenes.Level.Types exposing (SeedType(..))
 import Svg
@@ -16,13 +16,26 @@ seedBank seedType percentFull =
 
         seedLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
+
+        stringSeedType =
+            seedType |> toString |> String.toLower
+
+        seedBankId =
+            "seed-bank-" ++ stringSeedType
+
+        seedLevelId =
+            "seed-level-" ++ stringSeedType
     in
-        Svg.svg [ viewBox "0 0 124.5 193.5" ]
+        Svg.svg
+            [ viewBox "0 0 124.5 193.5"
+            , width "100%"
+            , height "100%"
+            ]
             [ Svg.defs []
                 [ Svg.rect
                     [ height <| toString fullHeight
-                    , id "seed-level"
-                    , width "124.5"
+                    , id <| seedLevelId
+                    , width "100%"
                     , style "transition: transform 1.5s ease"
                     , transform <| svgTranslate 0 seedLevelOffset
                     ]
@@ -33,11 +46,11 @@ seedBank seedType percentFull =
                 , Svg.g []
                     [ Svg.mask
                         [ fill "white"
-                        , id "seed-bank"
+                        , id seedBankId
                         ]
-                        [ Svg.use [ xlinkHref "#seed-level" ] [] ]
+                        [ Svg.use [ xlinkHref <| "#" ++ seedLevelId ] [] ]
                     , Svg.g
-                        [ mask "url(#seed-bank)" ]
+                        [ mask <| "url(#" ++ seedBankId ++ ")" ]
                         [ renderSeed seedType ]
                     ]
                 ]
