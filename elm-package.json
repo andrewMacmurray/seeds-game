@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "A connect the dots game with seeds",
-    "repository": "https://github.com/andrewMacmurray/elm-seed.git",
+    "repository": "https://github.com/andrewMacmurray/seeds-game.git",
     "license": "MIT",
     "source-directories": [
         "app/elm"

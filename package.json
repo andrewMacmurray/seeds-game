@@ -1,5 +1,5 @@
 {
-  "name": "elmSeed",
+  "name": "seeds-game",
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
@@ -21,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andrewMacmurray/elm-seed.git"
+    "url": "git+https://github.com/andrewMacmurray/seeds-game.git"
   },
   "author": "Andrew MacMurray",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andrewMacmurray/elm-seed/issues"
+    "url": "https://github.com/andrewMacmurray/seeds-game/issues"
   },
-  "homepage": "https://github.com/andrewMacmurray/elm-seed#readme",
+  "homepage": "https://github.com/andrewMacmurray/seeds-game#readme",
   "dependencies": {
     "bounce.js": "^0.8.2",
     "elm": "^0.18.0",

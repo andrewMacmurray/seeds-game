@@ -1,4 +1,4 @@
-# Elm Seeds
+# Seeds Game
 
 A connect the dots game with seeds: http://seedsgame.com
 
@@ -15,7 +15,7 @@ to get running locally:
 clone the repo:
 
 ```sh
-> git clone https://github.com/andrewMacmurray/elm-seeds.git
+> git clone https://github.com/andrewMacmurray/seeds-game.git
 ```
 
 make sure you have [Elm](https://guide.elm-lang.org/install.html) and [Node](https://nodejs.org/en/download/) installed.
@@ -38,4 +38,4 @@ run the dev environment (watches for changes in css and elm, auto launches and l
 > npm run dev
 ```
 
-Suggestions are welcome: https://github.com/andrewMacmurray/elm-seeds/issues
+Suggestions are welcome: https://github.com/andrewMacmurray/seeds-game/issues
