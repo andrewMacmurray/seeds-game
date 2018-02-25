@@ -69,8 +69,8 @@ color =
     (,) "color"
 
 
-frameBackground : List Style
-frameBackground =
+frameBackgroundImage : List Style
+frameBackgroundImage =
     [ ( "background-position", "center" )
     , ( "background-repeat", "no-repeat" )
     , ( "background-size", "contain" )

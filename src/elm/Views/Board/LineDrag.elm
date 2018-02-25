@@ -1,6 +1,5 @@
 module Views.Board.LineDrag exposing (..)
 
-import Data.Level.Board.Tile exposing (strokeColors)
 import Data.Level.Move.Square exposing (hasSquareTile)
 import Data.Level.Move.Utils exposing (currentMoveTileType, currentMoves, lastMove)
 import Helpers.Scale exposing (tileScaleFactor)
@@ -9,7 +8,7 @@ import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (boardOffsetTop, boardWidth)
+import Views.Board.Styles exposing (..)
 
 
 handleLineDrag : Level.Model -> Html Level.Msg

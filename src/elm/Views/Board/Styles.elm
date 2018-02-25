@@ -1,5 +1,7 @@
 module Views.Board.Styles exposing (..)
 
+import Data.Color exposing (..)
+import Data.Level.Board.Block as Block
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Score exposing (collectable, scoreTileTypes)
@@ -239,3 +241,98 @@ baseTileClasses =
 centerBlock : String
 centerBlock =
     "ma absolute top-0 left-0 right-0 bottom-0"
+
+
+tileColorMap : Block -> List Style
+tileColorMap =
+    Block.fold (tileStyleMap tileColors) []
+
+
+tileSizeMap : Block -> Float
+tileSizeMap =
+    Block.fold (tileTypeMap 0 tileSize) 0
+
+
+strokeColors : TileType -> String
+strokeColors tile =
+    case tile of
+        Rain ->
+            svgStyle "stroke" lightBlue
+
+        Sun ->
+            svgStyle "stroke" gold
+
+        SeedPod ->
+            svgStyle "stroke" green
+
+        Seed _ ->
+            svgStyle "stroke" darkBrown
+
+
+tileColors : TileType -> List Style
+tileColors tile =
+    case tile of
+        Rain ->
+            [ backgroundColor lightBlue ]
+
+        Sun ->
+            [ backgroundColor gold ]
+
+        SeedPod ->
+            [ background seedPodGradient ]
+
+        Seed seedType ->
+            [ backgroundImage <| seedBackgrounds seedType ] ++ frameBackgroundImage
+
+
+seedBackgrounds : SeedType -> String
+seedBackgrounds seedType =
+    case seedType of
+        Sunflower ->
+            "img/sunflower.svg"
+
+        Foxglove ->
+            "img/foxglove.svg"
+
+        Lupin ->
+            "img/lupin.svg"
+
+        Rose ->
+            "img/rose.svg"
+
+        _ ->
+            ""
+
+
+tileSize : TileType -> Float
+tileSize tile =
+    case tile of
+        Rain ->
+            18
+
+        Sun ->
+            18
+
+        SeedPod ->
+            26
+
+        Seed _ ->
+            35
+
+
+tileClassMap : (TileType -> String) -> TileState -> String
+tileClassMap =
+    tileTypeMap ""
+
+
+tileStyleMap : (TileType -> List Style) -> TileState -> List Style
+tileStyleMap =
+    tileTypeMap []
+
+
+tileTypeMap : a -> (TileType -> a) -> TileState -> a
+tileTypeMap default fn tileState =
+    tileState
+        |> getTileType_
+        |> Maybe.map fn
+        |> Maybe.withDefault default

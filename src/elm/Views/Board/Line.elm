@@ -1,14 +1,14 @@
 module Views.Board.Line exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
-import Data.Level.Board.Tile exposing (strokeColors)
-import Helpers.Scale exposing (tileScaleFactor)
 import Formatting exposing ((<>), print, s)
+import Helpers.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Views.Board.Styles exposing (strokeColors)
 import Window
 
 

@@ -2,7 +2,7 @@ module Scenes.Tutorial.View exposing (..)
 
 import Data.Color exposing (darkYellow, greyYellow)
 import Data.Level.Board.Block exposing (getTileState)
-import Data.Level.Board.Tile exposing (hasLine, isDragging, tileSize)
+import Data.Level.Board.Tile exposing (hasLine, isDragging)
 import Data.Tutorial exposing (getText)
 import Dict
 import Helpers.Scale exposing (tileScaleFactor)

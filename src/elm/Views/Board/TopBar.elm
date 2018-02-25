@@ -1,7 +1,7 @@
 module Views.Board.TopBar exposing (..)
 
 import Data.Color exposing (gold, washedYellow)
-import Data.Level.Board.Tile exposing (seedBackgrounds)
+import Views.Board.Styles exposing (seedBackgrounds)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)
