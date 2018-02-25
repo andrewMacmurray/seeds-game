@@ -26,48 +26,48 @@ world =
 levels : WorldLevels
 levels =
     makeWorldLevels
-        [ { walls = []
+        [ { walls = yellowWalls firstLevelWalls
           , boardDimensions = { x = 5, y = 5 }
-          , tutorial = Just SeedTutorial.initConfig
+          , tutorial = Just SeedTutorial.config
           , tileSettings =
                 [ seed
                     Sunflower
-                    (Probability 20)
-                    (TargetScore 50)
+                    (Probability 100)
+                    (TargetScore 30)
                 ]
           }
-        , { walls = []
-          , boardDimensions = { x = 5, y = 6 }
-          , tutorial = Just RainTutorial.initConfig
+        , { walls = yellowWalls secondLevelWalls
+          , boardDimensions = { x = 5, y = 5 }
+          , tutorial = Just RainTutorial.config
           , tileSettings =
                 [ seed
                     Sunflower
-                    (Probability 20)
-                    (TargetScore 20)
+                    (Probability 50)
+                    (TargetScore 10)
                 , rain
-                    (Probability 20)
-                    (TargetScore 20)
+                    (Probability 50)
+                    (TargetScore 10)
                 ]
           }
-        , { walls = []
+        , { walls = yellowWalls thirdLevelWalls
           , boardDimensions = { x = 6, y = 6 }
-          , tutorial = Just SunTutorial.initConfig
+          , tutorial = Just SunTutorial.config
           , tileSettings =
                 [ rain
                     (Probability 33)
-                    (TargetScore 30)
+                    (TargetScore 10)
                 , seed
                     Sunflower
                     (Probability 33)
-                    (TargetScore 30)
+                    (TargetScore 10)
                 , sun
                     (Probability 33)
-                    (TargetScore 30)
+                    (TargetScore 10)
                 ]
           }
-        , { walls = withColor blockYellow <| column 3
+        , { walls = yellowWalls fourthLevelWalls
           , boardDimensions = { x = 7, y = 7 }
-          , tutorial = Just SquareTutorial.initConfig
+          , tutorial = Just SquareTutorial.config
           , tileSettings =
                 [ seed
                     Sunflower
@@ -79,21 +79,21 @@ levels =
                 ]
           }
         , { walls = []
-          , tutorial = Just SeedPodTutorial.initConfig
+          , tutorial = Just SeedPodTutorial.config
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
                 [ seed
                     Sunflower
-                    (Probability 33)
+                    (Probability 5)
                     (TargetScore 50)
-                , rain
-                    (Probability 33)
+                , sun
+                    (Probability 45)
                     (TargetScore 30)
                 , seedPod
-                    (Probability 33)
+                    (Probability 45)
                 ]
           }
-        , { walls = []
+        , { walls = yellowWalls sixthLevelWalls
           , tutorial = Nothing
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
@@ -126,4 +126,64 @@ levels =
                     (Probability 25)
                 ]
           }
+        ]
+
+
+firstLevelWalls : List Coord
+firstLevelWalls =
+    toCoords
+        [ [ w, s, s, s, w ]
+        , [ s, w, s, w, s ]
+        , [ s, s, s, s, s ]
+        , [ s, w, s, w, s ]
+        , [ w, s, s, s, w ]
+        ]
+
+
+secondLevelWalls : List Coord
+secondLevelWalls =
+    toCoords
+        [ [ s, s, s, s, s ]
+        , [ s, w, s, w, s ]
+        , [ s, s, s, s, s ]
+        , [ s, w, s, w, s ]
+        , [ s, s, s, s, s ]
+        ]
+
+
+thirdLevelWalls : List Coord
+thirdLevelWalls =
+    toCoords
+        [ [ s, s, s, s, s, s ]
+        , [ s, w, s, s, w, s ]
+        , [ s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s ]
+        , [ s, w, s, s, w, s ]
+        , [ s, s, s, s, s, s ]
+        ]
+
+
+fourthLevelWalls : List Coord
+fourthLevelWalls =
+    toCoords
+        [ [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        ]
+
+
+sixthLevelWalls : List Coord
+sixthLevelWalls =
+    toCoords
+        [ [ w, s, s, w, s, s, w ]
+        , [ s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s ]
+        , [ w, s, s, s, s, s, w ]
+        , [ s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s ]
+        , [ w, s, s, w, s, s, w ]
         ]

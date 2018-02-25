@@ -21,7 +21,7 @@ world =
 levels : WorldLevels
 levels =
     makeWorldLevels
-        [ { walls = withColor blockYellow moreWalls
+        [ { walls = yellowWalls borders
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =
@@ -36,7 +36,7 @@ levels =
                     (Probability 30)
                 ]
           }
-        , { walls = withColor blockYellow corners
+        , { walls = yellowWalls corners
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =
@@ -55,7 +55,41 @@ levels =
                     (Probability 25)
                 ]
           }
-        , { walls = withColor blockYellow centerColumns
+        , { walls = yellowWalls innerBorders
+          , boardDimensions = { x = 8, y = 8 }
+          , tutorial = Nothing
+          , tileSettings =
+                [ rain
+                    (Probability 20)
+                    (TargetScore 20)
+                , seed
+                    Foxglove
+                    (Probability 20)
+                    (TargetScore 50)
+                , sun
+                    (Probability 20)
+                    (TargetScore 20)
+                , seedPod
+                    (Probability 40)
+                ]
+          }
+        , { walls = yellowWalls fourthLevelWalls
+          , boardDimensions = { x = 7, y = 8 }
+          , tutorial = Nothing
+          , tileSettings =
+                [ seed
+                    Sunflower
+                    (Probability 25)
+                    (TargetScore 50)
+                , seed
+                    Foxglove
+                    (Probability 25)
+                    (TargetScore 50)
+                , seedPod
+                    (Probability 40)
+                ]
+          }
+        , { walls = yellowWalls centerColumns
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =
@@ -66,12 +100,27 @@ levels =
                 , sun
                     (Probability 30)
                     (TargetScore 20)
+                , rain
+                    (Probability 30)
+                    (TargetScore 20)
                 , seed
                     Foxglove
                     (Probability 25)
                     (TargetScore 20)
-                , seedPod
-                    (Probability 40)
                 ]
           }
+        ]
+
+
+fourthLevelWalls : List Coord
+fourthLevelWalls =
+    toCoords
+        [ [ w, w, s, s, s, w, w ]
+        , [ w, s, s, s, s, s, w ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ w, s, s, s, s, s, w ]
+        , [ w, w, s, s, s, w, w ]
         ]

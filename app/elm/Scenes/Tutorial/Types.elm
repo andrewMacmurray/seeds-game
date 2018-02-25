@@ -24,7 +24,7 @@ type alias Model =
     }
 
 
-type alias InitConfig =
+type alias Config =
     { text : Dict Int String
     , boardDimensions : BoardDimensions
     , board : Board
@@ -39,7 +39,7 @@ type alias Sequence =
 
 type Msg
     = DragTile Coord
-    | StartSequence InitConfig
+    | StartSequence Config
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving

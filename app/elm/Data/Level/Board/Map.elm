@@ -1,9 +1,20 @@
-module Data.Level.Board.Square exposing (..)
+module Data.Level.Board.Map exposing (..)
 
 import Data.Level.Board.Tile exposing (getTileType, setToDragging)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
-import Scenes.Level.Types exposing (..)
 import Dict
+import Helpers.Dict exposing (mapValues)
+import Scenes.Level.Types exposing (..)
+
+
+mapBoard : (Block -> Block) -> HasBoard model -> HasBoard model
+mapBoard f model =
+    { model | board = (mapValues f) model.board }
+
+
+transformBoard : (a -> a) -> { m | board : a } -> { m | board : a }
+transformBoard fn model =
+    { model | board = fn model.board }
 
 
 setAllTilesOfTypeToDragging : Board -> Board

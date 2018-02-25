@@ -11,7 +11,6 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , moveShape : Maybe MoveShape
-    , seedType : SeedType
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
     , scoreIconSize : Int
@@ -28,7 +27,7 @@ type alias Model =
 type Msg
     = InitTiles (List ( WallColor, Coord )) (List TileType)
     | SquareMove
-    | StopMove MoveShape
+    | StopMove
     | StartMove Move
     | CheckMove Move
     | SetLeavingTiles

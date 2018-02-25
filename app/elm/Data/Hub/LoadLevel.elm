@@ -24,6 +24,5 @@ initWithLevelData ( worldData, { tileSettings, walls, boardDimensions } ) model 
         , board = addWalls walls model.board
         , boardDimensions = boardDimensions
         , tileSettings = tileSettings
-        , seedType = worldData.seedType
         , levelComplete = False
     }
