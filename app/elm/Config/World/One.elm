@@ -65,7 +65,7 @@ levels =
                     (TargetScore 10)
                 ]
           }
-        , { walls = yellowWalls <| column 3
+        , { walls = yellowWalls fourthLevelWalls
           , boardDimensions = { x = 7, y = 7 }
           , tutorial = Just SquareTutorial.config
           , tileSettings =
@@ -160,6 +160,19 @@ thirdLevelWalls =
         , [ s, s, s, s, s, s ]
         , [ s, w, s, s, w, s ]
         , [ s, s, s, s, s, s ]
+        ]
+
+
+fourthLevelWalls : List Coord
+fourthLevelWalls =
+    toCoords
+        [ [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, w, s, s, s ]
         ]
 
 
