@@ -1,93 +1,12 @@
 module Config.Wall exposing (..)
 
+import Data.Color exposing (blockYellow)
 import Scenes.Level.Types exposing (..)
 
 
-centerColumns : List Coord
-centerColumns =
-    combineWalls
-        [ column 3
-        , column 4
-        ]
-
-
-moreWalls : List Coord
-moreWalls =
-    combineWalls
-        [ standardWalls
-        , topCenter
-        , bottomCenter
-        ]
-
-
-standardWalls : List Coord
-standardWalls =
-    combineWalls
-        [ centerFour
-        , leftCenter
-        , rightCenter
-        ]
-
-
-corners : List Coord
-corners =
-    combineWalls
-        [ topLeft
-        , bottomRight
-        ]
-
-
-centerFour : List Coord
-centerFour =
-    [ ( 3, 3 )
-    , ( 4, 3 )
-    , ( 3, 4 )
-    , ( 4, 4 )
-    ]
-
-
-topLeft : List Coord
-topLeft =
-    [ ( 0, 0 )
-    , ( 1, 0 )
-    , ( 0, 1 )
-    ]
-
-
-bottomRight : List Coord
-bottomRight =
-    [ ( 7, 7 )
-    , ( 6, 7 )
-    , ( 7, 6 )
-    ]
-
-
-bottomCenter : List Coord
-bottomCenter =
-    [ ( 7, 3 )
-    , ( 7, 4 )
-    ]
-
-
-topCenter : List Coord
-topCenter =
-    [ ( 0, 3 )
-    , ( 0, 4 )
-    ]
-
-
-leftCenter : List Coord
-leftCenter =
-    [ ( 3, 0 )
-    , ( 4, 0 )
-    ]
-
-
-rightCenter : List Coord
-rightCenter =
-    [ ( 3, 7 )
-    , ( 4, 7 )
-    ]
+yellowWalls : List Coord -> List ( WallColor, Coord )
+yellowWalls =
+    withColor blockYellow
 
 
 withColor : WallColor -> List Coord -> List ( WallColor, Coord )
@@ -95,11 +14,97 @@ withColor color =
     List.map ((,) color)
 
 
-combineWalls : List (List Coord) -> List Coord
-combineWalls =
-    List.concat
+centerColumns : List Coord
+centerColumns =
+    toCoords
+        [ [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        ]
 
 
-column : Int -> List Coord
-column y =
-    List.range 0 7 |> List.map (\x -> ( x, y ))
+standardWalls : List Coord
+standardWalls =
+    toCoords
+        [ [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ w, s, s, w, w, s, s, w ]
+        , [ w, s, s, w, w, s, s, w ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        ]
+
+
+corners : List Coord
+corners =
+    toCoords
+        [ [ w, w, s, s, s, s, s, s ]
+        , [ w, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, w ]
+        , [ s, s, s, s, s, s, w, w ]
+        ]
+
+
+innerBorders : List Coord
+innerBorders =
+    toCoords
+        [ [ s, s, s, s, s, s, s, s ]
+        , [ s, w, w, s, s, w, w, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, w, w, s, s, w, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        ]
+
+
+borders : List Coord
+borders =
+    toCoords
+        [ [ w, w, s, w, w, s, w, w ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ w, w, s, w, w, s, w, w ]
+        ]
+
+
+toCoords : List (List Bool) -> List Coord
+toCoords allWalls =
+    allWalls
+        |> List.indexedMap (\i r -> List.indexedMap (toCoord i) r)
+        |> List.concat
+        |> List.concat
+
+
+toCoord : Int -> Int -> Bool -> List Coord
+toCoord i j x =
+    if x then
+        [ ( i, j ) ]
+    else
+        []
+
+
+w : Bool
+w =
+    True
+
+
+s : Bool
+s =
+    False

@@ -6,8 +6,8 @@ import Scenes.Level.Types exposing (SeedType(..), TileType(..), Board, BoardDime
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
 
-initConfig : InitConfig
-initConfig =
+config : Config
+config =
     { text = text
     , boardDimensions = boardDimensions
     , board = initialBoard

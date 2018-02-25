@@ -123,7 +123,7 @@ update msg model =
             model ! []
 
 
-handleInit : InitConfig -> Model -> Model
+handleInit : Config -> Model -> Model
 handleInit config model =
     { model
         | boardDimensions = config.boardDimensions

@@ -31,7 +31,6 @@ initialState =
     , scores = Dict.empty
     , isDragging = False
     , moveShape = Nothing
-    , seedType = Sunflower
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
     , scoreIconSize = 32
@@ -58,7 +57,7 @@ update msg model =
         StopMove ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
-                    model ! [ growSeedPodsSequence ]
+                    model ! [ growSeedPodsSequence model.moveShape ]
 
                 _ ->
                     model ! [ removeTilesSequence model.moveShape ]
@@ -138,10 +137,10 @@ update msg model =
 -- SEQUENCES
 
 
-growSeedPodsSequence : Cmd Level.Msg
-growSeedPodsSequence =
+growSeedPodsSequence : Maybe MoveShape -> Cmd Level.Msg
+growSeedPodsSequence moveShape =
     sequenceMs
-        [ ( 0, SetGrowingSeedPods )
+        [ ( initialDelay moveShape, SetGrowingSeedPods )
         , ( 0, ResetMove )
         , ( 800, GrowPodsToSeeds )
         , ( 600, ResetGrowingSeeds )
@@ -151,7 +150,7 @@ growSeedPodsSequence =
 removeTilesSequence : Maybe MoveShape -> Cmd Level.Msg
 removeTilesSequence moveShape =
     sequenceMs
-        [ ( leaveDelay moveShape, SetLeavingTiles )
+        [ ( initialDelay moveShape, SetLeavingTiles )
         , ( 0, ResetMove )
         , ( fallDelay moveShape, SetFallingTiles )
         , ( 500, ShiftBoard )
@@ -161,10 +160,10 @@ removeTilesSequence moveShape =
         ]
 
 
-leaveDelay : Maybe MoveShape -> Float
-leaveDelay moveShape =
+initialDelay : Maybe MoveShape -> Float
+initialDelay moveShape =
     if moveShape == Just Square then
-        300
+        200
     else
         0
 

@@ -21,8 +21,8 @@ world =
 levels : WorldLevels
 levels =
     makeWorldLevels
-        [ { walls = []
-          , boardDimensions = { x = 8, y = 8 }
+        [ { walls = yellowWalls firstLevelWalls
+          , boardDimensions = { x = 6, y = 8 }
           , tutorial = Nothing
           , tileSettings =
                 [ rain
@@ -36,7 +36,7 @@ levels =
                     (Probability 40)
                 ]
           }
-        , { walls = withColor blockYellow corners
+        , { walls = yellowWalls corners
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =
@@ -78,4 +78,18 @@ levels =
                     (Probability 25)
                 ]
           }
+        ]
+
+
+firstLevelWalls : List Coord
+firstLevelWalls =
+    toCoords
+        [ [ s, s, s, s, s, s ]
+        , [ w, w, w, s, s, s ]
+        , [ s, s, s, s, s, s ]
+        , [ s, s, s, w, w, w ]
+        , [ s, s, s, s, s, s ]
+        , [ w, w, w, s, s, s ]
+        , [ s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s ]
         ]

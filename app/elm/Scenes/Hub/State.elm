@@ -154,7 +154,7 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
-tutorialData : Main.Model -> Progress -> Maybe TutorialModel.InitConfig
+tutorialData : Main.Model -> Progress -> Maybe TutorialModel.Config
 tutorialData model level =
     let
         ( _, levelData ) =

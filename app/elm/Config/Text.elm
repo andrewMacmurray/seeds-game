@@ -25,7 +25,6 @@ successMessages =
         [ "Amazing!"
         , "You're a Hero!"
         , "Incredible!"
-        , "Astounding!"
         , "You're the best!"
         , "Stunning!"
         ]

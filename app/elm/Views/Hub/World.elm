@@ -51,7 +51,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
                   , marginBottom 50
                   , color worldData.textColor
                   ]
-                , offsetStyles levelNumber
+                , offsetStyles level
                 ]
             ]
             [ renderIcon ( world, level ) worldData.seedType model

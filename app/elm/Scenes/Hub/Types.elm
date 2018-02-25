@@ -95,5 +95,5 @@ type alias LevelData =
     { tileSettings : List TileSetting
     , walls : List ( WallColor, Coord )
     , boardDimensions : BoardDimensions
-    , tutorial : Maybe Tutorial.InitConfig
+    , tutorial : Maybe Tutorial.Config
     }
