@@ -61,7 +61,7 @@ renderLineLayer model (( coord, _ ) as move) =
 
 handleStop : Level.Model -> Attribute Level.Msg
 handleStop model =
-    if model.isDragging && model.moveShape /= Just Square then
-        onMouseUp <| StopMove Line
+    if model.isDragging then
+        onMouseUp StopMove
     else
         emptyProperty

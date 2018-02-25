@@ -4,20 +4,18 @@ import Config.Text exposing (getSuccessMessage)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
+import Data.Level.Board.Map exposing (mapBoard, setAllTilesOfTypeToDragging, transformBoard)
 import Data.Level.Board.Shift exposing (shiftBoard)
-import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
-import Delay
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
 import Scenes.Hub.Types as Main exposing (LevelData, Progress)
 import Scenes.Level.Types as Level exposing (..)
-import Time exposing (millisecond)
 import Types exposing (InfoWindow(..))
 
 
@@ -57,13 +55,13 @@ update msg model =
             )
                 ! []
 
-        StopMove moveShape ->
+        StopMove ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
                     model ! [ growSeedPodsSequence ]
 
                 _ ->
-                    model ! [ removeTilesSequence moveShape ]
+                    model ! [ removeTilesSequence model.moveShape ]
 
         SetLeavingTiles ->
             (model
@@ -114,7 +112,7 @@ update msg model =
             handleCheckMove move model
 
         SquareMove ->
-            handleSquareMove model ! [ Delay.after 600 millisecond <| StopMove Square ]
+            handleSquareMove model ! []
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
@@ -150,10 +148,10 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : MoveShape -> Cmd Level.Msg
+removeTilesSequence : Maybe MoveShape -> Cmd Level.Msg
 removeTilesSequence moveShape =
     sequenceMs
-        [ ( 0, SetLeavingTiles )
+        [ ( leaveDelay moveShape, SetLeavingTiles )
         , ( 0, ResetMove )
         , ( fallDelay moveShape, SetFallingTiles )
         , ( 500, ShiftBoard )
@@ -163,9 +161,17 @@ removeTilesSequence moveShape =
         ]
 
 
-fallDelay : MoveShape -> Float
+leaveDelay : Maybe MoveShape -> Float
+leaveDelay moveShape =
+    if moveShape == Just Square then
+        300
+    else
+        0
+
+
+fallDelay : Maybe MoveShape -> Float
 fallDelay moveShape =
-    if moveShape == Square then
+    if moveShape == Just Square then
         500
     else
         350
@@ -198,16 +204,6 @@ handleInsertNewSeeds seedType =
 handleAddScore : Level.Model -> Level.Model
 handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
-
-
-mapBoard : (Block -> Block) -> HasBoard model -> HasBoard model
-mapBoard f model =
-    { model | board = (mapValues f) model.board }
-
-
-transformBoard : (a -> a) -> { m | board : a } -> { m | board : a }
-transformBoard fn model =
-    { model | board = fn model.board }
 
 
 handleStopMove : Level.Model -> Level.Model

@@ -1,13 +1,13 @@
 module Scenes.Tutorial.State exposing (..)
 
 import Data.Level.Board.Falling exposing (setFallingTiles)
+import Data.Level.Board.Map exposing (mapBoard, setAllTilesOfTypeToDragging, transformBoard)
 import Data.Level.Board.Shift exposing (shiftBoard)
-import Data.Level.Board.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
-import Scenes.Level.State exposing (handleInsertEnteringTiles, mapBoard, transformBoard)
+import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Level.Types exposing (Block(..), Coord, MoveShape(..), SeedType(..), TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
 
