@@ -1,17 +1,17 @@
 module Views.Hub.World exposing (..)
 
+import Config.AllLevels exposing (allLevels)
 import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Dict
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (backgroundColor, color, heightStyle, marginBottom, marginTop, widthStyle)
+import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Config.AllLevels exposing (allLevels)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
-import Views.Seed.All exposing (renderSeed)
 import Types exposing (..)
+import Views.Seed.All exposing (renderSeed)
 
 
 renderWorlds : Hub.Model -> List (Html Hub.Msg)
@@ -39,17 +39,19 @@ renderLevel : Hub.Model -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelDat
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
         levelNumber =
-            getLevelNumber ( world, level ) allLevels |> toString
+            getLevelNumber ( world, level ) allLevels
     in
         div
             [ showInfo ( world, level ) model
-            , class "tc center pointer"
-            , id <| "level-" ++ levelNumber
-            , style
-                [ widthStyle 35
-                , marginTop 50
-                , marginBottom 50
-                , color worldData.textColor
+            , class "tc pointer"
+            , id <| "level-" ++ (toString levelNumber)
+            , styles
+                [ [ widthStyle 35
+                  , marginTop 50
+                  , marginBottom 50
+                  , color worldData.textColor
+                  ]
+                , offsetStyles levelNumber
                 ]
             ]
             [ renderIcon ( world, level ) worldData.seedType model
@@ -57,7 +59,36 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             ]
 
 
-renderNumber : String -> ( WorldNumber, LevelNumber ) -> WorldData -> Hub.Model -> Html Hub.Msg
+offsetStyles : Int -> List Style
+offsetStyles levelNumber =
+    let
+        center =
+            [ ( "margin-left", "auto" )
+            , ( "margin-right", "auto" )
+            ]
+
+        right =
+            [ ( "margin-left", "auto" ) ]
+
+        left =
+            []
+
+        offsetSin =
+            toFloat (levelNumber - 1)
+                |> (*) 90
+                |> degrees
+                |> sin
+                |> round
+    in
+        if offsetSin == 0 then
+            center
+        else if offsetSin == 1 then
+            right
+        else
+            left
+
+
+renderNumber : Int -> ( WorldNumber, LevelNumber ) -> WorldData -> Hub.Model -> Html Hub.Msg
 renderNumber visibleLevelNumber currentLevel worldData model =
     if reachedLevel currentLevel model then
         div
@@ -69,9 +100,9 @@ renderNumber visibleLevelNumber currentLevel worldData model =
                 , heightStyle 25
                 ]
             ]
-            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text visibleLevelNumber ] ]
+            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text <| toString visibleLevelNumber ] ]
     else
-        p [ style [ color worldData.textColor ] ] [ text visibleLevelNumber ]
+        p [ style [ color worldData.textColor ] ] [ text <| toString visibleLevelNumber ]
 
 
 showInfo : Progress -> Hub.Model -> Attribute Hub.Msg
