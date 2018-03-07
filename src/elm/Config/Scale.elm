@@ -25,6 +25,21 @@ smallestWindowDimension { height, width } =
         height
 
 
-bottomBarHeight : number
-bottomBarHeight =
+scoreIconSize : number
+scoreIconSize =
+    32
+
+
+baseTileSizeX : number
+baseTileSizeX =
+    55
+
+
+baseTileSizeY : number
+baseTileSizeY =
+    51
+
+
+topBarHeight : number
+topBarHeight =
     80

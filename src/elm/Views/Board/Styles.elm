@@ -1,12 +1,11 @@
 module Views.Board.Styles exposing (..)
 
+import Config.Scale as ScaleConfig
 import Data.Color exposing (..)
-import Data.Level.Board.Block as Block
-import Data.Level.Board.Block exposing (getTileState)
+import Data.Level.Board.Block as Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Dict exposing (Dict)
-import Config.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Window
@@ -19,17 +18,17 @@ boardMarginTop model =
 
 boardOffsetTop : TileConfig model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model) // 2 + model.topBarHeight // 2
+    (model.window.height - boardHeight model) // 2 + ScaleConfig.topBarHeight // 2
 
 
 boardHeight : TileConfig model -> Int
 boardHeight model =
-    round (model.tileSize.y * tileScaleFactor model.window) * model.boardDimensions.y
+    round (ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor model.window) * model.boardDimensions.y
 
 
 boardWidth : TileConfig model -> Int
 boardWidth model =
-    round (model.tileSize.x * tileScaleFactor model.window) * model.boardDimensions.x
+    round (ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor model.window) * model.boardDimensions.x
 
 
 tileCoordsStyles : TileConfig model -> Coord -> List Style
@@ -42,13 +41,13 @@ tileCoordsStyles model coord =
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
-tilePosition { window, tileSize } ( y, x ) =
+tilePosition { window } ( y, x ) =
     let
         tileScale =
-            tileScaleFactor window
+            ScaleConfig.tileScaleFactor window
     in
-        ( (toFloat y) * tileSize.y * tileScale
-        , (toFloat x) * tileSize.x * tileScale
+        ( (toFloat y) * ScaleConfig.baseTileSizeY * tileScale
+        , (toFloat x) * ScaleConfig.baseTileSizeX * tileScale
         )
 
 
@@ -56,7 +55,7 @@ wallStyles : Window.Size -> Move -> List Style
 wallStyles window ( _, block ) =
     let
         wallSize =
-            tileScaleFactor window * 45
+            ScaleConfig.tileScaleFactor window * 45
     in
         case block of
             Wall color ->
@@ -166,7 +165,7 @@ exitXDistance : Int -> Level.Model -> Float
 exitXDistance n model =
     let
         scoreWidth =
-            model.scoreIconSize * 2
+            ScaleConfig.scoreIconSize * 2
 
         scoreBarWidth =
             model.tileSettings
@@ -178,14 +177,14 @@ exitXDistance n model =
             (boardWidth model - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction model.tileSize <| tileScaleFactor model.window
+            exitOffsetFunction <| ScaleConfig.tileScaleFactor model.window
     in
         toFloat (baseOffset + n * scoreWidth) + offset
 
 
-exitOffsetFunction : TileSize -> Float -> Float
-exitOffsetFunction tileSize x =
-    25 * (x ^ 2) - (75 * x) + tileSize.x
+exitOffsetFunction : Float -> Float
+exitOffsetFunction x =
+    25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
 
 
 exitYdistance : Level.Model -> Int
@@ -221,13 +220,13 @@ draggingStyles moveShape ( _, tileState ) =
 
 
 tileWidthHeightStyles : TileConfig model -> List Style
-tileWidthHeightStyles { tileSize, window } =
+tileWidthHeightStyles { window } =
     let
         tileScale =
-            tileScaleFactor window
+            ScaleConfig.tileScaleFactor window
     in
-        [ widthStyle <| tileSize.x * tileScale
-        , heightStyle <| tileSize.y * tileScale
+        [ widthStyle <| ScaleConfig.baseTileSizeX * tileScale
+        , heightStyle <| ScaleConfig.baseTileSizeY * tileScale
         ]
 
 

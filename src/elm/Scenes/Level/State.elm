@@ -33,9 +33,6 @@ initialState =
     , moveShape = Nothing
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
-    , scoreIconSize = 32
-    , tileSize = { y = 51, x = 55 }
-    , topBarHeight = 80
     , levelComplete = False
     , successMessageIndex = 0
     , levelInfoWindow = Hidden

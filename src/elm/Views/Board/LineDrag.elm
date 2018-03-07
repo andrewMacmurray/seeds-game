@@ -1,8 +1,8 @@
 module Views.Board.LineDrag exposing (..)
 
+import Config.Scale as ScaleConfig
 import Data.Level.Move.Square exposing (hasSquareTile)
 import Data.Level.Move.Utils exposing (currentMoveTileType, currentMoves, lastMove)
-import Config.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
@@ -34,7 +34,7 @@ lineDrag ({ window } as model) =
                 |> Maybe.withDefault ""
 
         tileScale =
-            tileScaleFactor window
+            ScaleConfig.tileScaleFactor window
     in
         svg
             [ width <| px window.width
@@ -59,10 +59,7 @@ lastMoveOrigin : Level.Model -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
         tileScale =
-            tileScaleFactor window
-
-        tileSize =
-            model.tileSize
+            ScaleConfig.tileScaleFactor window
 
         ( ( y, x ), _ ) =
             lastMove model.board
@@ -74,10 +71,10 @@ lastMoveOrigin ({ window } as model) =
             toFloat x
 
         sY =
-            tileSize.y * tileScale
+            ScaleConfig.baseTileSizeY * tileScale
 
         sX =
-            tileSize.x * tileScale
+            ScaleConfig.baseTileSizeX * tileScale
 
         offsetY =
             boardOffsetTop model |> toFloat

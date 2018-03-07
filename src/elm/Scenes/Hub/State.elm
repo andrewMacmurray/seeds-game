@@ -1,13 +1,13 @@
 module Scenes.Hub.State exposing (..)
 
 import Config.AllLevels exposing (allLevels)
+import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
 import Helpers.Effect exposing (..)
-import Config.Scale exposing (tileScaleFactor)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
@@ -22,7 +22,7 @@ init : ( Main.Model, Cmd Main.Msg )
 init =
     initialState
         ! [ getWindowSize
-          , getExternalAnimations initialState.levelModel.tileSize.y
+          , getExternalAnimations ScaleConfig.baseTileSizeY
           , randomSuccessMessageIndex RandomSuccessMessageIndex |> Cmd.map LevelMsg
           ]
 
@@ -148,7 +148,7 @@ update msg model =
                 , tutorialModel = addWindowSizeToTutorial size model
                 , window = size
             }
-                ! [ getExternalAnimations <| model.levelModel.tileSize.y * tileScaleFactor size ]
+                ! [ getExternalAnimations <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
 
         MousePosition position ->
             { model | levelModel = addMousePositionToLevel position model } ! []

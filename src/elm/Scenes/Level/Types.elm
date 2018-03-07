@@ -13,9 +13,6 @@ type alias Model =
     , moveShape : Maybe MoveShape
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
-    , scoreIconSize : Int
-    , tileSize : TileSize
-    , topBarHeight : Int
     , levelComplete : Bool
     , levelInfoWindow : InfoWindow String
     , successMessageIndex : Int
@@ -73,23 +70,14 @@ type alias BoardConfig a =
     { a
         | board : Board
         , boardDimensions : BoardDimensions
-        , tileSize : TileSize
     }
 
 
 type alias TileConfig a =
     { a
         | moveShape : Maybe MoveShape
-        , tileSize : TileSize
         , window : Window.Size
         , boardDimensions : BoardDimensions
-        , topBarHeight : Int
-    }
-
-
-type alias TileSize =
-    { y : Float
-    , x : Float
     }
 
 

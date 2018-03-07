@@ -1,12 +1,13 @@
 module Views.Board.TopBar exposing (..)
 
+import Config.Scale as ScaleConfig
 import Data.Color exposing (gold, washedYellow)
-import Views.Board.Styles exposing (seedBackgrounds)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
+import Views.Board.Styles exposing (seedBackgrounds)
 import Views.Icons.Tick exposing (tickBackground)
 
 
@@ -15,7 +16,7 @@ topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
         , style
-            [ heightStyle model.topBarHeight
+            [ heightStyle ScaleConfig.topBarHeight
             , color gold
             , backgroundColor washedYellow
             ]
@@ -35,7 +36,7 @@ renderScore : Level.Model -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
-            model.scoreIconSize // 2
+            ScaleConfig.scoreIconSize // 2
     in
         div
             [ class "relative tc"
@@ -44,7 +45,7 @@ renderScore model tileType =
                 , marginLeft scoreMargin
                 ]
             ]
-            [ renderScoreIcon model tileType
+            [ renderScoreIcon tileType
             , p
                 [ class "ma0 absolute left-0 right-0 f6"
                 , style [ ( "bottom", "-1.5em" ) ]
@@ -86,9 +87,9 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : Level.Model -> TileType -> Html msg
-renderScoreIcon { scoreIconSize } tileType =
-    scoreIcon tileType scoreIconSize
+renderScoreIcon : TileType -> Html msg
+renderScoreIcon tileType =
+    scoreIcon tileType ScaleConfig.scoreIconSize
 
 
 scoreIcon : TileType -> number -> Html msg

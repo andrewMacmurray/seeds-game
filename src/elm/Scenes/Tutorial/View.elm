@@ -1,16 +1,16 @@
 module Scenes.Tutorial.View exposing (..)
 
+import Config.Scale as ScaleConfig
 import Data.Color exposing (darkYellow, greyYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging)
 import Data.Tutorial exposing (getText)
 import Dict
-import Config.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Level.Types exposing (Move, SeedType(..), TileConfig, TileSize, TileState(..), TileType(..))
+import Scenes.Level.Types exposing (Move, SeedType(..), TileConfig, TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
 import Views.Board.Layout exposing (renderLineLayer, renderLines)
 import Views.Board.Styles exposing (boardHeight, boardWidth)
@@ -73,10 +73,10 @@ tutorialBoard model =
 
 
 renderResourceBank : Model -> Html msg
-renderResourceBank ({ window, tileSize, resourceBankVisible, resourceBank } as model) =
+renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     let
         tileScale =
-            tileScaleFactor window
+            ScaleConfig.tileScaleFactor window
 
         offsetX =
             resourceBankOffsetX model
@@ -91,14 +91,14 @@ renderResourceBank ({ window, tileSize, resourceBankVisible, resourceBank } as m
                 ]
             , classList <| showIf resourceBankVisible
             ]
-            [ scoreIcon resourceBank <| tileSize.y * tileScale ]
+            [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
 
 
 resourceBankOffsetX : Model -> Float
 resourceBankOffsetX model =
-    model.tileSize.x
+    ScaleConfig.baseTileSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * tileScaleFactor model.window
+        * ScaleConfig.tileScaleFactor model.window
         / 2
 
 

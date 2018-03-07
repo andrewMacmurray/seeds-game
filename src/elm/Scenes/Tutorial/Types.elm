@@ -1,6 +1,6 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileSize, TileType, BoardDimensions)
+import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileType, BoardDimensions)
 import Window
 import Dict exposing (Dict)
 
@@ -14,10 +14,8 @@ type alias Model =
     , canvasVisible : Bool
     , skipped : Bool
     , moveShape : Maybe MoveShape
-    , tileSize : TileSize
     , resourceBank : TileType
     , boardDimensions : BoardDimensions
-    , topBarHeight : Int
     , currentText : Int
     , text : Dict Int String
     , window : Window.Size

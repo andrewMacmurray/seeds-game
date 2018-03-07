@@ -22,10 +22,8 @@ initialState =
     , canvasVisible = True
     , skipped = False
     , moveShape = Just Line
-    , tileSize = { y = 51, x = 55 }
     , resourceBank = Seed Sunflower
     , boardDimensions = { y = 2, x = 2 }
-    , topBarHeight = 0
     , currentText = 1
     , text = Dict.empty
     , window = { height = 0, width = 0 }
