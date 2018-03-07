@@ -10,6 +10,7 @@ type alias Model =
     { board : Board
     , scores : Scores
     , isDragging : Bool
+    , remainingMoves : Int
     , moveShape : Maybe MoveShape
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions

@@ -34,6 +34,11 @@ emptyStyle =
     ( "", "" )
 
 
+paddingAll : number -> Style
+paddingAll n =
+    ( "padding", px n )
+
+
 marginRight : number -> Style
 marginRight n =
     ( "margin-right", px n )
@@ -52,6 +57,11 @@ topStyle n =
 bottomStyle : number -> Style
 bottomStyle n =
     ( "bottom", px n )
+
+
+leftStyle : number -> Style
+leftStyle n =
+    ( "left", px n )
 
 
 marginLeft : number -> Style

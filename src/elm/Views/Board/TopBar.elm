@@ -1,13 +1,13 @@
 module Views.Board.TopBar exposing (..)
 
 import Config.Scale as ScaleConfig
-import Data.Color exposing (gold, washedYellow)
+import Data.Color exposing (darkYellow, gold, washedYellow)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
-import Views.Board.Styles exposing (seedBackgrounds)
+import Views.Board.Styles exposing (boardWidth, seedBackgrounds)
 import Views.Icons.Tick exposing (tickBackground)
 
 
@@ -22,13 +22,13 @@ topBar model =
             ]
         ]
         [ div
-            [ style
-                [ marginTop -16
-                , ( "padding", "0 9px" )
-                ]
-            , class "flex justify-center"
+            [ style [ widthStyle <| boardWidth model, heightStyle ScaleConfig.topBarHeight ]
+            , class "flex items-center justify-center relative"
             ]
-            (List.map (renderScore model) (scoreTileTypes model.tileSettings))
+            [ remainingMoves model
+            , div [ style [ marginTop -16, ( "padding", "0 9px" ) ], class "flex justify-center" ] <|
+                List.map (renderScore model) (scoreTileTypes model.tileSettings)
+            ]
         ]
 
 
@@ -52,6 +52,25 @@ renderScore model tileType =
                 ]
                 [ scoreContent tileType model.scores ]
             ]
+
+
+remainingMoves : Level.Model -> Html msg
+remainingMoves model =
+    div
+        [ style [ color darkYellow, leftStyle 8 ], class "absolute top-1" ]
+        [ div
+            [ style
+                [ widthStyle 20
+                , heightStyle 20
+                , ( "border", "1px solid" )
+                , paddingAll 17
+                ]
+            , class "br-100 flex items-center justify-center"
+            ]
+            [ p [ class "ma0 f6" ] [ text <| toString model.remainingMoves ]
+            ]
+        , p [ class "ma0 tracked f7 mt1 tc" ] [ text "moves" ]
+        ]
 
 
 scoreContent : TileType -> Scores -> Html msg

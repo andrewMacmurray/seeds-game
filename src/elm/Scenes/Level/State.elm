@@ -30,6 +30,7 @@ initialState =
     { board = Dict.empty
     , scores = Dict.empty
     , isDragging = False
+    , remainingMoves = 10
     , moveShape = Nothing
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
@@ -99,7 +100,11 @@ update msg model =
             transformBoard (mapValues setEnteringToStatic) model ! []
 
         ResetMove ->
-            handleStopMove model ! []
+            (model
+                |> handleResetMove
+                |> handleDecrementRemainingMoves
+            )
+                ! []
 
         StartMove move ->
             handleStartMove move model ! []
@@ -202,12 +207,20 @@ handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-handleStopMove : Level.Model -> Level.Model
-handleStopMove model =
+handleResetMove : Level.Model -> Level.Model
+handleResetMove model =
     { model
         | isDragging = False
         , moveShape = Nothing
     }
+
+
+handleDecrementRemainingMoves : Level.Model -> Level.Model
+handleDecrementRemainingMoves model =
+    if model.remainingMoves < 1 then
+        { model | remainingMoves = 0 }
+    else
+        { model | remainingMoves = model.remainingMoves - 1 }
 
 
 handleStartMove : Move -> Level.Model -> Level.Model
