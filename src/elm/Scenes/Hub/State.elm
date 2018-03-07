@@ -7,7 +7,7 @@ import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
 import Helpers.Effect exposing (..)
-import Helpers.Scale exposing (tileScaleFactor)
+import Config.Scale exposing (tileScaleFactor)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level

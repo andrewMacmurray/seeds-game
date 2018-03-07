@@ -6,7 +6,7 @@ import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Dict exposing (Dict)
-import Helpers.Scale exposing (tileScaleFactor)
+import Config.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Window
@@ -257,16 +257,32 @@ strokeColors : TileType -> String
 strokeColors tile =
     case tile of
         Rain ->
-            svgStyle "stroke" lightBlue
+            lightBlue
 
         Sun ->
-            svgStyle "stroke" gold
+            gold
 
         SeedPod ->
-            svgStyle "stroke" green
+            green
 
-        Seed _ ->
-            svgStyle "stroke" darkBrown
+        Seed seedType ->
+            seedStrokeColors seedType
+
+
+seedStrokeColors : SeedType -> String
+seedStrokeColors seedType =
+    case seedType of
+        Sunflower ->
+            darkBrown
+
+        Foxglove ->
+            purple
+
+        Lupin ->
+            crimson
+
+        _ ->
+            darkBrown
 
 
 tileColors : TileType -> List Style

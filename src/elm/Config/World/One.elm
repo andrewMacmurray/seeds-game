@@ -37,7 +37,7 @@ levels =
                 ]
           }
         , { walls = yellowWalls secondLevelWalls
-          , boardDimensions = { x = 5, y = 5 }
+          , boardDimensions = { x = 6, y = 6 }
           , tutorial = Just RainTutorial.config
           , tileSettings =
                 [ seed
@@ -132,22 +132,23 @@ levels =
 firstLevelWalls : List Coord
 firstLevelWalls =
     toCoords
-        [ [ w, s, s, s, w ]
-        , [ s, w, s, w, s ]
+        [ [ s, s, s, s, s ]
+        , [ w, w, w, w, s ]
         , [ s, s, s, s, s ]
-        , [ s, w, s, w, s ]
-        , [ w, s, s, s, w ]
+        , [ s, w, w, w, w ]
+        , [ s, s, s, s, s ]
         ]
 
 
 secondLevelWalls : List Coord
 secondLevelWalls =
     toCoords
-        [ [ s, s, s, s, s ]
-        , [ s, w, s, w, s ]
-        , [ s, s, s, s, s ]
-        , [ s, w, s, w, s ]
-        , [ s, s, s, s, s ]
+        [ [ s, s, s, s, s, s ]
+        , [ s, s, w, w, w, w ]
+        , [ s, s, s, s, s, s ]
+        , [ w, w, w, w, s, s ]
+        , [ s, s, s, s, s, s ]
+        , [ s, s, w, w, w, w ]
         ]
 
 

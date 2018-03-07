@@ -1,4 +1,4 @@
-module Helpers.Scale exposing (..)
+module Config.Scale exposing (..)
 
 import Window exposing (Size)
 
@@ -7,19 +7,24 @@ tileScaleFactor : Size -> Float
 tileScaleFactor window =
     let
         dimension =
-            smallest window
+            smallestWindowDimension window
     in
         if dimension < 480 then
             0.8
         else if dimension > 480 && dimension < 720 then
-            1
+            0.98
         else
             1.2
 
 
-smallest : Size -> Int
-smallest { height, width } =
+smallestWindowDimension : Size -> Int
+smallestWindowDimension { height, width } =
     if height >= width then
         width
     else
         height
+
+
+bottomBarHeight : number
+bottomBarHeight =
+    80

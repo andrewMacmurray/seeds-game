@@ -2,8 +2,8 @@ module Views.Board.Line exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
 import Formatting exposing ((<>), print, s)
-import Helpers.Scale exposing (tileScaleFactor)
-import Helpers.Style exposing (rotateZ_, svgStyles, transform_, translate_)
+import Config.Scale exposing (tileScaleFactor)
+import Helpers.Style exposing (..)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
@@ -57,7 +57,7 @@ line_ window tileType bearing =
                 , y1 "0"
                 , x2 <| toString <| 50 * tileScale
                 , y2 "0"
-                , Svg.Attributes.style <| strokeColors tileType
+                , Svg.Attributes.style <| svgStyle "stroke" <| strokeColors tileType
                 ]
                 []
             ]

@@ -5,7 +5,7 @@ import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Scale exposing (tileScaleFactor)
+import Config.Scale exposing (tileScaleFactor)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -31,6 +31,7 @@ tutorialView model =
         [ div
             [ style [ ( "margin-top", pc -3 ), transitionStyle "0.8s linear" ]
             , classList <| showIf model.containerVisible
+            , class "tc"
             ]
             [ tutorialBoard model
             , p

@@ -2,8 +2,8 @@ module Views.Board.LineDrag exposing (..)
 
 import Data.Level.Move.Square exposing (hasSquareTile)
 import Data.Level.Move.Utils exposing (currentMoveTileType, currentMoves, lastMove)
-import Helpers.Scale exposing (tileScaleFactor)
-import Helpers.Style exposing (px)
+import Config.Scale exposing (tileScaleFactor)
+import Helpers.Style exposing (..)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
@@ -30,7 +30,7 @@ lineDrag ({ window } as model) =
 
         colorClass =
             currentMoveTileType model.board
-                |> Maybe.map strokeColors
+                |> Maybe.map (strokeColors >> svgStyle "stroke")
                 |> Maybe.withDefault ""
 
         tileScale =

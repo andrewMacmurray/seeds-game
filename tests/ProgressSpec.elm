@@ -1,6 +1,5 @@
 module ProgressSpec exposing (..)
 
-import Config.AllLevels exposing (allLevels)
 import Data.Hub.Progress exposing (incrementProgress)
 import Expect
 import Test exposing (..)
@@ -13,7 +12,7 @@ suite =
             \_ ->
                 let
                     actual =
-                        incrementProgress (Just ( 1, 2 )) ( 1, 1 ) allLevels
+                        incrementProgress (Just ( 1, 2 )) ( 1, 1 )
 
                     expected =
                         ( 1, 2 )
@@ -23,7 +22,7 @@ suite =
             \_ ->
                 let
                     actual =
-                        incrementProgress (Just ( 1, 2 )) ( 1, 3 ) allLevels
+                        incrementProgress (Just ( 1, 2 )) ( 1, 3 )
 
                     expected =
                         ( 1, 3 )
@@ -33,7 +32,7 @@ suite =
             \_ ->
                 let
                     actual =
-                        incrementProgress (Just ( 1, 5 )) ( 1, 5 ) allLevels
+                        incrementProgress (Just ( 1, 5 )) ( 1, 5 )
 
                     expected =
                         ( 1, 3 )
