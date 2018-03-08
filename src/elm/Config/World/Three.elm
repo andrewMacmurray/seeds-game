@@ -24,6 +24,7 @@ levels =
         [ { walls = yellowWalls firstLevelWalls
           , boardDimensions = { x = 6, y = 8 }
           , tutorial = Nothing
+          , moves = 10
           , tileSettings =
                 [ rain
                     (Probability 20)
@@ -37,6 +38,7 @@ levels =
                 ]
           }
         , { walls = yellowWalls corners
+          , moves = 10
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =
@@ -56,6 +58,7 @@ levels =
                 ]
           }
         , { walls = []
+          , moves = 10
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =

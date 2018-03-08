@@ -28,7 +28,17 @@ boardHeight model =
 
 boardWidth : TileConfig model -> Int
 boardWidth model =
-    round (ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor model.window) * model.boardDimensions.x
+    tileWidth model * model.boardDimensions.x
+
+
+boardFullWidth : TileConfig model -> Int
+boardFullWidth model =
+    tileWidth model * 8
+
+
+tileWidth : TileConfig model -> Int
+tileWidth model =
+    round <| ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor model.window
 
 
 tileCoordsStyles : TileConfig model -> Coord -> List Style

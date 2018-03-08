@@ -18,11 +18,12 @@ handleLoadLevel (( _, levelData ) as config) model =
 
 
 initWithLevelData : ( WorldData, LevelData ) -> Level.Model -> Level.Model
-initWithLevelData ( worldData, { tileSettings, walls, boardDimensions } ) model =
+initWithLevelData ( worldData, { tileSettings, walls, boardDimensions, moves } ) model =
     { model
         | scores = initialScores tileSettings
         , board = addWalls walls model.board
         , boardDimensions = boardDimensions
         , tileSettings = tileSettings
         , levelComplete = False
+        , remainingMoves = moves
     }

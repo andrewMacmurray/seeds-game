@@ -28,6 +28,7 @@ defaultLevel =
     { walls = []
     , boardDimensions = { x = 8, y = 8 }
     , tutorial = Nothing
+    , moves = 10
     , tileSettings =
         [ rain
             (Probability 25)

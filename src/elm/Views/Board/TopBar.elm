@@ -7,7 +7,7 @@ import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
-import Views.Board.Styles exposing (boardWidth, seedBackgrounds)
+import Views.Board.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 import Views.Icons.Tick exposing (tickBackground)
 
 
@@ -22,7 +22,7 @@ topBar model =
             ]
         ]
         [ div
-            [ style [ widthStyle <| boardWidth model, heightStyle ScaleConfig.topBarHeight ]
+            [ style [ widthStyle <| boardFullWidth model, heightStyle ScaleConfig.topBarHeight ]
             , class "flex items-center justify-center relative"
             ]
             [ remainingMoves model

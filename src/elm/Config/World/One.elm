@@ -29,6 +29,7 @@ levels =
         [ { walls = yellowWalls firstLevelWalls
           , boardDimensions = { x = 5, y = 5 }
           , tutorial = Just SeedTutorial.config
+          , moves = 10
           , tileSettings =
                 [ seed
                     Sunflower
@@ -39,6 +40,7 @@ levels =
         , { walls = yellowWalls secondLevelWalls
           , boardDimensions = { x = 6, y = 6 }
           , tutorial = Just RainTutorial.config
+          , moves = 10
           , tileSettings =
                 [ seed
                     Sunflower
@@ -52,6 +54,7 @@ levels =
         , { walls = yellowWalls thirdLevelWalls
           , boardDimensions = { x = 6, y = 6 }
           , tutorial = Just SunTutorial.config
+          , moves = 10
           , tileSettings =
                 [ rain
                     (Probability 33)
@@ -67,6 +70,7 @@ levels =
           }
         , { walls = yellowWalls fourthLevelWalls
           , boardDimensions = { x = 7, y = 7 }
+          , moves = 10
           , tutorial = Just SquareTutorial.config
           , tileSettings =
                 [ seed
@@ -79,6 +83,7 @@ levels =
                 ]
           }
         , { walls = []
+          , moves = 10
           , tutorial = Just SeedPodTutorial.config
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
@@ -94,6 +99,7 @@ levels =
                 ]
           }
         , { walls = yellowWalls sixthLevelWalls
+          , moves = 10
           , tutorial = Nothing
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =
@@ -110,6 +116,7 @@ levels =
           }
         , { walls = []
           , tutorial = Nothing
+          , moves = 10
           , boardDimensions = { x = 8, y = 8 }
           , tileSettings =
                 [ rain

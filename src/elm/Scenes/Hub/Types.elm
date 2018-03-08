@@ -96,4 +96,5 @@ type alias LevelData =
     , walls : List ( WallColor, Coord )
     , boardDimensions : BoardDimensions
     , tutorial : Maybe Tutorial.Config
+    , moves : Int
     }

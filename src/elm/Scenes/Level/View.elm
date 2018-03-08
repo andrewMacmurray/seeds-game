@@ -17,7 +17,7 @@ levelView model =
         , infoWindow model
         , board model
         , handleLineDrag model
-        , div [ class "w-100 h-100 fixed z-1 top-0", handleStop model ] [ backdrop ]
+        , div [ class "w-100 h-100 fixed z-1 top-0" ] [ backdrop ]
         ]
 
 

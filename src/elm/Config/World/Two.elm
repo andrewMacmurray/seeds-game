@@ -24,6 +24,7 @@ levels =
         [ { walls = yellowWalls borders
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
+          , moves = 10
           , tileSettings =
                 [ seed
                     Foxglove
@@ -38,6 +39,7 @@ levels =
           }
         , { walls = yellowWalls corners
           , boardDimensions = { x = 8, y = 8 }
+          , moves = 10
           , tutorial = Nothing
           , tileSettings =
                 [ seed
@@ -57,6 +59,7 @@ levels =
           }
         , { walls = yellowWalls innerBorders
           , boardDimensions = { x = 8, y = 8 }
+          , moves = 10
           , tutorial = Nothing
           , tileSettings =
                 [ rain
@@ -75,6 +78,7 @@ levels =
           }
         , { walls = yellowWalls fourthLevelWalls
           , boardDimensions = { x = 7, y = 8 }
+          , moves = 10
           , tutorial = Nothing
           , tileSettings =
                 [ seed
@@ -91,6 +95,7 @@ levels =
           }
         , { walls = yellowWalls centerColumns
           , boardDimensions = { x = 8, y = 8 }
+          , moves = 10
           , tutorial = Nothing
           , tileSettings =
                 [ seed
