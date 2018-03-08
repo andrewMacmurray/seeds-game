@@ -4,7 +4,7 @@ import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Score exposing (initialScores)
 import Scenes.Hub.Types as Main
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types as Level
+import Scenes.Level.Types as Level exposing (LevelStatus(InProgress))
 import Scenes.Level.State exposing (levelInit)
 
 
@@ -24,6 +24,6 @@ initWithLevelData ( worldData, { tileSettings, walls, boardDimensions, moves } )
         , board = addWalls walls model.board
         , boardDimensions = boardDimensions
         , tileSettings = tileSettings
-        , levelComplete = False
+        , levelStatus = InProgress
         , remainingMoves = moves
     }

@@ -14,7 +14,7 @@ type alias Model =
     , moveShape : Maybe MoveShape
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
-    , levelComplete : Bool
+    , levelStatus : LevelStatus
     , levelInfoWindow : InfoWindow String
     , successMessageIndex : Int
     , mouse : Mouse.Position
@@ -41,10 +41,16 @@ type Msg
     | ResetMove
     | CheckLevelComplete
     | RandomSuccessMessageIndex Int
-    | ShowInfo
+    | ShowInfo String
     | RemoveInfo
     | InfoHidden
-    | ExitLevel
+    | LevelWon
+    | LevelLost
+
+
+type OutMsg
+    = ExitLevelWithWin
+    | ExitLevelWithLose
 
 
 type alias Scores =
@@ -55,6 +61,12 @@ type alias Score =
     { target : Int
     , current : Int
     }
+
+
+type LevelStatus
+    = InProgress
+    | Lose
+    | Win
 
 
 type alias BoardDimensions =

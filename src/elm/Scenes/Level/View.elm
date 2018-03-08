@@ -2,7 +2,7 @@ module Scenes.Level.View exposing (..)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Scenes.Level.Types as Level
+import Scenes.Level.Types as Level exposing (LevelStatus(InProgress))
 import Views.Backdrop exposing (backdrop)
 import Views.Board.InfoWindow exposing (infoWindow)
 import Views.Board.Layout exposing (board, handleStop)
@@ -23,7 +23,7 @@ levelView model =
 
 disableIfComplete : Level.Model -> String
 disableIfComplete model =
-    if model.levelComplete then
+    if not <| model.levelStatus == InProgress then
         "touch-disabled"
     else
         ""

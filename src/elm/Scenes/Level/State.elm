@@ -1,6 +1,6 @@
 module Scenes.Level.State exposing (..)
 
-import Config.Text exposing (getSuccessMessage)
+import Config.Text exposing (failureMessage, getSuccessMessage)
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
@@ -14,6 +14,7 @@ import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplet
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
+import Helpers.OutMsg exposing ((!!!), (!!))
 import Scenes.Hub.Types as Main exposing (LevelData, Progress)
 import Scenes.Level.Types as Level exposing (..)
 import Types exposing (InfoWindow(..))
@@ -34,7 +35,7 @@ initialState =
     , moveShape = Nothing
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
-    , levelComplete = False
+    , levelStatus = InProgress
     , successMessageIndex = 0
     , levelInfoWindow = Hidden
     , mouse = { y = 0, x = 0 }
@@ -42,7 +43,7 @@ initialState =
     }
 
 
-update : Level.Msg -> Level.Model -> ( Level.Model, Cmd Level.Msg )
+update : Level.Msg -> Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe OutMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -50,25 +51,25 @@ update msg model =
                 |> handleMakeBoard tiles
                 |> transformBoard (addWalls walls)
             )
-                ! []
+                !! []
 
         StopMove ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
-                    model ! [ growSeedPodsSequence model.moveShape ]
+                    model !! [ growSeedPodsSequence model.moveShape ]
 
                 _ ->
-                    model ! [ removeTilesSequence model.moveShape ]
+                    model !! [ removeTilesSequence model.moveShape ]
 
         SetLeavingTiles ->
             (model
                 |> handleAddScore
                 |> mapBoard setToLeaving
             )
-                ! []
+                !! []
 
         SetFallingTiles ->
-            transformBoard setFallingTiles model ! []
+            transformBoard setFallingTiles model !! []
 
         ShiftBoard ->
             (model
@@ -76,63 +77,67 @@ update msg model =
                 |> mapBoard setFallingToStatic
                 |> mapBoard setLeavingToEmpty
             )
-                ! []
+                !! []
 
         SetGrowingSeedPods ->
-            mapBoard setDraggingToGrowing model ! []
+            mapBoard setDraggingToGrowing model !! []
 
         GrowPodsToSeeds ->
-            model ! [ generateRandomSeedType model.tileSettings ]
+            model !! [ generateRandomSeedType model.tileSettings ]
 
         InsertGrowingSeeds seedType ->
-            handleInsertNewSeeds seedType model ! []
+            handleInsertNewSeeds seedType model !! []
 
         ResetGrowingSeeds ->
-            mapBoard setGrowingToStatic model ! []
+            mapBoard setGrowingToStatic model !! []
 
         GenerateEnteringTiles ->
-            model ! [ generateEnteringTiles model.tileSettings model.board ]
+            model !! [ generateEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
-            handleInsertEnteringTiles tiles model ! []
+            handleInsertEnteringTiles tiles model !! []
 
         ResetEntering ->
-            transformBoard (mapValues setEnteringToStatic) model ! []
+            transformBoard (mapValues setEnteringToStatic) model !! []
 
         ResetMove ->
             (model
                 |> handleResetMove
                 |> handleDecrementRemainingMoves
             )
-                ! []
+                !! []
 
         StartMove move ->
-            handleStartMove move model ! []
+            handleStartMove move model !! []
 
         CheckMove move ->
             handleCheckMove move model
 
         SquareMove ->
-            handleSquareMove model ! []
+            handleSquareMove model !! []
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
         RandomSuccessMessageIndex i ->
-            { model | successMessageIndex = i } ! []
+            { model | successMessageIndex = i } !! []
 
-        ShowInfo ->
-            { model | levelInfoWindow = Visible <| getSuccessMessage model.successMessageIndex } ! []
+        ShowInfo info ->
+            { model | levelInfoWindow = Visible info } !! []
 
         RemoveInfo ->
-            { model | levelInfoWindow = Hiding <| getSuccessMessage model.successMessageIndex } ! []
+            { model | levelInfoWindow = removeInfo model.levelInfoWindow } !! []
 
         InfoHidden ->
-            { model | levelInfoWindow = Hidden } ! []
+            { model | levelInfoWindow = Hidden } !! []
 
-        ExitLevel ->
-            -- top level update checks for this message and transitions scene
-            { model | successMessageIndex = model.successMessageIndex + 1 } ! []
+        LevelWon ->
+            -- outMsg signals to parent component that level has been won
+            { model | successMessageIndex = model.successMessageIndex + 1 } !!! ( [], ExitLevelWithWin )
+
+        LevelLost ->
+            -- outMsg signals to parent component that level has been lost
+            model !!! ( [], ExitLevelWithLose )
 
 
 
@@ -162,6 +167,26 @@ removeTilesSequence moveShape =
         ]
 
 
+winSequence : Level.Model -> Cmd Level.Msg
+winSequence model =
+    sequenceMs
+        [ ( 500, ShowInfo <| getSuccessMessage model.successMessageIndex )
+        , ( 2000, RemoveInfo )
+        , ( 1000, InfoHidden )
+        , ( 0, LevelWon )
+        ]
+
+
+loseSequence : Cmd Level.Msg
+loseSequence =
+    sequenceMs
+        [ ( 500, ShowInfo failureMessage )
+        , ( 2000, RemoveInfo )
+        , ( 1000, InfoHidden )
+        , ( 0, LevelLost )
+        ]
+
+
 initialDelay : Maybe MoveShape -> Float
 initialDelay moveShape =
     if moveShape == Just Square then
@@ -180,6 +205,16 @@ fallDelay moveShape =
 
 
 -- UPDATE HELPERS
+
+
+removeInfo : InfoWindow String -> InfoWindow String
+removeInfo infoWindow =
+    case infoWindow of
+        Visible info ->
+            Hiding info
+
+        window ->
+            window
 
 
 handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
@@ -232,13 +267,13 @@ handleStartMove move model =
     }
 
 
-handleCheckMove : Move -> Level.Model -> ( Level.Model, Cmd Level.Msg )
+handleCheckMove : Move -> Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe Level.OutMsg )
 handleCheckMove move model =
     let
         newModel =
             model |> handleCheckMove_ move
     in
-        newModel ! [ triggerMoveIfSquare newModel.board ]
+        newModel !! [ triggerMoveIfSquare newModel.board ]
 
 
 handleCheckMove_ : Move -> Level.Model -> Level.Model
@@ -257,19 +292,11 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg )
+handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe Level.OutMsg )
 handleCheckLevelComplete model =
-    if levelComplete model.scores && not model.levelComplete then
-        { model | levelComplete = True } ! [ exitSequence ]
+    if model.remainingMoves < 1 && model.levelStatus == InProgress then
+        { model | levelStatus = Lose } !! [ loseSequence ]
+    else if levelComplete model.scores && model.levelStatus == InProgress then
+        { model | levelStatus = Win } !! [ winSequence model ]
     else
-        model ! []
-
-
-exitSequence : Cmd Level.Msg
-exitSequence =
-    sequenceMs
-        [ ( 500, ShowInfo )
-        , ( 2000, RemoveInfo )
-        , ( 1000, InfoHidden )
-        , ( 0, ExitLevel )
-        ]
+        model !! []

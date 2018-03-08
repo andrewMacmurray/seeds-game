@@ -7,8 +7,17 @@ import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
+import Helpers.OutMsg exposing ((!!), (!!!))
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
-import Scenes.Level.Types exposing (Block(..), Coord, MoveShape(..), SeedType(..), TileState(..), TileType(..))
+import Scenes.Level.Types
+    exposing
+        ( Block(..)
+        , Coord
+        , MoveShape(..)
+        , SeedType(..)
+        , TileState(..)
+        , TileType(..)
+        )
 import Scenes.Tutorial.Types exposing (..)
 
 
@@ -30,38 +39,38 @@ initialState =
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         StartSequence config ->
-            handleInit config model ! [ sequenceMs config.sequence ]
+            handleInit config model !! [ sequenceMs config.sequence ]
 
         DragTile coord ->
-            handleDragTile coord model ! []
+            handleDragTile coord model !! []
 
         SetGrowingPods ->
-            mapBoard setDraggingToGrowing model ! []
+            mapBoard setDraggingToGrowing model !! []
 
         SetLeaving ->
-            mapBoard setToLeaving model ! []
+            mapBoard setToLeaving model !! []
 
         ResetLeaving ->
-            mapBoard setLeavingToEmpty model ! []
+            mapBoard setLeavingToEmpty model !! []
 
         GrowPods seedType ->
-            mapBoard (growSeedPod seedType) model ! []
+            mapBoard (growSeedPod seedType) model !! []
 
         ResetGrowingPods ->
-            mapBoard setGrowingToStatic model ! []
+            mapBoard setGrowingToStatic model !! []
 
         EnteringTiles tiles ->
-            handleInsertEnteringTiles tiles model ! []
+            handleInsertEnteringTiles tiles model !! []
 
         TriggerSquare ->
-            handleSquareMove model ! []
+            handleSquareMove model !! []
 
         FallTiles ->
-            transformBoard setFallingTiles model ! []
+            transformBoard setFallingTiles model !! []
 
         ShiftBoard ->
             (model
@@ -69,56 +78,55 @@ update msg model =
                 |> mapBoard setFallingToStatic
                 |> mapBoard setLeavingToEmpty
             )
-                ! []
+                !! []
 
         SetBoardDimensions n ->
-            { model | boardDimensions = n } ! []
+            { model | boardDimensions = n } !! []
 
         HideBoard ->
-            { model | boardVisible = False } ! []
+            { model | boardVisible = False } !! []
 
         ShowBoard ->
-            { model | boardVisible = True } ! []
+            { model | boardVisible = True } !! []
 
         HideText ->
-            { model | textVisible = False } ! []
+            { model | textVisible = False } !! []
 
         ShowText ->
-            { model | textVisible = True } ! []
+            { model | textVisible = True } !! []
 
         HideResourceBank ->
-            { model | resourceBankVisible = False } ! []
+            { model | resourceBankVisible = False } !! []
 
         ShowResourceBank ->
-            { model | resourceBankVisible = True } ! []
+            { model | resourceBankVisible = True } !! []
 
         HideContainer ->
-            { model | containerVisible = False } ! []
+            { model | containerVisible = False } !! []
 
         ShowContainer ->
-            { model | containerVisible = True } ! []
+            { model | containerVisible = True } !! []
 
         HideCanvas ->
-            { model | canvasVisible = False } ! []
+            { model | canvasVisible = False } !! []
 
         ResetBoard board ->
-            { model | board = board } ! []
+            { model | board = board } !! []
 
         NextText ->
-            { model | currentText = model.currentText + 1 } ! []
+            { model | currentText = model.currentText + 1 } !! []
 
         SkipTutorial ->
-            model ! [ skipSequence ]
+            model !! [ skipSequence ]
 
         DisableTutorial ->
-            { model | skipped = True } ! []
+            { model | skipped = True } !! []
 
         ResetVisibilities ->
-            resetVisibilities model ! []
+            resetVisibilities model !! []
 
         ExitTutorial ->
-            -- hub intercepts this message
-            model ! []
+            model !!! ( [], ExitTutorialToLevel )
 
 
 handleInit : Config -> Model -> Model

@@ -28,7 +28,8 @@ type Msg
     = LevelMsg Level.Msg
     | TutorialMsg Tutorial.Msg
     | StartLevel Progress
-    | EndLevel
+    | TransitionWithWin
+    | TransitionWithLose
     | LoadLevelData ( WorldData, LevelData )
     | SetScene Scene
     | BeginSceneTransition

@@ -28,3 +28,8 @@ successMessages =
         , "You're the best!"
         , "Stunning!"
         ]
+
+
+failureMessage : String
+failureMessage =
+    "No more moves!"

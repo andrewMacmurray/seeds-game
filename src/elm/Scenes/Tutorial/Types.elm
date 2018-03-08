@@ -63,3 +63,7 @@ type Msg
     | SkipTutorial
     | DisableTutorial
     | ExitTutorial
+
+
+type OutMsg
+    = ExitTutorialToLevel
