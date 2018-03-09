@@ -4,12 +4,11 @@
     "repository": "https://github.com/andrewMacmurray/seeds-game.git",
     "license": "MIT",
     "source-directories": [
-        "app/elm"
+        "src/elm"
     ],
     "exposed-modules": [],
     "dependencies": {
         "andrewMacmurray/elm-delay": "2.0.0 <= v < 3.0.0",
-        "elm-community/dict-extra": "2.1.0 <= v < 3.0.0",
         "elm-community/list-extra": "6.1.0 <= v < 7.0.0",
         "elm-lang/core": "5.1.1 <= v < 6.0.0",
         "elm-lang/dom": "1.1.1 <= v < 2.0.0",
