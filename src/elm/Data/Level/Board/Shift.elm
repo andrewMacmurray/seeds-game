@@ -20,7 +20,7 @@ groupBoardByColumn board =
     board
         |> Dict.toList
         |> List.sortBy xCoord
-        |> groupWhile sameColumn
+        |> List.Extra.groupWhile sameColumn
 
 
 shiftRow : List Move -> List Move

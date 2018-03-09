@@ -1,7 +1,7 @@
 module Views.Hub.InfoWindow exposing (..)
 
 import Config.AllLevels exposing (allLevels)
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
 import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Helpers.Html exposing (emptyProperty)
@@ -25,7 +25,7 @@ info model =
         Visible progress ->
             let
                 content =
-                    getLevelConfig progress model |> infoContent model progress
+                    getLevelConfig progress |> infoContent progress
             in
                 infoContainer model.infoWindow <|
                     div [ onClick <| StartLevel progress ] content
@@ -33,14 +33,14 @@ info model =
         Hiding progress ->
             let
                 content =
-                    getLevelConfig progress model |> infoContent model progress
+                    getLevelConfig progress |> infoContent progress
             in
                 infoContainer model.infoWindow <|
                     div [] content
 
 
-infoContent : Hub.Model -> Progress -> ( WorldData, LevelData ) -> List (Html msg)
-infoContent model ( world, level ) ( worldData, levelData ) =
+infoContent : Progress -> ( WorldData, LevelData ) -> List (Html msg)
+infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =
             allLevels

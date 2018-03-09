@@ -1,6 +1,6 @@
 module Views.Seed.Mono exposing (..)
 
-import Data.Color exposing (brown, darkBrown, purple, transparentGray)
+import Config.Color exposing (brown, darkBrown, purple, transparentGray)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

@@ -1,4 +1,4 @@
-module Data.Color exposing (..)
+module Config.Color exposing (..)
 
 import Helpers.Style exposing (deg, gradientStop, linearGradient, pc)
 
@@ -42,6 +42,16 @@ crimson =
 softRed : String
 softRed =
     "rgb(235, 76, 72)"
+
+
+pinkRed : String
+pinkRed =
+    "rgb(255, 116, 116)"
+
+
+fadedOrange : String
+fadedOrange =
+    "rgb(247, 179, 113)"
 
 
 lightOrange : String
@@ -137,3 +147,13 @@ midnightBlue =
 purple : String
 purple =
     "rgb(173, 81, 126)"
+
+
+silver : String
+silver =
+    "rgb(226, 226, 226)"
+
+
+lightGray : String
+lightGray =
+    "rgb(180, 180, 180)"

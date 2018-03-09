@@ -1,6 +1,6 @@
 module Config.Wall exposing (..)
 
-import Data.Color exposing (blockYellow)
+import Config.Color exposing (blockYellow)
 import Scenes.Level.Types exposing (..)
 
 

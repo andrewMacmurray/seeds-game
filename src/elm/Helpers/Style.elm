@@ -49,6 +49,16 @@ marginTop n =
     ( "margin-top", px n )
 
 
+marginLeft : number -> Style
+marginLeft n =
+    ( "margin-left", px n )
+
+
+marginBottom : number -> Style
+marginBottom n =
+    ( "margin-bottom", px n )
+
+
 topStyle : number -> Style
 topStyle n =
     ( "top", px n )
@@ -62,16 +72,6 @@ bottomStyle n =
 leftStyle : number -> Style
 leftStyle n =
     ( "left", px n )
-
-
-marginLeft : number -> Style
-marginLeft n =
-    ( "margin-left", px n )
-
-
-marginBottom : number -> Style
-marginBottom n =
-    ( "margin-bottom", px n )
 
 
 color : String -> Style

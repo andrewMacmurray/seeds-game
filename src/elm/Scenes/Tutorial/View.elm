@@ -1,7 +1,7 @@
 module Scenes.Tutorial.View exposing (..)
 
 import Config.Scale as ScaleConfig
-import Data.Color exposing (darkYellow, greyYellow)
+import Config.Color exposing (darkYellow, greyYellow)
 import Data.Level.Board.Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (hasLine, isDragging)
 import Data.Tutorial exposing (getText)

@@ -11,22 +11,38 @@ import Data.Level.Move.Check exposing (addToMove, startMove)
 import Data.Level.Move.Square exposing (triggerMoveIfSquare)
 import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
-import Dict exposing (Dict)
+import Dict
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
-import Helpers.OutMsg exposing ((!!!), (!!))
-import Scenes.Hub.Types as Main exposing (LevelData, Progress)
-import Scenes.Level.Types as Level exposing (..)
+import Helpers.OutMsg exposing ((!!), (!!!))
+import Scenes.Hub.Types exposing (LevelData)
+import Scenes.Level.Types exposing (..)
 import Types exposing (InfoWindow(..))
 
 
-levelInit : LevelData -> Main.Model -> Cmd Main.Msg
-levelInit config model =
-    handleGenerateTiles config model.levelModel
-        |> Cmd.map Main.LevelMsg
+init : LevelData -> Model -> ( Model, Cmd Msg )
+init levelData model =
+    addLevelData levelData model |> generateTiles levelData
 
 
-initialState : Level.Model
+generateTiles : LevelData -> Model -> ( Model, Cmd Msg )
+generateTiles levelData model =
+    model ! [ handleGenerateTiles levelData model ]
+
+
+addLevelData : LevelData -> Model -> Model
+addLevelData { tileSettings, walls, boardDimensions, moves } model =
+    { model
+        | scores = initialScores tileSettings
+        , board = addWalls walls model.board
+        , boardDimensions = boardDimensions
+        , tileSettings = tileSettings
+        , levelStatus = InProgress
+        , remainingMoves = moves
+    }
+
+
+initialState : Model
 initialState =
     { board = Dict.empty
     , scores = Dict.empty
@@ -43,7 +59,7 @@ initialState =
     }
 
 
-update : Level.Msg -> Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe OutMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -144,7 +160,7 @@ update msg model =
 -- SEQUENCES
 
 
-growSeedPodsSequence : Maybe MoveShape -> Cmd Level.Msg
+growSeedPodsSequence : Maybe MoveShape -> Cmd Msg
 growSeedPodsSequence moveShape =
     sequenceMs
         [ ( initialDelay moveShape, SetGrowingSeedPods )
@@ -154,7 +170,7 @@ growSeedPodsSequence moveShape =
         ]
 
 
-removeTilesSequence : Maybe MoveShape -> Cmd Level.Msg
+removeTilesSequence : Maybe MoveShape -> Cmd Msg
 removeTilesSequence moveShape =
     sequenceMs
         [ ( initialDelay moveShape, SetLeavingTiles )
@@ -167,7 +183,7 @@ removeTilesSequence moveShape =
         ]
 
 
-winSequence : Level.Model -> Cmd Level.Msg
+winSequence : Model -> Cmd Msg
 winSequence model =
     sequenceMs
         [ ( 500, ShowInfo <| getSuccessMessage model.successMessageIndex )
@@ -177,7 +193,7 @@ winSequence model =
         ]
 
 
-loseSequence : Cmd Level.Msg
+loseSequence : Cmd Msg
 loseSequence =
     sequenceMs
         [ ( 500, ShowInfo failureMessage )
@@ -217,7 +233,7 @@ removeInfo infoWindow =
             window
 
 
-handleGenerateTiles : LevelData -> Level.Model -> Cmd Level.Msg
+handleGenerateTiles : LevelData -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardDimensions } =
     generateInitialTiles levelData boardDimensions
 
@@ -237,12 +253,12 @@ handleInsertNewSeeds seedType =
     transformBoard <| insertNewSeeds seedType
 
 
-handleAddScore : Level.Model -> Level.Model
+handleAddScore : Model -> Model
 handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-handleResetMove : Level.Model -> Level.Model
+handleResetMove : Model -> Model
 handleResetMove model =
     { model
         | isDragging = False
@@ -250,7 +266,7 @@ handleResetMove model =
     }
 
 
-handleDecrementRemainingMoves : Level.Model -> Level.Model
+handleDecrementRemainingMoves : Model -> Model
 handleDecrementRemainingMoves model =
     if model.remainingMoves < 1 then
         { model | remainingMoves = 0 }
@@ -258,7 +274,7 @@ handleDecrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Level.Model -> Level.Model
+handleStartMove : Move -> Model -> Model
 handleStartMove move model =
     { model
         | isDragging = True
@@ -267,7 +283,7 @@ handleStartMove move model =
     }
 
 
-handleCheckMove : Move -> Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe Level.OutMsg )
+handleCheckMove : Move -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 handleCheckMove move model =
     let
         newModel =
@@ -276,7 +292,7 @@ handleCheckMove move model =
         newModel !! [ triggerMoveIfSquare newModel.board ]
 
 
-handleCheckMove_ : Move -> Level.Model -> Level.Model
+handleCheckMove_ : Move -> Model -> Model
 handleCheckMove_ move model =
     if model.isDragging then
         { model | board = addToMove move model.board }
@@ -284,7 +300,7 @@ handleCheckMove_ move model =
         model
 
 
-handleSquareMove : Level.Model -> Level.Model
+handleSquareMove : Model -> Model
 handleSquareMove model =
     { model
         | moveShape = Just Square
@@ -292,11 +308,21 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : Level.Model -> ( Level.Model, Cmd Level.Msg, Maybe Level.OutMsg )
+handleCheckLevelComplete : Model -> ( Model, Cmd Msg, Maybe OutMsg )
 handleCheckLevelComplete model =
-    if model.remainingMoves < 1 && model.levelStatus == InProgress then
+    if hasLost model then
         { model | levelStatus = Lose } !! [ loseSequence ]
-    else if levelComplete model.scores && model.levelStatus == InProgress then
+    else if hasWon model then
         { model | levelStatus = Win } !! [ winSequence model ]
     else
         model !! []
+
+
+hasLost : Model -> Bool
+hasLost { remainingMoves, levelStatus } =
+    remainingMoves < 1 && levelStatus == InProgress
+
+
+hasWon : Model -> Bool
+hasWon { scores, levelStatus } =
+    levelComplete scores && levelStatus == InProgress

@@ -1,6 +1,6 @@
 module Views.Loading exposing (..)
 
-import Data.Color exposing (gold, rainBlue)
+import Config.Color exposing (gold, rainBlue)
 import Data.Hub.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)

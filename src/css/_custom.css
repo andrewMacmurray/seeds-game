@@ -62,3 +62,9 @@ div {
   0%   { opacity: 1; }
   100% { opacity: 0; }
 }
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

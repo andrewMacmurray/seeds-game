@@ -1,7 +1,7 @@
 module Views.Board.TopBar exposing (..)
 
 import Config.Scale as ScaleConfig
-import Data.Color exposing (darkYellow, gold, washedYellow)
+import Config.Color exposing (darkYellow, gold, washedYellow)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)

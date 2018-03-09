@@ -1,6 +1,6 @@
 module Views.Seed.Twin exposing (..)
 
-import Data.Color exposing (brown, chocolate, crimson, darkRed, gold, lightBrown)
+import Config.Color exposing (brown, chocolate, crimson, darkRed, gold, lightBrown)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

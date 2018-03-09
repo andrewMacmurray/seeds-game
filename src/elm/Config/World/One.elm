@@ -6,7 +6,7 @@ import Config.Tutorial.SeedPod as SeedPodTutorial
 import Config.Tutorial.Square as SquareTutorial
 import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Data.Hub.World exposing (..)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)

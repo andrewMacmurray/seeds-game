@@ -1,6 +1,6 @@
 module Views.Seed.Circle exposing (..)
 
-import Data.Color exposing (orange, purple)
+import Config.Color exposing (orange, purple)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

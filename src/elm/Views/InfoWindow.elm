@@ -1,6 +1,6 @@
 module Views.InfoWindow exposing (..)
 
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)

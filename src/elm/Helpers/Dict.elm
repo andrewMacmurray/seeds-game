@@ -26,3 +26,20 @@ indexedDictFrom n xs =
     xs
         |> List.indexedMap (\i x -> ( i + n, x ))
         |> Dict.fromList
+
+
+find : (comparable -> a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
+find predicate =
+    let
+        findItem_ predicate k v acc =
+            case acc of
+                Just _ ->
+                    acc
+
+                Nothing ->
+                    if predicate k v then
+                        Just ( k, v )
+                    else
+                        Nothing
+    in
+        Dict.foldl (findItem_ predicate) Nothing

@@ -3,13 +3,13 @@ module Data.Level.Move.Utils exposing (..)
 import Data.Level.Board.Tile exposing (getTileType, isCurrentMove, isDragging, moveOrder)
 import Scenes.Level.Types exposing (..)
 import Dict
-import Dict.Extra
+import Helpers.Dict exposing (find)
 
 
 currentMoveTileType : Board -> Maybe TileType
 currentMoveTileType board =
     board
-        |> Dict.Extra.find (\_ tile -> isDragging tile)
+        |> find (\_ tile -> isDragging tile)
         |> Maybe.andThen moveTileType
 
 
@@ -54,7 +54,7 @@ isInCurrentMoves move board =
 lastMove : Board -> Move
 lastMove board =
     board
-        |> Dict.Extra.find isCurrentMove_
+        |> find isCurrentMove_
         |> Maybe.withDefault emptyMove
 
 

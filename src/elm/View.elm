@@ -2,10 +2,11 @@ module View exposing (..)
 
 import Helpers.Animation exposing (embeddedAnimations)
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Keyed as K
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Hub.View exposing (hubView)
 import Scenes.Level.View exposing (levelView)
+import Scenes.Retry.View exposing (retryView)
 import Scenes.Summary.View exposing (summaryView)
 import Scenes.Title.View exposing (titleView)
 import Scenes.Tutorial.View exposing (tutorialView)
@@ -26,8 +27,8 @@ view model =
 renderScene : Hub.Model -> Html Hub.Msg
 renderScene model =
     let
-        hidden =
-            div [ class "dn" ]
+        keyedDiv =
+            K.node "div" []
     in
         case model.scene of
             Hub ->
@@ -37,22 +38,23 @@ renderScene model =
                 titleView model
 
             Level ->
-                div []
-                    [ hidden [ summaryView model ]
-                    , hidden [ tutorialView model.tutorialModel |> Html.map TutorialMsg ]
-                    , levelView model.levelModel |> Html.map LevelMsg
-                    ]
+                keyedDiv
+                    [ ( "level", levelView model.levelModel |> Html.map LevelMsg ) ]
 
             Summary ->
-                div []
-                    [ summaryView model
-                    , hidden [ tutorialView model.tutorialModel |> Html.map TutorialMsg ]
-                    , levelView model.levelModel |> Html.map LevelMsg
+                keyedDiv
+                    [ ( "summary", summaryView model )
+                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
+                    ]
+
+            Retry ->
+                keyedDiv
+                    [ ( "retry", retryView model )
+                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
                     ]
 
             Tutorial ->
-                div []
-                    [ hidden [ summaryView model ]
-                    , tutorialView model.tutorialModel |> Html.map TutorialMsg
-                    , levelView model.levelModel |> Html.map LevelMsg
+                keyedDiv
+                    [ ( "tutorial", tutorialView model.tutorialModel |> Html.map TutorialMsg )
+                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
                     ]

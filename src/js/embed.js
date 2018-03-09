@@ -17,6 +17,7 @@ function init() {
     var anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
+      animations.bounceUp(),
       animations.bounceDowns(tileSize)
     ]
     .join(' ')

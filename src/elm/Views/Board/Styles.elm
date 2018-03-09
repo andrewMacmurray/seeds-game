@@ -1,7 +1,7 @@
 module Views.Board.Styles exposing (..)
 
 import Config.Scale as ScaleConfig
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Data.Level.Board.Block as Block exposing (getTileState)
 import Data.Level.Board.Tile exposing (..)
 import Data.Level.Score exposing (collectable, scoreTileTypes)

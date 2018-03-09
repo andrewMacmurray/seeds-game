@@ -1,7 +1,7 @@
 module Config.World.Two exposing (world)
 
 import Config.Wall exposing (..)
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Data.Hub.World exposing (..)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)

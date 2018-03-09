@@ -20,8 +20,13 @@ getSelectedProgress infoWindow =
             Just progress
 
 
-getLevelConfig : Progress -> Model -> ( WorldData, LevelData )
-getLevelConfig ( w, l ) model =
+getLevelData : Progress -> LevelData
+getLevelData progress =
+    getLevelConfig progress |> Tuple.second
+
+
+getLevelConfig : Progress -> ( WorldData, LevelData )
+getLevelConfig ( w, l ) =
     let
         worldData =
             allLevels |> Dict.get w

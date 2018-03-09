@@ -1,7 +1,7 @@
 module Data.Level.Board.Tile exposing (..)
 
 import Data.Level.Board.Block as Block
-import Data.Color exposing (..)
+import Config.Color exposing (..)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types exposing (..)
 

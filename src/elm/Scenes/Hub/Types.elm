@@ -18,6 +18,7 @@ type alias Model =
     , transitionBackground : TransitionBackground
     , progress : Progress
     , currentLevel : Maybe Progress
+    , lives : Int
     , infoWindow : InfoWindow Progress
     , window : Window.Size
     , mouse : Mouse.Position
@@ -28,9 +29,10 @@ type Msg
     = LevelMsg Level.Msg
     | TutorialMsg Tutorial.Msg
     | StartLevel Progress
+    | RestartLevel
     | TransitionWithWin
     | TransitionWithLose
-    | LoadLevelData ( WorldData, LevelData )
+    | LoadLevelData LevelData
     | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
@@ -41,6 +43,7 @@ type Msg
     | HideInfo
     | SetInfoState (InfoWindow Progress)
     | IncrementProgress
+    | DecrementLives
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | ReceieveExternalAnimations String
@@ -55,6 +58,7 @@ type Scene
     | Title
     | Tutorial
     | Summary
+    | Retry
 
 
 type TransitionBackground

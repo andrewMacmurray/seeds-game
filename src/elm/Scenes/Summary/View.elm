@@ -1,6 +1,6 @@
 module Scenes.Summary.View exposing (..)
 
-import Data.Color exposing (washedYellow)
+import Config.Color exposing (washedYellow)
 import Data.Level.Summary exposing (..)
 import Helpers.Style exposing (..)
 import Html exposing (..)

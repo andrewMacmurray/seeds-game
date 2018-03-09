@@ -43,7 +43,7 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         StartSequence config ->
-            handleInit config model !! [ sequenceMs config.sequence ]
+            loadTutorialData config model !! [ sequenceMs config.sequence ]
 
         DragTile coord ->
             handleDragTile coord model !! []
@@ -129,8 +129,8 @@ update msg model =
             model !!! ( [], ExitTutorialToLevel )
 
 
-handleInit : Config -> Model -> Model
-handleInit config model =
+loadTutorialData : Config -> Model -> Model
+loadTutorialData config model =
     { model
         | boardDimensions = config.boardDimensions
         , board = config.board

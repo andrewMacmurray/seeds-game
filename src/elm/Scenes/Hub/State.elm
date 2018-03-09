@@ -3,23 +3,23 @@ module Scenes.Hub.State exposing (..)
 import Config.AllLevels exposing (allLevels)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
-import Data.Hub.LoadLevel exposing (handleLoadLevel)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
 import Helpers.Effect exposing (..)
+import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
-import Scenes.Level.Types as LevelModel
+import Scenes.Level.Types as Lv
     exposing
         ( Msg(RandomSuccessMessageIndex)
         , OutMsg(ExitLevelWithWin, ExitLevelWithLose)
         )
 import Scenes.Tutorial.State as Tutorial
-import Scenes.Tutorial.Types as TutorialModel
+import Scenes.Tutorial.Types as Tu
     exposing
-        ( Msg(..)
+        ( Msg(ResetVisibilities, StartSequence)
         , OutMsg(ExitTutorialToLevel)
         )
 import Types exposing (..)
@@ -28,11 +28,16 @@ import Window
 
 init : ( Main.Model, Cmd Main.Msg )
 init =
-    initialState
-        ! [ getWindowSize
-          , getExternalAnimations ScaleConfig.baseTileSizeY
-          , randomSuccessMessageIndex RandomSuccessMessageIndex |> Cmd.map LevelMsg
-          ]
+    let
+        ( model, loadLevelCmd ) =
+            handleLoadLevel initialState <| getLevelData initialState.progress
+    in
+        model
+            ! [ getWindowSize
+              , getExternalAnimations ScaleConfig.baseTileSizeY
+              , randomSuccessMessageIndex RandomSuccessMessageIndex |> Cmd.map LevelMsg
+              , loadLevelCmd
+              ]
 
 
 initialState : Main.Model
@@ -43,8 +48,9 @@ initialState =
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 1, 7 )
+    , progress = ( 1, 1 )
     , currentLevel = Nothing
+    , lives = 5
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }
     , mouse = { y = 0, x = 0 }
@@ -64,14 +70,14 @@ update msg model =
             { model | xAnimations = animations } ! []
 
         StartLevel level ->
-            case tutorialData model level of
+            case tutorialData level of
                 Just tutorialConfig ->
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
                                 , ( 10, BeginSceneTransition )
                                 , ( 500, SetScene Tutorial )
-                                , ( 0, LoadLevelData <| getLevelConfig level model )
+                                , ( 0, LoadLevelData <| getLevelData level )
                                 , ( 0, TutorialMsg ResetVisibilities )
                                 , ( 2500, EndSceneTransition )
                                 , ( 500, TutorialMsg <| StartSequence tutorialConfig )
@@ -84,10 +90,20 @@ update msg model =
                                 [ ( 600, SetCurrentLevel <| Just level )
                                 , ( 10, BeginSceneTransition )
                                 , ( 500, SetScene Level )
-                                , ( 0, LoadLevelData <| getLevelConfig level model )
+                                , ( 0, LoadLevelData <| getLevelData level )
                                 , ( 2500, EndSceneTransition )
                                 ]
                           ]
+
+        RestartLevel ->
+            model
+                ! [ sequenceMs
+                        [ ( 10, BeginSceneTransition )
+                        , ( 500, SetScene Level )
+                        , ( 0, LoadLevelData <| currentLevelData model )
+                        , ( 2500, EndSceneTransition )
+                        ]
+                  ]
 
         TransitionWithWin ->
             model ! [ sequenceMs <| levelWinSequence model ]
@@ -96,7 +112,7 @@ update msg model =
             model ! [ sequenceMs <| levelLoseSequence model ]
 
         LoadLevelData levelData ->
-            handleLoadLevel levelData model
+            handleLoadLevel model levelData
 
         SetScene scene ->
             { model | scene = scene } ! []
@@ -144,6 +160,9 @@ update msg model =
         IncrementProgress ->
             handleIncrementProgress model ! []
 
+        DecrementLives ->
+            { model | lives = model.lives - 1 } ! []
+
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
 
@@ -165,69 +184,94 @@ update msg model =
             { model | levelModel = addMousePositionToLevel position model } ! []
 
 
-tutorialData : Main.Model -> Progress -> Maybe TutorialModel.Config
-tutorialData model level =
+currentLevelData : Model -> LevelData
+currentLevelData model =
+    model.currentLevel
+        |> Maybe.withDefault ( 1, 1 )
+        |> getLevelData
+
+
+handleLoadLevel : Main.Model -> LevelData -> ( Main.Model, Cmd Main.Msg )
+handleLoadLevel model levelData =
+    let
+        ( levelModel, levelCmd ) =
+            Level.init levelData model.levelModel
+    in
+        { model | levelModel = levelModel } ! [ Cmd.map LevelMsg levelCmd ]
+
+
+tutorialData : Progress -> Maybe Tu.Config
+tutorialData level =
     let
         ( _, levelData ) =
-            getLevelConfig level model
+            getLevelConfig level
     in
         levelData.tutorial
 
 
-addMousePositionToLevel : Mouse.Position -> Main.Model -> LevelModel.Model
+addMousePositionToLevel : Mouse.Position -> Main.Model -> Lv.Model
 addMousePositionToLevel position { levelModel } =
     { levelModel | mouse = position }
 
 
-addWindowSizeToLevel : Window.Size -> Main.Model -> LevelModel.Model
+addWindowSizeToLevel : Window.Size -> Main.Model -> Lv.Model
 addWindowSizeToLevel window { levelModel } =
     { levelModel | window = window }
 
 
-addWindowSizeToTutorial : Window.Size -> Main.Model -> TutorialModel.Model
+addWindowSizeToTutorial : Window.Size -> Main.Model -> Tu.Model
 addWindowSizeToTutorial window { tutorialModel } =
     { tutorialModel | window = window }
 
 
-handleLevelMsg : LevelModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleLevelMsg : Lv.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
-    let
-        ( levelModel, levelCmd_, outMsg ) =
-            Level.update levelMsg model.levelModel
-
-        newModel =
-            { model | levelModel = levelModel }
-
-        levelCmd =
-            Cmd.map LevelMsg levelCmd_
-    in
-        case outMsg of
-            Just ExitLevelWithWin ->
-                newModel ! [ trigger TransitionWithWin, levelCmd ]
-
-            Just ExitLevelWithLose ->
-                newModel ! [ trigger TransitionWithLose, levelCmd ]
-
-            _ ->
-                newModel ! [ levelCmd ]
+    Level.update levelMsg model.levelModel
+        |> returnWithOutMsg (embedLevelModel model) LevelMsg
+        |> handleLevelOutMsg
 
 
-handleTutorialMsg : TutorialModel.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
-handleTutorialMsg tutorialMsg model =
-    let
-        ( tutorialModel, tutorialCmd_, outMsg ) =
-            Tutorial.update tutorialMsg model.tutorialModel
+handleLevelOutMsg : ( Main.Model, Cmd Main.Msg, Maybe Lv.OutMsg ) -> ( Main.Model, Cmd Main.Msg )
+handleLevelOutMsg ( model, cmd, outMsg ) =
+    case outMsg of
+        Just ExitLevelWithWin ->
+            model ! [ trigger TransitionWithWin, cmd ]
 
-        newModel =
-            { model | tutorialModel = tutorialModel }
+        Just ExitLevelWithLose ->
+            model ! [ trigger TransitionWithLose, cmd ]
 
-        tutorialCmd =
-            Cmd.map TutorialMsg tutorialCmd_
-    in
-        if outMsg == Just ExitTutorialToLevel && not newModel.tutorialModel.skipped then
-            { newModel | scene = Level } ! [ tutorialCmd ]
-        else
-            newModel ! [ tutorialCmd ]
+        Nothing ->
+            model ! [ cmd ]
+
+
+embedLevelModel : Main.Model -> (Lv.Model -> Main.Model)
+embedLevelModel model levelModel =
+    { model | levelModel = levelModel }
+
+
+handleTutorialMsg : Tu.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleTutorialMsg tutorialMsg m =
+    Tutorial.update tutorialMsg m.tutorialModel
+        |> returnWithOutMsg (embedTutorialModel m) TutorialMsg
+        |> handleTutorialOutMsg
+
+
+handleTutorialOutMsg : ( Main.Model, Cmd Main.Msg, Maybe Tu.OutMsg ) -> ( Main.Model, Cmd Main.Msg )
+handleTutorialOutMsg ( model, cmd, outMsg ) =
+    case outMsg of
+        Just ExitTutorialToLevel ->
+            if not model.tutorialModel.skipped then
+                { model | scene = Level } ! [ cmd ]
+            else
+                model ! [ cmd ]
+
+        Nothing ->
+            model ! [ cmd ]
+
+
+embedTutorialModel : Main.Model -> (Tu.Model -> Main.Model)
+embedTutorialModel model tutorialModel =
+    { model | tutorialModel = tutorialModel }
 
 
 handleIncrementProgress : Main.Model -> Main.Model
@@ -258,10 +302,9 @@ levelWinSequence model =
 
 levelLoseSequence : Main.Model -> List ( Float, Main.Msg )
 levelLoseSequence model =
-    List.concat
-        [ [ ( 0, BeginSceneTransition ) ]
-        , backToHubSequence <| progressLevelNumber model
-        ]
+    [ ( 0, SetScene Retry )
+    , ( 1000, DecrementLives )
+    ]
 
 
 backToHubSequence : Int -> List ( Float, Main.Msg )

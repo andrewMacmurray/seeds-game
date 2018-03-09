@@ -1,6 +1,6 @@
 module Views.Icons.Tick exposing (..)
 
-import Data.Color exposing (white)
+import Config.Color exposing (white)
 import Html exposing (Html)
 import Svg exposing (svg)
 import Svg.Attributes exposing (..)

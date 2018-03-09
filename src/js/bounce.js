@@ -26,6 +26,19 @@ function bounceDown () {
     })
 }
 
+function bounceUp () {
+  return new Bounce()
+    .translate({
+      from: { x: 0, y: 200 },
+      to: { x: 0, y: 0 },
+      stiffness: 3,
+      bounces: 5
+    })
+    .getKeyframeCSS({
+      name: 'bounce-up'
+    })
+}
+
 
 function bounceDowns (tileSize) {
   var anims = []
@@ -50,5 +63,6 @@ function bounceDowns (tileSize) {
 module.exports = {
   elasticBounceIn,
   bounceDown,
+  bounceUp,
   bounceDowns
 }
