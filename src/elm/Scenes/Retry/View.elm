@@ -6,7 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types exposing (Model, Msg(RestartLevel, GoToHub))
-import Views.Icons.Heart exposing (heart)
+import Views.Icons.Heart exposing (heart, brokenHeart)
 
 
 retryView : Model -> Html Msg
@@ -22,13 +22,19 @@ retryView model =
         [ div [ class "tc", style [ ( "margin-top", pc -8 ) ] ]
             [ div [] <| livesLeft model.lives
             , div [ style [ color darkYellow ] ]
-                [ p [ class "mt3" ] [ text "You lost a life" ]
-                , p [] [ text "But don't feel disheartened" ]
+                [ p [ class "mt3" ] [ text "You lost a life ..." ]
+                , p
+                    [ style
+                        [ animationStyle "1s fade-in 2.5s forwards"
+                        ]
+                    , class "o-0"
+                    ]
+                    [ text "But don't feel disheartened" ]
                 ]
             , div
                 [ style
-                    [ animationStyle "1.5s bounce-up 1.5s linear forwards"
-                    , transformStyle <| translateY (model.window.height + 100)
+                    [ animationStyle "1.5s bounce-up 3s linear forwards"
+                    , transformStyle <| translateY <| model.window.height + 100
                     ]
                 ]
                 [ tryAgain model ]
@@ -40,28 +46,25 @@ tryAgain : Model -> Html Msg
 tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
-            [ style
-                [ background lightOrange
-                , color "white"
-                , ( "border-top-left-radius", "9999px" )
-                , ( "border-bottom-left-radius", "9999px" )
-                ]
+            [ styles [ [ background lightGreen, color "white" ], leftPill ]
             , class "pa3 dib"
             , onClick GoToHub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
-            [ style
-                [ background fadedOrange
-                , color "white"
-                , ( "border-top-right-radius", "9999px" )
-                , ( "border-bottom-right-radius", "9999px" )
-                ]
+            [ styles [ [ background mediumGreen, color "white" ], rightPill ]
             , class "pa3 dib"
             , onClick RestartLevel
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]
+
+
+livesLeft : Int -> List (Html msg)
+livesLeft lives =
+    List.range 1 5
+        |> List.map (\n -> ( n <= lives, n == lives ))
+        |> List.map life
 
 
 life : ( Bool, Bool ) -> Html msg
@@ -72,6 +75,18 @@ life ( active, currentLife ) =
                 animationStyle "heartbeat 1s infinite"
             else
                 emptyStyle
+
+        visibleHeart =
+            if active then
+                heart
+            else
+                brokenHeart
+
+        adjustScale =
+            if active then
+                emptyStyle
+            else
+                transformStyle <| scale 1.11
     in
         div
             [ style
@@ -80,14 +95,8 @@ life ( active, currentLife ) =
                 , marginLeft 10
                 , marginRight 10
                 , animation
+                , adjustScale
                 ]
-            , class "br-100 dib"
+            , class "dib"
             ]
-            [ heart active ]
-
-
-livesLeft : Int -> List (Html msg)
-livesLeft lives =
-    List.range 1 5
-        |> List.map (\n -> ( n <= lives, n == lives ))
-        |> List.map life
+            [ visibleHeart ]

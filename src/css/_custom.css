@@ -68,3 +68,13 @@ div {
   50% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+
+@keyframes break-left {
+  0% { transform: translateX(0px) rotateZ(0deg); }
+  100% { transform: translateX(-3px) rotateZ(-2deg); }
+}
+
+@keyframes break-right {
+  0% { transform: translateX(0px) rotateZ(0deg); }
+  100% { transform: translateX(3px) rotateZ(2deg); }
+}

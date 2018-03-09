@@ -119,6 +119,11 @@ chocolate =
     "rgb(57, 35, 21)"
 
 
+mediumGreen : String
+mediumGreen =
+    "rgb(78, 168, 59)"
+
+
 green : String
 green =
     "rgb(113, 175, 68)"

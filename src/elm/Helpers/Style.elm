@@ -79,6 +79,20 @@ color =
     (,) "color"
 
 
+rightPill : List Style
+rightPill =
+    [ ( "border-top-right-radius", px 9999 )
+    , ( "border-bottom-right-radius", px 9999 )
+    ]
+
+
+leftPill : List Style
+leftPill =
+    [ ( "border-top-left-radius", px 9999 )
+    , ( "border-bottom-left-radius", px 9999 )
+    ]
+
+
 frameBackgroundImage : List Style
 frameBackgroundImage =
     [ ( "background-position", "center" )
