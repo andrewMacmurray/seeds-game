@@ -1,7 +1,7 @@
 module Helpers.OutMsg exposing (..)
 
 -- Convenience functions for adding a Maybe OutMsg to (Model, Cmd Msg)
--- Used to communicate with parent component -- dont' abuse these!
+-- Used to communicate with parent component -- don't abuse these!
 
 
 returnWithOutMsg : (b -> d) -> (a -> msg) -> ( b, Cmd a, outMsg ) -> ( d, Cmd msg, outMsg )
