@@ -3,6 +3,8 @@ module Helpers.Style exposing (..)
 import Formatting exposing (..)
 import Html exposing (Attribute)
 import Html.Attributes exposing (class, style)
+import Svg.Attributes
+import Svg
 
 
 type alias Style =
@@ -19,14 +21,14 @@ styles =
     style << List.concat
 
 
-svgStyles : List String -> String
+svgStyles : List String -> Svg.Attribute msg
 svgStyles =
-    String.join "; "
+    Svg.Attributes.style << String.join "; "
 
 
-svgStyle : String -> String -> String
+svgStyle : String -> String -> Svg.Attribute msg
 svgStyle a b =
-    a ++ ":" ++ b
+    Svg.Attributes.style <| a ++ ":" ++ b
 
 
 emptyStyle : Style

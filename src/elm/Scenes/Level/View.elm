@@ -4,10 +4,10 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types as Level exposing (LevelStatus(InProgress))
 import Views.Backdrop exposing (backdrop)
-import Views.Board.InfoWindow exposing (infoWindow)
-import Views.Board.Layout exposing (board, handleStop)
-import Views.Board.LineDrag exposing (handleLineDrag)
-import Views.Board.TopBar exposing (topBar)
+import Views.Level.InfoWindow exposing (infoWindow)
+import Views.Level.Layout exposing (board, handleStop)
+import Views.Level.LineDrag exposing (handleLineDrag)
+import Views.Level.TopBar exposing (topBar)
 
 
 levelView : Level.Model -> Html Level.Msg

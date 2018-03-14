@@ -1,12 +1,13 @@
 module Scenes.Hub.Types exposing (..)
 
+import Data.Transit exposing (Transit)
 import Dict exposing (Dict)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
-import Window
 import Types exposing (..)
+import Window
 
 
 type alias Model =
@@ -18,7 +19,7 @@ type alias Model =
     , transitionBackground : TransitionBackground
     , progress : Progress
     , currentLevel : Maybe Progress
-    , lives : Int
+    , lives : Transit Int
     , infoWindow : InfoWindow Progress
     , window : Window.Size
     , mouse : Mouse.Position
@@ -39,6 +40,7 @@ type Msg
     | RandomBackground TransitionBackground
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
+    | GoToRetry
     | ShowInfo Progress
     | HideInfo
     | SetInfoState (InfoWindow Progress)

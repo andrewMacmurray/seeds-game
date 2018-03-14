@@ -6,6 +6,7 @@ import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
+import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse
@@ -50,7 +51,7 @@ initialState =
     , transitionBackground = Orange
     , progress = ( 1, 1 )
     , currentLevel = Nothing
-    , lives = 5
+    , lives = Stationary 5
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }
     , mouse = { y = 0, x = 0 }
@@ -136,6 +137,9 @@ update msg model =
                         ]
                   ]
 
+        GoToRetry ->
+            { model | scene = Retry, lives = Transit.toStationary model.lives } ! []
+
         SetInfoState infoWindow ->
             { model | infoWindow = infoWindow } ! []
 
@@ -161,7 +165,7 @@ update msg model =
             handleIncrementProgress model ! []
 
         DecrementLives ->
-            { model | lives = model.lives - 1 } ! []
+            { model | lives = decrementLives model.lives } ! []
 
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
@@ -189,6 +193,13 @@ currentLevelData model =
     model.currentLevel
         |> Maybe.withDefault ( 1, 1 )
         |> getLevelData
+
+
+decrementLives : Transit Int -> Transit Int
+decrementLives lifeState =
+    lifeState
+        |> Transit.map (\n -> n - 1)
+        |> Transit.toTransitioning
 
 
 handleLoadLevel : Main.Model -> LevelData -> ( Main.Model, Cmd Main.Msg )
@@ -302,7 +313,7 @@ levelWinSequence model =
 
 levelLoseSequence : Main.Model -> List ( Float, Main.Msg )
 levelLoseSequence model =
-    [ ( 0, SetScene Retry )
+    [ ( 0, GoToRetry )
     , ( 1000, DecrementLives )
     ]
 

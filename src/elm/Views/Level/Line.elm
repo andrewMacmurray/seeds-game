@@ -1,4 +1,4 @@
-module Views.Board.Line exposing (..)
+module Views.Level.Line exposing (..)
 
 import Data.Level.Board.Block exposing (getTileState)
 import Formatting exposing ((<>), print, s)
@@ -8,7 +8,7 @@ import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (strokeColors)
+import Views.Level.Styles exposing (strokeColors)
 import Window
 
 
@@ -44,11 +44,10 @@ line_ window tileType bearing =
         svg
             [ width <| toString <| 50 * tileScale
             , height <| toString <| 9 * tileScale
-            , Svg.Attributes.style <|
-                svgStyles
-                    [ transformMap window bearing
-                    , "margin: auto"
-                    ]
+            , svgStyles
+                [ transformMap window bearing
+                , "margin: auto"
+                ]
             , class "absolute bottom-0 right-0 left-0 top-0 z-0"
             ]
             [ line
@@ -57,7 +56,7 @@ line_ window tileType bearing =
                 , y1 "0"
                 , x2 <| toString <| 50 * tileScale
                 , y2 "0"
-                , Svg.Attributes.style <| svgStyle "stroke" <| strokeColors tileType
+                , svgStyle "stroke" <| strokeColors tileType
                 ]
                 []
             ]

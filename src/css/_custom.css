@@ -69,12 +69,12 @@ div {
   100% { transform: scale(1); }
 }
 
-@keyframes break-left {
+@keyframes heart-break-left {
   0% { transform: translateX(0px) rotateZ(0deg); }
   100% { transform: translateX(-3px) rotateZ(-2deg); }
 }
 
-@keyframes break-right {
+@keyframes heart-break-right {
   0% { transform: translateX(0px) rotateZ(0deg); }
   100% { transform: translateX(3px) rotateZ(2deg); }
 }

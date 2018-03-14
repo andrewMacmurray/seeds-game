@@ -1,4 +1,4 @@
-module Views.Board.InfoWindow exposing (..)
+module Views.Level.InfoWindow exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

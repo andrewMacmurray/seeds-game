@@ -1,12 +1,13 @@
 module Scenes.Retry.View exposing (..)
 
 import Config.Color exposing (..)
+import Data.Transit as Transit exposing (Transit)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types exposing (Model, Msg(RestartLevel, GoToHub))
-import Views.Icons.Heart exposing (heart, brokenHeart)
+import Scenes.Hub.Types exposing (..)
+import Views.Icons.Heart exposing (breakingHeart, brokenHeart, heart)
 
 
 retryView : Model -> Html Msg
@@ -60,15 +61,19 @@ tryAgain model =
         ]
 
 
-livesLeft : Int -> List (Html msg)
-livesLeft lives =
-    List.range 1 5
-        |> List.map (\n -> ( n <= lives, n == lives ))
-        |> List.map life
+livesLeft : Transit Int -> List (Html msg)
+livesLeft lifeState =
+    let
+        lives =
+            Transit.val lifeState
+    in
+        List.range 1 5
+            |> List.map (\n -> ( n <= lives, n == lives, n == lives + 1, lifeState ))
+            |> List.map life
 
 
-life : ( Bool, Bool ) -> Html msg
-life ( active, currentLife ) =
+life : ( Bool, Bool, Bool, Transit Int ) -> Html msg
+life ( active, currentLife, breaking, lifeState ) =
     let
         animation =
             if currentLife then
@@ -79,6 +84,8 @@ life ( active, currentLife ) =
         visibleHeart =
             if active then
                 heart
+            else if breaking && Transit.isTransitioning lifeState then
+                breakingHeart
             else
                 brokenHeart
 
