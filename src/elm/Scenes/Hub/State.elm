@@ -238,7 +238,7 @@ countDownToNextLife model =
 
 countDown : Float -> Int
 countDown timeTillNextLife =
-    round <| livesLeft <| timeTillNextLife - second
+    floor <| livesLeft <| timeTillNextLife - second
 
 
 currentLevelData : Model -> LevelData
