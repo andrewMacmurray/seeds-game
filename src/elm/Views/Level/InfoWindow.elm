@@ -3,7 +3,7 @@ module Views.Level.InfoWindow exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (..)
-import Types exposing (..)
+import Data.InfoWindow exposing (..)
 import Views.InfoWindow exposing (infoContainer)
 
 

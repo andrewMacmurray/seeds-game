@@ -2,7 +2,7 @@ module Scenes.Level.Types exposing (..)
 
 import Dict exposing (Dict)
 import Mouse
-import Types exposing (InfoWindow)
+import Data.InfoWindow exposing (InfoWindow)
 import Window
 
 

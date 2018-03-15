@@ -1,6 +1,7 @@
 module Scenes.Level.State exposing (..)
 
 import Config.Text exposing (failureMessage, getSuccessMessage)
+import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Level.Board.Block exposing (addWalls)
 import Data.Level.Board.Falling exposing (setFallingTiles)
 import Data.Level.Board.Generate exposing (..)
@@ -17,7 +18,6 @@ import Helpers.Effect exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing ((!!), (!!!))
 import Scenes.Hub.Types exposing (LevelData)
 import Scenes.Level.Types exposing (..)
-import Types exposing (InfoWindow(..))
 
 
 init : LevelData -> Model -> ( Model, Cmd Msg )
@@ -142,7 +142,7 @@ update msg model =
             { model | levelInfoWindow = Visible info } !! []
 
         RemoveInfo ->
-            { model | levelInfoWindow = removeInfo model.levelInfoWindow } !! []
+            { model | levelInfoWindow = InfoWindow.toHiding model.levelInfoWindow } !! []
 
         InfoHidden ->
             { model | levelInfoWindow = Hidden } !! []
@@ -221,16 +221,6 @@ fallDelay moveShape =
 
 
 -- UPDATE HELPERS
-
-
-removeInfo : InfoWindow String -> InfoWindow String
-removeInfo infoWindow =
-    case infoWindow of
-        Visible info ->
-            Hiding info
-
-        window ->
-            window
 
 
 handleGenerateTiles : LevelData -> Model -> Cmd Msg

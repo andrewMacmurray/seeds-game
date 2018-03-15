@@ -1,10 +1,10 @@
 module Views.InfoWindow exposing (..)
 
 import Config.Color exposing (..)
+import Data.InfoWindow exposing (..)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Types exposing (..)
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg

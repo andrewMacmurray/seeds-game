@@ -1,12 +1,12 @@
 module Scenes.Hub.Types exposing (..)
 
+import Data.InfoWindow exposing (InfoWindow)
 import Data.Transit exposing (Transit)
 import Dict exposing (Dict)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
-import Types exposing (..)
 import Window
 
 

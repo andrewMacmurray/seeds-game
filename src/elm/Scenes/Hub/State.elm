@@ -3,6 +3,7 @@ module Scenes.Hub.State exposing (..)
 import Config.AllLevels exposing (allLevels)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
+import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
@@ -23,7 +24,6 @@ import Scenes.Tutorial.Types as Tu
         ( Msg(ResetVisibilities, StartSequence)
         , OutMsg(ExitTutorialToLevel)
         )
-import Types exposing (..)
 import Window
 
 
@@ -147,16 +147,12 @@ update msg model =
             { model | infoWindow = Visible levelProgress } ! []
 
         HideInfo ->
-            let
-                selectedLevel =
-                    getSelectedProgress model.infoWindow |> Maybe.withDefault ( 1, 1 )
-            in
-                model
-                    ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Hiding selectedLevel )
-                            , ( 1000, SetInfoState Hidden )
-                            ]
-                      ]
+            model
+                ! [ sequenceMs
+                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.infoWindow )
+                        , ( 1000, SetInfoState Hidden )
+                        ]
+                  ]
 
         RandomBackground background ->
             { model | transitionBackground = background } ! []
