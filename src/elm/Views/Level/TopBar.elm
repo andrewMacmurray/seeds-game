@@ -1,13 +1,13 @@
-module Views.Board.TopBar exposing (..)
+module Views.Level.TopBar exposing (..)
 
 import Config.Scale as ScaleConfig
-import Config.Color exposing (darkYellow, gold, washedYellow)
+import Config.Color exposing (..)
 import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
-import Views.Board.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
+import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 import Views.Icons.Tick exposing (tickBackground)
 
 
@@ -25,7 +25,7 @@ topBar model =
             [ style [ widthStyle <| boardFullWidth model, heightStyle ScaleConfig.topBarHeight ]
             , class "flex items-center justify-center relative"
             ]
-            [ remainingMoves model
+            [ remainingMoves model.remainingMoves
             , div [ style [ marginTop -16, ( "padding", "0 9px" ) ], class "flex justify-center" ] <|
                 List.map (renderScore model) (scoreTileTypes model.tileSettings)
             ]
@@ -54,23 +54,39 @@ renderScore model tileType =
             ]
 
 
-remainingMoves : Level.Model -> Html msg
-remainingMoves model =
+remainingMoves : Int -> Html msg
+remainingMoves remainingMoves =
     div
-        [ style [ color darkYellow, leftStyle 8 ], class "absolute top-1" ]
+        [ style [ leftStyle 8 ], class "absolute top-1" ]
         [ div
             [ style
                 [ widthStyle 20
                 , heightStyle 20
-                , ( "border", "1px solid" )
                 , paddingAll 17
                 ]
             , class "br-100 flex items-center justify-center"
             ]
-            [ p [ class "ma0 f6" ] [ text <| toString model.remainingMoves ]
+            [ p
+                [ class "ma0 f3"
+                , style
+                    [ color <| moveCounterColor remainingMoves
+                    , transitionStyle "1s ease"
+                    ]
+                ]
+                [ text <| toString remainingMoves ]
             ]
-        , p [ class "ma0 tracked f7 mt1 tc" ] [ text "moves" ]
+        , p [ style [ color darkYellow ], class "ma0 tracked f7 mt1 tc" ] [ text "moves" ]
         ]
+
+
+moveCounterColor : Int -> String
+moveCounterColor remainingMoves =
+    if remainingMoves > 5 then
+        lightGreen
+    else if remainingMoves > 2 then
+        fadedOrange
+    else
+        pinkRed
 
 
 scoreContent : TileType -> Scores -> Html msg

@@ -1,11 +1,13 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.AllLevels exposing (allLevels)
+import Config.Levels exposing (allLevels, maxLives, lifeRecoveryInterval)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
+import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Hub.Progress exposing (..)
 import Data.Hub.Transition exposing (genRandomBackground)
 import Data.Ports exposing (..)
+import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse
@@ -22,15 +24,19 @@ import Scenes.Tutorial.Types as Tu
         ( Msg(ResetVisibilities, StartSequence)
         , OutMsg(ExitTutorialToLevel)
         )
-import Types exposing (..)
 import Window
+import Time exposing (every, second, minute, Time)
+import Types exposing (Flags, Times, toProgress, fromProgress)
 
 
-init : ( Main.Model, Cmd Main.Msg )
-init =
+init : Flags -> ( Model, Cmd Main.Msg )
+init flags =
     let
+        state =
+            initialState flags
+
         ( model, loadLevelCmd ) =
-            handleLoadLevel initialState <| getLevelData initialState.progress
+            handleLoadLevel state <| getLevelData state.progress
     in
         model
             ! [ getWindowSize
@@ -40,24 +46,26 @@ init =
               ]
 
 
-initialState : Main.Model
-initialState =
+initialState : Flags -> Model
+initialState flags =
     { levelModel = Level.initialState
     , tutorialModel = Tutorial.initialState
     , xAnimations = ""
     , scene = Title
     , sceneTransition = False
     , transitionBackground = Orange
-    , progress = ( 1, 1 )
+    , progress = flags.rawProgress |> toProgress |> Maybe.withDefault ( 1, 1 )
     , currentLevel = Nothing
-    , lives = 5
+    , lives = Stationary 5
     , infoWindow = Hidden
     , window = { height = 0, width = 0 }
     , mouse = { y = 0, x = 0 }
+    , lastPlayed = initTimeTillNextLife flags
+    , timeTillNextLife = flags.times |> Maybe.map .timeTillNextLife |> Maybe.withDefault 0
     }
 
 
-update : Main.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+update : Main.Msg -> Model -> ( Model, Cmd Main.Msg )
 update msg model =
     case msg of
         LevelMsg levelMsg ->
@@ -136,6 +144,9 @@ update msg model =
                         ]
                   ]
 
+        GoToRetry ->
+            { model | scene = Retry, lives = Transit.toStationary model.lives } ! []
+
         SetInfoState infoWindow ->
             { model | infoWindow = infoWindow } ! []
 
@@ -143,31 +154,34 @@ update msg model =
             { model | infoWindow = Visible levelProgress } ! []
 
         HideInfo ->
-            let
-                selectedLevel =
-                    getSelectedProgress model.infoWindow |> Maybe.withDefault ( 1, 1 )
-            in
-                model
-                    ! [ sequenceMs
-                            [ ( 0, SetInfoState <| Hiding selectedLevel )
-                            , ( 1000, SetInfoState Hidden )
-                            ]
-                      ]
+            model
+                ! [ sequenceMs
+                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.infoWindow )
+                        , ( 1000, SetInfoState Hidden )
+                        ]
+                  ]
 
         RandomBackground background ->
             { model | transitionBackground = background } ! []
 
         IncrementProgress ->
-            handleIncrementProgress model ! []
+            handleIncrementProgress model
 
         DecrementLives ->
-            { model | lives = model.lives - 1 } ! []
+            (model
+                |> handleDecrementLives
+                |> addTimeTillNextLife
+            )
+                ! []
 
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
 
         ReceiveHubLevelOffset offset ->
             model ! [ scrollHubToLevel offset model.window ]
+
+        ClearCache ->
+            model ! [ clearCache ]
 
         DomNoOp _ ->
             model ! []
@@ -183,6 +197,49 @@ update msg model =
         MousePosition position ->
             { model | levelModel = addMousePositionToLevel position model } ! []
 
+        Tick time ->
+            handleUpdateTimes time model
+
+
+initTimeTillNextLife : Flags -> Time
+initTimeTillNextLife flags =
+    flags.times
+        |> Maybe.map (\t -> decrementAboveZero (flags.now - t.lastPlayed) t.timeTillNextLife)
+        |> Maybe.withDefault 0
+
+
+handleUpdateTimes : Time -> Model -> ( Model, Cmd Main.Msg )
+handleUpdateTimes time model =
+    let
+        newModel =
+            { model | lastPlayed = time } |> countDownToNextLife
+    in
+        newModel ! [ handleCacheTimes newModel ]
+
+
+handleCacheTimes : Model -> Cmd msg
+handleCacheTimes model =
+    cacheTimes
+        { timeTillNextLife = model.timeTillNextLife
+        , lastPlayed = model.lastPlayed
+        }
+
+
+countDownToNextLife : Model -> Model
+countDownToNextLife model =
+    if model.timeTillNextLife <= 0 then
+        model
+    else
+        { model
+            | timeTillNextLife = model.timeTillNextLife - second
+            , lives = Transit.map (always <| countDown model.timeTillNextLife) model.lives
+        }
+
+
+countDown : Float -> Int
+countDown timeTillNextLife =
+    floor <| livesLeft <| timeTillNextLife - second
+
 
 currentLevelData : Model -> LevelData
 currentLevelData model =
@@ -191,7 +248,34 @@ currentLevelData model =
         |> getLevelData
 
 
-handleLoadLevel : Main.Model -> LevelData -> ( Main.Model, Cmd Main.Msg )
+livesLeft : Time -> Float
+livesLeft timeTill =
+    (timeTill - (lifeRecoveryInterval * maxLives)) / -lifeRecoveryInterval
+
+
+addTimeTillNextLife : Model -> Model
+addTimeTillNextLife model =
+    { model | timeTillNextLife = model.timeTillNextLife + lifeRecoveryInterval }
+
+
+handleDecrementLives : Model -> Model
+handleDecrementLives model =
+    { model | lives = decrementLives model.lives }
+
+
+decrementLives : Transit Int -> Transit Int
+decrementLives lifeState =
+    lifeState
+        |> Transit.map (decrementAboveZero 1)
+        |> Transit.toTransitioning
+
+
+decrementAboveZero : number -> number -> number
+decrementAboveZero x n =
+    clamp 0 100000000000 (n - x)
+
+
+handleLoadLevel : Model -> LevelData -> ( Model, Cmd Main.Msg )
 handleLoadLevel model levelData =
     let
         ( levelModel, levelCmd ) =
@@ -209,29 +293,29 @@ tutorialData level =
         levelData.tutorial
 
 
-addMousePositionToLevel : Mouse.Position -> Main.Model -> Lv.Model
+addMousePositionToLevel : Mouse.Position -> Model -> Lv.Model
 addMousePositionToLevel position { levelModel } =
     { levelModel | mouse = position }
 
 
-addWindowSizeToLevel : Window.Size -> Main.Model -> Lv.Model
+addWindowSizeToLevel : Window.Size -> Model -> Lv.Model
 addWindowSizeToLevel window { levelModel } =
     { levelModel | window = window }
 
 
-addWindowSizeToTutorial : Window.Size -> Main.Model -> Tu.Model
+addWindowSizeToTutorial : Window.Size -> Model -> Tu.Model
 addWindowSizeToTutorial window { tutorialModel } =
     { tutorialModel | window = window }
 
 
-handleLevelMsg : Lv.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleLevelMsg : Lv.Msg -> Model -> ( Model, Cmd Main.Msg )
 handleLevelMsg levelMsg model =
     Level.update levelMsg model.levelModel
         |> returnWithOutMsg (embedLevelModel model) LevelMsg
         |> handleLevelOutMsg
 
 
-handleLevelOutMsg : ( Main.Model, Cmd Main.Msg, Maybe Lv.OutMsg ) -> ( Main.Model, Cmd Main.Msg )
+handleLevelOutMsg : ( Model, Cmd Main.Msg, Maybe Lv.OutMsg ) -> ( Model, Cmd Main.Msg )
 handleLevelOutMsg ( model, cmd, outMsg ) =
     case outMsg of
         Just ExitLevelWithWin ->
@@ -244,19 +328,19 @@ handleLevelOutMsg ( model, cmd, outMsg ) =
             model ! [ cmd ]
 
 
-embedLevelModel : Main.Model -> (Lv.Model -> Main.Model)
+embedLevelModel : Model -> (Lv.Model -> Model)
 embedLevelModel model levelModel =
     { model | levelModel = levelModel }
 
 
-handleTutorialMsg : Tu.Msg -> Main.Model -> ( Main.Model, Cmd Main.Msg )
+handleTutorialMsg : Tu.Msg -> Model -> ( Model, Cmd Main.Msg )
 handleTutorialMsg tutorialMsg m =
     Tutorial.update tutorialMsg m.tutorialModel
         |> returnWithOutMsg (embedTutorialModel m) TutorialMsg
         |> handleTutorialOutMsg
 
 
-handleTutorialOutMsg : ( Main.Model, Cmd Main.Msg, Maybe Tu.OutMsg ) -> ( Main.Model, Cmd Main.Msg )
+handleTutorialOutMsg : ( Model, Cmd Main.Msg, Maybe Tu.OutMsg ) -> ( Model, Cmd Main.Msg )
 handleTutorialOutMsg ( model, cmd, outMsg ) =
     case outMsg of
         Just ExitTutorialToLevel ->
@@ -269,22 +353,26 @@ handleTutorialOutMsg ( model, cmd, outMsg ) =
             model ! [ cmd ]
 
 
-embedTutorialModel : Main.Model -> (Tu.Model -> Main.Model)
+embedTutorialModel : Model -> (Tu.Model -> Model)
 embedTutorialModel model tutorialModel =
     { model | tutorialModel = tutorialModel }
 
 
-handleIncrementProgress : Main.Model -> Main.Model
+handleIncrementProgress : Model -> ( Model, Cmd Main.Msg )
 handleIncrementProgress model =
-    { model | progress = incrementProgress model.currentLevel model.progress }
+    let
+        progress =
+            incrementProgress model.currentLevel model.progress
+    in
+        { model | progress = progress } ! [ cacheProgress <| fromProgress progress ]
 
 
-progressLevelNumber : Main.Model -> Int
+progressLevelNumber : Model -> Int
 progressLevelNumber model =
     getLevelNumber model.progress allLevels
 
 
-levelWinSequence : Main.Model -> List ( Float, Main.Msg )
+levelWinSequence : Model -> List ( Float, Main.Msg )
 levelWinSequence model =
     let
         backToHub =
@@ -300,9 +388,9 @@ levelWinSequence model =
             ( 0, BeginSceneTransition ) :: backToHub
 
 
-levelLoseSequence : Main.Model -> List ( Float, Main.Msg )
+levelLoseSequence : Model -> List ( Float, Main.Msg )
 levelLoseSequence model =
-    [ ( 0, SetScene Retry )
+    [ ( 0, GoToRetry )
     , ( 1000, DecrementLives )
     ]
 
@@ -316,7 +404,7 @@ backToHubSequence levelNumber =
     ]
 
 
-levelCompleteScrollNumber : Main.Model -> Int
+levelCompleteScrollNumber : Model -> Int
 levelCompleteScrollNumber model =
     if shouldIncrement model.currentLevel model.progress then
         progressLevelNumber model + 1
@@ -324,7 +412,7 @@ levelCompleteScrollNumber model =
         getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels
 
 
-subscriptions : Main.Model -> Sub Main.Msg
+subscriptions : Model -> Sub Main.Msg
 subscriptions model =
     Sub.batch
         [ trackWindowSize
@@ -332,4 +420,5 @@ subscriptions model =
         , trackMouseDowns
         , receiveExternalAnimations ReceieveExternalAnimations
         , receiveHubLevelOffset ReceiveHubLevelOffset
+        , every second Tick
         ]

@@ -1,7 +1,11 @@
 module View exposing (..)
 
+import Config.Color exposing (darkYellow)
 import Helpers.Animation exposing (embeddedAnimations)
+import Helpers.Style exposing (color)
 import Html exposing (..)
+import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Hub.View exposing (hubView)
@@ -18,6 +22,7 @@ view : Hub.Model -> Html Hub.Msg
 view model =
     div []
         [ embeddedAnimations model.xAnimations
+        , reset
         , loadingScreen model
         , renderScene model
         , backdrop
@@ -58,3 +63,13 @@ renderScene model =
                     [ ( "tutorial", tutorialView model.tutorialModel |> Html.map TutorialMsg )
                     , ( "level", levelView model.levelModel |> Html.map LevelMsg )
                     ]
+
+
+reset : Html Msg
+reset =
+    p
+        [ onClick ClearCache
+        , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
+        , style [ color darkYellow ]
+        ]
+        [ text "reset" ]

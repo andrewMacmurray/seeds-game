@@ -1,4 +1,4 @@
-module Views.Board.Tile exposing (..)
+module Views.Level.Tile exposing (..)
 
 import Helpers.Html exposing (onMouseDownPreventDefault)
 import Config.Scale exposing (tileScaleFactor)
@@ -7,7 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter)
 import Scenes.Level.Types as Level exposing (..)
-import Views.Board.Styles exposing (..)
+import Views.Level.Styles exposing (..)
 import Window exposing (Size)
 
 

@@ -1,12 +1,13 @@
-module Config.AllLevels exposing (..)
+module Config.Levels exposing (..)
 
 import Config.World.One as One
-import Config.World.Two as Two
 import Config.World.Three as Three
+import Config.World.Two as Two
 import Data.Hub.World exposing (..)
 import Dict exposing (Dict)
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (..)
+import Time exposing (Time, minute)
 
 
 allLevels : AllLevels
@@ -44,3 +45,13 @@ defaultLevel =
             (Probability 25)
         ]
     }
+
+
+maxLives : number
+maxLives =
+    5
+
+
+lifeRecoveryInterval : Time
+lifeRecoveryInterval =
+    5 * minute

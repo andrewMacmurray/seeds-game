@@ -1,4 +1,4 @@
-module Views.Board.LineDrag exposing (..)
+module Views.Level.LineDrag exposing (..)
 
 import Config.Scale as ScaleConfig
 import Data.Level.Move.Square exposing (hasSquareTile)
@@ -8,7 +8,7 @@ import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (..)
+import Views.Level.Styles exposing (..)
 
 
 handleLineDrag : Level.Model -> Html Level.Msg
@@ -28,9 +28,9 @@ lineDrag ({ window } as model) =
         ( oY, oX ) =
             lastMoveOrigin model
 
-        colorClass =
+        strokeColor =
             currentMoveTileType model.board
-                |> Maybe.map (strokeColors >> svgStyle "stroke")
+                |> Maybe.map strokeColors
                 |> Maybe.withDefault ""
 
         tileScale =
@@ -43,7 +43,7 @@ lineDrag ({ window } as model) =
             , class "fixed top-0 right-0 z-2 touch-disabled"
             ]
             [ line
-                [ Svg.Attributes.style colorClass
+                [ svgStyle "stroke" strokeColor
                 , strokeWidth <| toString <| 6 * tileScale
                 , strokeLinecap "round"
                 , x1 <| toString oX

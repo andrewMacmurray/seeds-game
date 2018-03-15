@@ -1,6 +1,7 @@
 module Views.Hub.World exposing (..)
 
-import Config.AllLevels exposing (allLevels)
+import Config.Levels exposing (allLevels)
+import Data.InfoWindow exposing (InfoWindow(Hidden))
 import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Dict
 import Helpers.Html exposing (emptyProperty)
@@ -10,7 +11,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))
-import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 

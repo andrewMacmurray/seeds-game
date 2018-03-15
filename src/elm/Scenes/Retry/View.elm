@@ -5,8 +5,8 @@ import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types exposing (Model, Msg(RestartLevel, GoToHub))
-import Views.Icons.Heart exposing (heart, brokenHeart)
+import Scenes.Hub.Types exposing (..)
+import Views.Lives exposing (livesLeft)
 
 
 retryView : Model -> Html Msg
@@ -58,45 +58,3 @@ tryAgain model =
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]
-
-
-livesLeft : Int -> List (Html msg)
-livesLeft lives =
-    List.range 1 5
-        |> List.map (\n -> ( n <= lives, n == lives ))
-        |> List.map life
-
-
-life : ( Bool, Bool ) -> Html msg
-life ( active, currentLife ) =
-    let
-        animation =
-            if currentLife then
-                animationStyle "heartbeat 1s infinite"
-            else
-                emptyStyle
-
-        visibleHeart =
-            if active then
-                heart
-            else
-                brokenHeart
-
-        adjustScale =
-            if active then
-                emptyStyle
-            else
-                transformStyle <| scale 1.11
-    in
-        div
-            [ style
-                [ widthStyle 35
-                , heightStyle 35
-                , marginLeft 10
-                , marginRight 10
-                , animation
-                , adjustScale
-                ]
-            , class "dib"
-            ]
-            [ visibleHeart ]

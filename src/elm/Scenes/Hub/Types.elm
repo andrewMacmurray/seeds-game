@@ -1,12 +1,14 @@
 module Scenes.Hub.Types exposing (..)
 
+import Data.InfoWindow exposing (InfoWindow)
+import Data.Transit exposing (Transit)
 import Dict exposing (Dict)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
+import Time exposing (Time)
 import Window
-import Types exposing (..)
 
 
 type alias Model =
@@ -18,10 +20,12 @@ type alias Model =
     , transitionBackground : TransitionBackground
     , progress : Progress
     , currentLevel : Maybe Progress
-    , lives : Int
+    , lives : Transit Int
     , infoWindow : InfoWindow Progress
     , window : Window.Size
     , mouse : Mouse.Position
+    , lastPlayed : Time
+    , timeTillNextLife : Time
     }
 
 
@@ -39,6 +43,7 @@ type Msg
     | RandomBackground TransitionBackground
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
+    | GoToRetry
     | ShowInfo Progress
     | HideInfo
     | SetInfoState (InfoWindow Progress)
@@ -47,9 +52,11 @@ type Msg
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | ReceieveExternalAnimations String
+    | ClearCache
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | MousePosition Mouse.Position
+    | Tick Time
 
 
 type Scene

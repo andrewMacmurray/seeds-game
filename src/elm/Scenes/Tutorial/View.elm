@@ -12,10 +12,10 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Scenes.Level.Types exposing (Move, SeedType(..), TileConfig, TileState(..), TileType(..))
 import Scenes.Tutorial.Types exposing (..)
-import Views.Board.Layout exposing (renderLineLayer, renderLines)
-import Views.Board.Styles exposing (boardHeight, boardWidth)
-import Views.Board.Tile exposing (renderTile_)
-import Views.Board.TopBar exposing (scoreIcon)
+import Views.Level.Layout exposing (renderLineLayer, renderLines)
+import Views.Level.Styles exposing (boardHeight, boardWidth)
+import Views.Level.Tile exposing (renderTile_)
+import Views.Level.TopBar exposing (scoreIcon)
 
 
 tutorialView : Model -> Html Msg

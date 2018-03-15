@@ -1,6 +1,7 @@
 module Views.Icons.Heart exposing (..)
 
 import Config.Color exposing (..)
+import Helpers.Style exposing (ms, svgStyles)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
@@ -27,25 +28,73 @@ heart =
         ]
 
 
+type HeartState
+    = Breaking
+    | Broken
+
+
+breakingHeart : Svg msg
+breakingHeart =
+    heartBreak Breaking
+
+
 brokenHeart : Svg msg
 brokenHeart =
-    Svg.svg
-        [ viewBox "-5 0 65 49"
-        , height "100%"
-        , width "100%"
-        ]
-        [ Svg.g [ fill "none" ]
-            [ Svg.path
-                [ d "M28 4.5a15.5 15.5 0 0 1 22 21.9l-22 22c-.3.2-.7.4-1 .4v-8.9l-5.7-9.8 5.7-8.7-5.7-8.3L27 5.7l1-1.2z"
-                , fill "#B4B4B4"
-                , style "transform-origin: bottom; animation: break-right 0.2s linear forwards"
-                ]
-                []
-            , Svg.path
-                [ d "M26.4 4.5A15.5 15.5 0 0 0 4.5 26.4l22 22c.3.2.6.4 1 .4v-8.9l-5.6-9.8 5.5-8.7-5.5-8.3 5.5-7.4-1-1.2z"
-                , fill "#E2E2E2"
-                , style "transform-origin: bottom; animation: break-left 0.2s linear forwards"
-                ]
-                []
+    heartBreak Broken
+
+
+heartBreak : HeartState -> Svg msg
+heartBreak heartState =
+    let
+        ( l, r ) =
+            case heartState of
+                Breaking ->
+                    ( [ "transform-origin: bottom"
+                      , breakAnimation "heart-break-left" 200 100
+                      ]
+                    , [ "transform-origin: bottom"
+                      , breakAnimation "heart-break-right" 200 100
+                      ]
+                    )
+
+                Broken ->
+                    ( [ "transform-origin: bottom"
+                      , breakAnimation "heart-break-left" 0 0
+                      ]
+                    , [ "transform-origin: bottom"
+                      , breakAnimation "heart-break-right" 0 0
+                      ]
+                    )
+    in
+        Svg.svg
+            [ viewBox "-5 0 65 49"
+            , height "100%"
+            , width "100%"
             ]
+            [ Svg.g [ fill "none" ]
+                [ Svg.path
+                    [ d "M28 4.5a15.5 15.5 0 0 1 22 21.9l-22 22c-.3.2-.7.4-1 .4v-8.9l-5.7-9.8 5.7-8.7-5.7-8.3L27 5.7l1-1.2z"
+                    , fill lightGray
+                    , svgStyles r
+                    ]
+                    []
+                , Svg.path
+                    [ d "M26.4 4.5A15.5 15.5 0 0 0 4.5 26.4l22 22c.3.2.6.4 1 .4v-8.9l-5.6-9.8 5.5-8.7-5.5-8.3 5.5-7.4-1-1.2z"
+                    , fill silver
+                    , svgStyles l
+                    ]
+                    []
+                ]
+            ]
+
+
+breakAnimation : String -> Float -> Float -> String
+breakAnimation name delay duration =
+    String.join " "
+        [ "animation:"
+        , ms delay
+        , name
+        , ms duration
+        , "cubic-bezier(0, -2.85, 0.67, 2.83)"
+        , "forwards"
         ]

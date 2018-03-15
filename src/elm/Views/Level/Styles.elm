@@ -1,4 +1,4 @@
-module Views.Board.Styles exposing (..)
+module Views.Level.Styles exposing (..)
 
 import Config.Scale as ScaleConfig
 import Config.Color exposing (..)
