@@ -1,6 +1,6 @@
 module Scenes.Hub.View exposing (..)
 
-import Config.Color exposing (darkYellow, washedYellow)
+import Config.Color exposing (darkYellow, pinkRed, washedYellow)
 import Date exposing (minute, second)
 import Helpers.Style exposing (..)
 import Html exposing (..)
@@ -38,23 +38,38 @@ hubTopBar model =
         , style [ background washedYellow ]
         ]
         [ div [ style [ transformStyle <| scale 0.8 ] ] <| livesLeft model.lives
-        , p [ class "f7", style [ color darkYellow ] ] [ text <| getTimeLeft model.timeTillNextLife ]
+        , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
         ]
 
 
-getTimeLeft : Time -> String
-getTimeLeft timeRemaining =
+renderCountDown : Time -> Html msg
+renderCountDown timeRemaining =
+    case timeLeft timeRemaining of
+        Nothing ->
+            p [] [ text "full life" ]
+
+        Just t ->
+            div []
+                [ p [ style [ marginRight 8 ], class "dib" ] [ text "Next life in: " ]
+                , p [ style [ color pinkRed ], class "dib" ] [ text <| renderTime t ]
+                ]
+
+
+renderTime : ( Int, Int ) -> String
+renderTime ( m, s ) =
+    toString m ++ ":" ++ renderSecond s
+
+
+timeLeft : Time -> Maybe ( Int, Int )
+timeLeft timeRemaining =
     let
         d =
             Date.fromTime timeRemaining
-
-        ( m, s ) =
-            ( minute d % 5, second d )
     in
         if timeRemaining == 0 then
-            "full life"
+            Nothing
         else
-            toString m ++ ":" ++ renderSecond s
+            Just ( minute d % 5, second d )
 
 
 renderSecond : Int -> String
