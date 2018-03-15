@@ -34,10 +34,10 @@ hubContent model =
 hubTopBar : Model -> Html msg
 hubTopBar model =
     div
-        [ class "fixed w-100 top-0 tc pa3"
+        [ class "fixed w-100 top-0 tc pa2"
         , style [ background washedYellow ]
         ]
-        [ div [ style [ transformStyle <| scale 0.8 ] ] <| livesLeft model.lives
+        [ div [ style [ transformStyle <| scale 0.7 ] ] <| livesLeft model.lives
         , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
         ]
 
@@ -46,12 +46,12 @@ renderCountDown : Time -> Html msg
 renderCountDown timeRemaining =
     case timeLeft timeRemaining of
         Nothing ->
-            p [] [ text "full life" ]
+            p [ class "ma1" ] [ text "full life" ]
 
         Just t ->
             div []
-                [ p [ style [ marginRight 8 ], class "dib" ] [ text "Next life in: " ]
-                , p [ style [ color pinkRed ], class "dib" ] [ text <| renderTime t ]
+                [ p [ class "dib ma1" ] [ text "Next life in: " ]
+                , p [ style [ color pinkRed ], class "dib ma1" ] [ text <| renderTime t ]
                 ]
 
 
