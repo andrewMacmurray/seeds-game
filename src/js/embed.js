@@ -1,10 +1,15 @@
-var Elm = window.Elm;
-var animations = require('./bounce.js');
+var Elm = window.Elm
+var animations = require('./bounce.js')
+var cache = require('./cache.js')
 
 function init() {
-  var node = document.getElementById('main');
-  var app = Elm.App.embed(node);
-  setTimeout(bumpDebuggerPanel, 1000)
+  var now = Date.now()
+
+  var app = Elm.App.fullscreen({
+    now: now,
+    times: cache.getTimes(),
+    rawProgress: cache.getProgress()
+  })
 
   app.ports.scrollToHubLevel.subscribe(function (level) {
     var levelEl = document.getElementById('level-' + level)
@@ -24,6 +29,21 @@ function init() {
 
     app.ports.receiveExternalAnimations.send(anims)
   })
+
+  app.ports.cacheProgress.subscribe(function (progress) {
+    cache.setProgress(progress)
+  })
+
+  app.ports.clearCache_.subscribe(function () {
+    cache.clear()
+    window.location.reload()
+  })
+
+  app.ports.cacheTimes.subscribe(function (times) {
+    cache.setTimes(times)
+  })
+
+  setTimeout(bumpDebuggerPanel, 100)
 }
 
 function bumpDebuggerPanel () {

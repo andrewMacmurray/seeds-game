@@ -1,14 +1,15 @@
 module App exposing (main)
 
-import Scenes.Hub.Types exposing (Model, Msg)
+import Html
 import Scenes.Hub.State as Hub
+import Scenes.Hub.Types exposing (Model, Msg)
+import Types exposing (Flags)
 import View exposing (view)
-import Html exposing (program)
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    program
+    Html.programWithFlags
         { init = Hub.init
         , update = Hub.update
         , view = view

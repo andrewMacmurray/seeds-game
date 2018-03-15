@@ -1,6 +1,6 @@
 module Views.Hub.World exposing (..)
 
-import Config.AllLevels exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.InfoWindow exposing (InfoWindow(Hidden))
 import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Dict

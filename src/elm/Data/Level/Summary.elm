@@ -1,6 +1,6 @@
 module Data.Level.Summary exposing (..)
 
-import Config.AllLevels exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Data.Level.Board.Tile exposing (getSeedType)
 import Data.Level.Score exposing (collectable)
 import Dict exposing (Dict)

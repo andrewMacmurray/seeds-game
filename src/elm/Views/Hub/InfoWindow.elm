@@ -1,6 +1,6 @@
 module Views.Hub.InfoWindow exposing (..)
 
-import Config.AllLevels exposing (allLevels)
+import Config.Levels exposing (allLevels)
 import Config.Color exposing (..)
 import Data.InfoWindow exposing (..)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)

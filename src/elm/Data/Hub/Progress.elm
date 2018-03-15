@@ -1,6 +1,6 @@
 module Data.Hub.Progress exposing (..)
 
-import Config.AllLevels exposing (allLevels, defaultLevel, defaultWorld)
+import Config.Levels exposing (allLevels, defaultLevel, defaultWorld)
 import Dict
 import Scenes.Hub.Types exposing (..)
 import Scenes.Level.Types exposing (SeedType(..))

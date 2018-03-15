@@ -7,6 +7,7 @@ import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
+import Time exposing (Time)
 import Window
 
 
@@ -23,6 +24,8 @@ type alias Model =
     , infoWindow : InfoWindow Progress
     , window : Window.Size
     , mouse : Mouse.Position
+    , lastPlayed : Time
+    , timeTillNextLife : Time
     }
 
 
@@ -49,9 +52,11 @@ type Msg
     | ScrollToHubLevel Int
     | ReceiveHubLevelOffset Float
     | ReceieveExternalAnimations String
+    | ClearCache
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | MousePosition Mouse.Position
+    | Tick Time
 
 
 type Scene
