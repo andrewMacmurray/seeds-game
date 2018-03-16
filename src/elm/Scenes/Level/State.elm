@@ -15,7 +15,7 @@ import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplet
 import Dict
 import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
-import Helpers.OutMsg exposing ((!!), (!!!))
+import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Hub.Types exposing (LevelData)
 import Scenes.Level.Types exposing (..)
 
@@ -63,97 +63,101 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
-            (model
-                |> handleMakeBoard tiles
-                |> transformBoard (addWalls walls)
-            )
-                !! []
+            noOutMsg
+                (model
+                    |> handleMakeBoard tiles
+                    |> transformBoard (addWalls walls)
+                )
+                []
 
         StopMove ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
-                    model !! [ growSeedPodsSequence model.moveShape ]
+                    noOutMsg model [ growSeedPodsSequence model.moveShape ]
 
                 _ ->
-                    model !! [ removeTilesSequence model.moveShape ]
+                    noOutMsg model [ removeTilesSequence model.moveShape ]
 
         SetLeavingTiles ->
-            (model
-                |> handleAddScore
-                |> mapBoard setToLeaving
-            )
-                !! []
+            noOutMsg
+                (model
+                    |> handleAddScore
+                    |> mapBoard setToLeaving
+                )
+                []
 
         SetFallingTiles ->
-            transformBoard setFallingTiles model !! []
+            noOutMsg (transformBoard setFallingTiles model) []
 
         ShiftBoard ->
-            (model
-                |> transformBoard shiftBoard
-                |> mapBoard setFallingToStatic
-                |> mapBoard setLeavingToEmpty
-            )
-                !! []
+            noOutMsg
+                (model
+                    |> transformBoard shiftBoard
+                    |> mapBoard setFallingToStatic
+                    |> mapBoard setLeavingToEmpty
+                )
+                []
 
         SetGrowingSeedPods ->
-            mapBoard setDraggingToGrowing model !! []
+            noOutMsg (mapBoard setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
-            model !! [ generateRandomSeedType model.tileSettings ]
+            noOutMsg model [ generateRandomSeedType model.tileSettings ]
 
         InsertGrowingSeeds seedType ->
-            handleInsertNewSeeds seedType model !! []
+            noOutMsg (handleInsertNewSeeds seedType model) []
 
         ResetGrowingSeeds ->
-            mapBoard setGrowingToStatic model !! []
+            noOutMsg (mapBoard setGrowingToStatic model) []
 
         GenerateEnteringTiles ->
-            model !! [ generateEnteringTiles model.tileSettings model.board ]
+            noOutMsg model [ generateEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
-            handleInsertEnteringTiles tiles model !! []
+            noOutMsg (handleInsertEnteringTiles tiles model) []
 
         ResetEntering ->
-            transformBoard (mapValues setEnteringToStatic) model !! []
+            noOutMsg (transformBoard (mapValues setEnteringToStatic) model) []
 
         ResetMove ->
-            (model
-                |> handleResetMove
-                |> handleDecrementRemainingMoves
-            )
-                !! []
+            noOutMsg
+                (model
+                    |> handleResetMove
+                    |> handleDecrementRemainingMoves
+                )
+                []
 
         StartMove move ->
-            handleStartMove move model !! []
+            noOutMsg (handleStartMove move model) []
 
         CheckMove move ->
             handleCheckMove move model
 
         SquareMove ->
-            handleSquareMove model !! []
+            noOutMsg (handleSquareMove model) []
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
         RandomSuccessMessageIndex i ->
-            { model | successMessageIndex = i } !! []
+            noOutMsg { model | successMessageIndex = i } []
 
         ShowInfo info ->
-            { model | levelInfoWindow = Visible info } !! []
+            noOutMsg { model | levelInfoWindow = Visible info } []
 
         RemoveInfo ->
-            { model | levelInfoWindow = InfoWindow.toHiding model.levelInfoWindow } !! []
+            noOutMsg { model | levelInfoWindow = InfoWindow.toHiding model.levelInfoWindow } []
 
         InfoHidden ->
-            { model | levelInfoWindow = Hidden } !! []
+            noOutMsg { model | levelInfoWindow = Hidden } []
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
-            { model | successMessageIndex = model.successMessageIndex + 1 } !!! ( [], ExitLevelWithWin )
+            withOutMsg { model | successMessageIndex = model.successMessageIndex + 1 } [] ExitLevelWithWin
 
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
-            model !!! ( [], ExitLevelWithLose )
+            withOutMsg model [] ExitLevelWithLose
 
 
 
@@ -279,7 +283,7 @@ handleCheckMove move model =
         newModel =
             model |> handleCheckMove_ move
     in
-        newModel !! [ triggerMoveIfSquare newModel.board ]
+        noOutMsg newModel [ triggerMoveIfSquare newModel.board ]
 
 
 handleCheckMove_ : Move -> Model -> Model
@@ -301,11 +305,11 @@ handleSquareMove model =
 handleCheckLevelComplete : Model -> ( Model, Cmd Msg, Maybe OutMsg )
 handleCheckLevelComplete model =
     if hasLost model then
-        { model | levelStatus = Lose } !! [ loseSequence ]
+        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
     else if hasWon model then
-        { model | levelStatus = Win } !! [ winSequence model ]
+        noOutMsg { model | levelStatus = Win } [ winSequence model ]
     else
-        model !! []
+        noOutMsg model []
 
 
 hasLost : Model -> Bool

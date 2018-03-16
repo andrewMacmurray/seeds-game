@@ -7,7 +7,7 @@ import Data.Level.Board.Tile exposing (..)
 import Data.Level.Move.Bearing exposing (addBearings)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
-import Helpers.OutMsg exposing ((!!), (!!!))
+import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Level.Types
     exposing
@@ -43,90 +43,91 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
         StartSequence config ->
-            loadTutorialData config model !! [ sequenceMs config.sequence ]
+            noOutMsg (loadTutorialData config model) [ sequenceMs config.sequence ]
 
         DragTile coord ->
-            handleDragTile coord model !! []
+            noOutMsg (handleDragTile coord model) []
 
         SetGrowingPods ->
-            mapBoard setDraggingToGrowing model !! []
+            noOutMsg (mapBoard setDraggingToGrowing model) []
 
         SetLeaving ->
-            mapBoard setToLeaving model !! []
+            noOutMsg (mapBoard setToLeaving model) []
 
         ResetLeaving ->
-            mapBoard setLeavingToEmpty model !! []
+            noOutMsg (mapBoard setLeavingToEmpty model) []
 
         GrowPods seedType ->
-            mapBoard (growSeedPod seedType) model !! []
+            noOutMsg (mapBoard (growSeedPod seedType) model) []
 
         ResetGrowingPods ->
-            mapBoard setGrowingToStatic model !! []
+            noOutMsg (mapBoard setGrowingToStatic model) []
 
         EnteringTiles tiles ->
-            handleInsertEnteringTiles tiles model !! []
+            noOutMsg (handleInsertEnteringTiles tiles model) []
 
         TriggerSquare ->
-            handleSquareMove model !! []
+            noOutMsg (handleSquareMove model) []
 
         FallTiles ->
-            transformBoard setFallingTiles model !! []
+            noOutMsg (transformBoard setFallingTiles model) []
 
         ShiftBoard ->
-            (model
-                |> transformBoard shiftBoard
-                |> mapBoard setFallingToStatic
-                |> mapBoard setLeavingToEmpty
-            )
-                !! []
+            noOutMsg
+                (model
+                    |> transformBoard shiftBoard
+                    |> mapBoard setFallingToStatic
+                    |> mapBoard setLeavingToEmpty
+                )
+                []
 
         SetBoardDimensions n ->
-            { model | boardDimensions = n } !! []
+            noOutMsg { model | boardDimensions = n } []
 
         HideBoard ->
-            { model | boardVisible = False } !! []
+            noOutMsg { model | boardVisible = False } []
 
         ShowBoard ->
-            { model | boardVisible = True } !! []
+            noOutMsg { model | boardVisible = True } []
 
         HideText ->
-            { model | textVisible = False } !! []
+            noOutMsg { model | textVisible = False } []
 
         ShowText ->
-            { model | textVisible = True } !! []
+            noOutMsg { model | textVisible = True } []
 
         HideResourceBank ->
-            { model | resourceBankVisible = False } !! []
+            noOutMsg { model | resourceBankVisible = False } []
 
         ShowResourceBank ->
-            { model | resourceBankVisible = True } !! []
+            noOutMsg { model | resourceBankVisible = True } []
 
         HideContainer ->
-            { model | containerVisible = False } !! []
+            noOutMsg { model | containerVisible = False } []
 
         ShowContainer ->
-            { model | containerVisible = True } !! []
+            noOutMsg { model | containerVisible = True } []
 
         HideCanvas ->
-            { model | canvasVisible = False } !! []
+            noOutMsg { model | canvasVisible = False } []
 
         ResetBoard board ->
-            { model | board = board } !! []
+            noOutMsg { model | board = board } []
 
         NextText ->
-            { model | currentText = model.currentText + 1 } !! []
+            noOutMsg { model | currentText = model.currentText + 1 } []
 
         SkipTutorial ->
-            model !! [ skipSequence ]
+            noOutMsg model [ skipSequence ]
 
         DisableTutorial ->
-            { model | skipped = True } !! []
+            noOutMsg { model | skipped = True } []
 
         ResetVisibilities ->
-            resetVisibilities model !! []
+            noOutMsg (resetVisibilities model) []
 
         ExitTutorial ->
-            model !!! ( [], ExitTutorialToLevel )
+            withOutMsg model [] ExitTutorialToLevel
 
 
 loadTutorialData : Config -> Model -> Model
