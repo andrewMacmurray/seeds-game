@@ -1,10 +1,10 @@
 module Data.Board.Move.Check exposing (..)
 
-import Data.Board.Move.Square exposing (isValidSquare)
-import Data.Board exposing (Board, Move)
-import Data.Board.Move.Bearing exposing (addBearings, validDirection)
-import Data.Board.Move exposing (lastMove, sameTileType, isUniqueMove)
 import Data.Board.Block exposing (setStaticToFirstMove)
+import Data.Board.Moves exposing (isUniqueMove, lastMove, sameTileType)
+import Data.Board.Move.Bearing exposing (addBearings, validDirection)
+import Data.Board.Move.Square exposing (isValidSquare)
+import Data.Board.Types exposing (..)
 import Dict
 
 

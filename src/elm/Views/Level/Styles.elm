@@ -2,11 +2,10 @@ module Views.Level.Styles exposing (..)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Block exposing (..)
-import Data.Board exposing (Coord, Move)
-import Data.Board.Tile exposing (TileType(..), SeedType(..))
-import Data.Board.TileState as TileState exposing (TileState(..), MoveShape(..))
+import Data.Board.Types exposing (..)
+import Data.Board.Tile as TileState
+import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)

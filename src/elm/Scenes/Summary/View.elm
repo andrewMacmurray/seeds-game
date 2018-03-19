@@ -1,9 +1,9 @@
 module Scenes.Summary.View exposing (..)
 
 import Config.Color exposing (washedYellow)
+import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
-import Data.Level.Settings exposing (Progress)
-import Data.Board.Tile exposing (..)
+import Data.Level.Types exposing (Progress)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)

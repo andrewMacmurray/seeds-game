@@ -7,9 +7,9 @@ import Config.Tutorial.SeedPod as SeedPodTutorial
 import Config.Tutorial.Square as SquareTutorial
 import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
-import Data.Board exposing (Coord)
+import Data.Board.Types exposing (..)
 import Data.Level.Settings exposing (..)
-import Data.Board.Tile exposing (..)
+import Data.Level.Types exposing (..)
 import Scenes.Tutorial.Types as Tutorial
 
 

@@ -1,12 +1,8 @@
 module Scenes.Level.Types exposing (..)
 
+import Data.Board.Types exposing (Board, Coord, Move, MoveShape, SeedType, TileType, WallColor)
 import Data.InfoWindow exposing (InfoWindow)
-import Data.Board.Block exposing (WallColor)
-import Data.Board exposing (Board, Coord, Move)
-import Data.Level.Score exposing (Scores)
-import Data.Level.Settings exposing (BoardDimensions, TileSetting)
-import Data.Board.Tile exposing (SeedType, TileType)
-import Data.Board.TileState exposing (MoveShape)
+import Data.Level.Types exposing (BoardDimensions, Scores, TileSetting)
 import Mouse
 import Window
 

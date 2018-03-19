@@ -1,13 +1,12 @@
 module Scenes.Tutorial.State exposing (..)
 
+import Data.Board.Map exposing (..)
 import Data.Board.Block exposing (..)
-import Data.Board exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile exposing (..)
-import Data.Board.TileState exposing (MoveShape(..), TileState(..))
+import Data.Board.Types exposing (..)
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)

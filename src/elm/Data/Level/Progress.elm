@@ -1,8 +1,8 @@
 module Data.Level.Progress exposing (..)
 
 import Config.Levels exposing (allLevels, defaultLevel, defaultWorld)
-import Data.Level.Settings exposing (..)
-import Data.Board.Tile exposing (SeedType(..))
+import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (..)
 import Dict
 import Scenes.Tutorial.Types as Tutorial
 

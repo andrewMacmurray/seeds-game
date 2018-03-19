@@ -1,8 +1,8 @@
 module Data.Board.Falling exposing (..)
 
-import Data.Board.Block as Block exposing (Block)
-import Data.Board exposing (Board, Coord, Move)
 import Dict
+import Data.Board.Types exposing (..)
+import Data.Board.Block as Block
 import Helpers.Dict exposing (filterValues)
 import Data.Board.Shift as Shift
 

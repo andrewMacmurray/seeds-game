@@ -1,11 +1,8 @@
 module Data.Level.Tutorial exposing (..)
 
-import Data.Board.Block exposing (Block(..))
-import Data.Board exposing (Board, Coord)
 import Data.Board.Generate exposing (makeBoard)
-import Data.Level.Settings exposing (BoardDimensions)
-import Data.Board.Tile exposing (TileType(..), SeedType(..))
-import Data.Board.TileState exposing (TileState(..))
+import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (BoardDimensions)
 import Dict exposing (Dict)
 
 

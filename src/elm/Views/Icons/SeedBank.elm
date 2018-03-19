@@ -1,6 +1,6 @@
 module Views.Icons.SeedBank exposing (..)
 
-import Data.Board.Tile exposing (SeedType(..))
+import Data.Board.Types exposing (..)
 import Helpers.Style exposing (pc, svgTranslate)
 import Html exposing (Html)
 import Svg

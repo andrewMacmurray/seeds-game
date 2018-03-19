@@ -1,16 +1,7 @@
 module Data.Board.Block exposing (..)
 
-import Data.Board.Tile exposing (TileType, SeedType)
-import Data.Board.TileState as TileState exposing (TileState(..), MoveOrder, MoveBearing)
-
-
-type Block
-    = Wall WallColor
-    | Space TileState
-
-
-type alias WallColor =
-    String
+import Data.Board.Types exposing (..)
+import Data.Board.Tile as TileState
 
 
 growingOrder : Block -> Int

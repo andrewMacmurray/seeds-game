@@ -1,32 +1,8 @@
-module Data.Board exposing (..)
+module Data.Board.Map exposing (..)
 
-import Data.Board.Block exposing (Block(Wall), WallColor)
+import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
-
-
-type alias Board =
-    Dict Coord Block
-
-
-type alias HasBoard a =
-    { a | board : Board }
-
-
-type alias Move =
-    ( Coord, Block )
-
-
-type alias Coord =
-    ( Y, X )
-
-
-type alias Y =
-    Int
-
-
-type alias X =
-    Int
 
 
 addWalls : List ( WallColor, Coord ) -> Board -> Board

@@ -1,10 +1,8 @@
-module Data.Board.Move exposing (..)
+module Data.Board.Moves exposing (..)
 
-import Data.Board.Block as Block exposing (Block(..))
-import Data.Board exposing (Board, Coord, Move)
-import Data.Board.Tile exposing (TileType)
-import Data.Board.TileState exposing (TileState(..), MoveShape)
 import Dict
+import Data.Board.Types exposing (..)
+import Data.Board.Block as Block
 import Helpers.Dict exposing (filterValues, find, findValue)
 
 
