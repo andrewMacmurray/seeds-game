@@ -2,6 +2,10 @@ module Scenes.Hub.Types exposing (..)
 
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Transit exposing (Transit)
+import Data2.Block exposing (WallColor)
+import Data2.Board exposing (Coord)
+import Data2.Level.Settings exposing (BoardDimensions, TileSetting)
+import Data2.Tile exposing (SeedType)
 import Dict exposing (Dict)
 import Dom
 import Mouse

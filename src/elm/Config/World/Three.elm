@@ -1,10 +1,12 @@
 module Config.World.Three exposing (world)
 
-import Config.Wall exposing (..)
 import Config.Color exposing (..)
+import Config.Wall exposing (..)
 import Data.Hub.World exposing (..)
+import Data2.Board exposing (Coord)
+import Data2.Level.Settings exposing (..)
+import Data2.Tile exposing (..)
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
 
 
 world : WorldData

@@ -1,23 +1,17 @@
 module Scenes.Tutorial.State exposing (..)
 
-import Data.Level.Board.Falling exposing (setFallingTiles)
-import Data.Level.Board.Map exposing (mapBoard, setAllTilesOfTypeToDragging, transformBoard)
-import Data.Level.Board.Shift exposing (shiftBoard)
-import Data.Level.Board.Tile exposing (..)
-import Data.Level.Move.Bearing exposing (addBearings)
+import Data2.Block exposing (..)
+import Data2.Board exposing (..)
+import Data2.Board.Falling exposing (setFallingTiles)
+import Data2.Board.Move.Bearing exposing (addBearings)
+import Data2.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
+import Data2.Board.Shift exposing (shiftBoard)
+import Data2.Tile exposing (..)
+import Data2.TileState exposing (MoveShape(..), TileState(..))
 import Dict
 import Helpers.Effect exposing (pause, sequenceMs)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
-import Scenes.Level.Types
-    exposing
-        ( Block(..)
-        , Coord
-        , MoveShape(..)
-        , SeedType(..)
-        , TileState(..)
-        , TileType(..)
-        )
 import Scenes.Tutorial.Types exposing (..)
 
 
@@ -49,19 +43,19 @@ update msg model =
             noOutMsg (handleDragTile coord model) []
 
         SetGrowingPods ->
-            noOutMsg (mapBoard setDraggingToGrowing model) []
+            noOutMsg (mapBlocks setDraggingToGrowing model) []
 
         SetLeaving ->
-            noOutMsg (mapBoard setToLeaving model) []
+            noOutMsg (mapBlocks setToLeaving model) []
 
         ResetLeaving ->
-            noOutMsg (mapBoard setLeavingToEmpty model) []
+            noOutMsg (mapBlocks setLeavingToEmpty model) []
 
         GrowPods seedType ->
-            noOutMsg (mapBoard (growSeedPod seedType) model) []
+            noOutMsg (mapBlocks (growSeedPod seedType) model) []
 
         ResetGrowingPods ->
-            noOutMsg (mapBoard setGrowingToStatic model) []
+            noOutMsg (mapBlocks setGrowingToStatic model) []
 
         EnteringTiles tiles ->
             noOutMsg (handleInsertEnteringTiles tiles model) []
@@ -70,14 +64,14 @@ update msg model =
             noOutMsg (handleSquareMove model) []
 
         FallTiles ->
-            noOutMsg (transformBoard setFallingTiles model) []
+            noOutMsg (mapBoard setFallingTiles model) []
 
         ShiftBoard ->
             noOutMsg
                 (model
-                    |> transformBoard shiftBoard
-                    |> mapBoard setFallingToStatic
-                    |> mapBoard setLeavingToEmpty
+                    |> mapBoard shiftBoard
+                    |> mapBlocks setFallingToStatic
+                    |> mapBlocks setLeavingToEmpty
                 )
                 []
 

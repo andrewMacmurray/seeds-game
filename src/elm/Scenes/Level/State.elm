@@ -2,18 +2,18 @@ module Scenes.Level.State exposing (..)
 
 import Config.Text exposing (failureMessage, getSuccessMessage)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Level.Board.Block exposing (addWalls)
-import Data.Level.Board.Falling exposing (setFallingTiles)
-import Data.Level.Board.Generate exposing (..)
-import Data.Level.Board.Map exposing (mapBoard, setAllTilesOfTypeToDragging, transformBoard)
-import Data.Level.Board.Shift exposing (shiftBoard)
-import Data.Level.Board.Tile exposing (..)
-import Data.Level.Move.Check exposing (addToMove, startMove)
-import Data.Level.Move.Square exposing (triggerMoveIfSquare)
-import Data.Level.Move.Utils exposing (currentMoveTileType)
 import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
+import Data2.Block exposing (..)
+import Data2.Board exposing (Move, addWalls, mapBlocks, mapBoard)
+import Data2.Board.Falling exposing (..)
+import Data2.Board.Generate exposing (generateEnteringTiles, generateInitialTiles, generateRandomSeedType, insertNewEnteringTiles, insertNewSeeds, makeBoard)
+import Data2.Board.Move exposing (currentMoveTileType)
+import Data2.Board.Move.Check exposing (addToMove, startMove)
+import Data2.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
+import Data2.Board.Shift exposing (shiftBoard)
+import Data2.Tile exposing (SeedType, TileType(..))
+import Data2.TileState exposing (MoveShape(..))
 import Dict
-import Helpers.Dict exposing (mapValues)
 import Helpers.Effect exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Hub.Types exposing (LevelData)
@@ -66,7 +66,7 @@ update msg model =
             noOutMsg
                 (model
                     |> handleMakeBoard tiles
-                    |> transformBoard (addWalls walls)
+                    |> mapBoard (addWalls walls)
                 )
                 []
 
@@ -82,42 +82,42 @@ update msg model =
             noOutMsg
                 (model
                     |> handleAddScore
-                    |> mapBoard setToLeaving
+                    |> mapBlocks setToLeaving
                 )
                 []
 
         SetFallingTiles ->
-            noOutMsg (transformBoard setFallingTiles model) []
+            noOutMsg (mapBoard setFallingTiles model) []
 
         ShiftBoard ->
             noOutMsg
                 (model
-                    |> transformBoard shiftBoard
-                    |> mapBoard setFallingToStatic
-                    |> mapBoard setLeavingToEmpty
+                    |> mapBoard shiftBoard
+                    |> mapBlocks setFallingToStatic
+                    |> mapBlocks setLeavingToEmpty
                 )
                 []
 
         SetGrowingSeedPods ->
-            noOutMsg (mapBoard setDraggingToGrowing model) []
+            noOutMsg (mapBlocks setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
-            noOutMsg model [ generateRandomSeedType model.tileSettings ]
+            noOutMsg model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
 
         InsertGrowingSeeds seedType ->
             noOutMsg (handleInsertNewSeeds seedType model) []
 
         ResetGrowingSeeds ->
-            noOutMsg (mapBoard setGrowingToStatic model) []
+            noOutMsg (mapBlocks setGrowingToStatic model) []
 
         GenerateEnteringTiles ->
-            noOutMsg model [ generateEnteringTiles model.tileSettings model.board ]
+            noOutMsg model [ generateEnteringTiles InsertEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
             noOutMsg (handleInsertEnteringTiles tiles model) []
 
         ResetEntering ->
-            noOutMsg (transformBoard (mapValues setEnteringToStatic) model) []
+            noOutMsg (mapBlocks setEnteringToStatic model) []
 
         ResetMove ->
             noOutMsg
@@ -229,7 +229,7 @@ fallDelay moveShape =
 
 handleGenerateTiles : LevelData -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardDimensions } =
-    generateInitialTiles levelData boardDimensions
+    generateInitialTiles (InitTiles levelData.walls) levelData.tileSettings boardDimensions
 
 
 handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
@@ -239,12 +239,12 @@ handleMakeBoard tileList ({ boardDimensions } as model) =
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
 handleInsertEnteringTiles tileList =
-    transformBoard <| insertNewEnteringTiles tileList
+    mapBoard <| insertNewEnteringTiles tileList
 
 
 handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
 handleInsertNewSeeds seedType =
-    transformBoard <| insertNewSeeds seedType
+    mapBoard <| insertNewSeeds seedType
 
 
 handleAddScore : Model -> Model
@@ -283,7 +283,7 @@ handleCheckMove move model =
         newModel =
             model |> handleCheckMove_ move
     in
-        noOutMsg newModel [ triggerMoveIfSquare newModel.board ]
+        noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
 handleCheckMove_ : Move -> Model -> Model

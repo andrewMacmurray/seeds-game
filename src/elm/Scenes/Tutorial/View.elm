@@ -1,16 +1,17 @@
 module Scenes.Tutorial.View exposing (..)
 
-import Config.Scale as ScaleConfig
 import Config.Color exposing (darkYellow, greyYellow)
-import Data.Level.Board.Block exposing (getTileState)
-import Data.Level.Board.Tile exposing (hasLine, isDragging)
+import Config.Scale as ScaleConfig
 import Data.Tutorial exposing (getText)
+import Data2.Block exposing (getTileState, hasLine)
+import Data2.Board exposing (Move)
+import Data2.TileState exposing (TileState(..))
 import Dict
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Level.Types exposing (Move, SeedType(..), TileConfig, TileState(..), TileType(..))
+import Scenes.Level.Types exposing (TileConfig)
 import Scenes.Tutorial.Types exposing (..)
 import Views.Level.Layout exposing (renderLineLayer, renderLines)
 import Views.Level.Styles exposing (boardHeight, boardWidth)

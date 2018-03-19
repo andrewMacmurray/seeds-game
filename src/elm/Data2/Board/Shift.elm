@@ -1,10 +1,9 @@
-module Data.Level.Board.Shift exposing (..)
+module Data2.Board.Shift exposing (..)
 
-import Data.Level.Board.Block exposing (isWall)
-import Data.Level.Board.Tile exposing (isLeaving)
+import Data2.Board exposing (Board, Move, Coord)
+import List.Extra
 import Dict
-import List.Extra exposing (groupWhile)
-import Scenes.Level.Types exposing (..)
+import Data2.Block as Block exposing (Block)
 
 
 shiftBoard : Board -> Board
@@ -41,11 +40,11 @@ sortByLeaving : List Move -> List Move
 sortByLeaving row =
     let
         walls =
-            List.filter (\( _, block ) -> isWall block) row
+            List.filter (\( _, block ) -> Block.isWall block) row
     in
         row
-            |> List.filter (\( _, block ) -> not (isWall block))
-            |> List.partition (\( coord, block ) -> isLeaving block)
+            |> List.filter (\( _, block ) -> not (Block.isWall block))
+            |> List.partition (\( coord, block ) -> Block.isLeaving block)
             |> (\( a, b ) -> a ++ b)
             |> reAddWalls walls
 

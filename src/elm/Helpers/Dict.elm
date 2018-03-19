@@ -28,6 +28,11 @@ indexedDictFrom n xs =
         |> Dict.fromList
 
 
+findValue : (a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
+findValue f =
+    find <| always f
+
+
 find : (comparable -> a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
 find predicate =
     let

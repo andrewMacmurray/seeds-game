@@ -1,15 +1,17 @@
 module Config.World.One exposing (world)
 
+import Config.Color exposing (..)
 import Config.Tutorial.Rain as RainTutorial
 import Config.Tutorial.Seed as SeedTutorial
 import Config.Tutorial.SeedPod as SeedPodTutorial
 import Config.Tutorial.Square as SquareTutorial
 import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
-import Config.Color exposing (..)
 import Data.Hub.World exposing (..)
+import Data2.Board exposing (Coord)
+import Data2.Level.Settings exposing (..)
+import Data2.Tile exposing (..)
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
 
 
 world : WorldData

@@ -1,9 +1,9 @@
 module Data.Hub.Progress exposing (..)
 
 import Config.Levels exposing (allLevels, defaultLevel, defaultWorld)
+import Data2.Tile exposing (SeedType(..))
 import Dict
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (SeedType(..))
 
 
 getLevelData : Progress -> LevelData

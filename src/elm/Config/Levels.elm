@@ -4,9 +4,10 @@ import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
 import Data.Hub.World exposing (..)
+import Data2.Level.Settings exposing (..)
+import Data2.Tile exposing (..)
 import Dict exposing (Dict)
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
 import Time exposing (Time, minute)
 
 

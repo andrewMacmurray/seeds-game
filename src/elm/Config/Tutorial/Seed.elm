@@ -1,8 +1,9 @@
 module Config.Tutorial.Seed exposing (..)
 
 import Data.Tutorial exposing (seedBoard)
+import Data2.Level.Settings exposing (BoardDimensions)
+import Data2.Tile exposing (..)
 import Dict exposing (Dict)
-import Scenes.Level.Types exposing (..)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
 

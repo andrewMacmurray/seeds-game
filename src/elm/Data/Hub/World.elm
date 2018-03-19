@@ -1,8 +1,9 @@
 module Data.Hub.World exposing (..)
 
+import Data2.Level.Settings exposing (Probability, TargetScore, TileSetting)
+import Data2.Tile exposing (SeedType, TileType(..))
 import Helpers.Dict exposing (indexedDictFrom)
 import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
 
 
 makeWorldLevels : List LevelData -> WorldLevels

@@ -1,12 +1,12 @@
 module Data.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data.Level.Board.Tile exposing (getSeedType)
 import Data.Level.Score exposing (collectable)
+import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
+import Data2.Tile exposing (SeedType, TileType, getSeedType)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
 import Scenes.Hub.Types exposing (Progress, WorldData)
-import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileSetting, TileType)
 
 
 percentComplete : TileType -> Progress -> Maybe Progress -> Float

@@ -1,8 +1,11 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileType, BoardDimensions)
-import Window
+import Data2.Board exposing (Board, Coord)
+import Data2.Level.Settings exposing (BoardDimensions)
+import Data2.Tile exposing (SeedType, TileType)
+import Data2.TileState exposing (MoveShape)
 import Dict exposing (Dict)
+import Window
 
 
 type alias Model =

@@ -1,15 +1,25 @@
-module Data.Level.Move.Utils exposing (..)
+module Data2.Board.Move exposing (..)
 
-import Data.Level.Board.Tile exposing (getTileType, isCurrentMove, isDragging, moveOrder)
-import Scenes.Level.Types exposing (..)
+import Data2.Block as Block exposing (Block(..))
+import Data2.Board exposing (Board, Coord, Move)
+import Data2.Tile exposing (TileType)
+import Data2.TileState exposing (TileState(..), MoveShape)
 import Dict
-import Helpers.Dict exposing (find)
+import Helpers.Dict exposing (filterValues, find, findValue)
+
+
+currentMoves : Board -> List Move
+currentMoves board =
+    board
+        |> filterValues Block.isDragging
+        |> Dict.toList
+        |> List.sortBy (Tuple.second >> Block.moveOrder)
 
 
 currentMoveTileType : Board -> Maybe TileType
 currentMoveTileType board =
     board
-        |> find (\_ tile -> isDragging tile)
+        |> findValue Block.isDragging
         |> Maybe.andThen moveTileType
 
 
@@ -35,7 +45,7 @@ moveTileType ( _, block ) =
 
 sameTileType : Move -> Move -> Bool
 sameTileType ( _, t2 ) ( _, t1 ) =
-    getTileType t1 == getTileType t2
+    Block.getTileType t1 == Block.getTileType t2
 
 
 isUniqueMove : Move -> Board -> Bool
@@ -54,38 +64,15 @@ isInCurrentMoves move board =
 lastMove : Board -> Move
 lastMove board =
     board
-        |> find isCurrentMove_
+        |> findValue Block.isCurrentMove
         |> Maybe.withDefault emptyMove
 
 
 coordsList : Board -> List Coord
 coordsList board =
     board
-        |> Dict.filter isDragging_
+        |> filterValues Block.isDragging
         |> Dict.keys
-
-
-currentMoves : Board -> List Move
-currentMoves board =
-    board
-        |> Dict.filter isDragging_
-        |> Dict.toList
-        |> List.sortBy moveOrder_
-
-
-isCurrentMove_ : Coord -> Block -> Bool
-isCurrentMove_ _ =
-    isCurrentMove
-
-
-isDragging_ : Coord -> Block -> Bool
-isDragging_ _ =
-    isDragging
-
-
-moveOrder_ : Move -> Int
-moveOrder_ ( _, tileState ) =
-    moveOrder tileState
 
 
 emptyMove : Move

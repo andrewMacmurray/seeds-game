@@ -1,8 +1,12 @@
 module Data.Tutorial exposing (..)
 
-import Data.Level.Board.Generate exposing (makeBoard)
+import Data2.Block exposing (Block(..))
+import Data2.Board exposing (Board, Coord)
+import Data2.Board.Generate exposing (makeBoard)
+import Data2.Level.Settings exposing (BoardDimensions)
+import Data2.Tile exposing (TileType(..), SeedType(..))
+import Data2.TileState exposing (TileState(..))
 import Dict exposing (Dict)
-import Scenes.Level.Types exposing (..)
 
 
 getText : Dict Int String -> Int -> String
