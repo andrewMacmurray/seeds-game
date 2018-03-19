@@ -1,6 +1,6 @@
-module Data2.Board exposing (..)
+module Data.Board exposing (..)
 
-import Data2.Block exposing (Block(Wall), WallColor)
+import Data.Board.Block exposing (Block(Wall), WallColor)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (mapValues)
 

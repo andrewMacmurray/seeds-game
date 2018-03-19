@@ -2,8 +2,8 @@ module Scenes.Hub.Types exposing (..)
 
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Transit exposing (Transit)
-import Data2.Background exposing (TransitionBackground)
-import Data2.Level.Settings exposing (BoardDimensions, LevelData, Progress, TileSetting)
+import Data.Background exposing (TransitionBackground)
+import Data.Level.Settings exposing (BoardDimensions, LevelData, Progress, TileSetting)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)

@@ -1,8 +1,8 @@
-module Data2.Level.Settings exposing (..)
+module Data.Level.Settings exposing (..)
 
-import Data2.Block exposing (WallColor)
-import Data2.Board exposing (Coord)
-import Data2.Tile exposing (SeedType, TileType(..))
+import Data.Board.Block exposing (WallColor)
+import Data.Board exposing (Coord)
+import Data.Board.Tile exposing (SeedType, TileType(..))
 import Dict exposing (Dict)
 import Helpers.Dict exposing (indexedDictFrom)
 

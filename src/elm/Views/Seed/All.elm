@@ -1,6 +1,6 @@
 module Views.Seed.All exposing (..)
 
-import Data2.Tile exposing (SeedType(..))
+import Data.Board.Tile exposing (SeedType(..))
 import Svg exposing (Svg)
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (greyedOut, rose)

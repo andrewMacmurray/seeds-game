@@ -1,9 +1,9 @@
-module Data2.Level.Score exposing (..)
+module Data.Level.Score exposing (..)
 
-import Data2.Board exposing (Board)
-import Data2.Board.Move exposing (currentMoveTileType, currentMoves)
-import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
-import Data2.Tile exposing (TileType(..))
+import Data.Board exposing (Board)
+import Data.Board.Move exposing (currentMoveTileType, currentMoves)
+import Data.Level.Settings exposing (TargetScore(..), TileSetting)
+import Data.Board.Tile exposing (TileType(..))
 import Dict exposing (Dict)
 
 

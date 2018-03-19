@@ -3,8 +3,8 @@ module Config.Levels exposing (..)
 import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
-import Data2.Level.Settings exposing (..)
-import Data2.Tile exposing (..)
+import Data.Level.Settings exposing (..)
+import Data.Board.Tile exposing (..)
 import Dict exposing (Dict)
 import Time exposing (Time, minute)
 import Scenes.Tutorial.Types as Tutorial

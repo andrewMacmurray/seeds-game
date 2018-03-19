@@ -1,4 +1,4 @@
-module Data2.Background exposing (..)
+module Data.Background exposing (..)
 
 import Random
 

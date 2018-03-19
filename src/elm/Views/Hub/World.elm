@@ -1,10 +1,10 @@
 module Views.Hub.World exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data2.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
+import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.InfoWindow exposing (InfoWindow(Hidden))
-import Data2.Level.Settings exposing (..)
-import Data2.Tile exposing (SeedType(..))
+import Data.Level.Settings exposing (..)
+import Data.Board.Tile exposing (SeedType(..))
 import Dict
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (..)

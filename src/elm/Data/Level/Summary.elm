@@ -1,9 +1,9 @@
-module Data2.Level.Summary exposing (..)
+module Data.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data2.Level.Score exposing (collectable)
-import Data2.Level.Settings exposing (..)
-import Data2.Tile exposing (SeedType, TileType, getSeedType)
+import Data.Level.Score exposing (collectable)
+import Data.Level.Settings exposing (..)
+import Data.Board.Tile exposing (SeedType, TileType, getSeedType)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
 import Scenes.Tutorial.Types as Tutorial

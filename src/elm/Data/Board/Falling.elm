@@ -1,10 +1,10 @@
-module Data2.Board.Falling exposing (..)
+module Data.Board.Falling exposing (..)
 
-import Data2.Block as Block exposing (Block)
-import Data2.Board exposing (Board, Coord, Move)
+import Data.Board.Block as Block exposing (Block)
+import Data.Board exposing (Board, Coord, Move)
 import Dict
 import Helpers.Dict exposing (filterValues)
-import Data2.Board.Shift as Shift
+import Data.Board.Shift as Shift
 
 
 setFallingTiles : Board -> Board

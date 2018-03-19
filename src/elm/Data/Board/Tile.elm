@@ -1,4 +1,4 @@
-module Data2.Tile exposing (..)
+module Data.Board.Tile exposing (..)
 
 
 type TileType

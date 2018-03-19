@@ -1,9 +1,9 @@
-module Data2.Board.Move.Bearing exposing (..)
+module Data.Board.Move.Bearing exposing (..)
 
-import Data2.Block exposing (addBearing, setToDragging, moveOrder)
-import Data2.Board exposing (Board, Coord, Move)
-import Data2.Board.Move exposing (..)
-import Data2.TileState exposing (MoveBearing(..))
+import Data.Board.Block exposing (addBearing, setToDragging, moveOrder)
+import Data.Board exposing (Board, Coord, Move)
+import Data.Board.Move exposing (..)
+import Data.Board.TileState exposing (MoveBearing(..))
 import Dict
 
 

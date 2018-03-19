@@ -1,8 +1,8 @@
 module Config.Wall exposing (..)
 
 import Config.Color exposing (blockYellow)
-import Data2.Block exposing (WallColor)
-import Data2.Board exposing (Coord)
+import Data.Board.Block exposing (WallColor)
+import Data.Board exposing (Coord)
 
 
 yellowWalls : List Coord -> List ( WallColor, Coord )

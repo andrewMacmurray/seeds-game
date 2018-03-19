@@ -1,11 +1,11 @@
-module Data2.Board.Move.Square exposing (..)
+module Data.Board.Move.Square exposing (..)
 
-import Data2.Block exposing (Block, getTileType, moveOrder, setToDragging)
-import Data2.Board exposing (Board, Coord, Move)
-import Data2.Board.Move exposing (..)
-import Data2.Board.Move.Bearing exposing (validDirection)
-import Data2.Tile exposing (TileType)
-import Data2.TileState exposing (MoveShape(..))
+import Data.Board.Block exposing (Block, getTileType, moveOrder, setToDragging)
+import Data.Board exposing (Board, Coord, Move)
+import Data.Board.Move exposing (..)
+import Data.Board.Move.Bearing exposing (validDirection)
+import Data.Board.Tile exposing (TileType)
+import Data.Board.TileState exposing (MoveShape(..))
 import Delay
 import Dict
 import List exposing (all)

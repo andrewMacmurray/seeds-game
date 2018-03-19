@@ -1,10 +1,10 @@
-module Data2.Board.Generate exposing (..)
+module Data.Board.Generate exposing (..)
 
-import Data2.Block as Block exposing (Block(..))
-import Data2.Board exposing (Board, Coord)
-import Data2.Level.Settings exposing (Probability(..), TileSetting, BoardDimensions)
-import Data2.Tile as Tile exposing (SeedType(..), TileType(..))
-import Data2.TileState exposing (TileState(..))
+import Data.Board.Block as Block exposing (Block(..))
+import Data.Board exposing (Board, Coord)
+import Data.Level.Settings exposing (Probability(..), TileSetting, BoardDimensions)
+import Data.Board.Tile as Tile exposing (SeedType(..), TileType(..))
+import Data.Board.TileState exposing (TileState(..))
 import Dict
 import Random exposing (Generator)
 

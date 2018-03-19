@@ -1,6 +1,6 @@
-module Data2.TileState exposing (..)
+module Data.Board.TileState exposing (..)
 
-import Data2.Tile exposing (TileType(..), SeedType)
+import Data.Board.Tile exposing (TileType(..), SeedType)
 
 
 type TileState

@@ -1,9 +1,9 @@
-module Data2.Board.Shift exposing (..)
+module Data.Board.Shift exposing (..)
 
-import Data2.Board exposing (Board, Move, Coord)
+import Data.Board exposing (Board, Move, Coord)
 import List.Extra
 import Dict
-import Data2.Block as Block exposing (Block)
+import Data.Board.Block as Block exposing (Block)
 
 
 shiftBoard : Board -> Board

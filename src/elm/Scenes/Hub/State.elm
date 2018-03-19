@@ -4,14 +4,14 @@ import Config.Levels exposing (allLevels, maxLives, lifeRecoveryInterval)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data2.Level.Progress exposing (..)
-import Data2.Background exposing (..)
+import Data.Level.Progress exposing (..)
+import Data.Background exposing (..)
 import Data.Ports exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse
-import Data2.Level.Settings exposing (..)
+import Data.Level.Settings exposing (..)
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as Lv

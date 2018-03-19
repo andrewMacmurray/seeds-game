@@ -2,8 +2,8 @@ module Views.Level.TopBar exposing (..)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data2.Level.Score exposing (Scores, getScoreFor, scoreTileTypes, scoreToString)
-import Data2.Tile exposing (TileType(..))
+import Data.Level.Score exposing (Scores, getScoreFor, scoreTileTypes, scoreToString)
+import Data.Board.Tile exposing (TileType(..))
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)

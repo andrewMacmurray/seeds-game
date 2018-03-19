@@ -2,9 +2,9 @@ module Config.World.Two exposing (world)
 
 import Config.Color exposing (..)
 import Config.Wall exposing (..)
-import Data2.Board exposing (Coord)
-import Data2.Level.Settings exposing (..)
-import Data2.Tile exposing (..)
+import Data.Board exposing (Coord)
+import Data.Level.Settings exposing (..)
+import Data.Board.Tile exposing (..)
 import Scenes.Tutorial.Types as Tutorial
 
 

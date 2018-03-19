@@ -1,6 +1,6 @@
 module Types exposing (..)
 
-import Data2.Level.Settings exposing (Progress)
+import Data.Level.Settings exposing (Progress)
 import Time exposing (Time)
 
 

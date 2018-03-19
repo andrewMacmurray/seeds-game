@@ -1,7 +1,7 @@
-module Data2.Block exposing (..)
+module Data.Board.Block exposing (..)
 
-import Data2.Tile exposing (TileType, SeedType)
-import Data2.TileState as TileState exposing (TileState(..), MoveOrder, MoveBearing)
+import Data.Board.Tile exposing (TileType, SeedType)
+import Data.Board.TileState as TileState exposing (TileState(..), MoveOrder, MoveBearing)
 
 
 type Block

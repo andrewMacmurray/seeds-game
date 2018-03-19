@@ -2,10 +2,10 @@ module Scenes.Tutorial.View exposing (..)
 
 import Config.Color exposing (darkYellow, greyYellow)
 import Config.Scale as ScaleConfig
-import Data.Tutorial exposing (getText)
-import Data2.Block exposing (getTileState, hasLine)
-import Data2.Board exposing (Move)
-import Data2.TileState exposing (TileState(..))
+import Data.Level.Tutorial exposing (getText)
+import Data.Board.Block exposing (getTileState, hasLine)
+import Data.Board exposing (Move)
+import Data.Board.TileState exposing (TileState(..))
 import Dict
 import Helpers.Style exposing (..)
 import Html exposing (..)
