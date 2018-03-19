@@ -2,7 +2,7 @@ module Scenes.Level.State exposing (..)
 
 import Config.Text exposing (failureMessage, getSuccessMessage)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
+import Data2.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Data2.Block exposing (..)
 import Data2.Board exposing (Move, addWalls, mapBlocks, mapBoard)
 import Data2.Board.Falling exposing (..)

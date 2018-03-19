@@ -2,7 +2,7 @@ module Views.Level.Styles exposing (..)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Level.Score exposing (collectable, scoreTileTypes)
+import Data2.Level.Score exposing (collectable, scoreTileTypes)
 import Data2.Block exposing (..)
 import Data2.Board exposing (Coord, Move)
 import Data2.Tile exposing (TileType(..), SeedType(..))

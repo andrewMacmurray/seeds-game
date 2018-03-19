@@ -1,7 +1,7 @@
 module Data.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data.Level.Score exposing (collectable)
+import Data2.Level.Score exposing (collectable)
 import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
 import Data2.Tile exposing (SeedType, TileType, getSeedType)
 import Dict exposing (Dict)

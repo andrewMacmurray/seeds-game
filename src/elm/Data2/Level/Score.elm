@@ -1,11 +1,20 @@
-module Data.Level.Score exposing (..)
+module Data2.Level.Score exposing (..)
 
 import Data2.Board exposing (Board)
 import Data2.Board.Move exposing (currentMoveTileType, currentMoves)
 import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
 import Data2.Tile exposing (TileType(..))
-import Dict
-import Scenes.Level.Types exposing (Score, Scores)
+import Dict exposing (Dict)
+
+
+type alias Scores =
+    Dict String Score
+
+
+type alias Score =
+    { target : Int
+    , current : Int
+    }
 
 
 addScoreFromMoves : Board -> Scores -> Scores
