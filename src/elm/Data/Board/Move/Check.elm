@@ -10,14 +10,10 @@ import Dict
 
 addToMove : Move -> Board -> Board
 addToMove curr board =
-    let
-        newBoard =
-            addBearings curr board
-    in
-        if isValidMove curr board || isValidSquare curr board then
-            newBoard
-        else
-            board
+    if isValidMove curr board || isValidSquare curr board then
+        addBearings curr board
+    else
+        board
 
 
 startMove : Move -> Board -> Board

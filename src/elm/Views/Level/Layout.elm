@@ -1,6 +1,6 @@
 module Views.Level.Layout exposing (..)
 
-import Data.Board.Types exposing (Move)
+import Data.Board.Types exposing (Move, TileConfig)
 import Dict
 import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
 import Helpers.Style exposing (..)

@@ -1,7 +1,6 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Data.Board.Types exposing (Board, Coord, MoveShape, SeedType, TileType)
-import Data.Level.Types exposing (BoardDimensions)
+import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Dict exposing (Dict)
 import Window
 

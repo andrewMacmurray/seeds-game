@@ -2,7 +2,6 @@ module Data.Level.Tutorial exposing (..)
 
 import Data.Board.Generate exposing (makeBoard)
 import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (BoardDimensions)
 import Dict exposing (Dict)
 
 

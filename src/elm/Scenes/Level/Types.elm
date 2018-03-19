@@ -1,8 +1,8 @@
 module Scenes.Level.Types exposing (..)
 
-import Data.Board.Types exposing (Board, Coord, Move, MoveShape, SeedType, TileType, WallColor)
+import Data.Board.Types exposing (Board, BoardDimensions, Coord, Move, MoveShape, SeedType, TileType, WallColor)
 import Data.InfoWindow exposing (InfoWindow)
-import Data.Level.Types exposing (BoardDimensions, Scores, TileSetting)
+import Data.Level.Types exposing (Scores, TileSetting)
 import Mouse
 import Window
 
@@ -58,18 +58,3 @@ type LevelStatus
     = InProgress
     | Lose
     | Win
-
-
-type alias BoardConfig a =
-    { a
-        | board : Board
-        , boardDimensions : BoardDimensions
-    }
-
-
-type alias TileConfig a =
-    { a
-        | moveShape : Maybe MoveShape
-        , window : Window.Size
-        , boardDimensions : BoardDimensions
-    }

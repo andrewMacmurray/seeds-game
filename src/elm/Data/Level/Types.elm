@@ -1,6 +1,6 @@
 module Data.Level.Types exposing (..)
 
-import Data.Board.Types exposing (Coord, SeedType, TileType, WallColor)
+import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType, WallColor)
 import Dict exposing (Dict)
 
 
@@ -54,12 +54,6 @@ type alias LevelData tutorialData =
     , boardDimensions : BoardDimensions
     , tutorial : Maybe tutorialData
     , moves : Int
-    }
-
-
-type alias BoardDimensions =
-    { x : Int
-    , y : Int
     }
 
 

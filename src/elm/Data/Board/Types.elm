@@ -1,6 +1,7 @@
 module Data.Board.Types exposing (..)
 
 import Dict exposing (Dict)
+import Window
 
 
 type alias Board =
@@ -9,6 +10,27 @@ type alias Board =
 
 type alias HasBoard a =
     { a | board : Board }
+
+
+type alias BoardConfig a =
+    { a
+        | board : Board
+        , boardDimensions : BoardDimensions
+    }
+
+
+type alias TileConfig a =
+    { a
+        | moveShape : Maybe MoveShape
+        , window : Window.Size
+        , boardDimensions : BoardDimensions
+    }
+
+
+type alias BoardDimensions =
+    { x : Int
+    , y : Int
+    }
 
 
 type alias Move =

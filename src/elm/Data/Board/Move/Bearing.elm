@@ -92,4 +92,4 @@ check a b fn =
 
 validDirection : Move -> Move -> Bool
 validDirection ( c2, _ ) ( c1, _ ) =
-    List.map (check c2 c1) directionsToCheck |> (List.any identity)
+    List.map (check c2 c1) directionsToCheck |> List.any identity
