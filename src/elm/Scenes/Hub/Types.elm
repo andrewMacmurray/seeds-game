@@ -81,16 +81,12 @@ type alias Progress =
     ( WorldNumber, LevelNumber )
 
 
+type alias AllLevels =
+    Dict WorldNumber WorldData
+
+
 type alias WorldNumber =
     Int
-
-
-type alias LevelNumber =
-    Int
-
-
-type alias AllLevels =
-    Dict Int WorldData
 
 
 type alias WorldData =
@@ -104,7 +100,11 @@ type alias WorldData =
 
 
 type alias WorldLevels =
-    Dict Int LevelData
+    Dict LevelNumber LevelData
+
+
+type alias LevelNumber =
+    Int
 
 
 type alias LevelData =

@@ -3,10 +3,10 @@ module Scenes.Level.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data2.Block exposing (WallColor)
 import Data2.Board exposing (Board, Coord, Move)
+import Data2.Level.Score exposing (Scores)
 import Data2.Level.Settings exposing (BoardDimensions, TileSetting)
 import Data2.Tile exposing (SeedType, TileType)
 import Data2.TileState exposing (MoveShape)
-import Dict exposing (Dict)
 import Mouse
 import Window
 
@@ -58,24 +58,10 @@ type OutMsg
     | ExitLevelWithLose
 
 
-type alias Scores =
-    Dict String Score
-
-
-type alias Score =
-    { target : Int
-    , current : Int
-    }
-
-
 type LevelStatus
     = InProgress
     | Lose
     | Win
-
-
-type alias HasBoard a =
-    { a | board : Board }
 
 
 type alias BoardConfig a =
