@@ -7,14 +7,13 @@ import Config.Tutorial.SeedPod as SeedPodTutorial
 import Config.Tutorial.Square as SquareTutorial
 import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
-import Data.Hub.World exposing (..)
 import Data2.Board exposing (Coord)
 import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (..)
-import Scenes.Hub.Types exposing (..)
+import Scenes.Tutorial.Types as Tutorial
 
 
-world : WorldData
+world : WorldData Tutorial.Config
 world =
     { seedType = Sunflower
     , levels = levels
@@ -25,7 +24,7 @@ world =
     }
 
 
-levels : WorldLevels
+levels : WorldLevels Tutorial.Config
 levels =
     makeWorldLevels
         [ { walls = yellowWalls firstLevelWalls

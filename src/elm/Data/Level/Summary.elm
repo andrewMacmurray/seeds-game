@@ -2,11 +2,11 @@ module Data.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
 import Data2.Level.Score exposing (collectable)
-import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
+import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (SeedType, TileType, getSeedType)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
-import Scenes.Hub.Types exposing (Progress, WorldData)
+import Scenes.Tutorial.Types as Tutorial
 
 
 percentComplete : TileType -> Progress -> Maybe Progress -> Float
@@ -45,7 +45,7 @@ secondaryResourceTypes currentLevel =
         |> Maybe.map secondaryResourceTypes_
 
 
-secondaryResourceTypes_ : WorldData -> List TileType
+secondaryResourceTypes_ : WorldData tutorialConfig -> List TileType
 secondaryResourceTypes_ { levels, seedType } =
     levels
         |> mapValues .tileSettings
@@ -99,7 +99,7 @@ currentTotalScoresForWorld (( worldNumber, levelNumber ) as progress) =
     getWorld progress |> Maybe.map (scoresAtLevel levelNumber)
 
 
-getWorld : Progress -> Maybe WorldData
+getWorld : Progress -> Maybe (WorldData Tutorial.Config)
 getWorld ( w, _ ) =
     Dict.get w allLevels
 
@@ -111,7 +111,7 @@ totalTargetScoresForWorld worldNumber =
         |> Maybe.map scoresForWorld
 
 
-scoresAtLevel : Int -> WorldData -> Dict String Int
+scoresAtLevel : Int -> WorldData tutorialConfig -> Dict String Int
 scoresAtLevel level { levels } =
     levels
         |> mapValues .tileSettings
@@ -121,7 +121,7 @@ scoresAtLevel level { levels } =
         |> totalScoresDict
 
 
-scoresForWorld : WorldData -> Dict String Int
+scoresForWorld : WorldData tutorialConfig -> Dict String Int
 scoresForWorld { levels } =
     levels
         |> mapValues .tileSettings

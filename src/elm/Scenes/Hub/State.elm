@@ -11,6 +11,7 @@ import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse
+import Data2.Level.Settings exposing (..)
 import Scenes.Hub.Types as Main exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as Lv
@@ -241,7 +242,7 @@ countDown timeTillNextLife =
     floor <| livesLeft <| timeTillNextLife - second
 
 
-currentLevelData : Model -> LevelData
+currentLevelData : Model -> LevelData Tu.Config
 currentLevelData model =
     model.currentLevel
         |> Maybe.withDefault ( 1, 1 )
@@ -275,7 +276,7 @@ decrementAboveZero x n =
     clamp 0 100000000000 (n - x)
 
 
-handleLoadLevel : Model -> LevelData -> ( Model, Cmd Main.Msg )
+handleLoadLevel : Model -> LevelData config -> ( Model, Cmd Main.Msg )
 handleLoadLevel model levelData =
     let
         ( levelModel, levelCmd ) =

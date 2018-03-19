@@ -1,19 +1,16 @@
-module Data.Hub.Progress exposing (..)
+module Data2.Level.Progress exposing (..)
 
 import Config.Levels exposing (allLevels, defaultLevel, defaultWorld)
-import Data2.Level.Settings exposing (AllLevels, LevelData, LevelNumber, Progress, WorldData, WorldNumber)
 import Data2.Tile exposing (SeedType(..))
 import Dict
-import Scenes.Hub.Types exposing (..)
-import Scenes.Tutorial.Types as Tutorial
 
 
-getLevelData : Progress -> LevelData Tutorial.Config
+getLevelData : Progress -> LevelData
 getLevelData progress =
     getLevelConfig progress |> Tuple.second
 
 
-getLevelConfig : Progress -> ( WorldData Tutorial.Config, LevelData Tutorial.Config )
+getLevelConfig : Progress -> ( WorldData, LevelData )
 getLevelConfig ( w, l ) =
     let
         worldData =
@@ -54,14 +51,14 @@ reachedLevel ( world, level ) { progress } =
     getLevelNumber progress allLevels >= getLevelNumber ( world, level ) allLevels
 
 
-getLevelNumber : Progress -> AllLevels Tutorial.Config -> Int
+getLevelNumber : Progress -> AllLevels -> Int
 getLevelNumber ( world, level ) allLevels =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w allLevels) 0
         |> ((+) level)
 
 
-worldSize : Int -> AllLevels Tutorial.Config -> Int
+worldSize : Int -> AllLevels -> Int
 worldSize world allLevels =
     allLevels
         |> Dict.get world
@@ -77,7 +74,7 @@ incrementProgress currentLevel (( world, level ) as currentProgress) =
         |> Maybe.withDefault currentProgress
 
 
-compareLevels : Maybe Progress -> Progress -> WorldData Tutorial.Config -> Progress
+compareLevels : Maybe Progress -> Progress -> WorldData -> Progress
 compareLevels currentLevel progress worldData =
     if shouldIncrement currentLevel progress then
         handleIncrement progress worldData
@@ -97,7 +94,7 @@ shouldIncrement currentLevel progress =
         curr >= prog
 
 
-handleIncrement : Progress -> WorldData Tutorial.Config -> Progress
+handleIncrement : Progress -> WorldData -> Progress
 handleIncrement (( _, level ) as currentProgress) worldData =
     if lastLevel worldData == level then
         incrementWorld currentProgress
@@ -105,7 +102,7 @@ handleIncrement (( _, level ) as currentProgress) worldData =
         incrementLevel currentProgress
 
 
-lastLevel : WorldData Tutorial.Config -> Int
+lastLevel : WorldData -> Int
 lastLevel worldData =
     Dict.size worldData.levels
 

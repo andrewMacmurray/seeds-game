@@ -3,6 +3,7 @@ module Views.Hub.World exposing (..)
 import Config.Levels exposing (allLevels)
 import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.InfoWindow exposing (InfoWindow(Hidden))
+import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (SeedType(..))
 import Dict
 import Helpers.Html exposing (emptyProperty)
@@ -22,7 +23,7 @@ renderWorlds model =
         |> List.map (renderWorld model)
 
 
-renderWorld : Hub.Model -> ( WorldNumber, WorldData ) -> Html Hub.Msg
+renderWorld : Hub.Model -> ( WorldNumber, WorldData tutorialConfig ) -> Html Hub.Msg
 renderWorld model (( _, worldData ) as world) =
     div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
@@ -35,7 +36,7 @@ renderWorld model (( _, worldData ) as world) =
         ]
 
 
-renderLevel : Hub.Model -> ( WorldNumber, WorldData ) -> ( LevelNumber, LevelData ) -> Html Hub.Msg
+renderLevel : Hub.Model -> ( WorldNumber, WorldData tutorialConfig ) -> ( LevelNumber, LevelData tutorialConfig ) -> Html Hub.Msg
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
         levelNumber =
@@ -88,7 +89,7 @@ offsetStyles levelNumber =
             left
 
 
-renderNumber : Int -> ( WorldNumber, LevelNumber ) -> WorldData -> Hub.Model -> Html Hub.Msg
+renderNumber : Int -> ( WorldNumber, LevelNumber ) -> WorldData tutorialConfig -> Hub.Model -> Html Hub.Msg
 renderNumber visibleLevelNumber currentLevel worldData model =
     if reachedLevel currentLevel model then
         div

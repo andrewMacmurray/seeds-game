@@ -11,26 +11,26 @@ import Data2.Board.Move.Check exposing (addToMove, startMove)
 import Data2.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
 import Data2.Board.Shift exposing (shiftBoard)
 import Data2.Level.Score exposing (addScoreFromMoves, initialScores, levelComplete)
+import Data2.Level.Settings exposing (LevelData)
 import Data2.Tile exposing (SeedType, TileType(..))
 import Data2.TileState exposing (MoveShape(..))
 import Dict
 import Helpers.Effect exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Scenes.Hub.Types exposing (LevelData)
 import Scenes.Level.Types exposing (..)
 
 
-init : LevelData -> Model -> ( Model, Cmd Msg )
+init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
 init levelData model =
     addLevelData levelData model |> generateTiles levelData
 
 
-generateTiles : LevelData -> Model -> ( Model, Cmd Msg )
+generateTiles : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
 generateTiles levelData model =
     model ! [ handleGenerateTiles levelData model ]
 
 
-addLevelData : LevelData -> Model -> Model
+addLevelData : LevelData tutorialConfig -> Model -> Model
 addLevelData { tileSettings, walls, boardDimensions, moves } model =
     { model
         | scores = initialScores tileSettings
@@ -227,7 +227,7 @@ fallDelay moveShape =
 -- UPDATE HELPERS
 
 
-handleGenerateTiles : LevelData -> Model -> Cmd Msg
+handleGenerateTiles : LevelData tutorialConfig -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardDimensions } =
     generateInitialTiles (InitTiles levelData.walls) levelData.tileSettings boardDimensions
 

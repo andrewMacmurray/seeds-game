@@ -6,11 +6,11 @@ import Config.World.Two as Two
 import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (..)
 import Dict exposing (Dict)
-import Scenes.Hub.Types exposing (..)
 import Time exposing (Time, minute)
+import Scenes.Tutorial.Types as Tutorial
 
 
-allLevels : AllLevels
+allLevels : AllLevels Tutorial.Config
 allLevels =
     Dict.fromList
         [ ( 1, One.world )
@@ -19,12 +19,12 @@ allLevels =
         ]
 
 
-defaultWorld : WorldData
+defaultWorld : WorldData Tutorial.Config
 defaultWorld =
     One.world
 
 
-defaultLevel : LevelData
+defaultLevel : LevelData Tutorial.Config
 defaultLevel =
     { walls = []
     , boardDimensions = { x = 8, y = 8 }

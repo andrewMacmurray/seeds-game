@@ -5,7 +5,7 @@ import Config.Levels exposing (allLevels)
 import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
 import Data.InfoWindow exposing (..)
 import Data2.Level.Score exposing (collectable, scoreTileTypes)
-import Data2.Level.Settings exposing (TargetScore(..), TileSetting)
+import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (SeedType, TileType(..))
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (..)
@@ -40,7 +40,7 @@ info model =
                     div [] content
 
 
-infoContent : Progress -> ( WorldData, LevelData ) -> List (Html msg)
+infoContent : Progress -> CurrentLevelData tutorialConfig -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =
@@ -59,7 +59,7 @@ infoContent ( world, level ) ( worldData, levelData ) =
         ]
 
 
-infoIcons : LevelData -> SeedType -> Html msg
+infoIcons : LevelData tutorialConfig -> SeedType -> Html msg
 infoIcons levelData seedType =
     levelData.tileSettings
         |> List.filter collectable
