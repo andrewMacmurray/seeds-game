@@ -4,8 +4,8 @@ import Config.Levels exposing (allLevels, maxLives, lifeRecoveryInterval)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Hub.Progress exposing (..)
-import Data.Hub.Transition exposing (genRandomBackground)
+import Data2.Level.Progress exposing (..)
+import Data2.Background exposing (..)
 import Data.Ports exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
@@ -127,7 +127,7 @@ update msg model =
             { model | scene = scene } ! []
 
         BeginSceneTransition ->
-            { model | sceneTransition = True } ! [ genRandomBackground ]
+            { model | sceneTransition = True } ! [ genRandomBackground RandomBackground ]
 
         EndSceneTransition ->
             { model | sceneTransition = False } ! []

@@ -1,4 +1,4 @@
-module Data.Level.Summary exposing (..)
+module Data2.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
 import Data2.Level.Score exposing (collectable)

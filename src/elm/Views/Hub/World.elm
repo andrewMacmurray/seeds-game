@@ -1,7 +1,7 @@
 module Views.Hub.World exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data.Hub.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
+import Data2.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.InfoWindow exposing (InfoWindow(Hidden))
 import Data2.Level.Settings exposing (..)
 import Data2.Tile exposing (SeedType(..))
@@ -91,7 +91,7 @@ offsetStyles levelNumber =
 
 renderNumber : Int -> ( WorldNumber, LevelNumber ) -> WorldData tutorialConfig -> Hub.Model -> Html Hub.Msg
 renderNumber visibleLevelNumber currentLevel worldData model =
-    if reachedLevel currentLevel model then
+    if reachedLevel currentLevel model.progress then
         div
             [ class "br-100 center flex justify-center items-center"
             , style
@@ -108,7 +108,7 @@ renderNumber visibleLevelNumber currentLevel worldData model =
 
 showInfo : Progress -> Hub.Model -> Attribute Hub.Msg
 showInfo currentLevel model =
-    if reachedLevel currentLevel model && model.infoWindow == Hidden then
+    if reachedLevel currentLevel model.progress && model.infoWindow == Hidden then
         onClick <| ShowInfo currentLevel
     else
         emptyProperty
@@ -116,7 +116,7 @@ showInfo currentLevel model =
 
 handleStartLevel : Progress -> Hub.Model -> Attribute Hub.Msg
 handleStartLevel currentLevel model =
-    if reachedLevel currentLevel model then
+    if reachedLevel currentLevel model.progress then
         onClick <| StartLevel currentLevel
     else
         emptyProperty
@@ -124,7 +124,7 @@ handleStartLevel currentLevel model =
 
 renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> Hub.Model -> Html Hub.Msg
 renderIcon currentLevel seedType model =
-    if completedLevel currentLevel model then
+    if completedLevel currentLevel model.progress then
         renderSeed seedType
     else
         renderSeed GreyedOut

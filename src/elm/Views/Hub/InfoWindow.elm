@@ -2,7 +2,7 @@ module Views.Hub.InfoWindow exposing (..)
 
 import Config.Color exposing (..)
 import Config.Levels exposing (allLevels)
-import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
+import Data2.Level.Progress exposing (getLevelConfig, getLevelNumber)
 import Data.InfoWindow exposing (..)
 import Data2.Level.Score exposing (collectable, scoreTileTypes)
 import Data2.Level.Settings exposing (..)

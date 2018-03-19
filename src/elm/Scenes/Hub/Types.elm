@@ -2,6 +2,7 @@ module Scenes.Hub.Types exposing (..)
 
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Transit exposing (Transit)
+import Data2.Background exposing (TransitionBackground)
 import Data2.Level.Settings exposing (BoardDimensions, LevelData, Progress, TileSetting)
 import Dom
 import Mouse
@@ -66,8 +67,3 @@ type Scene
     | Tutorial
     | Summary
     | Retry
-
-
-type TransitionBackground
-    = Orange
-    | Blue
