@@ -1,14 +1,14 @@
 module Scenes.Tutorial.State exposing (..)
 
-import Data.Board.Map exposing (..)
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
+import Data.Board.Map exposing (..)
 import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Dict
-import Helpers.Effect exposing (pause, sequenceMs)
+import Helpers.Effect exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
@@ -141,7 +141,7 @@ update msg model =
             noOutMsg (resetVisibilities model) []
 
         ExitTutorial ->
-            withOutMsg model [] ExitTutorialToLevel
+            withOutMsg model [ trigger ResetVisibilities ] ExitTutorialToLevel
 
 
 
