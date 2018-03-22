@@ -13,6 +13,7 @@ coverage
 node_modules
 .npm
 .node_repl_history
+package-lock.json
 
 elm-stuff
 public/style.min.css

@@ -3,21 +3,17 @@
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
-    "dev": "npm run live & npm run css-watch & npm run js-watch",
-    "live": "elm-live src/elm/App.elm --output=public/main.js --dir=public --open --debug --pushstate",
-    "css": "postcss --config ./postcss-config.js",
-    "css-watch": "postcss --watch --config ./postcss-config.js",
-    "js-watch": "watchify src/js/embed.js -o public/embed.js -v",
-    "test": "cd ./test && elm-test App.elm",
-    "make-js": "browserify src/js/embed.js -o public/embed.js",
-    "make-elm": "elm-make src/elm/App.elm --output=public/main.js",
-    "compress": "uglifyjs -c -m -o public/bundle.js public/main.js",
-    "bundle": "npm run make-elm && npm run css",
-    "prepare-assets": "npm run bundle && npm run compress",
-    "add-changes": "git add . && git commit -m 'prepare bundle' && git push origin gh-deploy",
-    "gh-pages-push": "git subtree push --prefix public origin gh-pages",
-    "gh-pages-force-push": "git push origin `git subtree split --prefix public gh-deploy`:gh-pages --force",
-    "gh-publish": "git checkout gh-deploy && git merge master && npm run prepare-assets && npm run add-changes && npm run gh-pages-force-push && git checkout master"
+    "deploy": "npm run build && surge -p public -d seedsgame.com",
+    "dev": "npm run elm-dev & npm run css-dev & npm run js-dev",
+    "build": "npm run elm-build & npm run js-build & npm run css-build",
+    "elm-dev": "elm-live src/elm/App.elm --output=public/main.js --dir=public --open --debug --pushstate",
+    "elm-build": "elm-make src/elm/App.elm --output=public/main.js && npm run compress-main",
+    "css-dev": "postcss --watch --config ./postcss-config.js",
+    "css-build": "postcss --config ./postcss-config.js",
+    "js-dev": "watchify src/js/embed.js -o public/embed.js -v",
+    "js-build": "browserify src/js/embed.js -o public/embed.js",
+    "compress-main": "uglifyjs -c -m -o public/main.js public/main.js",
+    "test": "cd ./test && elm-test App.elm"
   },
   "repository": {
     "type": "git",
@@ -43,7 +39,7 @@
     "postcss-custom-media": "^5.0.1",
     "postcss-custom-properties": "^5.0.2",
     "postcss-import": "^9.1.0",
-    "uglify-js": "^3.0.23",
+    "uglify-js": "^3.3.16",
     "watchify": "^3.9.0"
   }
 }
