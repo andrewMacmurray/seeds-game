@@ -1,4 +1,4 @@
-module Data.Level.Tutorial exposing (..)
+module Data.Tutorial exposing (..)
 
 import Data.Board.Generate exposing (makeBoard)
 import Data.Board.Types exposing (..)

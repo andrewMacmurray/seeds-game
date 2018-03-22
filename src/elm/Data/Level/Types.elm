@@ -4,16 +4,6 @@ import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType, Wa
 import Dict exposing (Dict)
 
 
-type alias Scores =
-    Dict String Score
-
-
-type alias Score =
-    { target : Int
-    , current : Int
-    }
-
-
 type alias Progress =
     ( WorldNumber, LevelNumber )
 

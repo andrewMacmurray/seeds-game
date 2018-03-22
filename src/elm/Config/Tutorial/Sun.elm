@@ -1,7 +1,6 @@
 module Config.Tutorial.Sun exposing (..)
 
-import Data.Level.Tutorial exposing (addBlock, sunBoard)
-import Data.Level.Types exposing (..)
+import Data.Tutorial exposing (addBlock, sunBoard)
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Scenes.Tutorial.Types as Tutorial exposing (..)

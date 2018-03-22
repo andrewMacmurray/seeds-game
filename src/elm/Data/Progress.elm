@@ -1,4 +1,4 @@
-module Data.Level.Progress exposing (..)
+module Data.Progress exposing (..)
 
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)

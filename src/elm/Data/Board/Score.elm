@@ -1,4 +1,4 @@
-module Data.Level.Score exposing (..)
+module Data.Board.Score exposing (..)
 
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Types exposing (..)

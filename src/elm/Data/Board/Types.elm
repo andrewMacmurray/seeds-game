@@ -4,8 +4,7 @@ import Dict exposing (Dict)
 import Window
 
 
-type alias Board =
-    Dict Coord Block
+-- Extensible Records for working with a Board
 
 
 type alias HasBoard a =
@@ -31,6 +30,28 @@ type alias BoardDimensions =
     { x : Int
     , y : Int
     }
+
+
+
+-- Keeps Track of current Scores for each resource
+
+
+type alias Scores =
+    Dict String Score
+
+
+type alias Score =
+    { target : Int
+    , current : Int
+    }
+
+
+
+-- Core Board Type
+
+
+type alias Board =
+    Dict Coord Block
 
 
 type alias Move =

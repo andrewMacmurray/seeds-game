@@ -4,7 +4,7 @@ import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Background exposing (..)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Level.Progress exposing (..)
+import Data.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
