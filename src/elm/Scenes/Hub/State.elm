@@ -300,7 +300,7 @@ handleLoadLevel : Model -> LevelData config -> ( Model, Cmd Msg )
 handleLoadLevel model levelData =
     let
         ( levelModel, levelCmd ) =
-            Level.init levelData
+            Level.init levelData model.levelModel
     in
         { model | levelModel = levelModel } ! [ Cmd.map LevelMsg levelCmd ]
 

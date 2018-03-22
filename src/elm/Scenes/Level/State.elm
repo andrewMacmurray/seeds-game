@@ -23,9 +23,9 @@ import Scenes.Level.Types exposing (..)
 -- Init
 
 
-init : LevelData tutorialConfig -> ( Model, Cmd Msg )
-init levelData =
-    addLevelData levelData initialState |> generateTiles levelData
+init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
+init levelData model =
+    addLevelData levelData model |> generateTiles levelData
 
 
 generateTiles : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
