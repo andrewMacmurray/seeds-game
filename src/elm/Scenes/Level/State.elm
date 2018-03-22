@@ -1,6 +1,6 @@
 module Scenes.Level.State exposing (..)
 
-import Config.Text exposing (failureMessage, getSuccessMessage)
+import Config.Text exposing (failureMessage, getSuccessMessage, randomSuccessMessageIndex)
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (generateEnteringTiles, generateInitialTiles, generateRandomSeedType, insertNewEnteringTiles, insertNewSeeds, makeBoard)
@@ -20,9 +20,12 @@ import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.Types exposing (..)
 
 
-init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
-init levelData model =
-    addLevelData levelData model |> generateTiles levelData
+-- Init
+
+
+init : LevelData tutorialConfig -> ( Model, Cmd Msg )
+init levelData =
+    addLevelData levelData initialState |> generateTiles levelData
 
 
 generateTiles : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
@@ -57,6 +60,15 @@ initialState =
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
+
+
+generateSuccessMessageIndex : Cmd Msg
+generateSuccessMessageIndex =
+    randomSuccessMessageIndex RandomSuccessMessageIndex
+
+
+
+-- Update
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
@@ -224,7 +236,7 @@ fallDelay moveShape =
 
 
 
--- UPDATE HELPERS
+-- Update Helpers
 
 
 handleGenerateTiles : LevelData tutorialConfig -> Model -> Cmd Msg

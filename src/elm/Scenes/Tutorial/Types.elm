@@ -37,7 +37,6 @@ type alias Sequence =
 
 type Msg
     = DragTile Coord
-    | StartSequence Config
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving

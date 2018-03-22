@@ -1,9 +1,8 @@
 module Helpers.Effect exposing (..)
 
 import Delay
+import Dom
 import Dom.Scroll exposing (toY)
-import Scenes.Hub.Types as Main exposing (..)
-import Mouse exposing (downs, moves)
 import Task
 import Time exposing (millisecond)
 import Window exposing (Size, resizes, size)
@@ -35,41 +34,10 @@ pause pauseDuration steps =
 -- Dom Scroll Helpers
 
 
-scrollHubToLevel : Float -> Size -> Cmd Main.Msg
-scrollHubToLevel offset window =
+scrollHubToLevel : (Result Dom.Error () -> msg) -> Float -> Size -> Cmd msg
+scrollHubToLevel msg offset window =
     let
         targetDistance =
             offset - toFloat (window.height // 2) + 60
     in
-        toY "hub" targetDistance |> Task.attempt DomNoOp
-
-
-
--- Window Size helpers
-
-
-getWindowSize : Cmd Main.Msg
-getWindowSize =
-    size |> Task.perform WindowSize
-
-
-trackWindowSize : Sub Main.Msg
-trackWindowSize =
-    resizes WindowSize
-
-
-
--- Mouse Position Helpers
-
-
-trackMouseDowns : Sub Main.Msg
-trackMouseDowns =
-    downs MousePosition
-
-
-trackMousePosition : Main.Model -> Sub Main.Msg
-trackMousePosition model =
-    if model.levelModel.isDragging then
-        moves MousePosition
-    else
-        Sub.none
+        toY "hub" targetDistance |> Task.attempt msg

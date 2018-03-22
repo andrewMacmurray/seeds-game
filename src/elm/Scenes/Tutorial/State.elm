@@ -14,6 +14,14 @@ import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
 
 
+-- Init
+
+
+init : Config -> ( Model, Cmd Msg )
+init config =
+    loadTutorialData config initialState ! [ sequenceMs config.sequence ]
+
+
 initialState : Model
 initialState =
     { board = Dict.empty
@@ -32,12 +40,25 @@ initialState =
     }
 
 
+loadTutorialData : Config -> Model -> Model
+loadTutorialData config model =
+    { model
+        | boardDimensions = config.boardDimensions
+        , board = config.board
+        , text = config.text
+        , resourceBank = config.resourceBank
+        , currentText = 1
+        , skipped = False
+    }
+
+
+
+-- Update
+
+
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
-        StartSequence config ->
-            noOutMsg (loadTutorialData config model) [ sequenceMs config.sequence ]
-
         DragTile coord ->
             noOutMsg (handleDragTile coord model) []
 
@@ -123,16 +144,8 @@ update msg model =
             withOutMsg model [] ExitTutorialToLevel
 
 
-loadTutorialData : Config -> Model -> Model
-loadTutorialData config model =
-    { model
-        | boardDimensions = config.boardDimensions
-        , board = config.board
-        , text = config.text
-        , resourceBank = config.resourceBank
-        , currentText = 1
-        , skipped = False
-    }
+
+-- Update Helpers
 
 
 resetVisibilities : Model -> Model

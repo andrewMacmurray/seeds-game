@@ -37,7 +37,8 @@ type Msg
     | RestartLevel
     | TransitionWithWin
     | TransitionWithLose
-    | LoadLevelData (LevelData Tutorial.Config)
+    | LoadTutorial Tutorial.Config
+    | LoadLevel (LevelData Tutorial.Config)
     | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
