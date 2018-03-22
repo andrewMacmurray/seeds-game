@@ -1,19 +1,18 @@
 module Data.Board.Move.Square exposing (..)
 
 import Data.Board.Block exposing (getTileType, moveOrder, setToDragging)
-import Data.Board.Moves exposing (..)
 import Data.Board.Move.Bearing exposing (validDirection)
+import Data.Board.Moves exposing (..)
 import Data.Board.Types exposing (..)
-import Delay
 import Dict
+import Helpers.Effect exposing (trigger)
 import List exposing (all)
-import Time exposing (millisecond)
 
 
 triggerMoveIfSquare : msg -> Board -> Cmd msg
 triggerMoveIfSquare msg board =
     if hasSquareTile board then
-        Delay.after 0 millisecond msg
+        trigger msg
     else
         Cmd.none
 

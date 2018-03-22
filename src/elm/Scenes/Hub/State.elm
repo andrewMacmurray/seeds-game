@@ -1,13 +1,13 @@
 module Scenes.Hub.State exposing (..)
 
-import Config.Levels exposing (allLevels, maxLives, lifeRecoveryInterval)
+import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
 import Config.Text exposing (randomSuccessMessageIndex)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Level.Progress exposing (..)
 import Data.Background exposing (..)
 import Data.Level.Types exposing (..)
-import Data.Ports exposing (..)
+import Ports exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
 import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
@@ -202,6 +202,16 @@ update msg model =
             handleUpdateTimes time model
 
 
+getLevelData : Progress -> LevelData Tu.Config
+getLevelData =
+    levelData allLevels >> Maybe.withDefault defaultLevel
+
+
+getLevelConfig : Progress -> CurrentLevelConfig Tu.Config
+getLevelConfig =
+    levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
+
+
 initTimeTillNextLife : Flags -> Time
 initTimeTillNextLife flags =
     flags.times
@@ -363,7 +373,7 @@ handleIncrementProgress : Model -> ( Model, Cmd Main.Msg )
 handleIncrementProgress model =
     let
         progress =
-            incrementProgress model.currentLevel model.progress
+            incrementProgress allLevels model.currentLevel model.progress
     in
         { model | progress = progress } ! [ cacheProgress <| fromProgress progress ]
 
@@ -379,7 +389,7 @@ levelWinSequence model =
         backToHub =
             backToHubSequence <| levelCompleteScrollNumber model
     in
-        if shouldIncrement model.currentLevel model.progress then
+        if shouldIncrement allLevels model.currentLevel model.progress then
             [ ( 0, SetScene Summary )
             , ( 2000, IncrementProgress )
             , ( 2500, BeginSceneTransition )
@@ -407,7 +417,7 @@ backToHubSequence levelNumber =
 
 levelCompleteScrollNumber : Model -> Int
 levelCompleteScrollNumber model =
-    if shouldIncrement model.currentLevel model.progress then
+    if shouldIncrement allLevels model.currentLevel model.progress then
         progressLevelNumber model + 1
     else
         getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels

@@ -22,7 +22,7 @@ type alias AllLevels tutorialData =
     Dict WorldNumber (WorldData tutorialData)
 
 
-type alias CurrentLevelData tutorialData =
+type alias CurrentLevelConfig tutorialData =
     ( WorldData tutorialData, LevelData tutorialData )
 
 

@@ -19,7 +19,7 @@ sequenceMs steps =
 
 trigger : msg -> Cmd msg
 trigger msg =
-    Delay.after 0 millisecond msg
+    Task.succeed msg |> Task.perform identity
 
 
 pause : Float -> List ( Float, msg ) -> List ( Float, msg )

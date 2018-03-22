@@ -1,19 +1,17 @@
 module Data.Level.Progress exposing (..)
 
-import Config.Levels exposing (allLevels, defaultLevel, defaultWorld)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Dict
-import Scenes.Tutorial.Types as Tutorial
 
 
-getLevelData : Progress -> LevelData Tutorial.Config
-getLevelData progress =
-    getLevelConfig progress |> Tuple.second
+levelData : AllLevels tutorial -> Progress -> Maybe (LevelData tutorial)
+levelData allLevels progress =
+    levelConfig allLevels progress |> Maybe.map Tuple.second
 
 
-getLevelConfig : Progress -> ( WorldData Tutorial.Config, LevelData Tutorial.Config )
-getLevelConfig ( w, l ) =
+levelConfig : AllLevels tutorial -> Progress -> Maybe (CurrentLevelConfig tutorial)
+levelConfig allLevels ( w, l ) =
     let
         worldData =
             allLevels |> Dict.get w
@@ -21,46 +19,44 @@ getLevelConfig ( w, l ) =
         levelData =
             worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
     in
-        ( worldData |> Maybe.withDefault defaultWorld
-        , levelData |> Maybe.withDefault defaultLevel
-        )
+        Maybe.map2 (,) worldData levelData
 
 
-currentLevelSeedType : Maybe Progress -> Progress -> SeedType
-currentLevelSeedType currentLevel progress =
+currentLevelSeedType : AllLevels tutorial -> Maybe Progress -> Progress -> SeedType
+currentLevelSeedType allLevels currentLevel progress =
     currentLevel
         |> Maybe.map Tuple.first
         |> Maybe.andThen (\world -> Dict.get world allLevels)
         |> Maybe.map .seedType
-        |> Maybe.withDefault (currentProgressSeedType progress)
+        |> Maybe.withDefault (currentProgressSeedType allLevels progress)
 
 
-currentProgressSeedType : Progress -> SeedType
-currentProgressSeedType progress =
+currentProgressSeedType : AllLevels tutorial -> Progress -> SeedType
+currentProgressSeedType allLevels progress =
     allLevels
         |> Dict.get (Tuple.first progress)
         |> Maybe.map .seedType
         |> Maybe.withDefault Sunflower
 
 
-completedLevel : ( WorldNumber, LevelNumber ) -> Progress -> Bool
-completedLevel ( world, level ) progress =
+completedLevel : AllLevels tutorial -> ( WorldNumber, LevelNumber ) -> Progress -> Bool
+completedLevel allLevels ( world, level ) progress =
     getLevelNumber progress allLevels > getLevelNumber ( world, level ) allLevels
 
 
-reachedLevel : ( WorldNumber, LevelNumber ) -> Progress -> Bool
-reachedLevel ( world, level ) progress =
+reachedLevel : AllLevels tutorial -> ( WorldNumber, LevelNumber ) -> Progress -> Bool
+reachedLevel allLevels ( world, level ) progress =
     getLevelNumber progress allLevels >= getLevelNumber ( world, level ) allLevels
 
 
-getLevelNumber : Progress -> AllLevels Tutorial.Config -> Int
+getLevelNumber : Progress -> AllLevels tutorial -> Int
 getLevelNumber ( world, level ) allLevels =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w allLevels) 0
         |> ((+) level)
 
 
-worldSize : Int -> AllLevels Tutorial.Config -> Int
+worldSize : Int -> AllLevels tutorial -> Int
 worldSize world allLevels =
     allLevels
         |> Dict.get world
@@ -68,24 +64,24 @@ worldSize world allLevels =
         |> Maybe.withDefault 0
 
 
-incrementProgress : Maybe Progress -> Progress -> Progress
-incrementProgress currentLevel (( world, level ) as currentProgress) =
+incrementProgress : AllLevels tutorial -> Maybe Progress -> Progress -> Progress
+incrementProgress allLevels currentLevel (( world, level ) as currentProgress) =
     allLevels
         |> Dict.get world
-        |> Maybe.map (compareLevels currentLevel currentProgress)
+        |> Maybe.map (incrementProgress_ allLevels currentLevel currentProgress)
         |> Maybe.withDefault currentProgress
 
 
-compareLevels : Maybe Progress -> Progress -> WorldData Tutorial.Config -> Progress
-compareLevels currentLevel progress worldData =
-    if shouldIncrement currentLevel progress then
+incrementProgress_ : AllLevels tutorial -> Maybe Progress -> Progress -> WorldData tutorial -> Progress
+incrementProgress_ allLevels currentLevel progress worldData =
+    if shouldIncrement allLevels currentLevel progress then
         handleIncrement progress worldData
     else
         progress
 
 
-shouldIncrement : Maybe Progress -> Progress -> Bool
-shouldIncrement currentLevel progress =
+shouldIncrement : AllLevels tutorial -> Maybe Progress -> Progress -> Bool
+shouldIncrement allLevels currentLevel progress =
     let
         curr =
             getLevelNumber (Maybe.withDefault ( 1, 1 ) currentLevel) allLevels
@@ -96,7 +92,7 @@ shouldIncrement currentLevel progress =
         curr >= prog
 
 
-handleIncrement : Progress -> WorldData Tutorial.Config -> Progress
+handleIncrement : Progress -> WorldData tutorial -> Progress
 handleIncrement (( _, level ) as currentProgress) worldData =
     if lastLevel worldData == level then
         incrementWorld currentProgress
@@ -104,7 +100,7 @@ handleIncrement (( _, level ) as currentProgress) worldData =
         incrementLevel currentProgress
 
 
-lastLevel : WorldData Tutorial.Config -> Int
+lastLevel : WorldData tutorial -> Int
 lastLevel worldData =
     Dict.size worldData.levels
 

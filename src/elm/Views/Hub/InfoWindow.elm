@@ -4,7 +4,7 @@ import Config.Color exposing (..)
 import Config.Levels exposing (allLevels)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
-import Data.Level.Progress exposing (getLevelConfig, getLevelNumber)
+import Data.Level.Progress exposing (..)
 import Data.Level.Score exposing (collectable, scoreTileTypes)
 import Data.Level.Types exposing (..)
 import Helpers.Html exposing (emptyProperty)
@@ -12,6 +12,7 @@ import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Scenes.Hub.State exposing (getLevelConfig)
 import Scenes.Hub.Types as Hub exposing (..)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
@@ -40,7 +41,7 @@ info model =
                     div [] content
 
 
-infoContent : Progress -> CurrentLevelData tutorialConfig -> List (Html msg)
+infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =

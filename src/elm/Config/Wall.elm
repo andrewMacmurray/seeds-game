@@ -2,16 +2,12 @@ module Config.Wall exposing (..)
 
 import Config.Color exposing (blockYellow)
 import Data.Board.Types exposing (Coord, WallColor)
+import Data.Board.Wall exposing (toCoords, withColor)
 
 
 yellowWalls : List Coord -> List ( WallColor, Coord )
 yellowWalls =
     withColor blockYellow
-
-
-withColor : WallColor -> List Coord -> List ( WallColor, Coord )
-withColor color =
-    List.map ((,) color)
 
 
 centerColumns : List Coord
@@ -82,22 +78,6 @@ borders =
         , [ w, s, s, s, s, s, s, w ]
         , [ w, w, s, w, w, s, w, w ]
         ]
-
-
-toCoords : List (List Bool) -> List Coord
-toCoords allWalls =
-    allWalls
-        |> List.indexedMap (\i r -> List.indexedMap (toCoord i) r)
-        |> List.concat
-        |> List.concat
-
-
-toCoord : Int -> Int -> Bool -> List Coord
-toCoord i j x =
-    if x then
-        [ ( i, j ) ]
-    else
-        []
 
 
 w : Bool
