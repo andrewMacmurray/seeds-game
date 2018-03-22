@@ -4,8 +4,15 @@ import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType, Wa
 import Dict exposing (Dict)
 
 
+-- Identifier for a level
+
+
 type alias Progress =
     ( WorldNumber, LevelNumber )
+
+
+
+-- Types to represent settings for all levels and worlds
 
 
 type alias AllLevels tutorialData =
@@ -45,6 +52,10 @@ type alias LevelData tutorialData =
     , tutorial : Maybe tutorialData
     , moves : Int
     }
+
+
+
+-- Types for initializing level with settings
 
 
 type alias TileSetting =
