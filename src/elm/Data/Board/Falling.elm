@@ -1,10 +1,10 @@
-module Data.Level.Board.Falling exposing (..)
+module Data.Board.Falling exposing (..)
 
-import Data.Level.Board.Shift exposing (groupBoardByColumn, shiftBoard, yCoord)
-import Data.Level.Board.Tile exposing (isFalling, isLeaving, setFallingToStatic, setToFalling)
 import Dict
-import Helpers.Dict exposing (filterValues, mapValues)
-import Scenes.Level.Types exposing (..)
+import Data.Board.Types exposing (..)
+import Data.Board.Block as Block
+import Helpers.Dict exposing (filterValues)
+import Data.Board.Shift as Shift
 
 
 setFallingTiles : Board -> Board
@@ -14,7 +14,7 @@ setFallingTiles board =
             board |> Dict.map (temporaryMarkFalling board)
 
         shiftedBoard =
-            beforeBoard |> shiftBoard
+            beforeBoard |> Shift.shiftBoard
 
         fallingTilesToUpdate =
             newFallingTiles beforeBoard shiftedBoard
@@ -38,7 +38,7 @@ newFallingTiles beforeBoard shiftedBoard =
 addFallingDistance : List Move -> List Move -> List Move
 addFallingDistance before shifted =
     List.map2
-        (\( ( y1, x1 ), b ) ( ( y2, x2 ), _ ) -> ( ( y1, x1 ), setToFalling (y2 - y1) b ))
+        (\( ( y1, x1 ), b ) ( ( y2, x2 ), _ ) -> ( ( y1, x1 ), Block.setToFalling (y2 - y1) b ))
         before
         shifted
 
@@ -46,15 +46,15 @@ addFallingDistance before shifted =
 listsOfFallingTiles : Board -> List (List Move)
 listsOfFallingTiles board =
     board
-        |> filterValues isFalling
-        |> groupBoardByColumn
-        |> List.map (List.sortBy yCoord)
+        |> filterValues Block.isFalling
+        |> Shift.groupBoardByColumn
+        |> List.map (List.sortBy Shift.yCoord)
 
 
 temporaryMarkFalling : Board -> Coord -> Block -> Block
 temporaryMarkFalling board coord block =
     if shouldMarkFalling board coord then
-        setToFalling 0 block
+        Block.setToFalling 0 block
     else
         block
 
@@ -62,5 +62,5 @@ temporaryMarkFalling board coord block =
 shouldMarkFalling : Board -> Coord -> Bool
 shouldMarkFalling board ( y2, x2 ) =
     board
-        |> Dict.filter (\( y1, x1 ) b -> x1 == x2 && isLeaving b && y1 > y2)
+        |> Dict.filter (\( y1, x1 ) b -> x1 == x2 && Block.isLeaving b && y1 > y2)
         |> (not << Dict.isEmpty)

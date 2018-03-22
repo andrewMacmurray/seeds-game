@@ -1,8 +1,8 @@
 module Views.Icons.SeedBank exposing (..)
 
+import Data.Board.Types exposing (..)
 import Helpers.Style exposing (pc, svgTranslate)
 import Html exposing (Html)
-import Scenes.Level.Types exposing (SeedType(..))
 import Svg
 import Svg.Attributes exposing (..)
 import Views.Seed.All exposing (renderSeed)

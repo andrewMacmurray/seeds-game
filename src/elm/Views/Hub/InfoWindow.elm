@@ -1,17 +1,19 @@
 module Views.Hub.InfoWindow exposing (..)
 
-import Config.Levels exposing (allLevels)
 import Config.Color exposing (..)
+import Config.Levels exposing (allLevels)
+import Data.Board.Score exposing (collectable, scoreTileTypes)
+import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
-import Data.Hub.Progress exposing (getLevelConfig, getLevelNumber)
-import Data.Level.Score exposing (collectable, scoreTileTypes)
+import Data.Level.Progress exposing (..)
+import Data.Level.Types exposing (..)
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Scenes.Hub.State exposing (getLevelConfig)
 import Scenes.Hub.Types as Hub exposing (..)
-import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileConfig, TileSetting, TileType, TileType(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
 
@@ -39,7 +41,7 @@ info model =
                     div [] content
 
 
-infoContent : Progress -> ( WorldData, LevelData ) -> List (Html msg)
+infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =
@@ -58,7 +60,7 @@ infoContent ( world, level ) ( worldData, levelData ) =
         ]
 
 
-infoIcons : LevelData -> SeedType -> Html msg
+infoIcons : LevelData tutorialConfig -> SeedType -> Html msg
 infoIcons levelData seedType =
     levelData.tileSettings
         |> List.filter collectable

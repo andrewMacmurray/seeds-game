@@ -1,8 +1,9 @@
-module Data.Level.Score exposing (..)
+module Data.Board.Score exposing (..)
 
-import Data.Level.Move.Utils exposing (currentMoveTileType, currentMoves)
-import Scenes.Level.Types exposing (..)
-import Dict
+import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
+import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (..)
+import Dict exposing (Dict)
 
 
 addScoreFromMoves : Board -> Scores -> Scores

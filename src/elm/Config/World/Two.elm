@@ -1,13 +1,15 @@
 module Config.World.Two exposing (world)
 
-import Config.Wall exposing (..)
 import Config.Color exposing (..)
-import Data.Hub.World exposing (..)
-import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
+import Config.Wall exposing (..)
+import Data.Board.Types exposing (..)
+import Data.Board.Wall exposing (toCoords)
+import Data.Level.Settings exposing (..)
+import Data.Level.Types exposing (..)
+import Scenes.Tutorial.Types as Tutorial
 
 
-world : WorldData
+world : WorldData Tutorial.Config
 world =
     { seedType = Foxglove
     , levels = levels
@@ -18,7 +20,7 @@ world =
     }
 
 
-levels : WorldLevels
+levels : WorldLevels Tutorial.Config
 levels =
     makeWorldLevels
         [ { walls = yellowWalls borders

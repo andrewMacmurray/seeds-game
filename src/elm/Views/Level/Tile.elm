@@ -1,7 +1,8 @@
 module Views.Level.Tile exposing (..)
 
-import Helpers.Html exposing (onMouseDownPreventDefault)
 import Config.Scale exposing (tileScaleFactor)
+import Data.Board.Types exposing (..)
+import Helpers.Html exposing (onMouseDownPreventDefault)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)

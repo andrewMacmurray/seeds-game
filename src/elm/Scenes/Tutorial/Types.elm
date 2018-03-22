@@ -1,8 +1,8 @@
 module Scenes.Tutorial.Types exposing (..)
 
-import Scenes.Level.Types exposing (Board, Coord, MoveShape, SeedType, TileType, BoardDimensions)
-import Window
+import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Dict exposing (Dict)
+import Window
 
 
 type alias Model =
@@ -37,7 +37,6 @@ type alias Sequence =
 
 type Msg
     = DragTile Coord
-    | StartSequence Config
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving

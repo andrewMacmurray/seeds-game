@@ -1,23 +1,23 @@
 module Data.Level.Summary exposing (..)
 
 import Config.Levels exposing (allLevels)
-import Data.Level.Board.Tile exposing (getSeedType)
-import Data.Level.Score exposing (collectable)
+import Data.Board.Tile exposing (getSeedType)
+import Data.Board.Types exposing (..)
+import Data.Board.Score exposing (collectable)
+import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
-import Scenes.Hub.Types exposing (Progress, WorldData)
-import Scenes.Level.Types exposing (SeedType, TargetScore(..), TileSetting, TileType)
 
 
-percentComplete : TileType -> Progress -> Maybe Progress -> Float
-percentComplete tileType ( w, l ) currentLevel =
+percentComplete : AllLevels tutorial -> TileType -> Progress -> Maybe Progress -> Float
+percentComplete allLevels tileType ( w, l ) currentLevel =
     let
         target =
             totalTargetScoresForWorld w
                 |> Maybe.andThen (Dict.get (toString tileType))
 
         current =
-            currentTotalScoresForWorld ( w, l )
+            currentTotalScoresForWorld allLevels ( w, l )
                 |> Maybe.andThen (Dict.get (toString tileType))
 
         percent a b =
@@ -30,22 +30,22 @@ percentComplete tileType ( w, l ) currentLevel =
                 |> Maybe.withDefault 0
 
 
-primarySeedType : Progress -> Maybe Progress -> Maybe SeedType
-primarySeedType progress currentLevel =
+primarySeedType : AllLevels tutorial -> Progress -> Maybe Progress -> Maybe SeedType
+primarySeedType allLevels progress currentLevel =
     if worldComplete progress currentLevel then
-        currentLevel |> Maybe.andThen worldSeedType
+        currentLevel |> Maybe.andThen (worldSeedType allLevels)
     else
-        worldSeedType progress
+        worldSeedType allLevels progress
 
 
-secondaryResourceTypes : Maybe Progress -> Maybe (List TileType)
-secondaryResourceTypes currentLevel =
+secondaryResourceTypes : AllLevels tutorial -> Maybe Progress -> Maybe (List TileType)
+secondaryResourceTypes allLevels currentLevel =
     currentLevel
-        |> Maybe.andThen getWorld
+        |> Maybe.andThen (getWorld allLevels)
         |> Maybe.map secondaryResourceTypes_
 
 
-secondaryResourceTypes_ : WorldData -> List TileType
+secondaryResourceTypes_ : WorldData tutorialConfig -> List TileType
 secondaryResourceTypes_ { levels, seedType } =
     levels
         |> mapValues .tileSettings
@@ -89,18 +89,18 @@ worldComplete progress curr =
             False
 
 
-worldSeedType : Progress -> Maybe SeedType
-worldSeedType =
-    getWorld >> Maybe.map .seedType
+worldSeedType : AllLevels tutorial -> Progress -> Maybe SeedType
+worldSeedType allLevels =
+    getWorld allLevels >> Maybe.map .seedType
 
 
-currentTotalScoresForWorld : Progress -> Maybe (Dict String Int)
-currentTotalScoresForWorld (( worldNumber, levelNumber ) as progress) =
-    getWorld progress |> Maybe.map (scoresAtLevel levelNumber)
+currentTotalScoresForWorld : AllLevels tutorial -> Progress -> Maybe (Dict String Int)
+currentTotalScoresForWorld allLevels (( worldNumber, levelNumber ) as progress) =
+    getWorld allLevels progress |> Maybe.map (scoresAtLevel levelNumber)
 
 
-getWorld : Progress -> Maybe WorldData
-getWorld ( w, _ ) =
+getWorld : AllLevels tutorial -> Progress -> Maybe (WorldData tutorial)
+getWorld allLevels ( w, _ ) =
     Dict.get w allLevels
 
 
@@ -111,7 +111,7 @@ totalTargetScoresForWorld worldNumber =
         |> Maybe.map scoresForWorld
 
 
-scoresAtLevel : Int -> WorldData -> Dict String Int
+scoresAtLevel : Int -> WorldData tutorialConfig -> Dict String Int
 scoresAtLevel level { levels } =
     levels
         |> mapValues .tileSettings
@@ -121,7 +121,7 @@ scoresAtLevel level { levels } =
         |> totalScoresDict
 
 
-scoresForWorld : WorldData -> Dict String Int
+scoresForWorld : WorldData tutorialConfig -> Dict String Int
 scoresForWorld { levels } =
     levels
         |> mapValues .tileSettings

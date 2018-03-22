@@ -1,8 +1,9 @@
 module Scenes.Hub.Types exposing (..)
 
+import Data.Background exposing (TransitionBackground)
 import Data.InfoWindow exposing (InfoWindow)
+import Data.Level.Types exposing (LevelData, Progress)
 import Data.Transit exposing (Transit)
-import Dict exposing (Dict)
 import Dom
 import Mouse
 import Scenes.Level.Types as Level exposing (..)
@@ -36,7 +37,8 @@ type Msg
     | RestartLevel
     | TransitionWithWin
     | TransitionWithLose
-    | LoadLevelData LevelData
+    | LoadTutorial Tutorial.Config
+    | LoadLevel (LevelData Tutorial.Config)
     | SetScene Scene
     | BeginSceneTransition
     | EndSceneTransition
@@ -66,47 +68,3 @@ type Scene
     | Tutorial
     | Summary
     | Retry
-
-
-type TransitionBackground
-    = Orange
-    | Blue
-
-
-type alias Progress =
-    ( WorldNumber, LevelNumber )
-
-
-type alias WorldNumber =
-    Int
-
-
-type alias LevelNumber =
-    Int
-
-
-type alias AllLevels =
-    Dict Int WorldData
-
-
-type alias WorldData =
-    { levels : WorldLevels
-    , seedType : SeedType
-    , background : String
-    , textColor : String
-    , textCompleteColor : String
-    , textBackgroundColor : String
-    }
-
-
-type alias WorldLevels =
-    Dict Int LevelData
-
-
-type alias LevelData =
-    { tileSettings : List TileSetting
-    , walls : List ( WallColor, Coord )
-    , boardDimensions : BoardDimensions
-    , tutorial : Maybe Tutorial.Config
-    , moves : Int
-    }

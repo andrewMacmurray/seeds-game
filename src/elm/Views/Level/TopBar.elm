@@ -1,17 +1,18 @@
 module Views.Level.TopBar exposing (..)
 
-import Config.Scale as ScaleConfig
 import Config.Color exposing (..)
-import Data.Level.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Config.Scale as ScaleConfig
+import Data.Board.Types exposing (..)
+import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Level.Types as Level exposing (..)
-import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
+import Scenes.Level.Types exposing (Model)
 import Views.Icons.Tick exposing (tickBackground)
+import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 
 
-topBar : Level.Model -> Html msg
+topBar : Model -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -32,7 +33,7 @@ topBar model =
         ]
 
 
-renderScore : Level.Model -> TileType -> Html msg
+renderScore : Model -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =

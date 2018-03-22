@@ -4,13 +4,13 @@ import Dict exposing (Dict)
 
 
 mapValues : (a -> b) -> Dict comparable a -> Dict comparable b
-mapValues f dict =
-    Dict.map (\_ val -> f val) dict
+mapValues f =
+    Dict.map <| always f
 
 
 filterValues : (b -> Bool) -> Dict comparable b -> Dict comparable b
-filterValues f dict =
-    Dict.filter (\_ val -> f val) dict
+filterValues f =
+    Dict.filter <| always f
 
 
 insertWith : (a -> a -> a) -> comparable -> a -> Dict comparable a -> Dict comparable a
@@ -26,6 +26,11 @@ indexedDictFrom n xs =
     xs
         |> List.indexedMap (\i x -> ( i + n, x ))
         |> Dict.fromList
+
+
+findValue : (a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
+findValue f =
+    find <| always f
 
 
 find : (comparable -> a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )

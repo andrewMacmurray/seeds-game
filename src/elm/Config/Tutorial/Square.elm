@@ -1,8 +1,8 @@
 module Config.Tutorial.Square exposing (..)
 
 import Data.Tutorial exposing (addBlock, seedBoard)
+import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
-import Scenes.Level.Types exposing (SeedType(..), TileType(..), Board, BoardDimensions)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
 

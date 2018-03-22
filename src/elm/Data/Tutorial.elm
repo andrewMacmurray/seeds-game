@@ -1,18 +1,23 @@
 module Data.Tutorial exposing (..)
 
-import Data.Level.Board.Generate exposing (makeBoard)
+import Data.Board.Generate exposing (makeBoard)
+import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
-import Scenes.Level.Types exposing (..)
 
 
 getText : Dict Int String -> Int -> String
-getText tutorialText n =
-    Dict.get n tutorialText |> Maybe.withDefault ""
+getText textDict n =
+    Dict.get n textDict |> Maybe.withDefault ""
 
 
 addBlock : Coord -> TileType -> Board -> Board
 addBlock coord tileType board =
-    board |> Dict.insert coord (Space (Static tileType))
+    board |> Dict.insert coord (staticTile tileType)
+
+
+staticTile : TileType -> Block
+staticTile =
+    Static >> Space
 
 
 sunBoard : BoardDimensions -> Board

@@ -1,6 +1,6 @@
 module Types exposing (..)
 
-import Scenes.Hub.Types exposing (Progress)
+import Data.Level.Types exposing (Progress)
 import Time exposing (Time)
 
 

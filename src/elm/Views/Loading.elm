@@ -1,7 +1,9 @@
 module Views.Loading exposing (..)
 
 import Config.Color exposing (gold, rainBlue)
-import Data.Hub.Progress exposing (currentLevelSeedType)
+import Config.Levels exposing (allLevels)
+import Data.Background exposing (..)
+import Data.Level.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -21,7 +23,10 @@ loadingScreen model =
             , transitionStyle "0.5s ease"
             ]
         ]
-        [ div [ style [ widthStyle 50 ] ] [ renderSeed <| currentLevelSeedType model ] ]
+        [ div [ style [ widthStyle 50 ] ]
+            [ renderSeed <| currentLevelSeedType allLevels model.currentLevel model.progress
+            ]
+        ]
 
 
 loadingBackground : TransitionBackground -> String

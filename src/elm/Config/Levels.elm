@@ -3,14 +3,15 @@ module Config.Levels exposing (..)
 import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
-import Data.Hub.World exposing (..)
+import Data.Board.Types exposing (..)
+import Data.Level.Settings exposing (..)
+import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
-import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
+import Scenes.Tutorial.Types as Tutorial
 import Time exposing (Time, minute)
 
 
-allLevels : AllLevels
+allLevels : AllLevels Tutorial.Config
 allLevels =
     Dict.fromList
         [ ( 1, One.world )
@@ -19,12 +20,12 @@ allLevels =
         ]
 
 
-defaultWorld : WorldData
+defaultWorld : WorldData Tutorial.Config
 defaultWorld =
     One.world
 
 
-defaultLevel : LevelData
+defaultLevel : LevelData Tutorial.Config
 defaultLevel =
     { walls = []
     , boardDimensions = { x = 8, y = 8 }

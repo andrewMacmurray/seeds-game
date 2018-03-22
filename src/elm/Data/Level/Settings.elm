@@ -1,28 +1,28 @@
-module Data.Hub.World exposing (..)
+module Data.Level.Settings exposing (..)
 
 import Helpers.Dict exposing (indexedDictFrom)
-import Scenes.Hub.Types exposing (..)
-import Scenes.Level.Types exposing (..)
+import Data.Level.Types exposing (..)
+import Data.Board.Types exposing (..)
 
 
-makeWorldLevels : List LevelData -> WorldLevels
+makeWorldLevels : List (LevelData tutorialConfig) -> WorldLevels tutorialConfig
 makeWorldLevels =
     indexedDictFrom 1
 
 
 rain : Probability -> TargetScore -> TileSetting
 rain prob targetScore =
-    TileSetting Rain prob (Just targetScore)
+    TileSetting Rain prob <| Just targetScore
 
 
 sun : Probability -> TargetScore -> TileSetting
 sun prob targetScore =
-    TileSetting Sun prob (Just targetScore)
+    TileSetting Sun prob <| Just targetScore
 
 
 seed : SeedType -> Probability -> TargetScore -> TileSetting
 seed seedType prob targetScore =
-    TileSetting (Seed seedType) prob (Just targetScore)
+    TileSetting (Seed seedType) prob <| Just targetScore
 
 
 seedPod : Probability -> TileSetting

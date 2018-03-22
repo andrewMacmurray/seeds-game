@@ -1,10 +1,11 @@
 module Views.Level.Styles exposing (..)
 
-import Config.Scale as ScaleConfig
 import Config.Color exposing (..)
-import Data.Level.Board.Block as Block exposing (getTileState)
-import Data.Level.Board.Tile exposing (..)
-import Data.Level.Score exposing (collectable, scoreTileTypes)
+import Config.Scale as ScaleConfig
+import Data.Board.Block exposing (..)
+import Data.Board.Types exposing (..)
+import Data.Board.Tile as TileState
+import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Dict exposing (Dict)
 import Helpers.Style exposing (..)
 import Scenes.Level.Types as Level exposing (..)
@@ -254,12 +255,12 @@ centerBlock =
 
 tileColorMap : Block -> List Style
 tileColorMap =
-    Block.fold (tileStyleMap tileColors) []
+    foldBlock (tileStyleMap tileColors) []
 
 
 tileSizeMap : Block -> Float
 tileSizeMap =
-    Block.fold (tileTypeMap 0 tileSize) 0
+    foldBlock (tileTypeMap 0 tileSize) 0
 
 
 strokeColors : TileType -> String
@@ -358,6 +359,6 @@ tileStyleMap =
 tileTypeMap : a -> (TileType -> a) -> TileState -> a
 tileTypeMap default fn tileState =
     tileState
-        |> getTileType_
+        |> TileState.getTileType
         |> Maybe.map fn
         |> Maybe.withDefault default
