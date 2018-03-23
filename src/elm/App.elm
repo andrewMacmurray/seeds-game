@@ -1,17 +1,16 @@
 module App exposing (main)
 
 import Html
-import Scenes.Hub.State as Hub
-import Scenes.Hub.Types exposing (Model, Msg)
-import Types exposing (Flags)
+import Types exposing (Flags, Model, Msg)
 import View exposing (view)
+import State exposing (init, update, subscriptions)
 
 
 main : Program Flags Model Msg
 main =
     Html.programWithFlags
-        { init = Hub.init
-        , update = Hub.update
+        { init = init
+        , update = update
         , view = view
-        , subscriptions = Hub.subscriptions
+        , subscriptions = subscriptions
         }

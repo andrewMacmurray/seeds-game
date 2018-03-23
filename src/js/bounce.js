@@ -1,6 +1,5 @@
 var Bounce = require('../../node_modules/bounce.js/bounce.min.js');
 
-
 function elasticBounceIn () {
   return new Bounce()
     .translate({
@@ -53,7 +52,6 @@ function bounceDowns (tileSize) {
       .getKeyframeCSS({
         name: 'bounce-down-' + i
       })
-
     anims.push(b)
   }
   return anims.join(' ')

@@ -7,11 +7,11 @@ import Data.Level.Progress exposing (currentLevelSeedType)
 import Helpers.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Hub.Types as Hub exposing (..)
+import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
-loadingScreen : Hub.Model -> Html msg
+loadingScreen : Model -> Html msg
 loadingScreen model =
     div
         [ classes
@@ -29,7 +29,7 @@ loadingScreen model =
         ]
 
 
-loadingBackground : TransitionBackground -> String
+loadingBackground : Background -> String
 loadingBackground bg =
     case bg of
         Blue ->
@@ -39,7 +39,7 @@ loadingBackground bg =
             gold
 
 
-transitionClasses : Hub.Model -> String
+transitionClasses : Model -> String
 transitionClasses model =
     if model.sceneTransition then
         "o-100"

@@ -5,7 +5,7 @@ import Helpers.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types exposing (..)
+import Types exposing (..)
 import Views.Lives exposing (livesLeft)
 
 
