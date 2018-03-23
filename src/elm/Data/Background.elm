@@ -1,21 +1,25 @@
-module Data.Background exposing (..)
+module Data.Background
+    exposing
+        ( Background(..)
+        , genRandomBackground
+        )
 
 import Random
 
 
-type TransitionBackground
+type Background
     = Orange
     | Blue
 
 
-genRandomBackground : (TransitionBackground -> msg) -> Cmd msg
+genRandomBackground : (Background -> msg) -> Cmd msg
 genRandomBackground msg =
     Random.int 1 10
         |> Random.map backgroundEnum
         |> Random.generate msg
 
 
-backgroundEnum : Int -> TransitionBackground
+backgroundEnum : Int -> Background
 backgroundEnum n =
     if n > 5 then
         Orange

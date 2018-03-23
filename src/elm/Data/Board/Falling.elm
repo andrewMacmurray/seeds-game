@@ -1,4 +1,7 @@
-module Data.Board.Falling exposing (..)
+module Data.Board.Falling
+    exposing
+        ( setFallingTiles
+        )
 
 import Dict
 import Data.Board.Types exposing (..)

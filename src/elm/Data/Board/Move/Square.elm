@@ -1,4 +1,10 @@
-module Data.Board.Move.Square exposing (..)
+module Data.Board.Move.Square
+    exposing
+        ( triggerMoveIfSquare
+        , hasSquareTile
+        , isValidSquare
+        , setAllTilesOfTypeToDragging
+        )
 
 import Data.Board.Block exposing (getTileType, moveOrder, setToDragging)
 import Data.Board.Move.Bearing exposing (validDirection)

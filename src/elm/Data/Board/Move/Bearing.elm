@@ -1,4 +1,8 @@
-module Data.Board.Move.Bearing exposing (..)
+module Data.Board.Move.Bearing
+    exposing
+        ( addBearings
+        , validDirection
+        )
 
 import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
 import Data.Board.Moves exposing (lastMove)

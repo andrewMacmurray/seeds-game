@@ -1,4 +1,13 @@
-module Data.Board.Score exposing (..)
+module Data.Board.Score
+    exposing
+        ( addScoreFromMoves
+        , collectable
+        , scoreTileTypes
+        , scoreToString
+        , getScoreFor
+        , levelComplete
+        , initialScores
+        )
 
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Types exposing (..)
