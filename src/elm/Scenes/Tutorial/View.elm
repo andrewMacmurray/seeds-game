@@ -6,7 +6,8 @@ import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -86,7 +87,7 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
         div
             [ style
                 [ transitionStyle "0.8s ease"
-                , transformStyle <| translate offsetX offsetY
+                , transformStyle [ translate offsetX offsetY ]
                 ]
             , classList <| showIf resourceBankVisible
             ]
@@ -136,7 +137,7 @@ leavingStyles model (( _, block ) as move) =
     in
         case tileState of
             Leaving _ order ->
-                [ transformStyle <| translate (resourceBankOffsetX model) -100
+                [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
                 , transitionStyle "0.5s ease"
                 , transitionDelayStyle <| (order % 5) * 80
                 ]

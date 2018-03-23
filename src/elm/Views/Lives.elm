@@ -1,7 +1,8 @@
 module Views.Lives exposing (..)
 
 import Data.Transit as Transit exposing (Transit)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (scale, transformStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Views.Icons.Heart exposing (..)
@@ -39,7 +40,7 @@ life ( active, currentLife, breaking, lifeState ) =
             if active then
                 emptyStyle
             else
-                transformStyle <| scale 1.11
+                transformStyle [ scale 1.11 ]
     in
         div
             [ style

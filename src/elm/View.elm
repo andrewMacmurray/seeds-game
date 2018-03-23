@@ -2,7 +2,7 @@ module View exposing (..)
 
 import Config.Color exposing (darkYellow)
 import Helpers.Animation exposing (embeddedAnimations)
-import Helpers.Style exposing (color)
+import Helpers.Css.Style exposing (color)
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)

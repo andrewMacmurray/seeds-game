@@ -1,6 +1,6 @@
 module Views.Icons.RainBank exposing (..)
 
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (Html)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)

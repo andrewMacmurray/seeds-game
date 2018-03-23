@@ -2,7 +2,8 @@ module Scenes.Hub.View exposing (..)
 
 import Config.Color exposing (darkYellow, pinkRed, washedYellow)
 import Date exposing (minute, second)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Time exposing (Time)
@@ -32,7 +33,7 @@ hubTopBar model =
         [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         , style [ background washedYellow ]
         ]
-        [ div [ style [ transformStyle <| scale 0.5 ] ] <| livesLeft model.lives
+        [ div [ style [ transformStyle [ scale 0.5 ] ] ] <| livesLeft model.lives
         , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
         ]
 

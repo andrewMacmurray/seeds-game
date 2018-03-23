@@ -2,7 +2,7 @@ module Views.InfoWindow exposing (..)
 
 import Config.Color exposing (..)
 import Data.InfoWindow exposing (..)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 

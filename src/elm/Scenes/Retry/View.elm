@@ -1,7 +1,8 @@
 module Scenes.Retry.View exposing (..)
 
 import Config.Color exposing (..)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -34,7 +35,7 @@ retryView model =
             , div
                 [ style
                     [ animationStyle "1.5s bounce-up 3s linear forwards"
-                    , transformStyle <| translateY <| model.window.height + 100
+                    , transformStyle [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
                 [ tryAgain model ]

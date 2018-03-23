@@ -1,7 +1,7 @@
 module Scenes.Title.View exposing (..)
 
 import Config.Color exposing (..)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)

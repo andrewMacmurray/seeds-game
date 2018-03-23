@@ -1,10 +1,17 @@
 module Helpers.Animation exposing (..)
 
 import Formatting exposing ((<>), print)
-import Helpers.Style exposing (keyframesAnimation, opacity_, scale_, step, step_, transform_, translateY_)
+import Helpers.Css.Format exposing (transformInline_, scale_, opacity_, translateY_)
+import Helpers.Css.Style exposing (keyframesAnimation, step)
 import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode as Encode
+
+
+type alias KeyframesAnimation a =
+    { name : String
+    , frames : List a
+    }
 
 
 embeddedAnimations : String -> Html msg
@@ -23,51 +30,71 @@ encodedAnimations animations =
 
 internalAnimations : String
 internalAnimations =
-    [ bulge
-    , bulgeFade
-    , exitDown
-    ]
-        |> String.join " "
+    String.join " "
+        [ bulge
+        , bulgeFade
+        , exitDown
+        ]
 
 
 exitDown : String
 exitDown =
-    [ ( 0, 0, 1 )
-    , ( 100, 300, 0 )
-    ]
-        |> List.map (\( step, y, opacity ) -> stepTranslateYFade step y opacity)
-        |> keyframesAnimation "exit-down"
+    map3 stepTranslateYFade
+        { name = "exit-down"
+        , frames =
+            [ ( 0, 0, 1 )
+            , ( 100, 300, 0 )
+            ]
+        }
 
 
 bulgeFade : String
 bulgeFade =
-    [ ( 0, 1, 1 )
-    , ( 100, 2.5, 0 )
-    ]
-        |> List.map (\( step, scale, opacity ) -> stepScaleFade step scale opacity)
-        |> keyframesAnimation "bulge-fade"
+    map3 stepScaleFade
+        { name = "bulge-fade"
+        , frames =
+            [ ( 0, 1, 1 )
+            , ( 100, 2.5, 0 )
+            ]
+        }
 
 
 bulge : String
 bulge =
-    [ ( 0, 0.5 )
-    , ( 50, 1.3 )
-    , ( 100, 1 )
-    ]
-        |> List.map (uncurry stepScale)
-        |> keyframesAnimation "bulge"
+    map2 stepScale
+        { name = "bulge"
+        , frames =
+            [ ( 0, 0.5 )
+            , ( 50, 1.3 )
+            , ( 100, 1 )
+            ]
+        }
+
+
+map2 : (a -> b -> String) -> KeyframesAnimation ( a, b ) -> String
+map2 f { frames, name } =
+    frames
+        |> List.map (uncurry f)
+        |> keyframesAnimation name
+
+
+map3 : (a -> b -> c -> String) -> KeyframesAnimation ( a, b, c ) -> String
+map3 f { frames, name } =
+    frames
+        |> List.map (\( a, b, c ) -> f a b c)
+        |> keyframesAnimation name
 
 
 stepTranslateYFade : Int -> number -> number -> String
 stepTranslateYFade =
-    step <| (transform_ translateY_) <> opacity_
+    step <| (transformInline_ translateY_) <> opacity_
 
 
 stepScaleFade : Int -> number -> number -> String
 stepScaleFade =
-    step <| (transform_ scale_) <> opacity_
+    step <| (transformInline_ scale_) <> opacity_
 
 
 stepScale : Int -> number -> String
 stepScale =
-    step <| transform_ scale_
+    step <| transformInline_ scale_

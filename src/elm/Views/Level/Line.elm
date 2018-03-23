@@ -3,8 +3,8 @@ module Views.Level.Line exposing (..)
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
-import Formatting exposing ((<>), print, s)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -65,31 +65,21 @@ line_ window tileType bearing =
 transformMap : Window.Size -> MoveBearing -> String
 transformMap window bearing =
     let
-        tileScale =
-            tileScaleFactor window
+        xOffset =
+            tileScaleFactor window * 25
     in
         case bearing of
             Left ->
-                translate (-25 * tileScale) 1.5
+                transformSvg [ translate -xOffset 1.5 ]
 
             Right ->
-                translate (25 * tileScale) 1.5
+                transformSvg [ translate xOffset 1.5 ]
 
             Up ->
-                rotateTranslate 90 (-25 * tileScale) 1.5
+                transformSvg [ rotateZ 90, translate -xOffset 1.5 ]
 
             Down ->
-                rotateTranslate 90 (25 * tileScale) 1.5
+                transformSvg [ rotateZ 90, translate xOffset 1.5 ]
 
             _ ->
                 ""
-
-
-rotateTranslate : number -> number -> number -> String
-rotateTranslate =
-    transform_ (rotateZ_ <> translate_) |> print
-
-
-translate : number -> number -> String
-translate =
-    transform_ translate_ |> print

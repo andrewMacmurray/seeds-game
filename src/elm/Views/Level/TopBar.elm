@@ -2,9 +2,10 @@ module Views.Level.TopBar exposing (..)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Board.Types exposing (..)
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
-import Helpers.Style exposing (..)
+import Data.Board.Types exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types exposing (Model)
@@ -104,7 +105,7 @@ tickFadeIn tileType scores =
         [ div
             [ style
                 [ topStyle 1
-                , transformStyle <| scale 0
+                , transformStyle [ scale 0 ]
                 , animationStyle "bulge 0.6s ease"
                 , fillForwards
                 , animationDelayStyle 800

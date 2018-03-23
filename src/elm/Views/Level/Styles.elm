@@ -3,11 +3,12 @@ module Views.Level.Styles exposing (..)
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Block exposing (..)
-import Data.Board.Types exposing (..)
-import Data.Board.Tile as TileState
 import Data.Board.Score exposing (collectable, scoreTileTypes)
+import Data.Board.Tile as TileState
+import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -48,7 +49,7 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-        [ transformStyle <| translate x y ]
+        [ transformStyle [ translate x y ] ]
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
@@ -94,7 +95,7 @@ growingStyles : Move -> List Style
 growingStyles ( coord, block ) =
     case getTileState block of
         Growing SeedPod _ ->
-            [ transformStyle <| scale 4
+            [ transformStyle [ scale 4 ]
             , transitionStyle "0.4s ease"
             , opacityStyle 0
             , transitionDelayStyle <| growingOrder block % 5 * 70
@@ -153,11 +154,10 @@ getLeavingStyle : TileType -> Level.Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (toString tileType)
-        |> Maybe.withDefault ""
-        |> transformStyle
+        |> Maybe.withDefault emptyStyle
 
 
-newLeavingStyles : Level.Model -> Dict String String
+newLeavingStyles : Level.Model -> Dict String Style
 newLeavingStyles model =
     model.tileSettings
         |> scoreTileTypes
@@ -165,10 +165,13 @@ newLeavingStyles model =
         |> Dict.fromList
 
 
-prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, String )
+prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
     ( toString tileType
-    , translateScale (exitXDistance i model) -(exitYdistance model) 0.5
+    , transformStyle
+        [ translate (exitXDistance i model) -(exitYdistance model)
+        , scale 0.5
+        ]
     )
 
 
@@ -198,9 +201,9 @@ exitOffsetFunction x =
     25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
 
 
-exitYdistance : Level.Model -> Int
+exitYdistance : Level.Model -> Float
 exitYdistance model =
-    (boardOffsetTop model) - 9
+    toFloat (boardOffsetTop model) - 9
 
 
 moveTracerStyles : Move -> List Style
@@ -223,7 +226,7 @@ draggingStyles moveShape ( _, tileState ) =
         [ transitionStyle "0.1s ease"
         ]
     else if isDragging tileState then
-        [ transformStyle <| scale 0.8
+        [ transformStyle [ scale 0.8 ]
         , transitionStyle "0.3s ease"
         ]
     else

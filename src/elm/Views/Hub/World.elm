@@ -7,7 +7,7 @@ import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLeve
 import Data.Level.Types exposing (..)
 import Dict
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
