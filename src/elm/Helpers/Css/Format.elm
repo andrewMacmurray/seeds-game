@@ -42,30 +42,6 @@ transformInline_ formatter =
 
 
 
--- Animation
-
-
-keyframesAnimation_ : Format r (String -> List String -> r)
-keyframesAnimation_ =
-    s "@keyframes " <> string <> s " { " <> joinStrings_ <> s " }"
-
-
-joinStrings_ : Format r (List String -> r)
-joinStrings_ =
-    premap (String.join " ") string
-
-
-step_ : Format r a -> Format r (Int -> a)
-step_ formatter =
-    int <> s "% { " <> formatter <> s "; }"
-
-
-cubicBezier_ : Format r (number -> number -> number -> number -> r)
-cubicBezier_ =
-    s "cubic-bezier(" <> number <> s "," <> number <> s "," <> number <> s "," <> number <> s ")"
-
-
-
 -- Units
 
 
@@ -106,3 +82,8 @@ linearGradient_ =
 opacity_ : Format r (number -> r)
 opacity_ =
     s "opacity: " <> number <> s ";"
+
+
+cubicBezier_ : Format r (number -> number -> number -> number -> r)
+cubicBezier_ =
+    s "cubic-bezier(" <> number <> s "," <> number <> s "," <> number <> s "," <> number <> s ")"

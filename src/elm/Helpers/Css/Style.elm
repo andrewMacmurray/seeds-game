@@ -194,15 +194,3 @@ linearGradient =
 svgTranslate : number -> number -> String
 svgTranslate =
     print svgTranslate_
-
-
-keyframesAnimation : String -> List String -> String
-keyframesAnimation =
-    print keyframesAnimation_
-
-
-step : Format String a -> Int -> a
-step formatter =
-    formatter
-        |> step_
-        |> print
