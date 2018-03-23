@@ -2,6 +2,7 @@ module Views.InfoWindow exposing (..)
 
 import Config.Color exposing (..)
 import Data.InfoWindow exposing (..)
+import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -20,7 +21,11 @@ infoContainer infoWindow content =
                     , style
                         [ background seedPodGradient
                         , color white
-                        , animationStyle "elastic-bounce-in 2s linear"
+                        , animationStyle
+                            { name = "elastic-bounce-in"
+                            , duration = 2000
+                            , timing = Linear
+                            }
                         , widthStyle 380
                         ]
                     ]
@@ -35,8 +40,11 @@ infoContainer infoWindow content =
                         [ background seedPodGradient
                         , color white
                         , widthStyle 380
-                        , animationStyle "exit-down 0.7s cubic-bezier(0.93, -0.36, 0.57, 0.96)"
-                        , fillForwards
+                        , animationStyle
+                            { name = "exit-down"
+                            , duration = 700
+                            , timing = CubicBezier 0.93 -0.36 0.57 0.96
+                            }
                         ]
                     ]
                     [ content ]

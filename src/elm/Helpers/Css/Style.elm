@@ -156,26 +156,6 @@ transitionDelayStyle delay =
     ( "transition-delay", ms delay )
 
 
-animationStyle : String -> Style
-animationStyle =
-    (,) "animation"
-
-
-animationDelayStyle : number -> Style
-animationDelayStyle delay =
-    ( "animation-delay", ms delay )
-
-
-fillForwards : Style
-fillForwards =
-    fillModeStyle "forwards"
-
-
-fillModeStyle : String -> Style
-fillModeStyle =
-    (,) "animation-fill-mode"
-
-
 opacityStyle : number -> Style
 opacityStyle number =
     ( "opacity", toString number )

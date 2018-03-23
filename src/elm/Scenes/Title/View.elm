@@ -1,6 +1,7 @@
 module Scenes.Title.View exposing (..)
 
 import Config.Color exposing (..)
+import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -78,7 +79,12 @@ fadeSeeds delay seed =
 fadeStyles : Float -> Float -> List Style
 fadeStyles duration delay =
     [ opacityStyle 0
-    , animationStyle <| ms duration ++ " fade-in linear"
-    , fillForwards
-    , animationDelayStyle delay
+    , animationWithOptionsStyle
+        { name = "fade-in"
+        , duration = duration
+        , delay = Just delay
+        , timing = Linear
+        , fill = Forwards
+        , iteration = Nothing
+        }
     ]

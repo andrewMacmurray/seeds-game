@@ -1,6 +1,7 @@
 module Views.Lives exposing (..)
 
 import Data.Transit as Transit exposing (Transit)
+import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform exposing (scale, transformStyle)
 import Html exposing (..)
@@ -24,7 +25,14 @@ life ( active, currentLife, breaking, lifeState ) =
     let
         animation =
             if currentLife then
-                animationStyle "heartbeat 1s infinite"
+                animationWithOptionsStyle
+                    { name = "heartbeat"
+                    , duration = 1000
+                    , iteration = Just Infinite
+                    , timing = Ease
+                    , delay = Nothing
+                    , fill = Forwards
+                    }
             else
                 emptyStyle
 

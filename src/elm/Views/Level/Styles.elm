@@ -7,6 +7,7 @@ import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as TileState
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
+import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Scenes.Level.Types as Level exposing (..)
@@ -84,7 +85,11 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            [ animationStyle "bounce-down 1s linear"
+            [ animationStyle
+                { name = "bounce-down"
+                , duration = 1000
+                , timing = Ease
+                }
             ]
 
         _ ->
@@ -103,7 +108,11 @@ growingStyles ( coord, block ) =
             ]
 
         Growing (Seed _) _ ->
-            [ animationStyle "bulge 0.5s ease"
+            [ animationStyle
+                { name = "bulge"
+                , duration = 500
+                , timing = Ease
+                }
             ]
 
         _ ->
@@ -114,8 +123,11 @@ fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
-            [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
-            , fillForwards
+            [ animationStyle
+                { name = "bounce-down-" ++ toString distance
+                , duration = 900
+                , timing = Linear
+                }
             ]
 
         _ ->
@@ -209,8 +221,11 @@ exitYdistance model =
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        [ animationStyle "bulge-fade 0.8s ease"
-        , fillForwards
+        [ animationStyle
+            { name = "bulge-fade"
+            , duration = 800
+            , timing = Ease
+            }
         ]
     else
         [ displayStyle "none"

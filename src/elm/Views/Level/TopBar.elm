@@ -4,6 +4,7 @@ import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
+import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
@@ -106,17 +107,21 @@ tickFadeIn tileType scores =
             [ style
                 [ topStyle 1
                 , transformStyle [ scale 0 ]
-                , animationStyle "bulge 0.6s ease"
-                , fillForwards
-                , animationDelayStyle 800
+                , animationWithOptionsStyle
+                    { name = "bulge"
+                    , duration = 600
+                    , delay = Just 800
+                    , timing = Ease
+                    , fill = Forwards
+                    , iteration = Nothing
+                    }
                 ]
             , class "absolute top-0 left-0 right-0"
             ]
             [ tickBackground ]
         , div
             [ style
-                [ animationStyle "fade-out 0.5s linear"
-                , fillForwards
+                [ animationStyle { name = "fade-out", duration = 500, timing = Ease }
                 , opacityStyle 1
                 ]
             ]

@@ -55,6 +55,11 @@ step_ formatter =
     int <> s "% { " <> formatter <> s "; }"
 
 
+cubicBezier_ : Format r (number -> number -> number -> number -> r)
+cubicBezier_ =
+    s "cubic-bezier(" <> number <> s "," <> number <> s "," <> number <> s "," <> number <> s ")"
+
+
 
 -- Units
 
