@@ -1,30 +1,234 @@
-module Helpers.Css.Keyframes exposing (..)
+module Helpers.Css.Keyframes
+    exposing
+        ( KeyframesAnimation
+        , KeyframeProp
+        , Frames
+        , color
+        , backgroundColor
+        , translateY
+        , translateX
+        , rotateZ
+        , scale
+        , opacity
+        , map
+        , map2
+        , map3
+        , embed
+        )
 
-import Helpers.Css.Style exposing (keyframesAnimation)
+import Helpers.Css.Style exposing (pc)
+import Helpers.Css.Transform as Transform exposing (Transform, fromTransform)
+import Html exposing (node, Html)
+import Html.Attributes exposing (property)
+import Json.Encode
 
 
-type alias KeyframesAnimation a =
+{-
+    -- example usage
+
+    bulgeSpinFade : String
+    bulgeSpinFade =
+        render
+            { name = "bulge-spin-fade"
+            , frames =
+                map3 ( scale, rotateZ, opacity )
+                    [ ( 0, ( 1, 0, 1 ) )
+                    , ( 100, ( 2.5, 90, 0 ) )
+                    ]
+            }
+
+   -- @keyframes bulge-spin-fade {
+   --   0% { transform: scale(1) rotateZ(0deg); opacity: 1 }
+   --   100% { transform: scale(2.5) rotateZ(90deg); opacity: 0 }
+   -- }
+-}
+
+
+type alias KeyframesAnimation =
     { name : String
-    , frames : List a
+    , frames : Frames
     }
 
 
-map : (a -> String) -> KeyframesAnimation a -> String
-map f { frames, name } =
+type Frames
+    = Frames (List ( Int, List KeyframeProp ))
+
+
+type KeyframeProp
+    = OpacityKey Float
+    | ColorKey String
+    | BackgroundColorKey String
+    | TransformKey Transform
+
+
+
+-- embeds animations in a style html element
+
+
+embed : List KeyframesAnimation -> Html msg
+embed animations =
+    let
+        r =
+            animations
+                |> List.map render
+                |> String.join " "
+                |> Json.Encode.string
+    in
+        node "style" [ property "textContent" r ] []
+
+
+
+-- Functions for embedding plain values into KeyframeProps
+-- Used in conjunction with map, map2, map3
+
+
+backgroundColor : String -> KeyframeProp
+backgroundColor =
+    BackgroundColorKey
+
+
+color : String -> KeyframeProp
+color =
+    ColorKey
+
+
+translateX : Float -> KeyframeProp
+translateX =
+    TransformKey << Transform.translateX
+
+
+translateY : Float -> KeyframeProp
+translateY =
+    TransformKey << Transform.translateY
+
+
+rotateZ : Float -> KeyframeProp
+rotateZ =
+    TransformKey << Transform.rotateZ
+
+
+scale : Float -> KeyframeProp
+scale =
+    TransformKey << Transform.scale
+
+
+opacity : Float -> KeyframeProp
+opacity =
+    OpacityKey
+
+
+
+-- Used to generate Opaque Frames to be rendered
+-- Each maps a corresponding keyframe props to plain values
+
+
+map3 :
+    ( a -> KeyframeProp, b -> KeyframeProp, c -> KeyframeProp )
+    -> List ( Int, ( a, b, c ) )
+    -> Frames
+map3 ( fa, fb, fc ) =
+    Frames << List.map (\( step, ( a, b, c ) ) -> ( step, [ fa a, fb b, fc c ] ))
+
+
+map2 :
+    ( a -> KeyframeProp, b -> KeyframeProp )
+    -> List ( Int, ( a, b ) )
+    -> Frames
+map2 ( fa, fb ) =
+    Frames << List.map (\( step, ( a, b ) ) -> ( step, [ fa a, fb b ] ))
+
+
+map : (a -> KeyframeProp) -> List ( Int, a ) -> Frames
+map f =
+    Frames << List.map (\( step, a ) -> ( step, [ f a ] ))
+
+
+
+-- Function to render KeyframeAnimation with a name and a collection of steps
+
+
+render : KeyframesAnimation -> String
+render kf =
+    String.join " "
+        [ "@keyframes", kf.name, "{", renderSteps kf.frames, "}" ]
+
+
+renderSteps : Frames -> String
+renderSteps (Frames frames) =
     frames
-        |> List.map f
-        |> keyframesAnimation name
+        |> List.map renderStep
+        |> String.join " "
 
 
-map2 : (a -> b -> String) -> KeyframesAnimation ( a, b ) -> String
-map2 f { frames, name } =
-    frames
-        |> List.map (uncurry f)
-        |> keyframesAnimation name
+renderStep : ( Int, List KeyframeProp ) -> String
+renderStep ( step, props ) =
+    String.join " "
+        [ pc step, "{", renderProps props, "}" ]
 
 
-map3 : (a -> b -> c -> String) -> KeyframesAnimation ( a, b, c ) -> String
-map3 f { frames, name } =
-    frames
-        |> List.map (\( a, b, c ) -> f a b c)
-        |> keyframesAnimation name
+renderProps : List KeyframeProp -> String
+renderProps props =
+    props
+        |> List.partition isTransform
+        |> combineProps
+        |> String.join "; "
+
+
+combineProps : ( List KeyframeProp, List KeyframeProp ) -> List String
+combineProps ( transforms, props ) =
+    let
+        renderedProps =
+            List.map renderProp props
+    in
+        transforms
+            |> combineTransforms
+            |> Maybe.map (\transform -> transform :: renderedProps)
+            |> Maybe.withDefault renderedProps
+
+
+combineTransforms : List KeyframeProp -> Maybe String
+combineTransforms transforms =
+    if List.isEmpty transforms then
+        Nothing
+    else
+        transforms
+            |> List.map renderTransform
+            |> String.join " "
+            |> (++) "transform: "
+            |> Just
+
+
+renderProp : KeyframeProp -> String
+renderProp prop =
+    case prop of
+        OpacityKey n ->
+            "opacity: " ++ toString n
+
+        ColorKey c ->
+            "color: " ++ c
+
+        BackgroundColorKey c ->
+            "background-color: " ++ c
+
+        _ ->
+            ""
+
+
+renderTransform : KeyframeProp -> String
+renderTransform prop =
+    case prop of
+        TransformKey t ->
+            fromTransform t
+
+        _ ->
+            ""
+
+
+isTransform : KeyframeProp -> Bool
+isTransform prop =
+    case prop of
+        TransformKey _ ->
+            True
+
+        _ ->
+            False

@@ -6,18 +6,23 @@ module Helpers.Css.Transform
         , transform
         , scale
         , translate
+        , translateX
+        , translateY
         , rotateX
         , rotateY
         , rotateZ
+        , fromTransform
         )
 
 import Formatting exposing (print)
-import Helpers.Css.Format exposing (rotate_, translate_, scale_)
+import Helpers.Css.Format exposing (rotate_, translate_, translateY_, translateX_, scale_)
 import Helpers.Css.Style exposing (Style)
 
 
 type Transform
     = Translate XY
+    | TranslateX Float
+    | TranslateY Float
     | Scale Float
     | RotateX Float
     | RotateY Float
@@ -68,6 +73,16 @@ translate x y =
     Translate <| XY x y
 
 
+translateX : Float -> Transform
+translateX =
+    TranslateX
+
+
+translateY : Float -> Transform
+translateY =
+    TranslateY
+
+
 rotateX : Float -> Transform
 rotateX =
     RotateX
@@ -100,3 +115,9 @@ fromTransform ts =
 
         Translate { x, y } ->
             print translate_ x y
+
+        TranslateX n ->
+            print translateX_ n
+
+        TranslateY n ->
+            print translateY_ n

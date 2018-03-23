@@ -16,6 +16,11 @@ translate_ =
     s "translate(" <> px_ <> s ", " <> px_ <> s ")"
 
 
+translateX_ : Format r (number -> r)
+translateX_ =
+    s "translateX(" <> px_ <> s ")"
+
+
 translateY_ : Format r (number -> r)
 translateY_ =
     s "translateY(" <> px_ <> s ")"
