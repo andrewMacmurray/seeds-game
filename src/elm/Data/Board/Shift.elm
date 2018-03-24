@@ -1,4 +1,9 @@
-module Data.Board.Shift exposing (..)
+module Data.Board.Shift
+    exposing
+        ( shiftBoard
+        , groupBoardByColumn
+        , yCoord
+        )
 
 import List.Extra
 import Dict

@@ -177,7 +177,7 @@ handleDragTile : Coord -> Model -> Model
 handleDragTile coord model =
     let
         sunflower =
-            Seed Sunflower |> Static |> Space
+            Space <| Static <| Seed Sunflower
 
         tile =
             Dict.get coord model.board |> Maybe.withDefault sunflower

@@ -1,4 +1,13 @@
-module Data.Board.Moves exposing (..)
+module Data.Board.Moves
+    exposing
+        ( currentMoves
+        , lastMove
+        , moveShape
+        , sameTileType
+        , currentMoveTileType
+        , isUniqueMove
+        , emptyMove
+        )
 
 import Dict
 import Data.Board.Types exposing (..)

@@ -1,7 +1,7 @@
 module Views.Backdrop exposing (backdrop)
 
 import Config.Color exposing (lightYellow)
-import Helpers.Style exposing (backgroundColor)
+import Helpers.Css.Style exposing (backgroundColor)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 

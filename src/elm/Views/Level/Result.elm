@@ -1,4 +1,4 @@
-module Views.Level.InfoWindow exposing (..)
+module Views.Level.Result exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

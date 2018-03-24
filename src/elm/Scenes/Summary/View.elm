@@ -5,10 +5,12 @@ import Config.Levels exposing (allLevels)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
 import Data.Level.Types exposing (Progress)
-import Helpers.Style exposing (..)
+import Helpers.Css.Animation exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Hub.Types exposing (..)
+import Types exposing (..)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank)
@@ -28,7 +30,11 @@ summaryView ({ progress, currentLevel } as model) =
             , style
                 [ heightStyle model.window.height
                 , background washedYellow
-                , animationStyle "fade-in 1s linear"
+                , animationStyle
+                    { name = "fade-in"
+                    , duration = 1000
+                    , timing = Linear
+                    }
                 ]
             ]
             [ div [ style [ ( "margin-top", pc -3 ) ] ]

@@ -1,4 +1,9 @@
-module Data.Level.Summary exposing (..)
+module Data.Level.Summary
+    exposing
+        ( percentComplete
+        , primarySeedType
+        , secondaryResourceTypes
+        )
 
 import Config.Levels exposing (allLevels)
 import Data.Board.Tile exposing (getSeedType)

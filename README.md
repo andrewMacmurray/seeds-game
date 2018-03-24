@@ -1,6 +1,6 @@
 # Seeds Game
 
-A connect the dots game with seeds: http://seedsgame.com
+A connect the dots game with seeds: https://www.seedsgame.com
 
 Heavily inspired by the fantastic [Two Dots](https://www.dots.co/twodots/)
 

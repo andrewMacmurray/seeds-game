@@ -1,4 +1,12 @@
-module Data.Board.Generate exposing (..)
+module Data.Board.Generate
+    exposing
+        ( insertNewSeeds
+        , generateInitialTiles
+        , insertNewEnteringTiles
+        , makeBoard
+        , generateRandomSeedType
+        , generateEnteringTiles
+        )
 
 import Dict
 import Data.Board.Types exposing (..)

@@ -1,10 +1,15 @@
 module Helpers.Html exposing (..)
 
-import Html exposing (Attribute)
+import Html exposing (Attribute, Html, node)
 import Html.Attributes exposing (property)
 import Html.Events exposing (onWithOptions)
-import Json.Encode exposing (string)
 import Json.Decode exposing (succeed)
+import Json.Encode exposing (string)
+
+
+embeddedStyle : String -> Html msg
+embeddedStyle styleStr =
+    node "style" [ property "textContent" <| string styleStr ] []
 
 
 onMouseDownPreventDefault : msg -> Attribute msg

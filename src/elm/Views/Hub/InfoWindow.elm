@@ -8,19 +8,19 @@ import Data.InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.State exposing (getLevelConfig)
-import Scenes.Hub.Types as Hub exposing (..)
+import State exposing (getLevelConfig)
+import Types exposing (Model, Msg(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
 
 
-info : Hub.Model -> Html Hub.Msg
+info : Model -> Html Msg
 info model =
-    case model.infoWindow of
+    case model.levelInfoWindow of
         Hidden ->
             span [] []
 
@@ -29,7 +29,7 @@ info model =
                 content =
                     getLevelConfig progress |> infoContent progress
             in
-                infoContainer model.infoWindow <|
+                infoContainer model.levelInfoWindow <|
                     div [ onClick <| StartLevel progress ] content
 
         Hiding progress ->
@@ -37,7 +37,7 @@ info model =
                 content =
                     getLevelConfig progress |> infoContent progress
             in
-                infoContainer model.infoWindow <|
+                infoContainer model.levelInfoWindow <|
                     div [] content
 
 
@@ -124,9 +124,9 @@ renderWeather color =
         []
 
 
-handleHideInfo : Hub.Model -> Attribute Hub.Msg
+handleHideInfo : Model -> Attribute Msg
 handleHideInfo model =
-    case model.infoWindow of
+    case model.levelInfoWindow of
         Visible _ ->
             onClick HideInfo
 

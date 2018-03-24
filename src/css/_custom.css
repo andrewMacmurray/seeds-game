@@ -52,29 +52,3 @@ div {
 .f7 {
   font-size: var(--font-size-7);
 }
-
-@keyframes fade-in {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes fade-out {
-  0%   { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@keyframes heartbeat {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-
-@keyframes heart-break-left {
-  0% { transform: translateX(0px) rotateZ(0deg); }
-  100% { transform: translateX(-3px) rotateZ(-2deg); }
-}
-
-@keyframes heart-break-right {
-  0% { transform: translateX(0px) rotateZ(0deg); }
-  100% { transform: translateX(3px) rotateZ(2deg); }
-}

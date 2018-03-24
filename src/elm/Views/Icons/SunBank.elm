@@ -1,6 +1,6 @@
 module Views.Icons.SunBank exposing (..)
 
-import Helpers.Style exposing (svgTranslate)
+import Helpers.Css.Style exposing (svgTranslate)
 import Html exposing (Html)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)

@@ -1,6 +1,6 @@
 module Config.Color exposing (..)
 
-import Helpers.Style exposing (deg, gradientStop, linearGradient, pc)
+import Helpers.Css.Style exposing (deg, gradientStop, linearGradient, pc)
 
 
 seedPodGradient : String

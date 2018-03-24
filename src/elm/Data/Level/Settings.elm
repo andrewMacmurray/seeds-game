@@ -1,4 +1,11 @@
-module Data.Level.Settings exposing (..)
+module Data.Level.Settings
+    exposing
+        ( makeWorldLevels
+        , rain
+        , sun
+        , seed
+        , seedPod
+        )
 
 import Helpers.Dict exposing (indexedDictFrom)
 import Data.Level.Types exposing (..)

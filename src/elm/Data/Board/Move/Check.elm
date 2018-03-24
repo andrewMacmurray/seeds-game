@@ -1,4 +1,8 @@
-module Data.Board.Move.Check exposing (..)
+module Data.Board.Move.Check
+    exposing
+        ( addToMove
+        , startMove
+        )
 
 import Data.Board.Block exposing (setStaticToFirstMove)
 import Data.Board.Moves exposing (isUniqueMove, lastMove, sameTileType)

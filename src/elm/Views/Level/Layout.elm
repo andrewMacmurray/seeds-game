@@ -3,7 +3,7 @@ module Views.Level.Layout exposing (..)
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
 import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onMouseEnter, onMouseUp)

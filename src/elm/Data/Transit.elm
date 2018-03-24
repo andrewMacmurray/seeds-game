@@ -4,15 +4,15 @@ module Data.Transit exposing (..)
 
 
 type Transit a
-    = Stationary a
+    = Static a
     | Transitioning a
 
 
 map : (a -> b) -> Transit a -> Transit b
 map f transit =
     case transit of
-        Stationary a ->
-            Stationary <| f a
+        Static a ->
+            Static <| f a
 
         Transitioning a ->
             Transitioning <| f a
@@ -21,27 +21,27 @@ map f transit =
 val : Transit a -> a
 val transit =
     case transit of
-        Stationary a ->
+        Static a ->
             a
 
         Transitioning a ->
             a
 
 
-toStationary : Transit a -> Transit a
-toStationary transit =
+toStatic : Transit a -> Transit a
+toStatic transit =
     case transit of
-        Stationary a ->
-            Stationary a
+        Static a ->
+            Static a
 
         Transitioning a ->
-            Stationary a
+            Static a
 
 
 toTransitioning : Transit a -> Transit a
 toTransitioning transit =
     case transit of
-        Stationary a ->
+        Static a ->
             Transitioning a
 
         Transitioning a ->

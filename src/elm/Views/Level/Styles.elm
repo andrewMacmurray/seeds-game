@@ -3,11 +3,15 @@ module Views.Level.Styles exposing (..)
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Block exposing (..)
-import Data.Board.Types exposing (..)
-import Data.Board.Tile as TileState
 import Data.Board.Score exposing (collectable, scoreTileTypes)
+import Data.Board.Tile as TileState
+import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
-import Helpers.Style exposing (..)
+import Helpers.Css.Animation exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
+import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Transition exposing (easeAll, transitionStyle)
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -48,7 +52,7 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-        [ transformStyle <| translate x y ]
+        [ transformStyle [ translate x y ] ]
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
@@ -83,8 +87,7 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            [ animationStyle "bounce-down 1s linear"
-            ]
+            [ animateEase "bounce-down" 1000 ]
 
         _ ->
             []
@@ -94,16 +97,19 @@ growingStyles : Move -> List Style
 growingStyles ( coord, block ) =
     case getTileState block of
         Growing SeedPod _ ->
-            [ transformStyle <| scale 4
-            , transitionStyle "0.4s ease"
+            [ transformStyle [ scale 4 ]
+            , transitionStyle
+                { property = "all"
+                , duration = 400
+                , timing = Ease
+                , delay = Just <| toFloat <| growingOrder block % 5 * 70
+                }
             , opacityStyle 0
-            , transitionDelayStyle <| growingOrder block % 5 * 70
             , ( "pointer-events", "none" )
             ]
 
         Growing (Seed _) _ ->
-            [ animationStyle "bulge 0.5s ease"
-            ]
+            [ animateEase "bulge" 500 ]
 
         _ ->
             []
@@ -113,8 +119,11 @@ fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
-            [ animationStyle <| "bounce-down-" ++ (toString distance) ++ " 0.9s linear"
-            , fillForwards
+            [ animationStyle
+                { name = "bounce-down-" ++ toString distance
+                , duration = 900
+                , timing = Linear
+                }
             ]
 
         _ ->
@@ -124,9 +133,13 @@ fallingStyles ( _, block ) =
 leavingStyles : Level.Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
-        [ transitionStyle "0.8s ease"
+        [ transitionStyle
+            { property = "all"
+            , duration = 800
+            , timing = Ease
+            , delay = Just <| toFloat <| ((leavingOrder tile) % 5) * 80
+            }
         , opacityStyle 0.2
-        , transitionDelayStyle <| ((leavingOrder tile) % 5) * 80
         , handleExitDirection move model
         ]
     else
@@ -153,11 +166,10 @@ getLeavingStyle : TileType -> Level.Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (toString tileType)
-        |> Maybe.withDefault ""
-        |> transformStyle
+        |> Maybe.withDefault emptyStyle
 
 
-newLeavingStyles : Level.Model -> Dict String String
+newLeavingStyles : Level.Model -> Dict String Style
 newLeavingStyles model =
     model.tileSettings
         |> scoreTileTypes
@@ -165,10 +177,13 @@ newLeavingStyles model =
         |> Dict.fromList
 
 
-prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, String )
+prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
     ( toString tileType
-    , translateScale (exitXDistance i model) -(exitYdistance model) 0.5
+    , transformStyle
+        [ translate (exitXDistance i model) -(exitYdistance model)
+        , scale 0.5
+        ]
     )
 
 
@@ -198,17 +213,15 @@ exitOffsetFunction x =
     25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
 
 
-exitYdistance : Level.Model -> Int
+exitYdistance : Level.Model -> Float
 exitYdistance model =
-    (boardOffsetTop model) - 9
+    toFloat (boardOffsetTop model) - 9
 
 
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        [ animationStyle "bulge-fade 0.8s ease"
-        , fillForwards
-        ]
+        [ animateEase "bulge-fade" 800 ]
     else
         [ displayStyle "none"
         ]
@@ -217,14 +230,14 @@ moveTracerStyles (( coord, tile ) as move) =
 draggingStyles : Maybe MoveShape -> Move -> List Style
 draggingStyles moveShape ( _, tileState ) =
     if moveShape == Just Square then
-        [ transitionStyle "0.5s ease"
+        [ easeAll 500
         ]
     else if isLeaving tileState then
-        [ transitionStyle "0.1s ease"
+        [ easeAll 100
         ]
     else if isDragging tileState then
-        [ transformStyle <| scale 0.8
-        , transitionStyle "0.3s ease"
+        [ transformStyle [ scale 0.8 ]
+        , easeAll 300
         ]
     else
         []

@@ -3,7 +3,7 @@ module Views.Level.LineDrag exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
 import Data.Board.Move.Square exposing (hasSquareTile)
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)

@@ -1,11 +1,14 @@
 module Scenes.Retry.View exposing (..)
 
 import Config.Color exposing (..)
-import Helpers.Style exposing (..)
+import Helpers.Css.Animation exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
+import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types exposing (..)
+import Types exposing (..)
 import Views.Lives exposing (livesLeft)
 
 
@@ -16,7 +19,11 @@ retryView model =
         , style
             [ heightStyle model.window.height
             , background washedYellow
-            , animationStyle "fade-in 1s linear"
+            , animationStyle
+                { name = "fade-in"
+                , duration = 1000
+                , timing = Linear
+                }
             ]
         ]
         [ div [ class "tc", style [ ( "margin-top", pc -8 ) ] ]
@@ -25,7 +32,14 @@ retryView model =
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
                     [ style
-                        [ animationStyle "1s fade-in 2.5s forwards"
+                        [ animationWithOptionsStyle
+                            { name = "fade-in"
+                            , duration = 1000
+                            , delay = Just 2500
+                            , timing = Ease
+                            , iteration = Nothing
+                            , fill = Forwards
+                            }
                         ]
                     , class "o-0"
                     ]
@@ -33,8 +47,15 @@ retryView model =
                 ]
             , div
                 [ style
-                    [ animationStyle "1.5s bounce-up 3s linear forwards"
-                    , transformStyle <| translateY <| model.window.height + 100
+                    [ animationWithOptionsStyle
+                        { name = "bounce-up"
+                        , duration = 1500
+                        , delay = Just 3000
+                        , timing = Linear
+                        , fill = Forwards
+                        , iteration = Nothing
+                        }
+                    , transformStyle [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
                 [ tryAgain model ]

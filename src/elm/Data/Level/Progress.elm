@@ -1,4 +1,14 @@
-module Data.Level.Progress exposing (..)
+module Data.Level.Progress
+    exposing
+        ( levelData
+        , levelConfig
+        , getLevelNumber
+        , incrementProgress
+        , shouldIncrement
+        , reachedLevel
+        , completedLevel
+        , currentLevelSeedType
+        )
 
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)

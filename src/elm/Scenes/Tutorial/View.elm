@@ -6,7 +6,10 @@ import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Style exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (TimingFunction(..))
+import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Transition exposing (easeAll, transitionStyle)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -23,18 +26,34 @@ tutorialView model =
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
         , style
             [ backgroundColor "rgba(255, 252, 227, 0.98)"
-            , transitionStyle "1.2s linear"
+            , transitionStyle
+                { property = "all"
+                , duration = 1200
+                , timing = Linear
+                , delay = Nothing
+                }
             ]
         , classList <| showIf model.canvasVisible
         ]
         [ div
-            [ style [ ( "margin-top", pc -3 ), transitionStyle "0.8s linear" ]
+            [ style
+                [ ( "margin-top", pc -3 )
+                , transitionStyle
+                    { property = "all"
+                    , duration = 800
+                    , timing = Linear
+                    , delay = Nothing
+                    }
+                ]
             , classList <| showIf model.containerVisible
             , class "tc"
             ]
             [ tutorialBoard model
             , p
-                [ style [ color darkYellow, transitionStyle "0.5s ease" ]
+                [ style
+                    [ color darkYellow
+                    , easeAll 500
+                    ]
                 , classList <| showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
@@ -44,8 +63,12 @@ tutorialView model =
             , style
                 [ color greyYellow
                 , bottomStyle 30
-                , transitionStyle "0.8s linear"
-                , transitionDelayStyle 800
+                , transitionStyle
+                    { property = "all"
+                    , duration = 800
+                    , timing = Linear
+                    , delay = Just 800
+                    }
                 ]
             , classList <| showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
@@ -62,7 +85,7 @@ tutorialBoard model =
         , style
             [ widthStyle <| boardWidth model
             , heightStyle <| boardHeight model
-            , transitionStyle "0.5s ease"
+            , easeAll 500
             ]
         ]
         [ div [ class "absolute z-5" ] [ renderResourceBank model ]
@@ -85,8 +108,8 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     in
         div
             [ style
-                [ transitionStyle "0.8s ease"
-                , transformStyle <| translate offsetX offsetY
+                [ easeAll 800
+                , transformStyle [ translate offsetX offsetY ]
                 ]
             , classList <| showIf resourceBankVisible
             ]
@@ -115,7 +138,7 @@ fadeLine model (( _, tile ) as move) =
             hasLine tile
     in
         div
-            [ style [ transitionStyle "0.5s ease" ]
+            [ style [ easeAll 500 ]
             , classList <| showIf visible
             ]
             [ renderLineLayer model move ]
@@ -136,9 +159,13 @@ leavingStyles model (( _, block ) as move) =
     in
         case tileState of
             Leaving _ order ->
-                [ transformStyle <| translate (resourceBankOffsetX model) -100
-                , transitionStyle "0.5s ease"
-                , transitionDelayStyle <| (order % 5) * 80
+                [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
+                , transitionStyle
+                    { property = "all"
+                    , duration = 500
+                    , timing = Ease
+                    , delay = Just <| toFloat <| (order % 5) * 80
+                    }
                 ]
 
             _ ->

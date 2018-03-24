@@ -1,7 +1,7 @@
 module Views.Icons.Heart exposing (..)
 
 import Config.Color exposing (..)
-import Helpers.Style exposing (ms, svgStyles)
+import Helpers.Css.Style exposing (ms, svgStyles)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 

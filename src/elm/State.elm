@@ -1,4 +1,4 @@
-module Scenes.Hub.State exposing (..)
+module State exposing (..)
 
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
@@ -11,14 +11,13 @@ import Helpers.Effect exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Mouse exposing (downs, moves)
 import Ports exposing (..)
-import Scenes.Hub.Types exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as Lv exposing (OutMsg(..))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as Tu exposing (OutMsg(..))
 import Task
 import Time exposing (Time, every, minute, second)
-import Types exposing (Flags, Times, fromProgress, toProgress)
+import Types exposing (..)
 import Window exposing (resizes, size)
 
 
@@ -52,8 +51,8 @@ initialState flags =
     , transitionBackground = Orange
     , progress = flags.rawProgress |> toProgress |> Maybe.withDefault ( 1, 1 )
     , currentLevel = Nothing
-    , lives = Stationary 5
-    , infoWindow = Hidden
+    , lives = Transitioning 5
+    , levelInfoWindow = Hidden
     , window = { height = 0, width = 0 }
     , mouse = { y = 0, x = 0 }
     , lastPlayed = initTimeTillNextLife flags
@@ -147,18 +146,18 @@ update msg model =
                   ]
 
         GoToRetry ->
-            { model | scene = Retry, lives = Transit.toStationary model.lives } ! []
+            { model | scene = Retry, lives = Transit.toStatic model.lives } ! []
 
         SetInfoState infoWindow ->
-            { model | infoWindow = infoWindow } ! []
+            { model | levelInfoWindow = infoWindow } ! []
 
         ShowInfo levelProgress ->
-            { model | infoWindow = Visible levelProgress } ! []
+            { model | levelInfoWindow = Visible levelProgress } ! []
 
         HideInfo ->
             model
                 ! [ sequenceMs
-                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.infoWindow )
+                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.levelInfoWindow )
                         , ( 1000, SetInfoState Hidden )
                         ]
                   ]

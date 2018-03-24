@@ -1,0 +1,121 @@
+module Helpers.Css.Animation
+    exposing
+        ( AnimationOptions
+        , Animation
+        , FillMode(..)
+        , IterationCount(..)
+        , animationStyle
+        , animationWithOptionsStyle
+        , animateEase
+        )
+
+import Helpers.Css.Style exposing (Style, ms)
+import Helpers.Css.Timing exposing (TimingFunction(Ease), timingToString)
+import Helpers.Maybe exposing (catMaybes)
+
+
+type alias AnimationOptions =
+    { name : String
+    , timing : TimingFunction
+    , duration : Float
+    , delay : Maybe Float
+    , fill : FillMode
+    , iteration : Maybe IterationCount
+    }
+
+
+type alias Animation =
+    { name : String
+    , duration : Float
+    , timing : TimingFunction
+    }
+
+
+type FillMode
+    = Forwards
+    | Backwards
+    | Both
+
+
+type IterationCount
+    = Infinite
+    | Count Int
+
+
+
+{- myAnim =
+   animationWithOptionsStyle
+       { name = "fade"
+       , duration = 300
+       , delay = Nothing
+       , timing = EaseInOut
+       , fill = Forwards
+       , iteration = Nothing
+       }
+
+   -- ("animation", "fade 300ms ease-in-out forwards")
+-}
+
+
+animateEase : String -> Float -> Style
+animateEase name duration =
+    animationStyle
+        { name = name
+        , duration = duration
+        , timing = Ease
+        }
+
+
+animationStyle : Animation -> Style
+animationStyle =
+    animation >> (,) "animation"
+
+
+animationWithOptionsStyle : AnimationOptions -> Style
+animationWithOptionsStyle =
+    animationWithOptions >> (,) "animation"
+
+
+animation : Animation -> String
+animation { name, duration, timing } =
+    animationWithOptions
+        { name = name
+        , duration = duration
+        , delay = Nothing
+        , timing = timing
+        , fill = Forwards
+        , iteration = Nothing
+        }
+
+
+animationWithOptions : AnimationOptions -> String
+animationWithOptions =
+    combineProperties
+        >> catMaybes
+        >> String.join " "
+
+
+combineProperties : AnimationOptions -> List (Maybe String)
+combineProperties anim =
+    [ Just anim.name
+    , Just <| ms anim.duration
+    , Just <| timingToString anim.timing
+    , Maybe.map ms anim.delay
+    , Just <| fillToString anim.fill
+    , Maybe.map iterationToString anim.iteration
+    ]
+
+
+fillToString : FillMode -> String
+fillToString =
+    toString >> String.toLower
+
+
+iterationToString : IterationCount -> String
+iterationToString iter =
+    case iter of
+        Infinite ->
+            "infinite"
+
+        Count n ->
+            toString n

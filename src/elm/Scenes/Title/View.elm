@@ -1,18 +1,20 @@
 module Scenes.Title.View exposing (..)
 
 import Config.Color exposing (..)
-import Helpers.Style exposing (..)
+import Helpers.Css.Animation exposing (..)
+import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Scenes.Hub.Types as Hub exposing (..)
+import Types exposing (Model, Msg(..))
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 import Window
 
 
-titleView : Hub.Model -> Html Hub.Msg
+titleView : Model -> Html Msg
 titleView model =
     div [ class "relative z-5 tc" ]
         [ div
@@ -78,7 +80,12 @@ fadeSeeds delay seed =
 fadeStyles : Float -> Float -> List Style
 fadeStyles duration delay =
     [ opacityStyle 0
-    , animationStyle <| ms duration ++ " fade-in linear"
-    , fillForwards
-    , animationDelayStyle delay
+    , animationWithOptionsStyle
+        { name = "fade-in"
+        , duration = duration
+        , delay = Just delay
+        , timing = Linear
+        , fill = Forwards
+        , iteration = Nothing
+        }
     ]
