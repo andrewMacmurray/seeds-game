@@ -14,6 +14,7 @@ module Helpers.Css.Keyframes
         , map2
         , map3
         , embed
+        , render
         )
 
 import Helpers.Css.Style exposing (pc)
@@ -26,21 +27,24 @@ import Json.Encode
 {-
     -- example usage
 
-    bulgeSpinFade : String
+    bugleSpinFade : Html msg
     bulgeSpinFade =
-        render
-            { name = "bulge-spin-fade"
-            , frames =
-                map3 ( scale, rotateZ, opacity )
-                    [ ( 0, ( 1, 0, 1 ) )
-                    , ( 100, ( 2.5, 90, 0 ) )
-                    ]
-            }
+        embed
+            [ { name = "bulge-spin-fade"
+              , frames =
+                    map3 ( scale, rotateZ, opacity )
+                        [ ( 0, ( 1, 0, 1 ) )
+                        , ( 100, ( 2.5, 90, 0 ) )
+                        ]
+              }
+            ]
 
-   -- @keyframes bulge-spin-fade {
-   --   0% { transform: scale(1) rotateZ(0deg); opacity: 1 }
-   --   100% { transform: scale(2.5) rotateZ(90deg); opacity: 0 }
-   -- }
+   -- <style>
+   --     @keyframes bulge-spin-fade {
+   --       0% { transform: scale(1) rotateZ(0deg); opacity: 1 }
+   --       100% { transform: scale(2.5) rotateZ(90deg); opacity: 0 }
+   --     }
+   -- </style>
 -}
 
 
@@ -62,7 +66,7 @@ type KeyframeProp
 
 
 
--- embeds animations in a style html element
+-- embeds animations in a `style` html node
 
 
 embed : List KeyframesAnimation -> Html msg
@@ -148,9 +152,9 @@ map f =
 
 
 render : KeyframesAnimation -> String
-render kf =
+render { name, frames } =
     String.join " "
-        [ "@keyframes", kf.name, "{", renderSteps kf.frames, "}" ]
+        [ "@keyframes", name, "{", renderSteps frames, "}" ]
 
 
 renderSteps : Frames -> String

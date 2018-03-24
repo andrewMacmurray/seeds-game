@@ -9,7 +9,9 @@ import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Transition exposing (easeAll, transitionStyle)
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -85,12 +87,7 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            [ animationStyle
-                { name = "bounce-down"
-                , duration = 1000
-                , timing = Ease
-                }
-            ]
+            [ animateEase "bounce-down" 1000 ]
 
         _ ->
             []
@@ -101,19 +98,18 @@ growingStyles ( coord, block ) =
     case getTileState block of
         Growing SeedPod _ ->
             [ transformStyle [ scale 4 ]
-            , transitionStyle "0.4s ease"
+            , transitionStyle
+                { property = "all"
+                , duration = 400
+                , timing = Ease
+                , delay = Just <| toFloat <| growingOrder block % 5 * 70
+                }
             , opacityStyle 0
-            , transitionDelayStyle <| growingOrder block % 5 * 70
             , ( "pointer-events", "none" )
             ]
 
         Growing (Seed _) _ ->
-            [ animationStyle
-                { name = "bulge"
-                , duration = 500
-                , timing = Ease
-                }
-            ]
+            [ animateEase "bulge" 500 ]
 
         _ ->
             []
@@ -137,9 +133,13 @@ fallingStyles ( _, block ) =
 leavingStyles : Level.Model -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
-        [ transitionStyle "0.8s ease"
+        [ transitionStyle
+            { property = "all"
+            , duration = 800
+            , timing = Ease
+            , delay = Just <| toFloat <| ((leavingOrder tile) % 5) * 80
+            }
         , opacityStyle 0.2
-        , transitionDelayStyle <| ((leavingOrder tile) % 5) * 80
         , handleExitDirection move model
         ]
     else
@@ -221,12 +221,7 @@ exitYdistance model =
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        [ animationStyle
-            { name = "bulge-fade"
-            , duration = 800
-            , timing = Ease
-            }
-        ]
+        [ animateEase "bulge-fade" 800 ]
     else
         [ displayStyle "none"
         ]
@@ -235,14 +230,14 @@ moveTracerStyles (( coord, tile ) as move) =
 draggingStyles : Maybe MoveShape -> Move -> List Style
 draggingStyles moveShape ( _, tileState ) =
     if moveShape == Just Square then
-        [ transitionStyle "0.5s ease"
+        [ easeAll 500
         ]
     else if isLeaving tileState then
-        [ transitionStyle "0.1s ease"
+        [ easeAll 100
         ]
     else if isDragging tileState then
         [ transformStyle [ scale 0.8 ]
-        , transitionStyle "0.3s ease"
+        , easeAll 300
         ]
     else
         []

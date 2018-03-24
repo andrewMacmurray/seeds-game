@@ -4,7 +4,8 @@ import Config.Color exposing (gold, rainBlue)
 import Config.Levels exposing (allLevels)
 import Data.Background exposing (..)
 import Data.Level.Progress exposing (currentLevelSeedType)
-import Helpers.Css.Style exposing (backgroundColor, classes, transitionStyle, widthStyle)
+import Helpers.Css.Style exposing (backgroundColor, classes, widthStyle)
+import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Types exposing (..)
@@ -20,7 +21,7 @@ loadingScreen model =
             ]
         , style
             [ backgroundColor <| loadingBackground model.transitionBackground
-            , transitionStyle "0.5s ease"
+            , easeAll 500
             ]
         ]
         [ div [ style [ widthStyle 50 ] ]

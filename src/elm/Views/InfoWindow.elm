@@ -4,6 +4,7 @@ import Config.Color exposing (..)
 import Data.InfoWindow exposing (..)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 

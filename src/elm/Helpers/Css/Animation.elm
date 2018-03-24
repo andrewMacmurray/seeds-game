@@ -2,16 +2,16 @@ module Helpers.Css.Animation
     exposing
         ( AnimationOptions
         , Animation
-        , TimingFunction(..)
         , FillMode(..)
         , IterationCount(..)
         , animationStyle
         , animationWithOptionsStyle
+        , animateEase
         )
 
-import Formatting exposing (print)
-import Helpers.Css.Format exposing (cubicBezier_)
 import Helpers.Css.Style exposing (Style, ms)
+import Helpers.Css.Timing exposing (TimingFunction(Ease), timingToString)
+import Helpers.Maybe exposing (catMaybes)
 
 
 type alias AnimationOptions =
@@ -29,15 +29,6 @@ type alias Animation =
     , duration : Float
     , timing : TimingFunction
     }
-
-
-type TimingFunction
-    = Ease
-    | Linear
-    | EaseIn
-    | EaseOut
-    | EaseInOut
-    | CubicBezier Float Float Float Float
 
 
 type FillMode
@@ -66,6 +57,15 @@ type IterationCount
 -}
 
 
+animateEase : String -> Float -> Style
+animateEase name duration =
+    animationStyle
+        { name = name
+        , duration = duration
+        , timing = Ease
+        }
+
+
 animationStyle : Animation -> Style
 animationStyle =
     animation >> (,) "animation"
@@ -90,13 +90,13 @@ animation { name, duration, timing } =
 
 animationWithOptions : AnimationOptions -> String
 animationWithOptions =
-    propertyOrder
+    combineProperties
         >> catMaybes
         >> String.join " "
 
 
-propertyOrder : AnimationOptions -> List (Maybe String)
-propertyOrder anim =
+combineProperties : AnimationOptions -> List (Maybe String)
+combineProperties anim =
     [ Just anim.name
     , Just <| ms anim.duration
     , Just <| timingToString anim.timing
@@ -104,28 +104,6 @@ propertyOrder anim =
     , Just <| fillToString anim.fill
     , Maybe.map iterationToString anim.iteration
     ]
-
-
-timingToString : TimingFunction -> String
-timingToString tf =
-    case tf of
-        Ease ->
-            "ease"
-
-        Linear ->
-            "linear"
-
-        EaseIn ->
-            "ease-in"
-
-        EaseOut ->
-            "ease-out"
-
-        EaseInOut ->
-            "ease-in-out"
-
-        CubicBezier a b c d ->
-            (print cubicBezier_) a b c d
 
 
 fillToString : FillMode -> String
@@ -141,18 +119,3 @@ iterationToString iter =
 
         Count n ->
             toString n
-
-
-catMaybes : List (Maybe a) -> List a
-catMaybes xs =
-    List.foldr cat [] xs
-
-
-cat : Maybe a -> List a -> List a
-cat val acc =
-    case val of
-        Just a ->
-            a :: acc
-
-        Nothing ->
-            acc

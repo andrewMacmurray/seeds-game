@@ -146,16 +146,6 @@ displayStyle =
     (,) "display"
 
 
-transitionStyle : String -> Style
-transitionStyle =
-    (,) "transition"
-
-
-transitionDelayStyle : number -> Style
-transitionDelayStyle delay =
-    ( "transition-delay", ms delay )
-
-
 opacityStyle : number -> Style
 opacityStyle number =
     ( "opacity", toString number )

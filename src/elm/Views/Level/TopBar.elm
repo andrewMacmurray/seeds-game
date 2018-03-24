@@ -6,7 +6,9 @@ import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types exposing (Model)
@@ -73,7 +75,7 @@ remainingMoves remainingMoves =
                 [ class "ma0 f3"
                 , style
                     [ color <| moveCounterColor remainingMoves
-                    , transitionStyle "1s ease"
+                    , easeAll 1000
                     ]
                 ]
                 [ text <| toString remainingMoves ]
@@ -121,7 +123,7 @@ tickFadeIn tileType scores =
             [ tickBackground ]
         , div
             [ style
-                [ animationStyle { name = "fade-out", duration = 500, timing = Ease }
+                [ animateEase "fade-out" 500
                 , opacityStyle 1
                 ]
             ]
