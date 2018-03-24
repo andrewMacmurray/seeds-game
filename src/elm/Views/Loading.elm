@@ -4,7 +4,7 @@ import Config.Color exposing (gold, rainBlue)
 import Config.Levels exposing (allLevels)
 import Data.Background exposing (..)
 import Data.Level.Progress exposing (currentLevelSeedType)
-import Helpers.Css.Style exposing (backgroundColor, classes, widthStyle)
+import Helpers.Css.Style exposing (Style, backgroundColor, classes, emptyStyle, widthStyle)
 import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -20,7 +20,7 @@ loadingScreen model =
             , transitionClasses model
             ]
         , style
-            [ backgroundColor <| loadingBackground model.transitionBackground
+            [ loadingScreenBackground model.loadingScreen
             , easeAll 500
             ]
         ]
@@ -30,8 +30,15 @@ loadingScreen model =
         ]
 
 
-loadingBackground : Background -> String
-loadingBackground bg =
+loadingScreenBackground : Maybe Background -> Style
+loadingScreenBackground sceneTransition =
+    sceneTransition
+        |> Maybe.map (loadingScreenColor >> backgroundColor)
+        |> Maybe.withDefault emptyStyle
+
+
+loadingScreenColor : Background -> String
+loadingScreenColor bg =
     case bg of
         Blue ->
             rainBlue
@@ -42,7 +49,9 @@ loadingBackground bg =
 
 transitionClasses : Model -> String
 transitionClasses model =
-    if model.sceneTransition then
-        "o-100"
-    else
-        "o-0 touch-disabled"
+    case model.loadingScreen of
+        Just _ ->
+            "o-100"
+
+        Nothing ->
+            "o-0 touch-disabled"

@@ -47,8 +47,7 @@ initialState flags =
     , tutorialModel = Tutorial.initialState
     , xAnimations = ""
     , scene = Title
-    , sceneTransition = False
-    , transitionBackground = Orange
+    , loadingScreen = Nothing
     , progress = flags.rawProgress |> toProgress |> Maybe.withDefault ( 1, 1 )
     , currentLevel = Nothing
     , lives = Transitioning 5
@@ -81,10 +80,10 @@ update msg model =
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
-                                , ( 10, BeginSceneTransition )
+                                , ( 10, ShowLoadingScreen )
                                 , ( 500, SetScene Tutorial )
                                 , ( 0, LoadLevel <| getLevelData level )
-                                , ( 2500, EndSceneTransition )
+                                , ( 2500, HideLoadingScreen )
                                 , ( 500, LoadTutorial tutorialConfig )
                                 ]
                           ]
@@ -93,20 +92,20 @@ update msg model =
                     model
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
-                                , ( 10, BeginSceneTransition )
+                                , ( 10, ShowLoadingScreen )
                                 , ( 500, SetScene Level )
                                 , ( 0, LoadLevel <| getLevelData level )
-                                , ( 2500, EndSceneTransition )
+                                , ( 2500, HideLoadingScreen )
                                 ]
                           ]
 
         RestartLevel ->
             model
                 ! [ sequenceMs
-                        [ ( 10, BeginSceneTransition )
+                        [ ( 10, ShowLoadingScreen )
                         , ( 500, SetScene Level )
                         , ( 0, LoadLevel <| currentLevelData model )
-                        , ( 2500, EndSceneTransition )
+                        , ( 2500, HideLoadingScreen )
                         ]
                   ]
 
@@ -125,11 +124,11 @@ update msg model =
         SetScene scene ->
             { model | scene = scene } ! []
 
-        BeginSceneTransition ->
-            { model | sceneTransition = True } ! [ genRandomBackground RandomBackground ]
+        ShowLoadingScreen ->
+            model ! [ genRandomBackground RandomBackground ]
 
-        EndSceneTransition ->
-            { model | sceneTransition = False } ! []
+        HideLoadingScreen ->
+            { model | loadingScreen = Nothing } ! []
 
         SetCurrentLevel progress ->
             { model | currentLevel = progress } ! []
@@ -137,10 +136,10 @@ update msg model =
         GoToHub ->
             model
                 ! [ sequenceMs
-                        [ ( 0, BeginSceneTransition )
+                        [ ( 0, ShowLoadingScreen )
                         , ( 500, SetScene Hub )
                         , ( 100, ScrollToHubLevel <| progressLevelNumber model )
-                        , ( 2400, EndSceneTransition )
+                        , ( 2400, HideLoadingScreen )
                         ]
                   ]
 
@@ -162,7 +161,7 @@ update msg model =
                   ]
 
         RandomBackground background ->
-            { model | transitionBackground = background } ! []
+            { model | loadingScreen = Just background } ! []
 
         IncrementProgress ->
             handleIncrementProgress model
@@ -405,11 +404,11 @@ levelWinSequence model =
         if shouldIncrement allLevels model.currentLevel model.progress then
             [ ( 0, SetScene Summary )
             , ( 2000, IncrementProgress )
-            , ( 2500, BeginSceneTransition )
+            , ( 2500, ShowLoadingScreen )
             ]
                 ++ backToHub
         else
-            ( 0, BeginSceneTransition ) :: backToHub
+            ( 0, ShowLoadingScreen ) :: backToHub
 
 
 levelLoseSequence : Model -> List ( Float, Msg )
@@ -423,7 +422,7 @@ backToHubSequence : Int -> List ( Float, Msg )
 backToHubSequence levelNumber =
     [ ( 500, SetScene Hub )
     , ( 1000, ScrollToHubLevel levelNumber )
-    , ( 1500, EndSceneTransition )
+    , ( 1500, HideLoadingScreen )
     , ( 500, SetCurrentLevel Nothing )
     ]
 

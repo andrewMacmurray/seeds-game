@@ -38,8 +38,7 @@ type alias Model =
     { levelModel : Level.Model
     , tutorialModel : Tutorial.Model
     , scene : Scene
-    , sceneTransition : Bool
-    , transitionBackground : Background
+    , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
     , lives : Transit Int
@@ -61,8 +60,8 @@ type Msg
     | LoadTutorial Tutorial.Config
     | LoadLevel (LevelData Tutorial.Config)
     | SetScene Scene
-    | BeginSceneTransition
-    | EndSceneTransition
+    | ShowLoadingScreen
+    | HideLoadingScreen
     | RandomBackground Background
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
