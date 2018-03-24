@@ -7,9 +7,9 @@ import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
-import Helpers.Effect exposing (..)
+import Dom.Scroll exposing (toY)
+import Helpers.Delay exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
-import Mouse exposing (downs, moves)
 import Ports exposing (..)
 import Scenes.Level.State as Level
 import Scenes.Level.Types as Lv exposing (OutMsg(..))
@@ -54,7 +54,6 @@ initialState flags =
     , lives = Transitioning 5
     , levelInfoWindow = Hidden
     , window = { height = 0, width = 0 }
-    , mouse = { y = 0, x = 0 }
     , lastPlayed = initTimeTillNextLife flags
     , timeTillNextLife = flags.times |> Maybe.map .timeTillNextLife |> Maybe.withDefault 0
     }
@@ -179,7 +178,7 @@ update msg model =
             model ! [ scrollToHubLevel level ]
 
         ReceiveHubLevelOffset offset ->
-            model ! [ scrollHubToLevel DomNoOp offset model.window ]
+            model ! [ scrollHubToLevel offset model.window ]
 
         ClearCache ->
             model ! [ clearCache ]
@@ -189,14 +188,11 @@ update msg model =
 
         WindowSize size ->
             { model
-                | levelModel = addWindowSizeToLevel size model
-                , tutorialModel = addWindowSizeToTutorial size model
+                | levelModel = updateWindowSize size model.levelModel
+                , tutorialModel = updateWindowSize size model.tutorialModel
                 , window = size
             }
                 ! [ getExternalAnimations <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
-
-        MousePosition position ->
-            { model | levelModel = addMousePositionToLevel position model } ! []
 
         Tick time ->
             handleUpdateTimes time model
@@ -209,6 +205,15 @@ update msg model =
 getWindowSize : Cmd Msg
 getWindowSize =
     Task.perform WindowSize size
+
+
+scrollHubToLevel : Float -> Window.Size -> Cmd Msg
+scrollHubToLevel offset window =
+    let
+        targetDistance =
+            offset - toFloat (window.height // 2) + 60
+    in
+        toY "hub" targetDistance |> Task.attempt DomNoOp
 
 
 getLevelData : Progress -> LevelData Tu.Config
@@ -322,19 +327,9 @@ tutorialData level =
         levelData.tutorial
 
 
-addMousePositionToLevel : Mouse.Position -> Model -> Lv.Model
-addMousePositionToLevel position { levelModel } =
-    { levelModel | mouse = position }
-
-
-addWindowSizeToLevel : Window.Size -> Model -> Lv.Model
-addWindowSizeToLevel window { levelModel } =
-    { levelModel | window = window }
-
-
-addWindowSizeToTutorial : Window.Size -> Model -> Tu.Model
-addWindowSizeToTutorial window { tutorialModel } =
-    { tutorialModel | window = window }
+updateWindowSize : Window.Size -> HasWindow model -> HasWindow model
+updateWindowSize window model =
+    { model | window = window }
 
 
 handleLevelMsg : Lv.Msg -> Model -> ( Model, Cmd Msg )
@@ -449,17 +444,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ resizes WindowSize
-        , downs MousePosition
-        , trackMousePosition model
         , receiveExternalAnimations ReceieveExternalAnimations
         , receiveHubLevelOffset ReceiveHubLevelOffset
         , every second Tick
+        , Sub.map LevelMsg <| Level.subscriptions model.levelModel
         ]
-
-
-trackMousePosition : Model -> Sub Msg
-trackMousePosition model =
-    if model.levelModel.isDragging then
-        moves MousePosition
-    else
-        Sub.none

@@ -1,14 +1,8 @@
-module Helpers.Effect exposing (..)
+module Helpers.Delay exposing (..)
 
 import Delay
-import Dom
-import Dom.Scroll exposing (toY)
 import Task
 import Time exposing (millisecond)
-import Window exposing (Size, resizes, size)
-
-
--- Delay Helpers
 
 
 sequenceMs : List ( Float, msg ) -> Cmd msg
@@ -28,16 +22,3 @@ pause pauseDuration steps =
         |> Maybe.map (\( n, msg ) -> ( n + pauseDuration, msg ))
         |> Maybe.map (\newDelay -> [ newDelay ] ++ (List.drop 1 steps))
         |> Maybe.withDefault []
-
-
-
--- Dom Scroll Helpers
-
-
-scrollHubToLevel : (Result Dom.Error () -> msg) -> Float -> Size -> Cmd msg
-scrollHubToLevel msg offset window =
-    let
-        targetDistance =
-            offset - toFloat (window.height // 2) + 60
-    in
-        toY "hub" targetDistance |> Task.attempt msg

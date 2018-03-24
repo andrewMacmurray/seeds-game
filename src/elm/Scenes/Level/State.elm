@@ -8,15 +8,16 @@ import Data.Board.Map exposing (..)
 import Data.Board.Move.Check exposing (addToMove, startMove)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
 import Data.Board.Moves exposing (currentMoveTileType)
+import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Data.Level.Types exposing (LevelData)
 import Dict
-import Helpers.Effect exposing (sequenceMs, trigger)
+import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
+import Mouse exposing (downs, moves)
 import Scenes.Level.Types exposing (..)
 
 
@@ -170,6 +171,9 @@ update msg model =
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
             withOutMsg model [] ExitLevelWithLose
+
+        MousePosition position ->
+            noOutMsg { model | mouse = position } []
 
 
 
@@ -332,3 +336,23 @@ hasLost { remainingMoves, levelStatus } =
 hasWon : Model -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
+
+
+
+-- subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ subscribeDrag model
+        , downs MousePosition
+        ]
+
+
+subscribeDrag : Model -> Sub Msg
+subscribeDrag model =
+    if model.isDragging then
+        moves MousePosition
+    else
+        Sub.none

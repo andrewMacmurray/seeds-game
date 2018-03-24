@@ -47,6 +47,7 @@ type Msg
     | InfoHidden
     | LevelWon
     | LevelLost
+    | MousePosition Mouse.Position
 
 
 type OutMsg

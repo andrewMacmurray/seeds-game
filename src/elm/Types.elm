@@ -5,7 +5,6 @@ import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
 import Data.Transit exposing (Transit)
 import Dom
-import Mouse
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
 import Time exposing (Time)
@@ -31,10 +30,13 @@ type alias RawProgress =
     }
 
 
+type alias HasWindow model =
+    { model | window : Window.Size }
+
+
 type alias Model =
     { levelModel : Level.Model
     , tutorialModel : Tutorial.Model
-    , xAnimations : String
     , scene : Scene
     , sceneTransition : Bool
     , transitionBackground : Background
@@ -42,10 +44,10 @@ type alias Model =
     , currentLevel : Maybe Progress
     , lives : Transit Int
     , levelInfoWindow : InfoWindow Progress
-    , window : Window.Size
-    , mouse : Mouse.Position
     , lastPlayed : Time
     , timeTillNextLife : Time
+    , window : Window.Size
+    , xAnimations : String
     }
 
 
@@ -76,7 +78,6 @@ type Msg
     | ClearCache
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
-    | MousePosition Mouse.Position
     | Tick Time
 
 

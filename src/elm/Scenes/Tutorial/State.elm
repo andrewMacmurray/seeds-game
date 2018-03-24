@@ -8,7 +8,7 @@ import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Dict
-import Helpers.Effect exposing (pause, sequenceMs, trigger)
+import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
