@@ -12,6 +12,8 @@ import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
+import Task
+import Window exposing (resizes, size)
 
 
 -- Init
@@ -19,7 +21,15 @@ import Scenes.Tutorial.Types exposing (..)
 
 init : Config -> ( Model, Cmd Msg )
 init config =
-    loadTutorialData config initialState ! [ sequenceMs config.sequence ]
+    loadTutorialData config initialState
+        ! [ sequenceMs config.sequence
+          , getWindowSize
+          ]
+
+
+getWindowSize : Cmd Msg
+getWindowSize =
+    Task.perform WindowSize size
 
 
 initialState : Model
@@ -143,6 +153,9 @@ update msg model =
         ExitTutorial ->
             withOutMsg model [ trigger ResetVisibilities ] ExitTutorialToLevel
 
+        WindowSize size ->
+            noOutMsg { model | window = size } []
+
 
 
 -- Update Helpers
@@ -183,3 +196,8 @@ handleDragTile coord model =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
         { model | board = addBearings ( coord, tile ) model.board }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    resizes WindowSize

@@ -30,14 +30,8 @@ type alias RawProgress =
     }
 
 
-type alias HasWindow model =
-    { model | window : Window.Size }
-
-
 type alias Model =
-    { levelModel : Level.Model
-    , tutorialModel : Tutorial.Model
-    , scene : Scene
+    { scene : Scene
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
@@ -50,6 +44,19 @@ type alias Model =
     }
 
 
+type Scene
+    = Title
+    | Hub
+    | Tutorial Tutorial.Model (Backdrop Level.Model)
+    | Level Level.Model
+    | Summary (Backdrop Level.Model)
+    | Retry (Backdrop Level.Model)
+
+
+type Backdrop a
+    = Backdrop a
+
+
 type Msg
     = LevelMsg Level.Msg
     | TutorialMsg Tutorial.Msg
@@ -57,15 +64,16 @@ type Msg
     | RestartLevel
     | TransitionWithWin
     | TransitionWithLose
-    | LoadTutorial Tutorial.Config
+    | LoadTutorial Progress Tutorial.Config
     | LoadLevel (LevelData Tutorial.Config)
-    | SetScene Scene
+    | LoadHub
+    | LoadSummary
+    | LoadRetry
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
-    | GoToRetry
     | ShowInfo Progress
     | HideInfo
     | SetInfoState (InfoWindow Progress)
@@ -78,15 +86,6 @@ type Msg
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | Tick Time
-
-
-type Scene
-    = Level
-    | Hub
-    | Title
-    | Tutorial
-    | Summary
-    | Retry
 
 
 fromProgress : Progress -> RawProgress

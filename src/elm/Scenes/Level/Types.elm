@@ -48,6 +48,7 @@ type Msg
     | LevelWon
     | LevelLost
     | MousePosition Mouse.Position
+    | WindowSize Window.Size
 
 
 type OutMsg

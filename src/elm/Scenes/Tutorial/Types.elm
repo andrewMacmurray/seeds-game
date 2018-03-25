@@ -62,6 +62,7 @@ type Msg
     | SkipTutorial
     | DisableTutorial
     | ExitTutorial
+    | WindowSize Window.Size
 
 
 type OutMsg

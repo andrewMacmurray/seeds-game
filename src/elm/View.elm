@@ -14,7 +14,7 @@ import Scenes.Retry.View exposing (retryView)
 import Scenes.Summary.View exposing (summaryView)
 import Scenes.Title.View exposing (titleView)
 import Scenes.Tutorial.View exposing (tutorialView)
-import Types exposing (Model, Msg(..), Scene(..))
+import Types exposing (Backdrop(..), Model, Msg(..), Scene(..))
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
@@ -41,36 +41,35 @@ embeddedAnimations externalanimations =
 renderScene : Model -> Html Msg
 renderScene model =
     let
-        keyedDiv =
+        kd =
             K.node "div" []
     in
         case model.scene of
             Hub ->
-                hubView model
+                kd [ ( "hub", hubView model ) ]
 
             Title ->
-                titleView model
+                kd [ ( "title", titleView model ) ]
 
-            Level ->
-                keyedDiv
-                    [ ( "level", levelView model.levelModel |> Html.map LevelMsg ) ]
+            Level levelModel ->
+                kd [ ( "level", levelView levelModel |> Html.map LevelMsg ) ]
 
-            Summary ->
-                keyedDiv
+            Summary (Backdrop levelModel) ->
+                kd
                     [ ( "summary", summaryView model )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
+                    , ( "level", levelView levelModel |> Html.map LevelMsg )
                     ]
 
-            Retry ->
-                keyedDiv
+            Retry (Backdrop levelModel) ->
+                kd
                     [ ( "retry", retryView model )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
+                    , ( "level", levelView levelModel |> Html.map LevelMsg )
                     ]
 
-            Tutorial ->
-                keyedDiv
-                    [ ( "tutorial", tutorialView model.tutorialModel |> Html.map TutorialMsg )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
+            Tutorial tutorialModel (Backdrop levelModel) ->
+                kd
+                    [ ( "tutorial", tutorialView tutorialModel |> Html.map TutorialMsg )
+                    , ( "level", levelView levelModel |> Html.map LevelMsg )
                     ]
 
 

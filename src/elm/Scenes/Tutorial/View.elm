@@ -10,6 +10,7 @@ import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -59,7 +60,7 @@ tutorialView model =
                 [ text <| getText model.text model.currentText ]
             ]
         , p
-            [ onClick SkipTutorial
+            [ handleSkip model
             , style
                 [ color greyYellow
                 , bottomStyle 30
@@ -75,6 +76,14 @@ tutorialView model =
             ]
             [ text "skip" ]
         ]
+
+
+handleSkip : Model -> Attribute Msg
+handleSkip model =
+    if not model.skipped then
+        onClick SkipTutorial
+    else
+        emptyProperty
 
 
 tutorialBoard : Model -> Html msg

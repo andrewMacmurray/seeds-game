@@ -19,6 +19,8 @@ import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Mouse exposing (downs, moves)
 import Scenes.Level.Types exposing (..)
+import Task
+import Window exposing (resizes, size)
 
 
 -- Init
@@ -26,12 +28,11 @@ import Scenes.Level.Types exposing (..)
 
 init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
 init levelData model =
-    addLevelData levelData model |> generateTiles levelData
-
-
-generateTiles : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
-generateTiles levelData model =
-    model ! [ handleGenerateTiles levelData model ]
+    addLevelData levelData model
+        ! [ handleGenerateTiles levelData model
+          , getWindowSize
+          , generateSuccessMessageIndex
+          ]
 
 
 addLevelData : LevelData tutorialConfig -> Model -> Model
@@ -61,6 +62,11 @@ initialState =
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
+
+
+getWindowSize : Cmd Msg
+getWindowSize =
+    Task.perform WindowSize size
 
 
 generateSuccessMessageIndex : Cmd Msg
@@ -174,6 +180,9 @@ update msg model =
 
         MousePosition position ->
             noOutMsg { model | mouse = position } []
+
+        WindowSize size ->
+            noOutMsg { model | window = size } []
 
 
 
@@ -347,6 +356,7 @@ subscriptions model =
     Sub.batch
         [ subscribeDrag model
         , downs MousePosition
+        , resizes WindowSize
         ]
 
 
