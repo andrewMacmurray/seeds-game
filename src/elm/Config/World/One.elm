@@ -101,7 +101,7 @@ levels =
                 ]
           }
         , { walls = yellowWalls sixthLevelWalls
-          , moves = 10
+          , moves = 20
           , tutorial = Nothing
           , boardDimensions = { x = 7, y = 7 }
           , tileSettings =

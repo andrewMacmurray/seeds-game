@@ -11,7 +11,7 @@ import Data.Board.Move.Bearing exposing (validDirection)
 import Data.Board.Moves exposing (..)
 import Data.Board.Types exposing (..)
 import Dict
-import Helpers.Effect exposing (trigger)
+import Helpers.Delay exposing (trigger)
 import List exposing (all)
 
 

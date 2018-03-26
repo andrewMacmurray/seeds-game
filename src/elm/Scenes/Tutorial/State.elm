@@ -7,19 +7,38 @@ import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (LevelData)
 import Dict
-import Helpers.Effect exposing (pause, sequenceMs, trigger)
+import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Scenes.Level.State exposing (handleInsertEnteringTiles)
+import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
+import Task
+import Window exposing (resizes, size)
 
 
 -- Init
 
 
-init : Config -> ( Model, Cmd Msg )
-init config =
-    loadTutorialData config initialState ! [ sequenceMs config.sequence ]
+init : LevelData Config -> Config -> ( Model, Cmd Msg )
+init levelData config =
+    let
+        model =
+            loadTutorialData config initialState
+
+        ( levelModel, levelCmd ) =
+            Level.init levelData
+    in
+        { model | levelModel = levelModel }
+            ! [ sequenceMs <| pause 500 config.sequence
+              , getWindowSize
+              , Cmd.map LevelMsg levelCmd
+              ]
+
+
+getWindowSize : Cmd Msg
+getWindowSize =
+    Task.perform WindowSize size
 
 
 initialState : Model
@@ -37,6 +56,7 @@ initialState =
     , currentText = 1
     , text = Dict.empty
     , window = { height = 0, width = 0 }
+    , levelModel = Level.initialState
     }
 
 
@@ -59,6 +79,13 @@ loadTutorialData config model =
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
+        LevelMsg levelMsg ->
+            let
+                ( levelModel, levelCmd, _ ) =
+                    Level.update levelMsg model.levelModel
+            in
+                noOutMsg { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
+
         DragTile coord ->
             noOutMsg (handleDragTile coord model) []
 
@@ -143,6 +170,9 @@ update msg model =
         ExitTutorial ->
             withOutMsg model [ trigger ResetVisibilities ] ExitTutorialToLevel
 
+        WindowSize size ->
+            noOutMsg { model | window = size } []
+
 
 
 -- Update Helpers
@@ -183,3 +213,11 @@ handleDragTile coord model =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
         { model | board = addBearings ( coord, tile ) model.board }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ resizes WindowSize
+        , Level.subscriptions model.levelModel |> Sub.map LevelMsg
+        ]

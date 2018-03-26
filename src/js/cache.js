@@ -20,9 +20,9 @@ function clear () {
   localStorage.clear()
 }
 
-function safeParse (rawJSON) {
+function safeParse (JSONstring) {
   try {
-    return JSON.parse(rawJSON)
+    return JSON.parse(JSONstring)
   } catch (e) {
     return null
   }

@@ -8,29 +8,35 @@ import Data.Board.Map exposing (..)
 import Data.Board.Move.Check exposing (addToMove, startMove)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
 import Data.Board.Moves exposing (currentMoveTileType)
+import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
-import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplete)
 import Data.Level.Types exposing (LevelData)
 import Dict
-import Helpers.Effect exposing (sequenceMs, trigger)
+import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
+import Mouse exposing (downs, moves)
 import Scenes.Level.Types exposing (..)
+import Task
+import Window exposing (resizes, size)
 
 
 -- Init
 
 
-init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
-init levelData model =
-    addLevelData levelData model |> generateTiles levelData
-
-
-generateTiles : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
-generateTiles levelData model =
-    model ! [ handleGenerateTiles levelData model ]
+init : LevelData tutorialConfig -> ( Model, Cmd Msg )
+init levelData =
+    let
+        model =
+            addLevelData levelData initialState
+    in
+        model
+            ! [ handleGenerateTiles levelData model
+              , getWindowSize
+              , generateSuccessMessageIndex
+              ]
 
 
 addLevelData : LevelData tutorialConfig -> Model -> Model
@@ -56,10 +62,15 @@ initialState =
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
     , successMessageIndex = 0
-    , levelInfoWindow = Hidden
+    , hubInfoWindow = Hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
+
+
+getWindowSize : Cmd Msg
+getWindowSize =
+    Task.perform WindowSize size
 
 
 generateSuccessMessageIndex : Cmd Msg
@@ -155,13 +166,13 @@ update msg model =
             noOutMsg { model | successMessageIndex = i } []
 
         ShowInfo info ->
-            noOutMsg { model | levelInfoWindow = Visible info } []
+            noOutMsg { model | hubInfoWindow = Visible info } []
 
         RemoveInfo ->
-            noOutMsg { model | levelInfoWindow = InfoWindow.toHiding model.levelInfoWindow } []
+            noOutMsg { model | hubInfoWindow = InfoWindow.toHiding model.hubInfoWindow } []
 
         InfoHidden ->
-            noOutMsg { model | levelInfoWindow = Hidden } []
+            noOutMsg { model | hubInfoWindow = Hidden } []
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
@@ -170,6 +181,12 @@ update msg model =
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
             withOutMsg model [] ExitLevelWithLose
+
+        MousePosition position ->
+            noOutMsg { model | mouse = position } []
+
+        WindowSize size ->
+            noOutMsg { model | window = size } []
 
 
 
@@ -332,3 +349,24 @@ hasLost { remainingMoves, levelStatus } =
 hasWon : Model -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
+
+
+
+-- subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ subscribeDrag model
+        , downs MousePosition
+        , resizes WindowSize
+        ]
+
+
+subscribeDrag : Model -> Sub Msg
+subscribeDrag model =
+    if model.isDragging then
+        moves MousePosition
+    else
+        Sub.none

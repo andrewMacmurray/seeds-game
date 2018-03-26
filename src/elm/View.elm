@@ -14,7 +14,7 @@ import Scenes.Retry.View exposing (retryView)
 import Scenes.Summary.View exposing (summaryView)
 import Scenes.Title.View exposing (titleView)
 import Scenes.Tutorial.View exposing (tutorialView)
-import Types exposing (Model, Msg(..), Scene(..))
+import Types exposing (Model, Msg(..), Scene(..), SceneState(..))
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
@@ -25,7 +25,7 @@ view model =
         [ embeddedAnimations model.xAnimations
         , reset
         , loadingScreen model
-        , renderScene model
+        , renderSceneState model
         , backdrop
         ]
 
@@ -38,40 +38,47 @@ embeddedAnimations externalanimations =
         ]
 
 
-renderScene : Model -> Html Msg
-renderScene model =
-    let
-        keyedDiv =
-            K.node "div" []
-    in
-        case model.scene of
-            Hub ->
-                hubView model
+renderSceneState : Model -> Html Msg
+renderSceneState model =
+    case model.scene of
+        Loaded scene ->
+            keyedDiv <| renderScene model scene
 
-            Title ->
-                titleView model
-
-            Level ->
-                keyedDiv
-                    [ ( "level", levelView model.levelModel |> Html.map LevelMsg ) ]
-
-            Summary ->
-                keyedDiv
-                    [ ( "summary", summaryView model )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
+        Transition { from, to } ->
+            keyedDiv <|
+                List.concat
+                    [ renderScene model to
+                    , renderScene model from
                     ]
 
-            Retry ->
-                keyedDiv
-                    [ ( "retry", retryView model )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
-                    ]
 
-            Tutorial ->
-                keyedDiv
-                    [ ( "tutorial", tutorialView model.tutorialModel |> Html.map TutorialMsg )
-                    , ( "level", levelView model.levelModel |> Html.map LevelMsg )
-                    ]
+keyedDiv : List ( String, Html msg ) -> Html msg
+keyedDiv =
+    K.node "div" []
+
+
+renderScene : Model -> Scene -> List ( String, Html Msg )
+renderScene model scene =
+    case scene of
+        Hub ->
+            [ ( "hub", hubView model ) ]
+
+        Title ->
+            [ ( "title", titleView model ) ]
+
+        Level levelModel ->
+            [ ( "level", levelView levelModel |> Html.map LevelMsg ) ]
+
+        Summary ->
+            [ ( "summary", summaryView model ) ]
+
+        Retry ->
+            [ ( "retry", retryView model ) ]
+
+        Tutorial tutorialModel ->
+            [ ( "tutorial", tutorialView tutorialModel |> Html.map TutorialMsg )
+            , ( "level", levelView tutorialModel.levelModel |> Html.map LevelMsg )
+            ]
 
 
 reset : Html Msg

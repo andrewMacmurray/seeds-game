@@ -10,8 +10,8 @@ import Html.Attributes exposing (..)
 import Views.Icons.Heart exposing (..)
 
 
-livesLeft : Transit Int -> List (Html msg)
-livesLeft lifeState =
+renderLivesLeft : Transit Int -> List (Html msg)
+renderLivesLeft lifeState =
     let
         lives =
             Transit.val lifeState

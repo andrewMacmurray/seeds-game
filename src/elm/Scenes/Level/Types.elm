@@ -16,7 +16,7 @@ type alias Model =
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
     , levelStatus : LevelStatus
-    , levelInfoWindow : InfoWindow String
+    , hubInfoWindow : InfoWindow String
     , successMessageIndex : Int
     , mouse : Mouse.Position
     , window : Window.Size
@@ -47,6 +47,8 @@ type Msg
     | InfoHidden
     | LevelWon
     | LevelLost
+    | MousePosition Mouse.Position
+    | WindowSize Window.Size
 
 
 type OutMsg
