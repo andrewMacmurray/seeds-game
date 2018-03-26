@@ -29,7 +29,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     initialState flags
         ! [ getWindowSize
-          , getExternalAnimations ScaleConfig.baseTileSizeY
+          , generateBounceKeyframes ScaleConfig.baseTileSizeY
           ]
 
 
@@ -47,7 +47,6 @@ initialState flags =
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
-    , xAnimations = ""
     , hubInfoWindow = Hidden
     }
 
@@ -150,13 +149,10 @@ update msg model =
 
         WindowSize size ->
             { model | window = size }
-                ! [ getExternalAnimations <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
+                ! [ generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
 
         UpdateTimes now ->
             updateTimes now model
-
-        ReceieveExternalAnimations animations ->
-            { model | xAnimations = animations } ! []
 
         -- Summary and Retry Specific Messages
         IncrementProgress ->
@@ -474,12 +470,9 @@ decrementAboveZero x n =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ receiveExternalAnimations ReceieveExternalAnimations
-        , resizes WindowSize
+        [ resizes WindowSize
         , subscribeDecrement model
-        , levelSubscriptions model
-        , tutorialSubscriptions model
-        , hubSubscriptions model
+        , sceneSubscriptions model
         ]
 
 
@@ -491,29 +484,15 @@ subscribeDecrement model =
         every (second * 10) UpdateTimes
 
 
-levelSubscriptions : Model -> Sub Msg
-levelSubscriptions model =
+sceneSubscriptions : Model -> Sub Msg
+sceneSubscriptions model =
     case model.scene of
         Loaded (Level levelModel) ->
             Sub.map LevelMsg <| Level.subscriptions levelModel
 
-        _ ->
-            Sub.none
-
-
-tutorialSubscriptions : Model -> Sub Msg
-tutorialSubscriptions model =
-    case model.scene of
         Loaded (Tutorial tutorialModel) ->
             Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
 
-        _ ->
-            Sub.none
-
-
-hubSubscriptions : Model -> Sub Msg
-hubSubscriptions model =
-    case model.scene of
         Loaded Hub ->
             Sub.map HubMsg <| Hub.subscriptions model
 

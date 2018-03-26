@@ -3,9 +3,9 @@ module Types exposing (..)
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
-import Scenes.Level.Types exposing (..)
-import Scenes.Tutorial.Types exposing (..)
-import Scenes.Hub.Types as Hub
+import Scenes.Level.Types exposing (LevelModel, LevelMsg)
+import Scenes.Tutorial.Types exposing (TutorialModel, TutorialMsg, TutorialConfig)
+import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Time exposing (Time)
 import Window
 
@@ -38,7 +38,6 @@ type alias Model =
     , lastPlayed : Time
     , hubInfoWindow : InfoWindow Progress
     , window : Window.Size
-    , xAnimations : String
     }
 
 
@@ -65,7 +64,7 @@ type Scene
 type Msg
     = LevelMsg LevelMsg
     | TutorialMsg TutorialMsg
-    | HubMsg Hub.HubMsg
+    | HubMsg HubMsg
     | StartLevel Progress
     | RestartLevel
     | TransitionWithWin
@@ -81,7 +80,6 @@ type Msg
     | RandomBackground Background
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
-    | ReceieveExternalAnimations String
     | ClearCache
     | WindowSize Window.Size
     | UpdateTimes Time

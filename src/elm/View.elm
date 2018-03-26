@@ -3,7 +3,6 @@ module View exposing (..)
 import Config.Animations exposing (internalAnimations)
 import Config.Color exposing (darkYellow)
 import Helpers.Css.Style exposing (color)
-import Helpers.Html exposing (embeddedStyle)
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -22,19 +21,11 @@ import Views.Loading exposing (loadingScreen)
 view : Model -> Html Msg
 view model =
     div []
-        [ embeddedAnimations model.xAnimations
+        [ internalAnimations
         , reset
         , loadingScreen model
         , renderSceneState model
         , backdrop
-        ]
-
-
-embeddedAnimations : String -> Html msg
-embeddedAnimations externalanimations =
-    div []
-        [ embeddedStyle externalanimations
-        , internalAnimations
         ]
 
 

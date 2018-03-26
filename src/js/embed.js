@@ -18,7 +18,7 @@ function init() {
     }
   })
 
-  app.ports.getExternalAnimations.subscribe(function (tileSize) {
+  app.ports.generateBounceKeyframes.subscribe(function (tileSize) {
     var anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
@@ -27,7 +27,8 @@ function init() {
     ]
     .join(' ')
 
-    app.ports.receiveExternalAnimations.send(anims)
+    var styleNode = document.getElementById('generated-styles')
+    styleNode.textContent = anims
   })
 
   app.ports.cacheProgress.subscribe(function (progress) {
