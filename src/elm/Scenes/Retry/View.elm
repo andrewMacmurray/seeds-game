@@ -1,6 +1,7 @@
 module Scenes.Retry.View exposing (..)
 
 import Config.Color exposing (..)
+import Data.Transit exposing (Transit(..))
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
@@ -8,8 +9,9 @@ import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import State exposing (livesLeft)
 import Types exposing (..)
-import Views.Lives exposing (livesLeft)
+import Views.Lives exposing (renderLivesLeft)
 
 
 retryView : Model -> Html Msg
@@ -27,7 +29,7 @@ retryView model =
             ]
         ]
         [ div [ class "tc", style [ ( "margin-top", pc -8 ) ] ]
-            [ div [] <| livesLeft model.lives
+            [ div [] <| renderLivesLeft <| lifeState model
             , div [ style [ color darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
@@ -61,6 +63,20 @@ retryView model =
                 [ tryAgain model ]
             ]
         ]
+
+
+lifeState : Model -> Transit Int
+lifeState model =
+    let
+        lives =
+            model.timeTillNextLife |> livesLeft |> floor
+    in
+        case model.scene of
+            Transition _ ->
+                Static lives
+
+            _ ->
+                Transitioning lives
 
 
 tryAgain : Model -> Html Msg

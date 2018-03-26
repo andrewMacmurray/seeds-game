@@ -43,7 +43,6 @@ initialState flags =
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
-    , lives = Transitioning 5
     , levelInfoWindow = Hidden
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
@@ -160,11 +159,7 @@ update msg model =
             handleIncrementProgress model
 
         DecrementLives ->
-            (model
-                |> handleDecrementLives
-                |> addTimeTillNextLife
-            )
-                ! []
+            addTimeTillNextLife model ! []
 
         ScrollToHubLevel level ->
             model ! [ scrollToHubLevel level ]
@@ -230,10 +225,7 @@ handleLoadRetry : Model -> Model
 handleLoadRetry model =
     case model.scene of
         Loaded (Level levelModel) ->
-            { model
-                | scene = Transition { from = Level levelModel, to = Retry }
-                , lives = Transit.toStatic model.lives
-            }
+            { model | scene = Transition { from = Level levelModel, to = Retry } }
 
         _ ->
             model
@@ -453,7 +445,6 @@ countDownToNextLife now model =
             { model
                 | timeTillNextLife = newTimeTillNextLife
                 , lastPlayed = now
-                , lives = Transit.map (always lifeVal) model.lives
             }
 
 
@@ -470,11 +461,6 @@ livesLeft timeTill =
 addTimeTillNextLife : Model -> Model
 addTimeTillNextLife model =
     { model | timeTillNextLife = model.timeTillNextLife + lifeRecoveryInterval }
-
-
-handleDecrementLives : Model -> Model
-handleDecrementLives model =
-    { model | lives = decrementLives model.lives }
 
 
 decrementLives : Transit Int -> Transit Int

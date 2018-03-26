@@ -3,7 +3,6 @@ module Types exposing (..)
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
-import Data.Transit exposing (Transit)
 import Dom
 import Scenes.Level.Types as Level exposing (..)
 import Scenes.Tutorial.Types as Tutorial
@@ -35,10 +34,9 @@ type alias Model =
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
-    , lives : Transit Int
     , levelInfoWindow : InfoWindow Progress
-    , lastPlayed : Time
     , timeTillNextLife : Time
+    , lastPlayed : Time
     , window : Window.Size
     , xAnimations : String
     }
