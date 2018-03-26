@@ -26,13 +26,17 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData tutorialConfig -> Model -> ( Model, Cmd Msg )
-init levelData model =
-    addLevelData levelData model
-        ! [ handleGenerateTiles levelData model
-          , getWindowSize
-          , generateSuccessMessageIndex
-          ]
+init : LevelData tutorialConfig -> ( Model, Cmd Msg )
+init levelData =
+    let
+        model =
+            addLevelData levelData initialState
+    in
+        model
+            ! [ handleGenerateTiles levelData model
+              , getWindowSize
+              , generateSuccessMessageIndex
+              ]
 
 
 addLevelData : LevelData tutorialConfig -> Model -> Model

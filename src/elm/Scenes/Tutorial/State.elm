@@ -27,10 +27,10 @@ init levelData config =
             loadTutorialData config initialState
 
         ( levelModel, levelCmd ) =
-            Level.init levelData Level.initialState
+            Level.init levelData
     in
         { model | levelModel = levelModel }
-            ! [ sequenceMs config.sequence
+            ! [ sequenceMs <| pause 500 config.sequence
               , getWindowSize
               , Cmd.map LevelMsg levelCmd
               ]

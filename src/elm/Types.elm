@@ -93,7 +93,7 @@ type Msg
     | ClearCache
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
-    | Tick Time
+    | UpdateTimes Time
 
 
 fromProgress : Progress -> RawProgress

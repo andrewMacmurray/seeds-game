@@ -16,7 +16,7 @@ import Scenes.Level.Types as Lv exposing (OutMsg(..))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types as Tu exposing (OutMsg(..))
 import Task
-import Time exposing (Time, every, minute, second)
+import Time exposing (Time, every, millisecond, second)
 import Types exposing (..)
 import Window exposing (resizes, size)
 
@@ -65,9 +65,6 @@ update msg model =
         TutorialMsg tutorialMsg ->
             handleTutorialMsg tutorialMsg model
 
-        ReceieveExternalAnimations animations ->
-            { model | xAnimations = animations } ! []
-
         StartLevel level ->
             case tutorialData level of
                 Just tutorialConfig ->
@@ -75,8 +72,8 @@ update msg model =
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
                                 , ( 10, ShowLoadingScreen )
-                                , ( 3000, HideLoadingScreen )
-                                , ( 0, LoadTutorial level tutorialConfig )
+                                , ( 2500, LoadTutorial level tutorialConfig )
+                                , ( 500, HideLoadingScreen )
                                 ]
                           ]
 
@@ -126,6 +123,9 @@ update msg model =
         ShowLoadingScreen ->
             model ! [ genRandomBackground RandomBackground ]
 
+        RandomBackground background ->
+            { model | loadingScreen = Just background } ! []
+
         HideLoadingScreen ->
             { model | loadingScreen = Nothing } ! []
 
@@ -156,9 +156,6 @@ update msg model =
                         ]
                   ]
 
-        RandomBackground background ->
-            { model | loadingScreen = Just background } ! []
-
         IncrementProgress ->
             handleIncrementProgress model
 
@@ -185,8 +182,11 @@ update msg model =
             { model | window = size }
                 ! [ getExternalAnimations <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
 
-        Tick time ->
-            updateTimes time model
+        UpdateTimes now ->
+            updateTimes now model
+
+        ReceieveExternalAnimations animations ->
+            { model | xAnimations = animations } ! []
 
 
 
@@ -197,12 +197,9 @@ loadLevel : Model -> Progress -> ( Model, Cmd Msg )
 loadLevel model level =
     let
         ( levelModel, levelCmd ) =
-            Level.init (getLevelData level) Level.initialState
+            Level.init <| getLevelData level
     in
-        { model | scene = Loaded <| Level levelModel }
-            ! [ Cmd.map LevelMsg levelCmd
-              , getWindowSize
-              ]
+        { model | scene = Loaded <| Level levelModel } ! [ Cmd.map LevelMsg levelCmd ]
 
 
 loadTutorial : Model -> Progress -> Tu.Config -> ( Model, Cmd Msg )
@@ -211,10 +208,7 @@ loadTutorial model level tutorialConfig =
         ( tutorialModel, tutorialCmd ) =
             Tutorial.init (getLevelData level) tutorialConfig
     in
-        { model | scene = Loaded <| Tutorial tutorialModel }
-            ! [ Cmd.map TutorialMsg tutorialCmd
-              , getWindowSize
-              ]
+        { model | scene = Loaded <| Tutorial tutorialModel } ! [ Cmd.map TutorialMsg tutorialCmd ]
 
 
 loadHub : Model -> Model
@@ -504,11 +498,19 @@ subscriptions model =
     Sub.batch
         [ receiveExternalAnimations ReceieveExternalAnimations
         , receiveHubLevelOffset ReceiveHubLevelOffset
-        , every second Tick
         , resizes WindowSize
+        , subscribeDecrement model
         , levelSubscriptions model
         , tutorialSubscriptions model
         ]
+
+
+subscribeDecrement : Model -> Sub Msg
+subscribeDecrement model =
+    if model.scene == Loaded Hub && model.timeTillNextLife > 0 then
+        every (millisecond * 100) UpdateTimes
+    else
+        every (second * 10) UpdateTimes
 
 
 levelSubscriptions : Model -> Sub Msg
