@@ -9,14 +9,14 @@ import Views.InfoWindow exposing (infoContainer)
 
 infoWindow : Model -> Html msg
 infoWindow model =
-    case model.levelInfoWindow of
+    case model.hubInfoWindow of
         Hidden ->
             span [] []
 
         Visible message ->
-            infoContainer model.levelInfoWindow <|
+            infoContainer model.hubInfoWindow <|
                 div [ class "pv5 f3 tracked-mega" ] [ text message ]
 
         Hiding message ->
-            infoContainer model.levelInfoWindow <|
+            infoContainer model.hubInfoWindow <|
                 div [ class "pv5 f3 tracked-mega" ] [ text message ]

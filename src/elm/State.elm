@@ -43,11 +43,11 @@ initialState flags =
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
-    , levelInfoWindow = Hidden
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
     , xAnimations = ""
+    , hubInfoWindow = Hidden
     }
 
 
@@ -136,36 +136,10 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, ShowLoadingScreen )
                         , ( 500, LoadHub )
-                        , ( 100, ScrollToHubLevel <| progressLevelNumber model )
+                        , ( 100, ScrollHubToLevel <| progressLevelNumber model )
                         , ( 2400, HideLoadingScreen )
                         ]
                   ]
-
-        SetInfoState infoWindow ->
-            { model | levelInfoWindow = infoWindow } ! []
-
-        ShowInfo levelProgress ->
-            { model | levelInfoWindow = Visible levelProgress } ! []
-
-        HideInfo ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.levelInfoWindow )
-                        , ( 1000, SetInfoState Hidden )
-                        ]
-                  ]
-
-        IncrementProgress ->
-            handleIncrementProgress model
-
-        DecrementLives ->
-            addTimeTillNextLife model ! []
-
-        ScrollToHubLevel level ->
-            model ! [ scrollToHubLevel level ]
-
-        ReceiveHubLevelOffset offset ->
-            model ! [ scrollHubToLevel offset model.window ]
 
         ClearCache ->
             model ! [ clearCache ]
@@ -182,6 +156,34 @@ update msg model =
 
         ReceieveExternalAnimations animations ->
             { model | xAnimations = animations } ! []
+
+        -- Summary and Retry Specific Messages
+        IncrementProgress ->
+            handleIncrementProgress model
+
+        DecrementLives ->
+            addTimeTillNextLife model ! []
+
+        -- Hub Specific Messages
+        SetInfoState infoWindow ->
+            { model | hubInfoWindow = infoWindow } ! []
+
+        ShowLevelInfo levelProgress ->
+            { model | hubInfoWindow = Visible levelProgress } ! []
+
+        HideLevelInfo ->
+            model
+                ! [ sequenceMs
+                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.hubInfoWindow )
+                        , ( 1000, SetInfoState Hidden )
+                        ]
+                  ]
+
+        ScrollHubToLevel level ->
+            model ! [ scrollToHubLevel level ]
+
+        ReceiveHubLevelOffset offset ->
+            model ! [ scrollHubToLevel offset model.window ]
 
 
 
@@ -313,6 +315,16 @@ initProgressFromCache rawProgress =
         |> Maybe.withDefault ( 1, 1 )
 
 
+fromProgress : Progress -> RawProgress
+fromProgress ( world, level ) =
+    RawProgress world level
+
+
+toProgress : Maybe RawProgress -> Maybe Progress
+toProgress =
+    Maybe.map (\{ world, level } -> ( world, level ))
+
+
 scrollHubToLevel : Float -> Window.Size -> Cmd Msg
 scrollHubToLevel offset window =
     let
@@ -381,7 +393,7 @@ levelLoseSequence model =
 backToHubSequence : Int -> List ( Float, Msg )
 backToHubSequence levelNumber =
     [ ( 500, LoadHub )
-    , ( 1000, ScrollToHubLevel levelNumber )
+    , ( 1000, ScrollHubToLevel levelNumber )
     , ( 1500, HideLoadingScreen )
     , ( 500, SetCurrentLevel Nothing )
     ]

@@ -20,7 +20,7 @@ import Views.Seed.All exposing (renderSeed)
 
 info : Model -> Html Msg
 info model =
-    case model.levelInfoWindow of
+    case model.hubInfoWindow of
         Hidden ->
             span [] []
 
@@ -29,7 +29,7 @@ info model =
                 content =
                     getLevelConfig progress |> infoContent progress
             in
-                infoContainer model.levelInfoWindow <|
+                infoContainer model.hubInfoWindow <|
                     div [ onClick <| StartLevel progress ] content
 
         Hiding progress ->
@@ -37,7 +37,7 @@ info model =
                 content =
                     getLevelConfig progress |> infoContent progress
             in
-                infoContainer model.levelInfoWindow <|
+                infoContainer model.hubInfoWindow <|
                     div [] content
 
 
@@ -126,9 +126,9 @@ renderWeather color =
 
 handleHideInfo : Model -> Attribute Msg
 handleHideInfo model =
-    case model.levelInfoWindow of
+    case model.hubInfoWindow of
         Visible _ ->
-            onClick HideInfo
+            onClick HideLevelInfo
 
         _ ->
             emptyProperty

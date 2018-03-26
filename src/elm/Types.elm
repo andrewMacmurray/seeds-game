@@ -34,11 +34,11 @@ type alias Model =
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
-    , levelInfoWindow : InfoWindow Progress
     , timeTillNextLife : Time
     , lastPlayed : Time
     , window : Window.Size
     , xAnimations : String
+    , hubInfoWindow : InfoWindow Progress
     }
 
 
@@ -80,30 +80,17 @@ type Msg
     | RandomBackground Background
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
-    | ShowInfo Progress
-    | HideInfo
-    | SetInfoState (InfoWindow Progress)
-    | IncrementProgress
-    | DecrementLives
-    | ScrollToHubLevel Int
-    | ReceiveHubLevelOffset Float
     | ReceieveExternalAnimations String
     | ClearCache
     | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | UpdateTimes Time
-
-
-fromProgress : Progress -> RawProgress
-fromProgress ( world, level ) =
-    RawProgress world level
-
-
-toProgress : Maybe RawProgress -> Maybe Progress
-toProgress =
-    Maybe.map toProgress_
-
-
-toProgress_ : RawProgress -> Progress
-toProgress_ { world, level } =
-    ( world, level )
+      -- Summary and Retry Specific Messages
+    | IncrementProgress
+    | DecrementLives
+      -- Hub Specific Messages
+    | ShowLevelInfo Progress
+    | HideLevelInfo
+    | SetInfoState (InfoWindow Progress)
+    | ScrollHubToLevel Int
+    | ReceiveHubLevelOffset Float
