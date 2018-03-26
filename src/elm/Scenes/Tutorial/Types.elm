@@ -3,10 +3,10 @@ module Scenes.Tutorial.Types exposing (..)
 import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Dict exposing (Dict)
 import Window
-import Scenes.Level.Types as Level
+import Scenes.Level.Types exposing (LevelMsg, LevelModel)
 
 
-type alias Model =
+type alias TutorialModel =
     { board : Board
     , boardVisible : Bool
     , textVisible : Bool
@@ -20,11 +20,11 @@ type alias Model =
     , currentText : Int
     , text : Dict Int String
     , window : Window.Size
-    , levelModel : Level.Model
+    , levelModel : LevelModel
     }
 
 
-type alias Config =
+type alias TutorialConfig =
     { text : Dict Int String
     , boardDimensions : BoardDimensions
     , board : Board
@@ -34,11 +34,11 @@ type alias Config =
 
 
 type alias Sequence =
-    List ( Float, Msg )
+    List ( Float, TutorialMsg )
 
 
-type Msg
-    = LevelMsg Level.Msg
+type TutorialMsg
+    = LevelMsg LevelMsg
     | DragTile Coord
     | SetGrowingPods
     | SetLeaving
@@ -68,5 +68,5 @@ type Msg
     | WindowSize Window.Size
 
 
-type OutMsg
-    = ExitTutorialToLevel
+type TutorialOutMsg
+    = ExitToLevel

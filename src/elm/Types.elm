@@ -3,9 +3,9 @@ module Types exposing (..)
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
-import Dom
-import Scenes.Level.Types as Level exposing (..)
-import Scenes.Tutorial.Types as Tutorial
+import Scenes.Level.Types exposing (..)
+import Scenes.Tutorial.Types exposing (..)
+import Scenes.Hub.Types as Hub
 import Time exposing (Time)
 import Window
 
@@ -36,9 +36,9 @@ type alias Model =
     , currentLevel : Maybe Progress
     , timeTillNextLife : Time
     , lastPlayed : Time
+    , hubInfoWindow : InfoWindow Progress
     , window : Window.Size
     , xAnimations : String
-    , hubInfoWindow : InfoWindow Progress
     }
 
 
@@ -56,20 +56,21 @@ type alias SceneTransition =
 type Scene
     = Title
     | Hub
-    | Tutorial Tutorial.Model
-    | Level Level.Model
+    | Tutorial TutorialModel
+    | Level LevelModel
     | Summary
     | Retry
 
 
 type Msg
-    = LevelMsg Level.Msg
-    | TutorialMsg Tutorial.Msg
+    = LevelMsg LevelMsg
+    | TutorialMsg TutorialMsg
+    | HubMsg Hub.HubMsg
     | StartLevel Progress
     | RestartLevel
     | TransitionWithWin
     | TransitionWithLose
-    | LoadTutorial Progress Tutorial.Config
+    | LoadTutorial Progress TutorialConfig
     | LoadLevel Progress
     | LoadHub
     | LoadSummary
@@ -82,15 +83,8 @@ type Msg
     | GoToHub
     | ReceieveExternalAnimations String
     | ClearCache
-    | DomNoOp (Result Dom.Error ())
     | WindowSize Window.Size
     | UpdateTimes Time
       -- Summary and Retry Specific Messages
     | IncrementProgress
     | DecrementLives
-      -- Hub Specific Messages
-    | ShowLevelInfo Progress
-    | HideLevelInfo
-    | SetInfoState (InfoWindow Progress)
-    | ScrollHubToLevel Int
-    | ReceiveHubLevelOffset Float

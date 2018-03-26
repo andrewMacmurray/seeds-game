@@ -7,7 +7,7 @@ import Data.InfoWindow exposing (..)
 import Views.InfoWindow exposing (infoContainer)
 
 
-infoWindow : Model -> Html msg
+infoWindow : LevelModel -> Html msg
 infoWindow model =
     case model.hubInfoWindow of
         Hidden ->

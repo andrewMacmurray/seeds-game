@@ -7,7 +7,7 @@ import Mouse
 import Window
 
 
-type alias Model =
+type alias LevelModel =
     { board : Board
     , scores : Scores
     , isDragging : Bool
@@ -23,7 +23,7 @@ type alias Model =
     }
 
 
-type Msg
+type LevelMsg
     = InitTiles (List ( WallColor, Coord )) (List TileType)
     | SquareMove
     | StopMove
@@ -51,9 +51,9 @@ type Msg
     | WindowSize Window.Size
 
 
-type OutMsg
-    = ExitLevelWithWin
-    | ExitLevelWithLose
+type LevelOutMsg
+    = ExitWin
+    | ExitLose
 
 
 type LevelStatus

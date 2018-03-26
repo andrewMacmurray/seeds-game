@@ -13,7 +13,7 @@ import Views.Level.Styles exposing (..)
 import Views.Level.Tile exposing (..)
 
 
-board : Level.Model -> Html Level.Msg
+board : LevelModel -> Html LevelMsg
 board model =
     boardLayout model
         [ div [ class "relative z-5" ] <| renderTiles model
@@ -21,21 +21,21 @@ board model =
         ]
 
 
-renderTiles : Level.Model -> List (Html Level.Msg)
+renderTiles : LevelModel -> List (Html LevelMsg)
 renderTiles model =
     model.board
         |> Dict.toList
         |> List.map (renderTile model)
 
 
-renderLines : Level.Model -> List (Html msg)
+renderLines : LevelModel -> List (Html msg)
 renderLines model =
     model.board
         |> Dict.toList
         |> List.map (renderLineLayer model)
 
 
-boardLayout : Level.Model -> List (Html Level.Msg) -> Html Level.Msg
+boardLayout : LevelModel -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
@@ -59,7 +59,7 @@ renderLineLayer model (( coord, _ ) as move) =
         ]
 
 
-handleStop : Level.Model -> Attribute Level.Msg
+handleStop : LevelModel -> Attribute LevelMsg
 handleStop model =
     if model.isDragging then
         onMouseUp StopMove

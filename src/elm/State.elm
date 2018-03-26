@@ -7,14 +7,15 @@ import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
-import Dom.Scroll exposing (toY)
 import Helpers.Delay exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Ports exposing (..)
+import Scenes.Hub.State as Hub
+import Scenes.Hub.Types exposing (HubMsg(..))
 import Scenes.Level.State as Level
-import Scenes.Level.Types as Lv exposing (OutMsg(..))
+import Scenes.Level.Types exposing (LevelOutMsg(..), LevelMsg)
 import Scenes.Tutorial.State as Tutorial
-import Scenes.Tutorial.Types as Tu exposing (OutMsg(..))
+import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialMsg, TutorialOutMsg(..))
 import Task
 import Time exposing (Time, every, millisecond, second)
 import Types exposing (..)
@@ -63,6 +64,9 @@ update msg model =
 
         TutorialMsg tutorialMsg ->
             handleTutorialMsg tutorialMsg model
+
+        HubMsg hubMsg ->
+            handleHubMsg hubMsg model
 
         StartLevel level ->
             case tutorialData level of
@@ -136,16 +140,13 @@ update msg model =
                 ! [ sequenceMs
                         [ ( 0, ShowLoadingScreen )
                         , ( 500, LoadHub )
-                        , ( 100, ScrollHubToLevel <| progressLevelNumber model )
+                        , ( 100, HubMsg <| ScrollHubToLevel <| progressLevelNumber model )
                         , ( 2400, HideLoadingScreen )
                         ]
                   ]
 
         ClearCache ->
             model ! [ clearCache ]
-
-        DomNoOp _ ->
-            model ! []
 
         WindowSize size ->
             { model | window = size }
@@ -164,27 +165,6 @@ update msg model =
         DecrementLives ->
             addTimeTillNextLife model ! []
 
-        -- Hub Specific Messages
-        SetInfoState infoWindow ->
-            { model | hubInfoWindow = infoWindow } ! []
-
-        ShowLevelInfo levelProgress ->
-            { model | hubInfoWindow = Visible levelProgress } ! []
-
-        HideLevelInfo ->
-            model
-                ! [ sequenceMs
-                        [ ( 0, SetInfoState <| InfoWindow.toHiding model.hubInfoWindow )
-                        , ( 1000, SetInfoState Hidden )
-                        ]
-                  ]
-
-        ScrollHubToLevel level ->
-            model ! [ scrollToHubLevel level ]
-
-        ReceiveHubLevelOffset offset ->
-            model ! [ scrollHubToLevel offset model.window ]
-
 
 
 -- Scene Loaders
@@ -199,7 +179,7 @@ loadLevel model level =
         { model | scene = Loaded <| Level levelModel } ! [ Cmd.map LevelMsg levelCmd ]
 
 
-loadTutorial : Model -> Progress -> Tu.Config -> ( Model, Cmd Msg )
+loadTutorial : Model -> Progress -> TutorialConfig -> ( Model, Cmd Msg )
 loadTutorial model level tutorialConfig =
     let
         ( tutorialModel, tutorialCmd ) =
@@ -247,7 +227,7 @@ completeSceneTransition sceneState =
 -- Scene updaters
 
 
-handleLevelMsg : Lv.Msg -> Model -> ( Model, Cmd Msg )
+handleLevelMsg : LevelMsg -> Model -> ( Model, Cmd Msg )
 handleLevelMsg levelMsg model =
     case model.scene of
         Loaded (Level levelModel) ->
@@ -259,20 +239,20 @@ handleLevelMsg levelMsg model =
             model ! []
 
 
-handleLevelOutMsg : ( Model, Cmd Msg, Maybe Lv.OutMsg ) -> ( Model, Cmd Msg )
+handleLevelOutMsg : ( Model, Cmd Msg, Maybe LevelOutMsg ) -> ( Model, Cmd Msg )
 handleLevelOutMsg ( model, cmd, outMsg ) =
     case outMsg of
-        Just ExitLevelWithWin ->
+        Just ExitWin ->
             model ! [ trigger TransitionWithWin, cmd ]
 
-        Just ExitLevelWithLose ->
+        Just ExitLose ->
             model ! [ trigger TransitionWithLose, cmd ]
 
         Nothing ->
             model ! [ cmd ]
 
 
-handleTutorialMsg : Tu.Msg -> Model -> ( Model, Cmd Msg )
+handleTutorialMsg : TutorialMsg -> Model -> ( Model, Cmd Msg )
 handleTutorialMsg tutorialMsg model =
     case model.scene of
         Loaded (Tutorial tutorialModel) ->
@@ -284,10 +264,10 @@ handleTutorialMsg tutorialMsg model =
             model ! []
 
 
-handleTutorialOutMsg : ( Model, Cmd Msg, Maybe Tu.OutMsg ) -> ( Model, Cmd Msg )
+handleTutorialOutMsg : ( Model, Cmd Msg, Maybe TutorialOutMsg ) -> ( Model, Cmd Msg )
 handleTutorialOutMsg ( model, cmd, outMsg ) =
     case outMsg of
-        Just ExitTutorialToLevel ->
+        Just ExitToLevel ->
             { model | scene = tutorialToLevel model.scene } ! [ cmd ]
 
         Nothing ->
@@ -302,6 +282,15 @@ tutorialToLevel scene =
 
         _ ->
             scene
+
+
+handleHubMsg : HubMsg -> Model -> ( Model, Cmd Msg )
+handleHubMsg hubMsg model =
+    let
+        ( newModel, cmd ) =
+            Hub.update hubMsg model
+    in
+        newModel ! [ Cmd.map HubMsg cmd ]
 
 
 
@@ -325,26 +314,17 @@ toProgress =
     Maybe.map (\{ world, level } -> ( world, level ))
 
 
-scrollHubToLevel : Float -> Window.Size -> Cmd Msg
-scrollHubToLevel offset window =
-    let
-        targetDistance =
-            offset - toFloat (window.height // 2) + 60
-    in
-        toY "hub" targetDistance |> Task.attempt DomNoOp
-
-
-getLevelData : Progress -> LevelData Tu.Config
+getLevelData : Progress -> LevelData TutorialConfig
 getLevelData =
     levelData allLevels >> Maybe.withDefault defaultLevel
 
 
-getLevelConfig : Progress -> CurrentLevelConfig Tu.Config
+getLevelConfig : Progress -> CurrentLevelConfig TutorialConfig
 getLevelConfig =
     levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
 
 
-tutorialData : Progress -> Maybe Tu.Config
+tutorialData : Progress -> Maybe TutorialConfig
 tutorialData level =
     let
         ( _, levelData ) =
@@ -393,7 +373,7 @@ levelLoseSequence model =
 backToHubSequence : Int -> List ( Float, Msg )
 backToHubSequence levelNumber =
     [ ( 500, LoadHub )
-    , ( 1000, ScrollHubToLevel levelNumber )
+    , ( 1000, HubMsg <| ScrollHubToLevel levelNumber )
     , ( 1500, HideLoadingScreen )
     , ( 500, SetCurrentLevel Nothing )
     ]
@@ -495,11 +475,11 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ receiveExternalAnimations ReceieveExternalAnimations
-        , receiveHubLevelOffset ReceiveHubLevelOffset
         , resizes WindowSize
         , subscribeDecrement model
         , levelSubscriptions model
         , tutorialSubscriptions model
+        , hubSubscriptions model
         ]
 
 
@@ -526,6 +506,16 @@ tutorialSubscriptions model =
     case model.scene of
         Loaded (Tutorial tutorialModel) ->
             Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
+
+        _ ->
+            Sub.none
+
+
+hubSubscriptions : Model -> Sub Msg
+hubSubscriptions model =
+    case model.scene of
+        Loaded Hub ->
+            Sub.map HubMsg <| Hub.subscriptions model
 
         _ ->
             Sub.none

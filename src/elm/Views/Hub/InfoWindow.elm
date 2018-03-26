@@ -13,12 +13,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import State exposing (getLevelConfig)
-import Types exposing (Model, Msg(..))
+import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
+import Types exposing (Msg(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
 
 
-info : Model -> Html Msg
+info : HubModel model -> Html Msg
 info model =
     case model.hubInfoWindow of
         Hidden ->
@@ -124,11 +125,11 @@ renderWeather color =
         []
 
 
-handleHideInfo : Model -> Attribute Msg
+handleHideInfo : HubModel model -> Attribute Msg
 handleHideInfo model =
     case model.hubInfoWindow of
         Visible _ ->
-            onClick HideLevelInfo
+            onClick <| HubMsg HideLevelInfo
 
         _ ->
             emptyProperty

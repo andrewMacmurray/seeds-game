@@ -26,7 +26,7 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData tutorialConfig -> ( Model, Cmd Msg )
+init : LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
 init levelData =
     let
         model =
@@ -39,7 +39,7 @@ init levelData =
               ]
 
 
-addLevelData : LevelData tutorialConfig -> Model -> Model
+addLevelData : LevelData tutorialConfig -> LevelModel -> LevelModel
 addLevelData { tileSettings, walls, boardDimensions, moves } model =
     { model
         | scores = initialScores tileSettings
@@ -51,7 +51,7 @@ addLevelData { tileSettings, walls, boardDimensions, moves } model =
     }
 
 
-initialState : Model
+initialState : LevelModel
 initialState =
     { board = Dict.empty
     , scores = Dict.empty
@@ -68,12 +68,12 @@ initialState =
     }
 
 
-getWindowSize : Cmd Msg
+getWindowSize : Cmd LevelMsg
 getWindowSize =
     Task.perform WindowSize size
 
 
-generateSuccessMessageIndex : Cmd Msg
+generateSuccessMessageIndex : Cmd LevelMsg
 generateSuccessMessageIndex =
     randomSuccessMessageIndex RandomSuccessMessageIndex
 
@@ -82,7 +82,7 @@ generateSuccessMessageIndex =
 -- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
+update : LevelMsg -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -176,11 +176,11 @@ update msg model =
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
-            withOutMsg { model | successMessageIndex = model.successMessageIndex + 1 } [] ExitLevelWithWin
+            withOutMsg { model | successMessageIndex = model.successMessageIndex + 1 } [] ExitWin
 
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
-            withOutMsg model [] ExitLevelWithLose
+            withOutMsg model [] ExitLose
 
         MousePosition position ->
             noOutMsg { model | mouse = position } []
@@ -193,7 +193,7 @@ update msg model =
 -- SEQUENCES
 
 
-growSeedPodsSequence : Maybe MoveShape -> Cmd Msg
+growSeedPodsSequence : Maybe MoveShape -> Cmd LevelMsg
 growSeedPodsSequence moveShape =
     sequenceMs
         [ ( initialDelay moveShape, SetGrowingSeedPods )
@@ -203,7 +203,7 @@ growSeedPodsSequence moveShape =
         ]
 
 
-removeTilesSequence : Maybe MoveShape -> Cmd Msg
+removeTilesSequence : Maybe MoveShape -> Cmd LevelMsg
 removeTilesSequence moveShape =
     sequenceMs
         [ ( initialDelay moveShape, SetLeavingTiles )
@@ -216,7 +216,7 @@ removeTilesSequence moveShape =
         ]
 
 
-winSequence : Model -> Cmd Msg
+winSequence : LevelModel -> Cmd LevelMsg
 winSequence model =
     sequenceMs
         [ ( 500, ShowInfo <| getSuccessMessage model.successMessageIndex )
@@ -226,7 +226,7 @@ winSequence model =
         ]
 
 
-loseSequence : Cmd Msg
+loseSequence : Cmd LevelMsg
 loseSequence =
     sequenceMs
         [ ( 500, ShowInfo failureMessage )
@@ -256,7 +256,7 @@ fallDelay moveShape =
 -- Update Helpers
 
 
-handleGenerateTiles : LevelData tutorialConfig -> Model -> Cmd Msg
+handleGenerateTiles : LevelData tutorialConfig -> LevelModel -> Cmd LevelMsg
 handleGenerateTiles levelData { boardDimensions } =
     generateInitialTiles (InitTiles levelData.walls) levelData.tileSettings boardDimensions
 
@@ -276,12 +276,12 @@ handleInsertNewSeeds seedType =
     mapBoard <| insertNewSeeds seedType
 
 
-handleAddScore : Model -> Model
+handleAddScore : LevelModel -> LevelModel
 handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-handleResetMove : Model -> Model
+handleResetMove : LevelModel -> LevelModel
 handleResetMove model =
     { model
         | isDragging = False
@@ -289,7 +289,7 @@ handleResetMove model =
     }
 
 
-handleDecrementRemainingMoves : Model -> Model
+handleDecrementRemainingMoves : LevelModel -> LevelModel
 handleDecrementRemainingMoves model =
     if model.remainingMoves < 1 then
         { model | remainingMoves = 0 }
@@ -297,7 +297,7 @@ handleDecrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Model -> Model
+handleStartMove : Move -> LevelModel -> LevelModel
 handleStartMove move model =
     { model
         | isDragging = True
@@ -306,7 +306,7 @@ handleStartMove move model =
     }
 
 
-handleCheckMove : Move -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
+handleCheckMove : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
 handleCheckMove move model =
     let
         newModel =
@@ -315,7 +315,7 @@ handleCheckMove move model =
         noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
-handleCheckMove_ : Move -> Model -> Model
+handleCheckMove_ : Move -> LevelModel -> LevelModel
 handleCheckMove_ move model =
     if model.isDragging then
         { model | board = addToMove move model.board }
@@ -323,7 +323,7 @@ handleCheckMove_ move model =
         model
 
 
-handleSquareMove : Model -> Model
+handleSquareMove : LevelModel -> LevelModel
 handleSquareMove model =
     { model
         | moveShape = Just Square
@@ -331,7 +331,7 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : Model -> ( Model, Cmd Msg, Maybe OutMsg )
+handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
 handleCheckLevelComplete model =
     if hasLost model then
         noOutMsg { model | levelStatus = Lose } [ loseSequence ]
@@ -341,12 +341,12 @@ handleCheckLevelComplete model =
         noOutMsg model []
 
 
-hasLost : Model -> Bool
+hasLost : LevelModel -> Bool
 hasLost { remainingMoves, levelStatus } =
     remainingMoves < 1 && levelStatus == InProgress
 
 
-hasWon : Model -> Bool
+hasWon : LevelModel -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
 
@@ -355,7 +355,7 @@ hasWon { scores, levelStatus } =
 -- subscriptions
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : LevelModel -> Sub LevelMsg
 subscriptions model =
     Sub.batch
         [ subscribeDrag model
@@ -364,7 +364,7 @@ subscriptions model =
         ]
 
 
-subscribeDrag : Model -> Sub Msg
+subscribeDrag : LevelModel -> Sub LevelMsg
 subscribeDrag model =
     if model.isDragging then
         moves MousePosition

@@ -11,7 +11,7 @@ import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (..)
 
 
-handleLineDrag : Level.Model -> Html Level.Msg
+handleLineDrag : LevelModel -> Html LevelMsg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
@@ -19,7 +19,7 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : Level.Model -> Html Level.Msg
+lineDrag : LevelModel -> Html LevelMsg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -55,7 +55,7 @@ lineDrag ({ window } as model) =
             ]
 
 
-lastMoveOrigin : Level.Model -> ( Float, Float )
+lastMoveOrigin : LevelModel -> ( Float, Float )
 lastMoveOrigin ({ window } as model) =
     let
         tileScale =

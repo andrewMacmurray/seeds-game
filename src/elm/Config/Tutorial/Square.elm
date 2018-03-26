@@ -6,7 +6,7 @@ import Dict exposing (Dict)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
 
-config : Config
+config : TutorialConfig
 config =
     { text = text
     , boardDimensions = boardDimensions

@@ -21,7 +21,7 @@ import Views.Level.Tile exposing (renderTile_)
 import Views.Level.TopBar exposing (scoreIcon)
 
 
-tutorialView : Model -> Html Msg
+tutorialView : TutorialModel -> Html TutorialMsg
 tutorialView model =
     div
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
@@ -78,7 +78,7 @@ tutorialView model =
         ]
 
 
-handleSkip : Model -> Attribute Msg
+handleSkip : TutorialModel -> Attribute TutorialMsg
 handleSkip model =
     if not model.skipped then
         onClick SkipTutorial
@@ -86,7 +86,7 @@ handleSkip model =
         emptyProperty
 
 
-tutorialBoard : Model -> Html msg
+tutorialBoard : TutorialModel -> Html msg
 tutorialBoard model =
     div
         [ class "center relative"
@@ -103,7 +103,7 @@ tutorialBoard model =
         ]
 
 
-renderResourceBank : Model -> Html msg
+renderResourceBank : TutorialModel -> Html msg
 renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     let
         tileScale =
@@ -125,7 +125,7 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
             [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
 
 
-resourceBankOffsetX : Model -> Float
+resourceBankOffsetX : TutorialModel -> Float
 resourceBankOffsetX model =
     ScaleConfig.baseTileSizeX
         * toFloat (model.boardDimensions.x - 1)
@@ -133,7 +133,7 @@ resourceBankOffsetX model =
         / 2
 
 
-renderLines_ : Model -> List (Html msg)
+renderLines_ : TutorialModel -> List (Html msg)
 renderLines_ model =
     model.board
         |> Dict.toList
@@ -153,14 +153,14 @@ fadeLine model (( _, tile ) as move) =
             [ renderLineLayer model move ]
 
 
-renderTiles : Model -> List (Html msg)
+renderTiles : TutorialModel -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
         |> List.map (\mv -> renderTile_ (leavingStyles model mv) model mv)
 
 
-leavingStyles : Model -> Move -> List Style
+leavingStyles : TutorialModel -> Move -> List Style
 leavingStyles model (( _, block ) as move) =
     let
         tileState =

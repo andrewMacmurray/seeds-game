@@ -16,7 +16,7 @@ import Scenes.Level.Types as Level exposing (..)
 import Window
 
 
-boardMarginTop : Level.Model -> Style
+boardMarginTop : LevelModel -> Style
 boardMarginTop model =
     marginTop <| boardOffsetTop model
 
@@ -130,7 +130,7 @@ fallingStyles ( _, block ) =
             []
 
 
-leavingStyles : Level.Model -> Move -> List Style
+leavingStyles : LevelModel -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
         [ transitionStyle
@@ -146,7 +146,7 @@ leavingStyles model (( _, tile ) as move) =
         []
 
 
-handleExitDirection : Move -> Level.Model -> Style
+handleExitDirection : Move -> LevelModel -> Style
 handleExitDirection ( coord, block ) model =
     case getTileState block of
         Leaving Rain _ ->
@@ -162,14 +162,14 @@ handleExitDirection ( coord, block ) model =
             emptyStyle
 
 
-getLeavingStyle : TileType -> Level.Model -> Style
+getLeavingStyle : TileType -> LevelModel -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (toString tileType)
         |> Maybe.withDefault emptyStyle
 
 
-newLeavingStyles : Level.Model -> Dict String Style
+newLeavingStyles : LevelModel -> Dict String Style
 newLeavingStyles model =
     model.tileSettings
         |> scoreTileTypes
@@ -177,7 +177,7 @@ newLeavingStyles model =
         |> Dict.fromList
 
 
-prepareLeavingStyle : Level.Model -> Int -> TileType -> ( String, Style )
+prepareLeavingStyle : LevelModel -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
     ( toString tileType
     , transformStyle
@@ -187,7 +187,7 @@ prepareLeavingStyle model i tileType =
     )
 
 
-exitXDistance : Int -> Level.Model -> Float
+exitXDistance : Int -> LevelModel -> Float
 exitXDistance n model =
     let
         scoreWidth =
@@ -213,7 +213,7 @@ exitOffsetFunction x =
     25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
 
 
-exitYdistance : Level.Model -> Float
+exitYdistance : LevelModel -> Float
 exitYdistance model =
     toFloat (boardOffsetTop model) - 9
 

@@ -20,7 +20,7 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData Config -> Config -> ( Model, Cmd Msg )
+init : LevelData TutorialConfig -> TutorialConfig -> ( TutorialModel, Cmd TutorialMsg )
 init levelData config =
     let
         model =
@@ -36,12 +36,12 @@ init levelData config =
               ]
 
 
-getWindowSize : Cmd Msg
+getWindowSize : Cmd TutorialMsg
 getWindowSize =
     Task.perform WindowSize size
 
 
-initialState : Model
+initialState : TutorialModel
 initialState =
     { board = Dict.empty
     , boardVisible = True
@@ -60,7 +60,7 @@ initialState =
     }
 
 
-loadTutorialData : Config -> Model -> Model
+loadTutorialData : TutorialConfig -> TutorialModel -> TutorialModel
 loadTutorialData config model =
     { model
         | boardDimensions = config.boardDimensions
@@ -76,7 +76,7 @@ loadTutorialData config model =
 -- Update
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
+update : TutorialMsg -> TutorialModel -> ( TutorialModel, Cmd TutorialMsg, Maybe TutorialOutMsg )
 update msg model =
     case msg of
         LevelMsg levelMsg ->
@@ -168,7 +168,7 @@ update msg model =
             noOutMsg (resetVisibilities model) []
 
         ExitTutorial ->
-            withOutMsg model [ trigger ResetVisibilities ] ExitTutorialToLevel
+            withOutMsg model [ trigger ResetVisibilities ] ExitToLevel
 
         WindowSize size ->
             noOutMsg { model | window = size } []
@@ -178,7 +178,7 @@ update msg model =
 -- Update Helpers
 
 
-resetVisibilities : Model -> Model
+resetVisibilities : TutorialModel -> TutorialModel
 resetVisibilities model =
     { model
         | boardVisible = True
@@ -189,7 +189,7 @@ resetVisibilities model =
     }
 
 
-skipSequence : Cmd Msg
+skipSequence : Cmd TutorialMsg
 skipSequence =
     sequenceMs
         [ ( 0, HideCanvas )
@@ -198,12 +198,12 @@ skipSequence =
         ]
 
 
-handleSquareMove : Model -> Model
+handleSquareMove : TutorialModel -> TutorialModel
 handleSquareMove model =
     { model | board = setAllTilesOfTypeToDragging model.board }
 
 
-handleDragTile : Coord -> Model -> Model
+handleDragTile : Coord -> TutorialModel -> TutorialModel
 handleDragTile coord model =
     let
         sunflower =
@@ -215,7 +215,7 @@ handleDragTile coord model =
         { model | board = addBearings ( coord, tile ) model.board }
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : TutorialModel -> Sub TutorialMsg
 subscriptions model =
     Sub.batch
         [ resizes WindowSize

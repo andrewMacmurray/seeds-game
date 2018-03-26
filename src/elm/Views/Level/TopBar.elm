@@ -11,12 +11,12 @@ import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Level.Types exposing (Model)
+import Scenes.Level.Types exposing (LevelModel)
 import Views.Icons.Tick exposing (tickBackground)
 import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 
 
-topBar : Model -> Html msg
+topBar : LevelModel -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -37,7 +37,7 @@ topBar model =
         ]
 
 
-renderScore : Model -> TileType -> Html msg
+renderScore : LevelModel -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =

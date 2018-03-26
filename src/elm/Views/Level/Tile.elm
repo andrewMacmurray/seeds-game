@@ -12,7 +12,7 @@ import Views.Level.Styles exposing (..)
 import Window exposing (Size)
 
 
-renderTile : Level.Model -> Move -> Html Level.Msg
+renderTile : LevelModel -> Move -> Html LevelMsg
 renderTile model (( ( y, x ) as coord, tile ) as move) =
     div
         [ hanldeMoveEvents model move
@@ -37,7 +37,7 @@ renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
         ]
 
 
-hanldeMoveEvents : Level.Model -> Move -> Attribute Level.Msg
+hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
 hanldeMoveEvents model move =
     if model.isDragging then
         onMouseEnter <| CheckMove move
