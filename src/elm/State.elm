@@ -32,17 +32,22 @@ init flags =
           ]
 
 
+getWindowSize : Cmd Msg
+getWindowSize =
+    Task.perform WindowSize size
+
+
 initialState : Flags -> Model
 initialState flags =
     { scene = Loaded Title
     , loadingScreen = Nothing
-    , progress = flags.rawProgress |> toProgress |> Maybe.withDefault ( 1, 1 )
+    , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
     , lives = Transitioning 5
     , levelInfoWindow = Hidden
     , window = { height = 0, width = 0 }
-    , lastPlayed = initTimeTillNextLife flags
-    , timeTillNextLife = flags.times |> Maybe.map .timeTillNextLife |> Maybe.withDefault 0
+    , lastPlayed = initLastPlayed flags
+    , timeTillNextLife = initTimeTillNextLife flags
     , xAnimations = ""
     }
 
@@ -181,35 +186,7 @@ update msg model =
                 ! [ getExternalAnimations <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor size ]
 
         Tick time ->
-            handleUpdateTimes time model
-
-
-
--- Update Helpers
-
-
-getWindowSize : Cmd Msg
-getWindowSize =
-    Task.perform WindowSize size
-
-
-scrollHubToLevel : Float -> Window.Size -> Cmd Msg
-scrollHubToLevel offset window =
-    let
-        targetDistance =
-            offset - toFloat (window.height // 2) + 60
-    in
-        toY "hub" targetDistance |> Task.attempt DomNoOp
-
-
-getLevelData : Progress -> LevelData Tu.Config
-getLevelData =
-    levelData allLevels >> Maybe.withDefault defaultLevel
-
-
-getLevelConfig : Progress -> CurrentLevelConfig Tu.Config
-getLevelConfig =
-    levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
+            updateTimes time model
 
 
 
@@ -343,6 +320,32 @@ tutorialToLevel scene =
 -- Misc
 
 
+initProgressFromCache : Maybe RawProgress -> Progress
+initProgressFromCache rawProgress =
+    rawProgress
+        |> toProgress
+        |> Maybe.withDefault ( 1, 1 )
+
+
+scrollHubToLevel : Float -> Window.Size -> Cmd Msg
+scrollHubToLevel offset window =
+    let
+        targetDistance =
+            offset - toFloat (window.height // 2) + 60
+    in
+        toY "hub" targetDistance |> Task.attempt DomNoOp
+
+
+getLevelData : Progress -> LevelData Tu.Config
+getLevelData =
+    levelData allLevels >> Maybe.withDefault defaultLevel
+
+
+getLevelConfig : Progress -> CurrentLevelConfig Tu.Config
+getLevelConfig =
+    levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
+
+
 tutorialData : Progress -> Maybe Tu.Config
 tutorialData level =
     let
@@ -407,43 +410,14 @@ levelCompleteScrollNumber model =
 
 
 
--- Subscriptions
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ receiveExternalAnimations ReceieveExternalAnimations
-        , receiveHubLevelOffset ReceiveHubLevelOffset
-          -- , every second Tick
-        , resizes WindowSize
-        , levelSubscriptions model
-        , tutorialSubscriptions model
-        ]
-
-
-levelSubscriptions : Model -> Sub Msg
-levelSubscriptions model =
-    case model.scene of
-        Loaded (Level levelModel) ->
-            Sub.map LevelMsg <| Level.subscriptions levelModel
-
-        _ ->
-            Sub.none
-
-
-tutorialSubscriptions : Model -> Sub Msg
-tutorialSubscriptions model =
-    case model.scene of
-        Loaded (Tutorial tutorialModel) ->
-            Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
-
-        _ ->
-            Sub.none
-
-
-
 -- Life Timers
+
+
+initLastPlayed : Flags -> Time
+initLastPlayed flags =
+    flags.times
+        |> Maybe.map .lastPlayed
+        |> Maybe.withDefault flags.now
 
 
 initTimeTillNextLife : Flags -> Time
@@ -453,11 +427,11 @@ initTimeTillNextLife flags =
         |> Maybe.withDefault 0
 
 
-handleUpdateTimes : Time -> Model -> ( Model, Cmd Msg )
-handleUpdateTimes time model =
+updateTimes : Time -> Model -> ( Model, Cmd Msg )
+updateTimes now model =
     let
         newModel =
-            { model | lastPlayed = time } |> countDownToNextLife
+            countDownToNextLife now model
     in
         newModel ! [ handleCacheTimes newModel ]
 
@@ -470,20 +444,23 @@ handleCacheTimes model =
         }
 
 
-countDownToNextLife : Model -> Model
-countDownToNextLife model =
+countDownToNextLife : Time -> Model -> Model
+countDownToNextLife now model =
     if model.timeTillNextLife <= 0 then
-        model
+        { model | lastPlayed = now }
     else
-        { model
-            | timeTillNextLife = model.timeTillNextLife - second
-            , lives = Transit.map (always <| countDown model.timeTillNextLife) model.lives
-        }
+        let
+            newTimeTillNextLife =
+                decrementAboveZero (now - model.lastPlayed) model.timeTillNextLife
 
-
-countDown : Float -> Int
-countDown timeTillNextLife =
-    floor <| livesLeft <| timeTillNextLife - second
+            lifeVal =
+                floor <| livesLeft newTimeTillNextLife
+        in
+            { model
+                | timeTillNextLife = newTimeTillNextLife
+                , lastPlayed = now
+                , lives = Transit.map (always lifeVal) model.lives
+            }
 
 
 currentLevel : Model -> Progress
@@ -516,3 +493,39 @@ decrementLives lifeState =
 decrementAboveZero : number -> number -> number
 decrementAboveZero x n =
     clamp 0 100000000000 (n - x)
+
+
+
+-- Subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ receiveExternalAnimations ReceieveExternalAnimations
+        , receiveHubLevelOffset ReceiveHubLevelOffset
+        , every second Tick
+        , resizes WindowSize
+        , levelSubscriptions model
+        , tutorialSubscriptions model
+        ]
+
+
+levelSubscriptions : Model -> Sub Msg
+levelSubscriptions model =
+    case model.scene of
+        Loaded (Level levelModel) ->
+            Sub.map LevelMsg <| Level.subscriptions levelModel
+
+        _ ->
+            Sub.none
+
+
+tutorialSubscriptions : Model -> Sub Msg
+tutorialSubscriptions model =
+    case model.scene of
+        Loaded (Tutorial tutorialModel) ->
+            Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
+
+        _ ->
+            Sub.none
