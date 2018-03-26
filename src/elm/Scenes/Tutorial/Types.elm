@@ -3,6 +3,7 @@ module Scenes.Tutorial.Types exposing (..)
 import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Dict exposing (Dict)
 import Window
+import Scenes.Level.Types as Level
 
 
 type alias Model =
@@ -19,6 +20,7 @@ type alias Model =
     , currentText : Int
     , text : Dict Int String
     , window : Window.Size
+    , levelModel : Level.Model
     }
 
 
@@ -36,7 +38,8 @@ type alias Sequence =
 
 
 type Msg
-    = DragTile Coord
+    = LevelMsg Level.Msg
+    | DragTile Coord
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving

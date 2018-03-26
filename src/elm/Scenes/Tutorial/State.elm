@@ -7,10 +7,11 @@ import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (LevelData)
 import Dict
 import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Scenes.Level.State exposing (handleInsertEnteringTiles)
+import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
 import Scenes.Tutorial.Types exposing (..)
 import Task
 import Window exposing (resizes, size)
@@ -19,12 +20,20 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : Config -> ( Model, Cmd Msg )
-init config =
-    loadTutorialData config initialState
-        ! [ sequenceMs config.sequence
-          , getWindowSize
-          ]
+init : LevelData Config -> Config -> ( Model, Cmd Msg )
+init levelData config =
+    let
+        model =
+            loadTutorialData config initialState
+
+        ( levelModel, levelCmd ) =
+            Level.init levelData Level.initialState
+    in
+        { model | levelModel = levelModel }
+            ! [ sequenceMs config.sequence
+              , getWindowSize
+              , Cmd.map LevelMsg levelCmd
+              ]
 
 
 getWindowSize : Cmd Msg
@@ -47,6 +56,7 @@ initialState =
     , currentText = 1
     , text = Dict.empty
     , window = { height = 0, width = 0 }
+    , levelModel = Level.initialState
     }
 
 
@@ -69,6 +79,13 @@ loadTutorialData config model =
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update msg model =
     case msg of
+        LevelMsg levelMsg ->
+            let
+                ( levelModel, levelCmd, _ ) =
+                    Level.update levelMsg model.levelModel
+            in
+                noOutMsg { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
+
         DragTile coord ->
             noOutMsg (handleDragTile coord model) []
 
@@ -199,5 +216,8 @@ handleDragTile coord model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    resizes WindowSize
+subscriptions model =
+    Sub.batch
+        [ resizes WindowSize
+        , Level.subscriptions model.levelModel |> Sub.map LevelMsg
+        ]

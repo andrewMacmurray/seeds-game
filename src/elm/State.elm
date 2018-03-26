@@ -34,7 +34,7 @@ init flags =
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Title
+    { scene = Loaded Title
     , loadingScreen = Nothing
     , progress = flags.rawProgress |> toProgress |> Maybe.withDefault ( 1, 1 )
     , currentLevel = Nothing
@@ -80,7 +80,7 @@ update msg model =
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
                                 , ( 10, ShowLoadingScreen )
-                                , ( 500, LoadLevel <| getLevelData level )
+                                , ( 500, LoadLevel level )
                                 , ( 2500, HideLoadingScreen )
                                 ]
                           ]
@@ -89,25 +89,28 @@ update msg model =
             model
                 ! [ sequenceMs
                         [ ( 10, ShowLoadingScreen )
-                        , ( 500, LoadLevel <| currentLevelData model )
+                        , ( 500, LoadLevel <| currentLevel model )
                         , ( 2500, HideLoadingScreen )
                         ]
                   ]
 
         LoadTutorial level config ->
-            handleLoadTutorial model level config
+            loadTutorial model level config
 
-        LoadLevel levelData ->
-            handleLoadLevel model levelData
+        LoadLevel level ->
+            loadLevel model level
 
         LoadHub ->
-            handleLoadHub model ! []
+            loadHub model ! []
 
         LoadSummary ->
-            handleLoadSummary model ! []
+            loadSummary model ! [ delayMs 1000 CompleteSceneTransition ]
 
         LoadRetry ->
-            handleLoadRetry model ! []
+            handleLoadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
+
+        CompleteSceneTransition ->
+            { model | scene = completeSceneTransition model.scene } ! []
 
         TransitionWithWin ->
             model ! [ sequenceMs <| levelWinSequence model ]
@@ -213,44 +216,40 @@ getLevelConfig =
 -- Scene Loaders
 
 
-handleLoadLevel : Model -> LevelData config -> ( Model, Cmd Msg )
-handleLoadLevel model levelData =
+loadLevel : Model -> Progress -> ( Model, Cmd Msg )
+loadLevel model level =
     let
         ( levelModel, levelCmd ) =
-            Level.init levelData Level.initialState
+            Level.init (getLevelData level) Level.initialState
     in
-        { model | scene = Level levelModel }
+        { model | scene = Loaded <| Level levelModel }
             ! [ Cmd.map LevelMsg levelCmd
               , getWindowSize
               ]
 
 
-handleLoadTutorial : Model -> Progress -> Tu.Config -> ( Model, Cmd Msg )
-handleLoadTutorial model level tutorialConfig =
+loadTutorial : Model -> Progress -> Tu.Config -> ( Model, Cmd Msg )
+loadTutorial model level tutorialConfig =
     let
         ( tutorialModel, tutorialCmd ) =
-            Tutorial.init tutorialConfig
-
-        ( levelModel, levelCmd ) =
-            Level.init (getLevelData level) Level.initialState
+            Tutorial.init (getLevelData level) tutorialConfig
     in
-        { model | scene = Tutorial tutorialModel (Backdrop levelModel) }
+        { model | scene = Loaded <| Tutorial tutorialModel }
             ! [ Cmd.map TutorialMsg tutorialCmd
-              , Cmd.map LevelMsg levelCmd
               , getWindowSize
               ]
 
 
-handleLoadHub : Model -> Model
-handleLoadHub model =
-    { model | scene = Hub }
+loadHub : Model -> Model
+loadHub model =
+    { model | scene = Loaded Hub }
 
 
-handleLoadSummary : Model -> Model
-handleLoadSummary model =
+loadSummary : Model -> Model
+loadSummary model =
     case model.scene of
-        Level levelModel ->
-            { model | scene = Summary (Backdrop levelModel) }
+        Loaded (Level levelModel) ->
+            { model | scene = Transition { from = Level levelModel, to = Summary } }
 
         _ ->
             model
@@ -259,14 +258,24 @@ handleLoadSummary model =
 handleLoadRetry : Model -> Model
 handleLoadRetry model =
     case model.scene of
-        Level levelModel ->
+        Loaded (Level levelModel) ->
             { model
-                | scene = Retry (Backdrop levelModel)
+                | scene = Transition { from = Level levelModel, to = Retry }
                 , lives = Transit.toStatic model.lives
             }
 
         _ ->
             model
+
+
+completeSceneTransition : SceneState -> SceneState
+completeSceneTransition sceneState =
+    case sceneState of
+        Transition { to } ->
+            Loaded to
+
+        _ ->
+            sceneState
 
 
 
@@ -275,30 +284,14 @@ handleLoadRetry model =
 
 handleLevelMsg : Lv.Msg -> Model -> ( Model, Cmd Msg )
 handleLevelMsg levelMsg model =
-    let
-        returnLevel lm f =
-            Level.update levelMsg lm
-                |> returnWithOutMsg f LevelMsg
+    case model.scene of
+        Loaded (Level levelModel) ->
+            Level.update levelMsg levelModel
+                |> returnWithOutMsg (\lm -> { model | scene = Loaded <| Level lm }) LevelMsg
                 |> handleLevelOutMsg
 
-        toScene f lm =
-            { model | scene = f lm }
-    in
-        case model.scene of
-            Level lm ->
-                returnLevel lm (toScene Level)
-
-            Tutorial tuM (Backdrop lm) ->
-                returnLevel lm (toScene <| Tutorial tuM << Backdrop)
-
-            Retry (Backdrop lm) ->
-                returnLevel lm (toScene <| Retry << Backdrop)
-
-            Summary (Backdrop lm) ->
-                returnLevel lm (toScene <| Summary << Backdrop)
-
-            _ ->
-                model ! []
+        _ ->
+            model ! []
 
 
 handleLevelOutMsg : ( Model, Cmd Msg, Maybe Lv.OutMsg ) -> ( Model, Cmd Msg )
@@ -317,9 +310,9 @@ handleLevelOutMsg ( model, cmd, outMsg ) =
 handleTutorialMsg : Tu.Msg -> Model -> ( Model, Cmd Msg )
 handleTutorialMsg tutorialMsg model =
     case model.scene of
-        Tutorial tutorialModel bg ->
+        Loaded (Tutorial tutorialModel) ->
             Tutorial.update tutorialMsg tutorialModel
-                |> returnWithOutMsg (\tm -> { model | scene = Tutorial tm bg }) TutorialMsg
+                |> returnWithOutMsg (\tm -> { model | scene = Loaded <| Tutorial tm }) TutorialMsg
                 |> handleTutorialOutMsg
 
         _ ->
@@ -336,11 +329,11 @@ handleTutorialOutMsg ( model, cmd, outMsg ) =
             model ! [ cmd ]
 
 
-tutorialToLevel : Scene -> Scene
+tutorialToLevel : SceneState -> SceneState
 tutorialToLevel scene =
     case scene of
-        Tutorial _ (Backdrop lm) ->
-            Level lm
+        Loaded (Tutorial tutorialModel) ->
+            Loaded (Level tutorialModel.levelModel)
 
         _ ->
             scene
@@ -431,32 +424,19 @@ subscriptions model =
 
 levelSubscriptions : Model -> Sub Msg
 levelSubscriptions model =
-    let
-        levelSub lm =
-            Sub.map LevelMsg <| Level.subscriptions lm
-    in
-        case model.scene of
-            Level levelModel ->
-                levelSub levelModel
+    case model.scene of
+        Loaded (Level levelModel) ->
+            Sub.map LevelMsg <| Level.subscriptions levelModel
 
-            Tutorial tuM (Backdrop lm) ->
-                levelSub lm
-
-            Retry (Backdrop lm) ->
-                levelSub lm
-
-            Summary (Backdrop lm) ->
-                levelSub lm
-
-            _ ->
-                Sub.none
+        _ ->
+            Sub.none
 
 
 tutorialSubscriptions : Model -> Sub Msg
 tutorialSubscriptions model =
     case model.scene of
-        Tutorial tuM _ ->
-            Sub.map TutorialMsg <| Tutorial.subscriptions tuM
+        Loaded (Tutorial tutorialModel) ->
+            Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
 
         _ ->
             Sub.none
@@ -506,11 +486,9 @@ countDown timeTillNextLife =
     floor <| livesLeft <| timeTillNextLife - second
 
 
-currentLevelData : Model -> LevelData Tu.Config
-currentLevelData model =
-    model.currentLevel
-        |> Maybe.withDefault ( 1, 1 )
-        |> getLevelData
+currentLevel : Model -> Progress
+currentLevel model =
+    model.currentLevel |> Maybe.withDefault ( 1, 1 )
 
 
 livesLeft : Time -> Float

@@ -31,7 +31,7 @@ type alias RawProgress =
 
 
 type alias Model =
-    { scene : Scene
+    { scene : SceneState
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
@@ -44,17 +44,24 @@ type alias Model =
     }
 
 
+type SceneState
+    = Transition SceneTransition
+    | Loaded Scene
+
+
+type alias SceneTransition =
+    { from : Scene
+    , to : Scene
+    }
+
+
 type Scene
     = Title
     | Hub
-    | Tutorial Tutorial.Model (Backdrop Level.Model)
+    | Tutorial Tutorial.Model
     | Level Level.Model
-    | Summary (Backdrop Level.Model)
-    | Retry (Backdrop Level.Model)
-
-
-type Backdrop a
-    = Backdrop a
+    | Summary
+    | Retry
 
 
 type Msg
@@ -65,10 +72,11 @@ type Msg
     | TransitionWithWin
     | TransitionWithLose
     | LoadTutorial Progress Tutorial.Config
-    | LoadLevel (LevelData Tutorial.Config)
+    | LoadLevel Progress
     | LoadHub
     | LoadSummary
     | LoadRetry
+    | CompleteSceneTransition
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background

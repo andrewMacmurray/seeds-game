@@ -10,6 +10,11 @@ sequenceMs steps =
     Delay.sequence <| Delay.withUnit millisecond <| steps
 
 
+delayMs : Float -> msg -> Cmd msg
+delayMs time =
+    Delay.after time millisecond
+
+
 trigger : msg -> Cmd msg
 trigger msg =
     Task.succeed msg |> Task.perform identity
