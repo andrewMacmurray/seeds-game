@@ -1,4 +1,4 @@
-module Scenes.Retry.View exposing (..)
+module Scenes.Retry exposing (..)
 
 import Config.Color exposing (..)
 import Data.Transit exposing (Transit(..))

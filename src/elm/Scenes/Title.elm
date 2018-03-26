@@ -1,4 +1,4 @@
-module Scenes.Title.View exposing (..)
+module Scenes.Title exposing (..)
 
 import Config.Color exposing (..)
 import Helpers.Css.Animation exposing (..)

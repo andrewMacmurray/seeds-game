@@ -1,4 +1,4 @@
-module Scenes.Summary.View exposing (..)
+module Scenes.Summary exposing (..)
 
 import Config.Color exposing (washedYellow)
 import Config.Levels exposing (allLevels)
