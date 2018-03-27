@@ -1,12 +1,14 @@
 var Elm = window.Elm
 var animations = require('./bounce.js')
 var cache = require('./cache.js')
+var util = require('./util')
+
+init()
+util.bumpDebuggerPanel()
 
 function init() {
-  var now = Date.now()
-
   var app = Elm.App.fullscreen({
-    now: now,
+    now: Date.now(),
     times: cache.getTimes(),
     rawProgress: cache.getProgress()
   })
@@ -43,15 +45,4 @@ function init() {
   app.ports.cacheTimes.subscribe(function (times) {
     cache.setTimes(times)
   })
-
-  setTimeout(bumpDebuggerPanel, 100)
 }
-
-function bumpDebuggerPanel () {
-  var overlay = document.querySelector('.elm-overlay')
-  if (overlay) {
-    overlay.classList.add('z-999')
-  }
-}
-
-init()

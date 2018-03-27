@@ -111,7 +111,7 @@ update msg model =
             loadSummary model ! [ delayMs 1000 CompleteSceneTransition ]
 
         LoadRetry ->
-            handleLoadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
+            loadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
 
         CompleteSceneTransition ->
             { model | scene = completeSceneTransition model.scene } ! []
@@ -199,8 +199,8 @@ loadSummary model =
             model
 
 
-handleLoadRetry : Model -> Model
-handleLoadRetry model =
+loadRetry : Model -> Model
+loadRetry model =
     case model.scene of
         Loaded (Level levelModel) ->
             { model | scene = Transition { from = Level levelModel, to = Retry } }
@@ -296,18 +296,13 @@ handleHubMsg hubMsg model =
 initProgressFromCache : Maybe RawProgress -> Progress
 initProgressFromCache rawProgress =
     rawProgress
-        |> toProgress
+        |> Maybe.map (\{ world, level } -> ( world, level ))
         |> Maybe.withDefault ( 1, 1 )
 
 
 fromProgress : Progress -> RawProgress
 fromProgress ( world, level ) =
     RawProgress world level
-
-
-toProgress : Maybe RawProgress -> Maybe Progress
-toProgress =
-    Maybe.map (\{ world, level } -> ( world, level ))
 
 
 getLevelData : Progress -> LevelData TutorialConfig
