@@ -333,10 +333,10 @@ handleSquareMove model =
 
 handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
 handleCheckLevelComplete model =
-    if hasLost model then
-        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
-    else if hasWon model then
+    if hasWon model then
         noOutMsg { model | levelStatus = Win } [ winSequence model ]
+    else if hasLost model then
+        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
     else
         noOutMsg model []
 
