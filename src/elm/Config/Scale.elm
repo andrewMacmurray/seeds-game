@@ -1,9 +1,9 @@
 module Config.Scale exposing (..)
 
-import Window exposing (Size)
+import Window
 
 
-tileScaleFactor : Size -> Float
+tileScaleFactor : Window.Size -> Float
 tileScaleFactor window =
     let
         dimension =
@@ -17,7 +17,7 @@ tileScaleFactor window =
             1.2
 
 
-smallestWindowDimension : Size -> Int
+smallestWindowDimension : Window.Size -> Int
 smallestWindowDimension { height, width } =
     if height >= width then
         width

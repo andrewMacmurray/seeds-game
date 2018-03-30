@@ -8,6 +8,7 @@ internalAnimations : Html msg
 internalAnimations =
     embed
         [ bulge
+        , bulgeSmall
         , bulgeFade
         , exitDown
         , fadeIn
@@ -15,7 +16,20 @@ internalAnimations =
         , heartBeat
         , heartBreakLeft
         , heartBreakRight
+        , slideDownScaleOut
         ]
+
+
+slideDownScaleOut =
+    { name = "slide-down-scale-out"
+    , frames =
+        map3 ( translateY, scale, opacity )
+            [ ( 0, ( 0, 1, 1 ) )
+            , ( 50, ( 40, 1, 1 ) )
+            , ( 60, ( 40, 1.1, 1 ) )
+            , ( 100, ( 40, 0, 0 ) )
+            ]
+    }
 
 
 exitDown : KeyframesAnimation
@@ -48,6 +62,18 @@ bulge =
             [ ( 0, 0.5 )
             , ( 50, 1.3 )
             , ( 100, 1 )
+            ]
+    }
+
+
+bulgeSmall : KeyframesAnimation
+bulgeSmall =
+    { name = "bulge-small"
+    , frames =
+        map2 ( scale, opacity )
+            [ ( 0, ( 0, 0.5 ) )
+            , ( 50, ( 1, 1.1 ) )
+            , ( 100, ( 1, 1 ) )
             ]
     }
 

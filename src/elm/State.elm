@@ -12,8 +12,10 @@ import Helpers.OutMsg exposing (returnWithOutMsg)
 import Ports exposing (..)
 import Scenes.Hub.State as Hub
 import Scenes.Hub.Types exposing (HubMsg(..))
+import Scenes.Intro.State as Intro
+import Scenes.Intro.Types exposing (IntroMsg)
 import Scenes.Level.State as Level
-import Scenes.Level.Types exposing (LevelOutMsg(..), LevelMsg)
+import Scenes.Level.Types exposing (LevelMsg, LevelOutMsg(..))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialMsg, TutorialOutMsg(..))
 import Task
@@ -30,6 +32,7 @@ init flags =
     initialState flags
         ! [ getWindowSize
           , generateBounceKeyframes ScaleConfig.baseTileSizeY
+          , trigger LoadIntro
           ]
 
 
@@ -40,7 +43,7 @@ getWindowSize =
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Loaded Title
+    { scene = Loaded <| Intro Intro.initialState
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
@@ -66,6 +69,9 @@ update msg model =
 
         HubMsg hubMsg ->
             handleHubMsg hubMsg model
+
+        IntroMsg introMsg ->
+            handleIntroMsg introMsg model
 
         StartLevel level ->
             case tutorialData level of
@@ -103,6 +109,9 @@ update msg model =
 
         LoadLevel level ->
             loadLevel model level
+
+        LoadIntro ->
+            loadIntro model
 
         LoadHub ->
             loadHub model ! []
@@ -182,6 +191,15 @@ loadTutorial model level tutorialConfig =
             Tutorial.init (getLevelData level) tutorialConfig
     in
         { model | scene = Loaded <| Tutorial tutorialModel } ! [ Cmd.map TutorialMsg tutorialCmd ]
+
+
+loadIntro : Model -> ( Model, Cmd Msg )
+loadIntro model =
+    let
+        ( introModel, introCmd ) =
+            Intro.init
+    in
+        { model | scene = Loaded <| Intro introModel } ! [ Cmd.map IntroMsg introCmd ]
 
 
 loadHub : Model -> Model
@@ -287,6 +305,20 @@ handleHubMsg hubMsg model =
             Hub.update hubMsg model
     in
         newModel ! [ Cmd.map HubMsg cmd ]
+
+
+handleIntroMsg : IntroMsg -> Model -> ( Model, Cmd Msg )
+handleIntroMsg introMsg model =
+    case model.scene of
+        Loaded (Intro introModel) ->
+            let
+                ( newModel, cmd ) =
+                    Intro.update introMsg introModel
+            in
+                { model | scene = Loaded <| Intro newModel } ! [ Cmd.map IntroMsg cmd ]
+
+        _ ->
+            model ! []
 
 
 
@@ -490,6 +522,9 @@ sceneSubscriptions model =
 
         Loaded Hub ->
             Sub.map HubMsg <| Hub.subscriptions model
+
+        Loaded (Intro introModel) ->
+            Sub.map IntroMsg <| Intro.subscriptions introModel
 
         _ ->
             Sub.none

@@ -8,6 +8,7 @@ import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Scenes.Hub.View exposing (hubView)
+import Scenes.Intro.View exposing (introView)
 import Scenes.Level.View exposing (levelView)
 import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
@@ -53,6 +54,9 @@ renderScene model scene =
     case scene of
         Hub ->
             [ ( "hub", hubView model ) ]
+
+        Intro introModel ->
+            [ ( "intro", introView introModel |> Html.map IntroMsg ) ]
 
         Title ->
             [ ( "title", titleView model ) ]

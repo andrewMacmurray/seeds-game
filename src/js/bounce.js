@@ -38,7 +38,6 @@ function bounceUp () {
     })
 }
 
-
 function bounceDowns (tileSize) {
   var anims = []
   for (var i = 1; i <= 8; i++) {
@@ -56,7 +55,6 @@ function bounceDowns (tileSize) {
   }
   return anims.join(' ')
 }
-
 
 module.exports = {
   elasticBounceIn,

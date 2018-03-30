@@ -134,6 +134,11 @@ lightGreen =
     "rgb(119, 193, 66)"
 
 
+skyGreen : String
+skyGreen =
+    "rgb(166, 255, 150)"
+
+
 lightBlue : String
 lightBlue =
     "rgb(38, 170, 224)"
