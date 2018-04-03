@@ -1,5 +1,6 @@
 module Views.Intro.DyingLandscape exposing (..)
 
+import Data.Visibility exposing (..)
 import Helpers.Css.Timing exposing (TimingFunction(Linear))
 import Helpers.Css.Transition exposing (transition)
 import Scenes.Intro.Types exposing (..)

@@ -58,8 +58,8 @@ renderScene model scene =
         Intro introModel ->
             [ ( "intro", introView introModel |> Html.map IntroMsg ) ]
 
-        Title ->
-            [ ( "title", titleView model ) ]
+        Title visibility ->
+            [ ( "title", titleView model visibility ) ]
 
         Level levelModel ->
             [ ( "level", levelView levelModel |> Html.map LevelMsg ) ]

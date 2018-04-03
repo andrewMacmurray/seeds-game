@@ -1,12 +1,20 @@
 module Scenes.Hub.State exposing (..)
 
 import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
+import Delay exposing (after)
 import Dom.Scroll
 import Helpers.Delay exposing (sequenceMs)
 import Ports exposing (receiveHubLevelOffset, scrollToHubLevel)
 import Scenes.Hub.Types as Hub exposing (..)
 import Task exposing (Task)
+import Time exposing (millisecond)
 import Window
+
+
+init : Int -> HubModel model -> ( HubModel model, Cmd HubMsg )
+init levelNumber model =
+    model ! [ after 1000 millisecond <| ScrollHubToLevel levelNumber ]
+
 
 
 -- Update

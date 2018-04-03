@@ -21,7 +21,7 @@ loadingScreen model =
             ]
         , style
             [ loadingScreenBackground model.loadingScreen
-            , easeAll 500
+            , easeAll 800
             ]
         ]
         [ div [ style [ widthStyle 50 ] ]

@@ -3,6 +3,7 @@ module Types exposing (..)
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
+import Data.Visibility exposing (Visibility)
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
 import Scenes.Level.Types exposing (LevelModel, LevelMsg)
@@ -54,7 +55,7 @@ type alias SceneTransition =
 
 
 type Scene
-    = Title
+    = Title Visibility
     | Level LevelModel
     | Tutorial TutorialModel
     | Intro IntroModel
@@ -70,20 +71,23 @@ type Msg
     | HubMsg HubMsg
     | StartLevel Progress
     | RestartLevel
-    | TransitionWithWin
-    | TransitionWithLose
+    | LevelWin
+    | LevelLose
     | LoadTutorial Progress TutorialConfig
     | LoadLevel Progress
     | LoadIntro
-    | LoadHub
+    | LoadHub Int
     | LoadSummary
     | LoadRetry
+    | FadeTitle
     | CompleteSceneTransition
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
     | SetCurrentLevel (Maybe Progress)
     | GoToHub
+    | GoToIntro
+    | IntroMusicPlaying Bool
     | ClearCache
     | WindowSize Window.Size
     | UpdateTimes Time

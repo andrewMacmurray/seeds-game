@@ -27,3 +27,12 @@ port clearCache_ : () -> Cmd msg
 
 
 port animate : () -> Cmd msg
+
+
+port playIntroMusic : () -> Cmd msg
+
+
+port introMusicPlaying : (Bool -> msg) -> Sub msg
+
+
+port fadeMusic : () -> Cmd msg

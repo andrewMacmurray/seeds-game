@@ -1,5 +1,6 @@
 module Scenes.Intro.Types exposing (..)
 
+import Data.Visibility exposing (Visibility)
 import Window
 
 
@@ -16,14 +17,7 @@ type alias IntroModel =
 type Scene
     = DyingLandscape Environment Visibility
     | GrowingSeeds Visibility
-    | BloomingFlowers Visibility
-
-
-type Visibility
-    = Hidden
-    | Visible
-    | Leaving
-    | Entering
+    | RollingHills Visibility
 
 
 type Environment
@@ -32,9 +26,7 @@ type Environment
 
 
 type IntroMsg
-    = Reset
-    | TransitionToDead
-    | ShowDyingLandscape
+    = ShowDyingLandscape
     | HideDyingLandscape
     | ShowGrowingSeeds
     | HideGrowingSeeds
@@ -47,4 +39,9 @@ type IntroMsg
     | ShowText
     | HideText
     | KillEnvironment
+    | IntroComplete
     | WindowSize Window.Size
+
+
+type IntroOutMsg
+    = ExitIntro

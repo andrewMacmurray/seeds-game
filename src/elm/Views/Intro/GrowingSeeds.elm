@@ -2,13 +2,13 @@ module Views.Intro.GrowingSeeds exposing (..)
 
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Types exposing (SeedType(..))
+import Data.Visibility exposing (..)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (Style, marginLeft, marginRight, opacityStyle, widthStyle)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Css.Transition exposing (ease)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Scenes.Intro.Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 import Window
 

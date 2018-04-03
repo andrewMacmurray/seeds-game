@@ -1,48 +1,46 @@
-var Elm = window.Elm
-var animations = require('./bounce.js')
-var cache = require('./cache.js')
-var util = require('./util')
-var { TweenMax, Elastic } = require('gsap')
+const { Elm } = window
+const animations = require('./bounce.js')
+const cache = require('./cache.js')
+const util = require('./util')
+const { animateHills } = require('./animations.js')
+const { Howl } = require('howler')
 
 init()
 util.bumpDebuggerPanel()
 
 function init() {
-  var app = Elm.App.fullscreen({
+  const app = Elm.App.fullscreen({
     now: Date.now(),
     times: cache.getTimes(),
     rawProgress: cache.getProgress()
   })
 
-  app.ports.animate.subscribe(function () {
-    var hillVals = [
-      [ 800, 700 ],
-      [ 800, 600 ],
-      [ 800, 500 ],
-      [ 800, 400 ],
-      [ 800, 300 ]
-    ]
-    var hills = Array.from(document.querySelectorAll('.hill')).reverse()
-    hills.forEach((hill, i) => {
-      [ from, to ] = hillVals[i]
-      const toConfig = {
-        y: to,
-        delay: i * 0.5,
-        ease: Elastic.easeOut.config(0.3, 0.3)
-      }
-      TweenMax.fromTo(hill, 2, { y: from }, toConfig)
-    })
+  const introMusic = new Howl({
+    src: ['audio/intro.mp3']
   })
 
-  app.ports.scrollToHubLevel.subscribe(function (level) {
-    var levelEl = document.getElementById('level-' + level)
+  function introMusicstarted () {
+    app.ports.introMusicPlaying.send(true)
+  }
+
+  app.ports.playIntroMusic.subscribe(() => {
+    introMusic.once('play', introMusicstarted)
+    introMusic.play()
+  })
+
+  app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
+
+  app.ports.animate.subscribe(animateHills)
+
+  app.ports.scrollToHubLevel.subscribe(level => {
+    const levelEl = document.getElementById('level-' + level)
     if (levelEl) {
       app.ports.receiveHubLevelOffset.send(levelEl.offsetTop)
     }
   })
 
-  app.ports.generateBounceKeyframes.subscribe(function (tileSize) {
-    var anims = [
+  app.ports.generateBounceKeyframes.subscribe(tileSize => {
+    const anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
       animations.bounceUp(),
@@ -50,20 +48,20 @@ function init() {
     ]
     .join(' ')
 
-    var styleNode = document.getElementById('generated-styles')
+    const styleNode = document.getElementById('generated-styles')
     styleNode.textContent = anims
   })
 
-  app.ports.cacheProgress.subscribe(function (progress) {
+  app.ports.cacheProgress.subscribe(progress => {
     cache.setProgress(progress)
   })
 
-  app.ports.clearCache_.subscribe(function () {
+  app.ports.clearCache_.subscribe(() => {
     cache.clear()
     window.location.reload()
   })
 
-  app.ports.cacheTimes.subscribe(function (times) {
+  app.ports.cacheTimes.subscribe(times => {
     cache.setTimes(times)
   })
 }
