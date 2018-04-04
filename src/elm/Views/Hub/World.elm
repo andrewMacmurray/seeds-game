@@ -2,7 +2,7 @@ module Views.Hub.World exposing (..)
 
 import Config.Levels exposing (allLevels)
 import Data.Board.Types exposing (..)
-import Data.InfoWindow exposing (InfoWindow(Hidden))
+import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
@@ -119,7 +119,7 @@ renderNumber visibleLevelNumber currentLevel worldData model =
 
 showInfo : Progress -> HubModel model -> Attribute Msg
 showInfo currentLevel model =
-    if reachedLevel allLevels currentLevel model.progress && model.hubInfoWindow == Hidden then
+    if reachedLevel allLevels currentLevel model.progress && InfoWindow.isHidden model.hubInfoWindow then
         onClick <| HubMsg <| ShowLevelInfo currentLevel
     else
         emptyProperty

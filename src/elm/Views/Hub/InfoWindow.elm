@@ -20,26 +20,20 @@ import Views.Seed.All exposing (renderSeed)
 
 
 info : HubModel model -> Html Msg
-info model =
-    case model.hubInfoWindow of
-        Hidden ->
+info { hubInfoWindow } =
+    let
+        progress =
+            val hubInfoWindow |> Maybe.withDefault ( 1, 1 )
+
+        content =
+            getLevelConfig progress |> infoContent progress
+    in
+        if isHidden hubInfoWindow then
             span [] []
-
-        Visible progress ->
-            let
-                content =
-                    getLevelConfig progress |> infoContent progress
-            in
-                infoContainer model.hubInfoWindow <|
-                    div [ onClick <| StartLevel progress ] content
-
-        Hiding progress ->
-            let
-                content =
-                    getLevelConfig progress |> infoContent progress
-            in
-                infoContainer model.hubInfoWindow <|
-                    div [] content
+        else if isVisible hubInfoWindow then
+            infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
+        else
+            infoContainer hubInfoWindow <| div [] content
 
 
 infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
@@ -127,9 +121,7 @@ renderWeather color =
 
 handleHideInfo : HubModel model -> Attribute Msg
 handleHideInfo model =
-    case model.hubInfoWindow of
-        Visible _ ->
-            onClick <| HubMsg HideLevelInfo
-
-        _ ->
-            emptyProperty
+    if isVisible model.hubInfoWindow then
+        onClick <| HubMsg HideLevelInfo
+    else
+        emptyProperty

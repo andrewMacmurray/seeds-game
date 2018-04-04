@@ -3,7 +3,7 @@ module State exposing (..)
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Background exposing (..)
-import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
+import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
@@ -50,7 +50,7 @@ initialState flags =
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
-    , hubInfoWindow = Hidden
+    , hubInfoWindow = InfoWindow.hidden
     }
 
 
