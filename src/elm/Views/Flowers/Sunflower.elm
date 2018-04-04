@@ -1,5 +1,9 @@
 module Views.Flowers.Sunflower exposing (..)
 
+import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsSvg)
+import Helpers.Css.Style exposing (svgStyles)
+import Helpers.Css.Timing exposing (..)
+import Helpers.Css.Transform as Transform
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
@@ -11,7 +15,18 @@ sunflower delay =
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
             , fill "#8A5D3B"
-            , style <| "animation: bulge-small 1s cubic-bezier(0.5, -0.36, 0.19, 1.04) " ++ toString delay ++ "ms forwards; transform-origin: 40% 45%; opacity: 0"
+            , svgStyles
+                [ animationWithOptionsSvg
+                    { name = "bulge-small"
+                    , duration = 1000
+                    , timing = CubicBezier 0.5 -0.36 0.19 1.04
+                    , delay = Just delay
+                    , fill = Forwards
+                    , iteration = Nothing
+                    }
+                , "transform-origin: 40% 45%"
+                , "opacity: 0"
+                ]
             ]
             []
         ]
@@ -21,9 +36,23 @@ fadePetal : Float -> Int -> Svg msg -> Svg msg
 fadePetal delay index petal =
     let
         d =
-            toString <| delay + 1100 + toFloat index * 60
+            delay + 1100 + toFloat index * 60
     in
-        Svg.g [ style <| "animation: bulge-small 0.9s ease " ++ d ++ "ms forwards; transform: scale(0); transform-origin: center" ]
+        Svg.g
+            [ svgStyles
+                [ Transform.transform [ Transform.scale 0 ]
+                , "transform-origin: center"
+                , "opacity: 0"
+                , animationWithOptionsSvg
+                    { name = "bulge-small"
+                    , duration = 900
+                    , timing = Ease
+                    , delay = Just d
+                    , iteration = Nothing
+                    , fill = Forwards
+                    }
+                ]
+            ]
             [ petal ]
 
 
