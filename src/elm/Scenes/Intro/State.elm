@@ -12,15 +12,18 @@ import Window exposing (resizes, size)
 
 init : ( IntroModel, Cmd IntroMsg )
 init =
-    initialState ! [ Task.perform WindowSize size, sequence ]
+    initialState
+        ! [ Task.perform WindowSize size
+          , sequence
+          ]
 
 
 initialState : IntroModel
 initialState =
     { scene = DyingLandscape Alive Hidden
-    , backdrop = "rgba(0, 0, 0, 0)"
+    , backdrop = Color.transparent
     , text = "Our world is dying"
-    , textColor = "rgb(105, 88, 35)"
+    , textColor = Color.brownYellow
     , textVisible = False
     , window = { width = 0, height = 0 }
     }
@@ -31,13 +34,13 @@ sequence =
     sequenceMs
         [ ( 100, SetBackdrop Color.skyGreen )
         , ( 1000, ShowDyingLandscape )
-        , ( 4000, SetBackdrop "rgb(255, 227, 137)" )
+        , ( 4000, SetBackdrop Color.skyYellow )
         , ( 1000, ShowText )
         , ( 1000, KillEnvironment )
         , ( 2000, HideDyingLandscape )
         , ( 1000, HideText )
         , ( 1000, SetText "We must save our seeds" )
-        , ( 500, SetBackdrop "rgb(255, 199, 19)" )
+        , ( 500, SetBackdrop Color.lightGold )
         , ( 500, ShowGrowingSeeds )
         , ( 1500, HideText )
         , ( 500, HideGrowingSeeds )
@@ -45,7 +48,7 @@ sequence =
         , ( 500, SetText "So they may bloom again on a new world" )
         , ( 1500, InitRollingHills )
         , ( 100, ShowRollingHills )
-        , ( 500, SetBackdrop "#5BCA78" )
+        , ( 500, SetBackdrop Color.meadowGreen )
         , ( 500, BloomFlowers )
         , ( 4000, HideText )
         , ( 1500, IntroComplete )
