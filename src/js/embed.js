@@ -30,7 +30,7 @@ function init() {
 
   app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
 
-  app.ports.animate.subscribe(animateHills)
+  app.ports.animateHills.subscribe(animateHills)
 
   app.ports.scrollToHubLevel.subscribe(level => {
     const levelEl = document.getElementById('level-' + level)

@@ -26,7 +26,7 @@ clearCache =
 port clearCache_ : () -> Cmd msg
 
 
-port animate : () -> Cmd msg
+port animateHills : () -> Cmd msg
 
 
 port playIntroMusic : () -> Cmd msg

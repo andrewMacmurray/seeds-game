@@ -4,7 +4,7 @@ import Config.Color as Color
 import Data.Visibility exposing (..)
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Ports exposing (animate)
+import Ports exposing (animateHills)
 import Scenes.Intro.Types exposing (..)
 import Task
 import Window exposing (resizes, size)
@@ -71,7 +71,7 @@ update msg model =
             noOutMsg { model | scene = GrowingSeeds Leaving } []
 
         ShowRollingHills ->
-            noOutMsg { model | scene = RollingHills Entering } [ animate () ]
+            noOutMsg { model | scene = RollingHills Entering } [ animateHills () ]
 
         InitRollingHills ->
             noOutMsg { model | scene = RollingHills Hidden } []

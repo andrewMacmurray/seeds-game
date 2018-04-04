@@ -10,5 +10,5 @@ function bumpDebuggerPanel () {
 }
 
 module.exports = {
-  bumpDebuggerPanel: bumpDebuggerPanel
+  bumpDebuggerPanel
 }
