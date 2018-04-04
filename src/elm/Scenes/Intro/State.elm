@@ -4,7 +4,7 @@ import Config.Color as Color
 import Data.Visibility exposing (..)
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Ports exposing (animateHills)
+import Ports exposing (animateGrowingSeeds, animateHills)
 import Scenes.Intro.Types exposing (..)
 import Task
 import Window exposing (resizes, size)
@@ -65,7 +65,7 @@ update msg model =
             noOutMsg { model | scene = DyingLandscape Dead Leaving } []
 
         ShowGrowingSeeds ->
-            noOutMsg { model | scene = GrowingSeeds Entering } []
+            noOutMsg { model | scene = GrowingSeeds Entering } [ animateGrowingSeeds () ]
 
         HideGrowingSeeds ->
             noOutMsg { model | scene = GrowingSeeds Leaving } []

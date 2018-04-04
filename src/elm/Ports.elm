@@ -29,6 +29,9 @@ port clearCache_ : () -> Cmd msg
 port animateHills : () -> Cmd msg
 
 
+port animateGrowingSeeds : () -> Cmd msg
+
+
 port playIntroMusic : () -> Cmd msg
 
 

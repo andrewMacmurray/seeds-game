@@ -6,6 +6,7 @@ import Data.Visibility exposing (..)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (Style, marginLeft, marginRight, opacityStyle, widthStyle)
 import Helpers.Css.Timing exposing (TimingFunction(..))
+import Helpers.Css.Transform as Transform exposing (transform, transformStyle)
 import Helpers.Css.Transition exposing (ease)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -15,7 +16,7 @@ import Window
 
 growingSeeds : Window.Size -> Visibility -> Html msg
 growingSeeds window vis =
-    div [ class "flex justify-center" ] <|
+    div [ class "flex justify-center", id "growing-seeds" ] <|
         [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) seedsLeft
         , div [ mainSeedStyles vis ] [ growingSeed window ( 0, Sunflower, 1.1 ) ]
         , sideSeedsContainer vis <| List.map (growingSeed window) seedsRight
@@ -67,18 +68,13 @@ growingSeed window ( index, seedType, scale ) =
             [ div
                 [ style
                     [ widthStyle <| 50 * scale * (tileScaleFactor window)
-                    , opacityStyle 0
-                    , animationWithOptionsStyle
-                        { name = "fade-in"
-                        , duration = 300
-                        , timing = EaseIn
-                        , delay = Just delay
-                        , fill = Forwards
-                        , iteration = Nothing
-                        }
                     , marginLeft 5
                     , marginRight 5
+                    , transformStyle [ Transform.scale 0 ]
+                    , ( "transform-origin", "center" )
                     ]
+                , class "growing-seed"
+                , attribute "gsap-val-delay" <| toString delay
                 ]
                 [ renderSeed seedType ]
             ]

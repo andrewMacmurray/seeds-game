@@ -2,7 +2,7 @@ const { Elm } = window
 const animations = require('./bounce.js')
 const cache = require('./cache.js')
 const util = require('./util')
-const { animateHills } = require('./animations.js')
+const { animateHills, growSeeds } = require('./animations.js')
 const { Howl } = require('howler')
 
 init()
@@ -31,6 +31,7 @@ function init() {
   app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
 
   app.ports.animateHills.subscribe(animateHills)
+  app.ports.animateGrowingSeeds.subscribe(growSeeds)
 
   app.ports.scrollToHubLevel.subscribe(level => {
     const levelEl = document.getElementById('level-' + level)
