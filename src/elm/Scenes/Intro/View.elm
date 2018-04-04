@@ -21,7 +21,7 @@ introView model =
             ]
         ]
         [ p
-            [ class "tc f3 relative z-3"
+            [ class "tc f5 f3-ns relative z-2"
             , style
                 [ textOffset model.window
                 , color model.textColor
