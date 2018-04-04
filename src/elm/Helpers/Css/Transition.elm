@@ -4,6 +4,7 @@ module Helpers.Css.Transition
         , easeAll
         , ease
         , transitionStyle
+        , transitionSvg
         , transition
         )
 
@@ -56,6 +57,11 @@ ease property duration =
 transitionStyle : Transition -> Style
 transitionStyle =
     transition >> (,) "transition"
+
+
+transitionSvg : Transition -> String
+transitionSvg =
+    transition >> (++) "transition: "
 
 
 transition : Transition -> String
