@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
-    "deploy": "npm run build && firebase deploy",
+    "deploy-production": "npm run build && firebase deploy -P production",
+    "deploy-staging": "npm run build && firebase deploy -P staging",
     "dev": "npm run elm-dev & npm run css-dev & npm run js-dev",
     "build": "npm run elm-build && npm run js-build && npm run css-build",
     "elm-dev": "elm-live src/elm/App.elm --output=public/main.js --dir=public --open --debug --pushstate",
@@ -11,8 +12,9 @@
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
     "js-dev": "watchify src/js/embed.js -o public/embed.js -v",
-    "js-build": "browserify src/js/embed.js -o public/embed.js",
+    "js-build": "browserify src/js/embed.js -o public/embed.js -t [ babelify --presets [ env ] ]",
     "compress-main": "uglifyjs -c -m -o public/main.js public/main.js",
+    "compress-embed": "uglifyjs -c -m -o public/embed.js public/embed.js",
     "test": "cd ./test && elm-test App.elm"
   },
   "repository": {
@@ -28,10 +30,15 @@
   "dependencies": {
     "bounce.js": "^0.8.2",
     "elm": "^0.18.0",
+    "gsap": "^1.20.4",
+    "howler": "^2.0.9",
     "tachyons-custom": "^4.5.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.3",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babelify": "^8.0.0",
     "browserify": "^14.4.0",
     "elm-live": "^2.7.4",
     "postcss-clean": "^1.0.2",

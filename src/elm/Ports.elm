@@ -24,3 +24,18 @@ clearCache =
 
 
 port clearCache_ : () -> Cmd msg
+
+
+port animateHills : () -> Cmd msg
+
+
+port animateGrowingSeeds : () -> Cmd msg
+
+
+port playIntroMusic : () -> Cmd msg
+
+
+port introMusicPlaying : (Bool -> msg) -> Sub msg
+
+
+port fadeMusic : () -> Cmd msg

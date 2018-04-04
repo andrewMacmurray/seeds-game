@@ -1,25 +1,47 @@
-var Elm = window.Elm
-var animations = require('./bounce.js')
-var cache = require('./cache.js')
+const { Elm } = window
+const animations = require('./bounce.js')
+const cache = require('./cache.js')
+const util = require('./util')
+const { animateHills, growSeeds } = require('./animations.js')
+const { Howl } = require('howler')
+
+init()
+util.bumpDebuggerPanel()
 
 function init() {
-  var now = Date.now()
-
-  var app = Elm.App.fullscreen({
-    now: now,
+  const app = Elm.App.fullscreen({
+    now: Date.now(),
     times: cache.getTimes(),
     rawProgress: cache.getProgress()
   })
 
-  app.ports.scrollToHubLevel.subscribe(function (level) {
-    var levelEl = document.getElementById('level-' + level)
+  const introMusic = new Howl({
+    src: ['audio/intro.mp3']
+  })
+
+  function introMusicstarted () {
+    app.ports.introMusicPlaying.send(true)
+  }
+
+  app.ports.playIntroMusic.subscribe(() => {
+    introMusic.once('play', introMusicstarted)
+    introMusic.play()
+  })
+
+  app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
+
+  app.ports.animateHills.subscribe(animateHills)
+  app.ports.animateGrowingSeeds.subscribe(growSeeds)
+
+  app.ports.scrollToHubLevel.subscribe(level => {
+    const levelEl = document.getElementById('level-' + level)
     if (levelEl) {
       app.ports.receiveHubLevelOffset.send(levelEl.offsetTop)
     }
   })
 
-  app.ports.generateBounceKeyframes.subscribe(function (tileSize) {
-    var anims = [
+  app.ports.generateBounceKeyframes.subscribe(tileSize => {
+    const anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
       animations.bounceUp(),
@@ -27,31 +49,20 @@ function init() {
     ]
     .join(' ')
 
-    var styleNode = document.getElementById('generated-styles')
+    const styleNode = document.getElementById('generated-styles')
     styleNode.textContent = anims
   })
 
-  app.ports.cacheProgress.subscribe(function (progress) {
+  app.ports.cacheProgress.subscribe(progress => {
     cache.setProgress(progress)
   })
 
-  app.ports.clearCache_.subscribe(function () {
+  app.ports.clearCache_.subscribe(() => {
     cache.clear()
     window.location.reload()
   })
 
-  app.ports.cacheTimes.subscribe(function (times) {
+  app.ports.cacheTimes.subscribe(times => {
     cache.setTimes(times)
   })
-
-  setTimeout(bumpDebuggerPanel, 100)
 }
-
-function bumpDebuggerPanel () {
-  var overlay = document.querySelector('.elm-overlay')
-  if (overlay) {
-    overlay.classList.add('z-999')
-  }
-}
-
-init()

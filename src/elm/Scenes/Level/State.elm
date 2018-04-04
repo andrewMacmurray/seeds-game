@@ -12,7 +12,7 @@ import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplet
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
-import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
+import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
 import Dict
 import Helpers.Delay exposing (sequenceMs, trigger)
@@ -34,7 +34,7 @@ init levelData =
     in
         model
             ! [ handleGenerateTiles levelData model
-              , getWindowSize
+              , Task.perform WindowSize size
               , generateSuccessMessageIndex
               ]
 
@@ -62,15 +62,10 @@ initialState =
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
     , successMessageIndex = 0
-    , hubInfoWindow = Hidden
+    , hubInfoWindow = InfoWindow.hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
-
-
-getWindowSize : Cmd LevelMsg
-getWindowSize =
-    Task.perform WindowSize size
 
 
 generateSuccessMessageIndex : Cmd LevelMsg
@@ -166,13 +161,13 @@ update msg model =
             noOutMsg { model | successMessageIndex = i } []
 
         ShowInfo info ->
-            noOutMsg { model | hubInfoWindow = Visible info } []
+            noOutMsg { model | hubInfoWindow = InfoWindow.show info } []
 
         RemoveInfo ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.toHiding model.hubInfoWindow } []
+            noOutMsg { model | hubInfoWindow = InfoWindow.leave model.hubInfoWindow } []
 
         InfoHidden ->
-            noOutMsg { model | hubInfoWindow = Hidden } []
+            noOutMsg { model | hubInfoWindow = InfoWindow.hidden } []
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
@@ -333,10 +328,10 @@ handleSquareMove model =
 
 handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
 handleCheckLevelComplete model =
-    if hasLost model then
-        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
-    else if hasWon model then
+    if hasWon model then
         noOutMsg { model | levelStatus = Win } [ winSequence model ]
+    else if hasLost model then
+        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
     else
         noOutMsg model []
 

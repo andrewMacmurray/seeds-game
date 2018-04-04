@@ -3,17 +3,20 @@ module State exposing (..)
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Background exposing (..)
-import Data.InfoWindow as InfoWindow exposing (InfoWindow(..))
+import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
+import Data.Visibility exposing (Visibility(Entering, Leaving))
 import Helpers.Delay exposing (..)
 import Helpers.OutMsg exposing (returnWithOutMsg)
 import Ports exposing (..)
 import Scenes.Hub.State as Hub
 import Scenes.Hub.Types exposing (HubMsg(..))
+import Scenes.Intro.State as Intro
+import Scenes.Intro.Types exposing (IntroMsg, IntroOutMsg(..))
 import Scenes.Level.State as Level
-import Scenes.Level.Types exposing (LevelOutMsg(..), LevelMsg)
+import Scenes.Level.Types exposing (LevelMsg, LevelOutMsg(..))
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialMsg, TutorialOutMsg(..))
 import Task
@@ -28,26 +31,21 @@ import Window exposing (resizes, size)
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     initialState flags
-        ! [ getWindowSize
+        ! [ Task.perform WindowSize size
           , generateBounceKeyframes ScaleConfig.baseTileSizeY
           ]
 
 
-getWindowSize : Cmd Msg
-getWindowSize =
-    Task.perform WindowSize size
-
-
 initialState : Flags -> Model
 initialState flags =
-    { scene = Loaded Title
+    { scene = Loaded <| Title Entering
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
-    , hubInfoWindow = Hidden
+    , hubInfoWindow = InfoWindow.hidden
     }
 
 
@@ -67,6 +65,9 @@ update msg model =
         HubMsg hubMsg ->
             handleHubMsg hubMsg model
 
+        IntroMsg introMsg ->
+            handleIntroMsg introMsg model
+
         StartLevel level ->
             case tutorialData level of
                 Just tutorialConfig ->
@@ -84,8 +85,8 @@ update msg model =
                         ! [ sequenceMs
                                 [ ( 600, SetCurrentLevel <| Just level )
                                 , ( 10, ShowLoadingScreen )
-                                , ( 500, LoadLevel level )
-                                , ( 2500, HideLoadingScreen )
+                                , ( 1000, LoadLevel level )
+                                , ( 2000, HideLoadingScreen )
                                 ]
                           ]
 
@@ -104,22 +105,28 @@ update msg model =
         LoadLevel level ->
             loadLevel model level
 
-        LoadHub ->
-            loadHub model ! []
+        LoadIntro ->
+            loadIntro model
+
+        LoadHub levelNumber ->
+            loadHub levelNumber model
 
         LoadSummary ->
             loadSummary model ! [ delayMs 1000 CompleteSceneTransition ]
 
         LoadRetry ->
-            handleLoadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
+            loadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
+
+        FadeTitle ->
+            { model | scene = Loaded <| Title Leaving } ! []
 
         CompleteSceneTransition ->
             { model | scene = completeSceneTransition model.scene } ! []
 
-        TransitionWithWin ->
+        LevelWin ->
             model ! [ sequenceMs <| levelWinSequence model ]
 
-        TransitionWithLose ->
+        LevelLose ->
             model ! [ sequenceMs <| levelLoseSequence model ]
 
         ShowLoadingScreen ->
@@ -138,9 +145,19 @@ update msg model =
             model
                 ! [ sequenceMs
                         [ ( 0, ShowLoadingScreen )
-                        , ( 500, LoadHub )
-                        , ( 100, HubMsg <| ScrollHubToLevel <| progressLevelNumber model )
-                        , ( 2400, HideLoadingScreen )
+                        , ( 1000, LoadHub <| progressLevelNumber model )
+                        , ( 2000, HideLoadingScreen )
+                        ]
+                  ]
+
+        GoToIntro ->
+            model ! [ playIntroMusic () ]
+
+        IntroMusicPlaying playing ->
+            model
+                ! [ sequenceMs
+                        [ ( 0, FadeTitle )
+                        , ( 2000, LoadIntro )
                         ]
                   ]
 
@@ -184,9 +201,22 @@ loadTutorial model level tutorialConfig =
         { model | scene = Loaded <| Tutorial tutorialModel } ! [ Cmd.map TutorialMsg tutorialCmd ]
 
 
-loadHub : Model -> Model
-loadHub model =
-    { model | scene = Loaded Hub }
+loadIntro : Model -> ( Model, Cmd Msg )
+loadIntro model =
+    let
+        ( introModel, introCmd ) =
+            Intro.init
+    in
+        { model | scene = Loaded <| Intro introModel } ! [ Cmd.map IntroMsg introCmd ]
+
+
+loadHub : Int -> Model -> ( Model, Cmd Msg )
+loadHub levelNumber model =
+    let
+        ( newModel, hubCmd ) =
+            Hub.init levelNumber model
+    in
+        { newModel | scene = Loaded Hub } ! [ Cmd.map HubMsg hubCmd ]
 
 
 loadSummary : Model -> Model
@@ -199,8 +229,8 @@ loadSummary model =
             model
 
 
-handleLoadRetry : Model -> Model
-handleLoadRetry model =
+loadRetry : Model -> Model
+loadRetry model =
     case model.scene of
         Loaded (Level levelModel) ->
             { model | scene = Transition { from = Level levelModel, to = Retry } }
@@ -239,10 +269,10 @@ handleLevelOutMsg : ( Model, Cmd Msg, Maybe LevelOutMsg ) -> ( Model, Cmd Msg )
 handleLevelOutMsg ( model, cmd, outMsg ) =
     case outMsg of
         Just ExitWin ->
-            model ! [ trigger TransitionWithWin, cmd ]
+            model ! [ trigger LevelWin, cmd ]
 
         Just ExitLose ->
-            model ! [ trigger TransitionWithLose, cmd ]
+            model ! [ trigger LevelLose, cmd ]
 
         Nothing ->
             model ! [ cmd ]
@@ -289,6 +319,28 @@ handleHubMsg hubMsg model =
         newModel ! [ Cmd.map HubMsg cmd ]
 
 
+handleIntroMsg : IntroMsg -> Model -> ( Model, Cmd Msg )
+handleIntroMsg introMsg model =
+    case model.scene of
+        Loaded (Intro introModel) ->
+            Intro.update introMsg introModel
+                |> returnWithOutMsg (\im -> { model | scene = Loaded <| Intro im }) IntroMsg
+                |> handleIntroOutMsg
+
+        _ ->
+            model ! []
+
+
+handleIntroOutMsg : ( Model, Cmd Msg, Maybe IntroOutMsg ) -> ( Model, Cmd Msg )
+handleIntroOutMsg ( model, cmd, outMsg ) =
+    case outMsg of
+        Just ExitIntro ->
+            model ! [ trigger GoToHub, fadeMusic (), cmd ]
+
+        Nothing ->
+            model ! [ cmd ]
+
+
 
 -- Misc
 
@@ -296,18 +348,13 @@ handleHubMsg hubMsg model =
 initProgressFromCache : Maybe RawProgress -> Progress
 initProgressFromCache rawProgress =
     rawProgress
-        |> toProgress
+        |> Maybe.map (\{ world, level } -> ( world, level ))
         |> Maybe.withDefault ( 1, 1 )
 
 
 fromProgress : Progress -> RawProgress
 fromProgress ( world, level ) =
     RawProgress world level
-
-
-toProgress : Maybe RawProgress -> Maybe Progress
-toProgress =
-    Maybe.map (\{ world, level } -> ( world, level ))
 
 
 getLevelData : Progress -> LevelData TutorialConfig
@@ -368,8 +415,7 @@ levelLoseSequence model =
 
 backToHubSequence : Int -> List ( Float, Msg )
 backToHubSequence levelNumber =
-    [ ( 500, LoadHub )
-    , ( 1000, HubMsg <| ScrollHubToLevel levelNumber )
+    [ ( 1000, LoadHub levelNumber )
     , ( 1500, HideLoadingScreen )
     , ( 500, SetCurrentLevel Nothing )
     ]
@@ -471,6 +517,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ resizes WindowSize
+        , introMusicPlaying IntroMusicPlaying
         , subscribeDecrement model
         , sceneSubscriptions model
         ]
@@ -495,6 +542,9 @@ sceneSubscriptions model =
 
         Loaded Hub ->
             Sub.map HubMsg <| Hub.subscriptions model
+
+        Loaded (Intro introModel) ->
+            Sub.map IntroMsg <| Intro.subscriptions introModel
 
         _ ->
             Sub.none

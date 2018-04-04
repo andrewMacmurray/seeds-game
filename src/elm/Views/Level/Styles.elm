@@ -23,7 +23,7 @@ boardMarginTop model =
 
 boardOffsetTop : TileConfig model -> Int
 boardOffsetTop model =
-    (model.window.height - boardHeight model) // 2 + ScaleConfig.topBarHeight // 2
+    (model.window.height - boardHeight model) // 2 + (ScaleConfig.topBarHeight // 2) - 10
 
 
 boardHeight : TileConfig model -> Int

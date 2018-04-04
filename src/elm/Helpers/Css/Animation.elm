@@ -6,6 +6,7 @@ module Helpers.Css.Animation
         , IterationCount(..)
         , animationStyle
         , animationWithOptionsStyle
+        , animationWithOptionsSvg
         , animateEase
         )
 
@@ -74,6 +75,11 @@ animationStyle =
 animationWithOptionsStyle : AnimationOptions -> Style
 animationWithOptionsStyle =
     animationWithOptions >> (,) "animation"
+
+
+animationWithOptionsSvg : AnimationOptions -> String
+animationWithOptionsSvg =
+    animationWithOptions >> (++) "animation: "
 
 
 animation : Animation -> String

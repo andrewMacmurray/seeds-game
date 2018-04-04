@@ -19,16 +19,6 @@ seedPodGradient_ =
         ]
 
 
-transparentGray : String
-transparentGray =
-    "rgba(149, 149, 149, 0.2)"
-
-
-white : String
-white =
-    "rgb(255, 255, 255)"
-
-
 darkRed : String
 darkRed =
     "rgb(191, 30, 45)"
@@ -69,14 +59,29 @@ gold =
     "rgb(255, 160, 0)"
 
 
+lightGold : String
+lightGold =
+    "rgb(255, 199, 19)"
+
+
 darkYellow : String
 darkYellow =
     "rgb(201, 153, 6)"
 
 
+brownYellow : String
+brownYellow =
+    "rgb(105, 88, 35)"
+
+
 yellow : String
 yellow =
     "rgb(255, 234, 124)"
+
+
+skyYellow : String
+skyYellow =
+    "rgb(255, 227, 137)"
 
 
 blockYellow : String
@@ -134,6 +139,16 @@ lightGreen =
     "rgb(119, 193, 66)"
 
 
+skyGreen : String
+skyGreen =
+    "rgb(166, 255, 150)"
+
+
+meadowGreen : String
+meadowGreen =
+    "rgb(91, 201, 120)"
+
+
 lightBlue : String
 lightBlue =
     "rgb(38, 170, 224)"
@@ -162,3 +177,18 @@ silver =
 lightGray : String
 lightGray =
     "rgb(180, 180, 180)"
+
+
+transparent : String
+transparent =
+    "rgba(0, 0, 0, 0)"
+
+
+transparentGray : String
+transparentGray =
+    "rgba(149, 149, 149, 0.2)"
+
+
+white : String
+white =
+    "rgb(255, 255, 255)"

@@ -2,7 +2,10 @@ module Helpers.Css.Transition
     exposing
         ( Transition
         , easeAll
+        , ease
         , transitionStyle
+        , transitionSvg
+        , transition
         )
 
 import Helpers.Css.Style exposing (Style, ms)
@@ -41,9 +44,24 @@ easeAll duration =
         }
 
 
+ease : String -> Float -> Style
+ease property duration =
+    transitionStyle
+        { property = property
+        , duration = duration
+        , timing = Ease
+        , delay = Nothing
+        }
+
+
 transitionStyle : Transition -> Style
 transitionStyle =
     transition >> (,) "transition"
+
+
+transitionSvg : Transition -> String
+transitionSvg =
+    transition >> (++) "transition: "
 
 
 transition : Transition -> String

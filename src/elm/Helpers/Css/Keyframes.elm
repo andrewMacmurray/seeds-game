@@ -55,7 +55,7 @@ type alias KeyframesAnimation =
 
 
 type Frames
-    = Frames (List ( Int, List KeyframeProp ))
+    = Frames (List ( Float, List KeyframeProp ))
 
 
 type KeyframeProp
@@ -128,7 +128,7 @@ opacity =
 
 map3 :
     ( a -> KeyframeProp, b -> KeyframeProp, c -> KeyframeProp )
-    -> List ( Int, ( a, b, c ) )
+    -> List ( Float, ( a, b, c ) )
     -> Frames
 map3 ( fa, fb, fc ) =
     Frames << List.map (\( step, ( a, b, c ) ) -> ( step, [ fa a, fb b, fc c ] ))
@@ -136,13 +136,13 @@ map3 ( fa, fb, fc ) =
 
 map2 :
     ( a -> KeyframeProp, b -> KeyframeProp )
-    -> List ( Int, ( a, b ) )
+    -> List ( Float, ( a, b ) )
     -> Frames
 map2 ( fa, fb ) =
     Frames << List.map (\( step, ( a, b ) ) -> ( step, [ fa a, fb b ] ))
 
 
-map : (a -> KeyframeProp) -> List ( Int, a ) -> Frames
+map : (a -> KeyframeProp) -> List ( Float, a ) -> Frames
 map f =
     Frames << List.map (\( step, a ) -> ( step, [ f a ] ))
 
@@ -164,7 +164,7 @@ renderSteps (Frames frames) =
         |> String.join " "
 
 
-renderStep : ( Int, List KeyframeProp ) -> String
+renderStep : ( Float, List KeyframeProp ) -> String
 renderStep ( step, props ) =
     String.join " "
         [ pc step, "{", renderProps props, "}" ]

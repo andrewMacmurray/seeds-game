@@ -1,4 +1,4 @@
-var localStorage = window.localStorage
+const { localStorage } = window
 
 function getTimes () {
   return safeParse(localStorage.getItem('times'))
@@ -29,9 +29,9 @@ function safeParse (JSONstring) {
 }
 
 module.exports = {
-  getTimes: getTimes,
-  setTimes: setTimes,
-  getProgress: getProgress,
-  setProgress: setProgress,
-  clear: clear
+  getTimes,
+  setTimes,
+  getProgress,
+  setProgress,
+  clear
 }
