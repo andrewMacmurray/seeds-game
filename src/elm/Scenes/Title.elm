@@ -13,13 +13,14 @@ import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 import Window
+import Config.Scale as ScaleConfig
 
 
 titleView : Model -> Visibility -> Html Msg
 titleView model vis =
     div [ class "relative z-5 tc" ]
         [ div
-            [ style [ marginTop <| percentWindowHeight 17 model ] ]
+            [ style [ marginTop <| percentWindowHeight 20 model ] ]
             [ seeds vis ]
         , p
             [ class "f3 tracked-mega"
@@ -63,8 +64,12 @@ percentWindowHeight percent model =
 seeds : Visibility -> Html msg
 seeds vis =
     div
-        [ style [ maxWidth 450 ]
-        , class "flex center ph3"
+        [ style
+            [ maxWidth 450
+            , paddingLeft ScaleConfig.windowPadding
+            , paddingRight ScaleConfig.windowPadding
+            ]
+        , class "flex center"
         ]
         (List.map3 (fadeSeeds vis)
             (seedEntranceDelays 500)

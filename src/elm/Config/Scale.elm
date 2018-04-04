@@ -43,3 +43,8 @@ baseTileSizeY =
 topBarHeight : number
 topBarHeight =
     80
+
+
+windowPadding : number
+windowPadding =
+    35

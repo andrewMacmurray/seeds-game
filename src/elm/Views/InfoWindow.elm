@@ -7,6 +7,7 @@ import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Config.Scale as ScaleConfig
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg
@@ -54,14 +55,26 @@ infoContainer infoWindow content =
 
 infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
-    case infoWindow of
-        Hiding _ ->
-            div [ classes [ "touch-disabled", infoContainerBaseClasses ] ]
+    let
+        padding =
+            [ paddingLeft ScaleConfig.windowPadding
+            , paddingRight ScaleConfig.windowPadding
+            ]
+    in
+        case infoWindow of
+            Hiding _ ->
+                div
+                    [ classes [ "touch-disabled", infoContainerBaseClasses ]
+                    , style padding
+                    ]
 
-        _ ->
-            div [ class infoContainerBaseClasses ]
+            _ ->
+                div
+                    [ class infoContainerBaseClasses
+                    , style padding
+                    ]
 
 
 infoContainerBaseClasses : String
 infoContainerBaseClasses =
-    "pointer fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center z-5 ph3"
+    "pointer fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center z-5"
