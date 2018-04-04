@@ -31,14 +31,9 @@ import Window exposing (resizes, size)
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     initialState flags
-        ! [ getWindowSize
+        ! [ Task.perform WindowSize size
           , generateBounceKeyframes ScaleConfig.baseTileSizeY
           ]
-
-
-getWindowSize : Cmd Msg
-getWindowSize =
-    Task.perform WindowSize size
 
 
 initialState : Flags -> Model

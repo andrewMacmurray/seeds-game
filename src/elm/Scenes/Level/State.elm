@@ -34,7 +34,7 @@ init levelData =
     in
         model
             ! [ handleGenerateTiles levelData model
-              , getWindowSize
+              , Task.perform WindowSize size
               , generateSuccessMessageIndex
               ]
 
@@ -66,11 +66,6 @@ initialState =
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
-
-
-getWindowSize : Cmd LevelMsg
-getWindowSize =
-    Task.perform WindowSize size
 
 
 generateSuccessMessageIndex : Cmd LevelMsg

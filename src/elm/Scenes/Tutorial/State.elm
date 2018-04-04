@@ -12,6 +12,7 @@ import Dict
 import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
 import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
+import Scenes.Level.Types exposing (LevelModel)
 import Scenes.Tutorial.Types exposing (..)
 import Task
 import Window exposing (resizes, size)
@@ -23,26 +24,18 @@ import Window exposing (resizes, size)
 init : LevelData TutorialConfig -> TutorialConfig -> ( TutorialModel, Cmd TutorialMsg )
 init levelData config =
     let
-        model =
-            loadTutorialData config initialState
-
         ( levelModel, levelCmd ) =
             Level.init levelData
     in
-        { model | levelModel = levelModel }
-            ! [ sequenceMs <| pause 500 config.sequence
-              , getWindowSize
+        loadTutorialData config (initialState levelModel)
+            ! [ Task.perform WindowSize size
               , Cmd.map LevelMsg levelCmd
+              , sequenceMs <| pause 500 config.sequence
               ]
 
 
-getWindowSize : Cmd TutorialMsg
-getWindowSize =
-    Task.perform WindowSize size
-
-
-initialState : TutorialModel
-initialState =
+initialState : LevelModel -> TutorialModel
+initialState levelModel =
     { board = Dict.empty
     , boardVisible = True
     , textVisible = True
@@ -56,7 +49,7 @@ initialState =
     , currentText = 1
     , text = Dict.empty
     , window = { height = 0, width = 0 }
-    , levelModel = Level.initialState
+    , levelModel = levelModel
     }
 
 
