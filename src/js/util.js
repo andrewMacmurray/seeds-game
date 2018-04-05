@@ -16,11 +16,9 @@ function whenMounted(id, cb) {
   if (element) {
     cb()
   } else {
-    callWhenIdAdded(
-      document.querySelector("body"),
-      id,
-      () => whenMounted.apply(null, arguments)
-    )
+    const parent = document.body
+    const reCall = () => whenMounted.apply(null, arguments)
+    callWhenIdAdded(parent, id, reCall)
   }
 }
 

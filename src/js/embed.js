@@ -3,44 +3,42 @@ const animations = require('./bounce.js')
 const cache = require('./cache.js')
 const util = require('./util')
 const { animateHills, growSeeds } = require('./animations.js')
-const { Howl } = require('howler')
+const { loadAudio, playTrack, longFade } = require('./audio.js')
 
 init()
 util.bumpDebuggerPanel()
 
 function init() {
-  const app = Elm.App.fullscreen({
+  // Init Elm App
+  const { ports } = Elm.App.fullscreen({
     now: Date.now(),
     times: cache.getTimes(),
     rawProgress: cache.getProgress()
   })
 
-  const introMusic = new Howl({
-    src: ['audio/intro.mp3']
+  // Audio
+  const { introMusic } = loadAudio()
+
+  ports.playIntroMusic.subscribe(() => {
+    const musicPlaying = () => ports.introMusicPlaying.send(true)
+    playTrack(introMusic, musicPlaying)
   })
 
-  function introMusicstarted () {
-    app.ports.introMusicPlaying.send(true)
-  }
+  ports.fadeMusic.subscribe(() => longFade(introMusic))
 
-  app.ports.playIntroMusic.subscribe(() => {
-    introMusic.once('play', introMusicstarted)
-    introMusic.play()
-  })
-
-  app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
-
-  app.ports.animateHills.subscribe(animateHills)
-  app.ports.animateGrowingSeeds.subscribe(growSeeds)
-
-  app.ports.scrollToHubLevel.subscribe(level => {
+  // Scroll
+  ports.scrollToHubLevel.subscribe(level => {
     const levelEl = document.getElementById('level-' + level)
     if (levelEl) {
-      app.ports.receiveHubLevelOffset.send(levelEl.offsetTop)
+      ports.receiveHubLevelOffset.send(levelEl.offsetTop)
     }
   })
 
-  app.ports.generateBounceKeyframes.subscribe(tileSize => {
+  // Animations
+  ports.animateHills.subscribe(animateHills)
+  ports.animateGrowingSeeds.subscribe(growSeeds)
+
+  ports.generateBounceKeyframes.subscribe(tileSize => {
     const anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
@@ -53,16 +51,17 @@ function init() {
     styleNode.textContent = anims
   })
 
-  app.ports.cacheProgress.subscribe(progress => {
+  // Cache
+  ports.cacheProgress.subscribe(progress => {
     cache.setProgress(progress)
   })
 
-  app.ports.clearCache_.subscribe(() => {
+  ports.clearCache_.subscribe(() => {
     cache.clear()
     window.location.reload()
   })
 
-  app.ports.cacheTimes.subscribe(times => {
+  ports.cacheTimes.subscribe(times => {
     cache.setTimes(times)
   })
 }

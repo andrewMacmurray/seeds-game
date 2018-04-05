@@ -171,7 +171,7 @@ update msg model =
         UpdateTimes now ->
             updateTimes now model
 
-        -- Summary and Retry Specific Messages
+        -- Summary and Retry
         IncrementProgress ->
             handleIncrementProgress model
 

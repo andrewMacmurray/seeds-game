@@ -91,6 +91,6 @@ type Msg
     | ClearCache
     | WindowSize Window.Size
     | UpdateTimes Time
-      -- Summary and Retry Specific Messages
+      -- Summary and Retry
     | IncrementProgress
     | DecrementLives
