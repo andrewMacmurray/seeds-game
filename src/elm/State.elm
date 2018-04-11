@@ -38,14 +38,15 @@ init flags =
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Loaded <| Title Entering
+    { scene = Loaded Title
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
-    , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
+    , titleAnimation = Entering
     , hubInfoWindow = InfoWindow.hidden
+    , window = { height = 0, width = 0 }
     }
 
 
@@ -118,7 +119,7 @@ update msg model =
             loadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
 
         FadeTitle ->
-            { model | scene = Loaded <| Title Leaving } ! []
+            { model | titleAnimation = Leaving } ! []
 
         CompleteSceneTransition ->
             { model | scene = completeSceneTransition model.scene } ! []

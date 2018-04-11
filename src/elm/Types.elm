@@ -39,6 +39,7 @@ type alias Model =
     , timeTillNextLife : Time
     , lastPlayed : Time
     , hubInfoWindow : InfoWindow Progress
+    , titleAnimation : Visibility
     , window : Window.Size
     }
 
@@ -55,7 +56,7 @@ type alias SceneTransition =
 
 
 type Scene
-    = Title Visibility
+    = Title
     | Level LevelModel
     | Tutorial TutorialModel
     | Intro IntroModel
