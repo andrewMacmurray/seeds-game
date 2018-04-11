@@ -33,6 +33,7 @@ init flags =
     initialState flags
         ! [ Task.perform WindowSize size
           , generateBounceKeyframes ScaleConfig.baseTileSizeY
+          , trigger LoadIntro
           ]
 
 

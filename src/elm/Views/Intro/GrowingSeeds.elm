@@ -72,9 +72,16 @@ growingSeed window ( index, seedType, scale ) =
                     , marginRight 5
                     , transformStyle [ Transform.scale 0 ]
                     , ( "transform-origin", "center" )
+                    , animationWithOptionsStyle
+                        { name = "bulge-elastic"
+                        , duration = 500
+                        , timing = EaseOut
+                        , delay = Just delay
+                        , iteration = Nothing
+                        , fill = Forwards
+                        }
                     ]
                 , class "growing-seed"
-                , attribute "gsap-val-delay" <| toString delay
                 ]
                 [ renderSeed seedType ]
             ]

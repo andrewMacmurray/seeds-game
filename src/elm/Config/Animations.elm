@@ -9,6 +9,7 @@ internalAnimations =
     embed
         [ bulge
         , bulgeSmall
+        , bulgeElastic
         , bulgeFade
         , exitDown
         , fadeIn
@@ -62,6 +63,19 @@ bulge =
             [ ( 0, 0.5 )
             , ( 50, 1.3 )
             , ( 100, 1 )
+            ]
+    }
+
+
+bulgeElastic : KeyframesAnimation
+bulgeElastic =
+    { name = "bulge-elastic"
+    , frames =
+        map2 ( scale, opacity )
+            [ ( 0, ( 0, 0 ) )
+            , ( 50, ( 1.3, 0.4 ) )
+            , ( 75, ( 0.9, 0.7 ) )
+            , ( 100, ( 1, 1 ) )
             ]
     }
 
