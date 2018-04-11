@@ -38,10 +38,10 @@ init flags =
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Loaded <| Title Entering
+    { scene = Loaded Summary
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
-    , currentLevel = Nothing
+    , currentLevel = Just ( 2, 2 )
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags

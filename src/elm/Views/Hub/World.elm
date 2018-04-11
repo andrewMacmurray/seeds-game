@@ -6,14 +6,15 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
-import Helpers.Html exposing (emptyProperty)
 import Helpers.Css.Style exposing (..)
+import Helpers.Html exposing (emptyProperty)
+import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
 import Types exposing (Msg(..))
-import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -68,31 +69,12 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
 
 offsetStyles : Int -> List Style
 offsetStyles levelNumber =
-    let
-        center =
-            [ ( "margin-left", "auto" )
-            , ( "margin-right", "auto" )
-            ]
-
-        right =
-            [ ( "margin-left", "auto" ) ]
-
-        left =
-            []
-
-        offsetSin =
-            toFloat (levelNumber - 1)
-                |> (*) 90
-                |> degrees
-                |> sin
-                |> round
-    in
-        if offsetSin == 0 then
-            center
-        else if offsetSin == 1 then
-            right
-        else
-            left
+    wave
+        { center = [ ( "margin-left", "auto" ), ( "margin-right", "auto" ) ]
+        , right = [ ( "margin-left", "auto" ) ]
+        , left = []
+        }
+        (levelNumber - 1)
 
 
 renderNumber :

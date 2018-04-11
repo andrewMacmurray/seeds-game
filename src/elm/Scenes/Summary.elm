@@ -1,6 +1,6 @@
 module Scenes.Summary exposing (..)
 
-import Config.Color exposing (washedYellow)
+import Config.Color exposing (gold, rainBlue, washedYellow)
 import Config.Levels exposing (allLevels)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
@@ -8,6 +8,8 @@ import Data.Level.Types exposing (Progress)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
+import Helpers.Css.Transform exposing (transformStyle, translateX)
+import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Types exposing (..)
@@ -53,12 +55,14 @@ renderResourceBank progress currentLevel tileType =
     case tileType of
         Rain ->
             div [ style [ widthStyle 40 ], class "dib ph1 mh4" ]
-                [ rainBank <| percentComplete allLevels Rain progress currentLevel
+                [ renderResourceFill tileType
+                , rainBank <| percentComplete allLevels Rain progress currentLevel
                 ]
 
         Sun ->
             div [ style [ widthStyle 40 ], class "dib mh4" ]
-                [ sunBank <| percentComplete allLevels Sun progress currentLevel
+                [ renderResourceFill tileType
+                , sunBank <| percentComplete allLevels Sun progress currentLevel
                 ]
 
         Seed seedType ->
@@ -68,3 +72,67 @@ renderResourceBank progress currentLevel tileType =
 
         _ ->
             span [] []
+
+
+renderResourceFill : TileType -> Html msg
+renderResourceFill tileType =
+    case tileType of
+        Rain ->
+            div [ style [ heightStyle 100 ] ]
+                [ div [ style [ widthStyle 15 ], class "center" ] [ rainBank 100 ]
+                , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
+                ]
+
+        Sun ->
+            div [ style [ heightStyle 100 ] ]
+                [ div [ style [ widthStyle 22 ], class "center" ] [ sunBank 100 ]
+                , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
+                ]
+
+        _ ->
+            span [] []
+
+
+drop : String -> Int -> Html msg
+drop bgColor n =
+    let
+        d =
+            if n % 3 == 0 then
+                30
+            else if n % 3 == 1 then
+                60
+            else
+                90
+    in
+        div
+            [ style
+                [ transformStyle
+                    [ translateX <|
+                        wave
+                            { left = -5
+                            , center = 0
+                            , right = 5
+                            }
+                            (n - 1)
+                    ]
+                ]
+            ]
+            [ div
+                [ class "br-100 absolute left-0 right-0 center"
+                , style
+                    [ widthStyle 10
+                    , heightStyle 10
+                    , background bgColor
+                    , opacityStyle 0
+                    , animationWithOptionsStyle
+                        { name = "fade-slide-down"
+                        , duration = 200
+                        , delay = Just <| toFloat <| n * d
+                        , timing = Linear
+                        , iteration = Nothing
+                        , fill = Forwards
+                        }
+                    ]
+                ]
+                []
+            ]
