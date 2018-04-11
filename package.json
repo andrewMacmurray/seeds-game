@@ -30,7 +30,6 @@
   "dependencies": {
     "bounce.js": "^0.8.2",
     "elm": "^0.18.0",
-    "gsap": "^1.20.4",
     "howler": "^2.0.9",
     "tachyons-custom": "^4.5.4"
   },
