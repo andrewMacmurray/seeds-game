@@ -52,6 +52,16 @@ paddingRight n =
     ( "padding-right", px n )
 
 
+paddingTop : number -> Style
+paddingTop n =
+    ( "padding-top", px n )
+
+
+paddingBottom : number -> Style
+paddingBottom n =
+    ( "padding-bottom", px n )
+
+
 marginRight : number -> Style
 marginRight n =
     ( "margin-right", px n )

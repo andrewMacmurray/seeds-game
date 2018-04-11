@@ -21,11 +21,11 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData TutorialConfig -> TutorialConfig -> ( TutorialModel, Cmd TutorialMsg )
-init levelData config =
+init : Int -> LevelData TutorialConfig -> TutorialConfig -> ( TutorialModel, Cmd TutorialMsg )
+init successMessageIndex levelData config =
     let
         ( levelModel, levelCmd ) =
-            Level.init levelData
+            Level.init successMessageIndex levelData
     in
         loadTutorialData config (initialState levelModel)
             ! [ Task.perform WindowSize size

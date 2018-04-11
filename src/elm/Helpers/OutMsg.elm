@@ -4,8 +4,8 @@ module Helpers.OutMsg exposing (..)
 -- Used to communicate with parent component -- don't abuse these!
 
 
-returnWithOutMsg : (b -> d) -> (a -> msg) -> ( b, Cmd a, outMsg ) -> ( d, Cmd msg, outMsg )
-returnWithOutMsg modelF msgF ( model, cmd, outMsg ) =
+returnOutMsg : (b -> d) -> (a -> msg) -> ( b, Cmd a, outMsg ) -> ( d, Cmd msg, outMsg )
+returnOutMsg modelF msgF ( model, cmd, outMsg ) =
     ( modelF model, Cmd.map msgF cmd, outMsg )
 
 

@@ -26,16 +26,15 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
-init levelData =
+init : Int -> LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
+init successMessageIndex levelData =
     let
         model =
-            addLevelData levelData initialState
+            addLevelData levelData <| initialState successMessageIndex
     in
         model
             ! [ handleGenerateTiles levelData model
               , Task.perform WindowSize size
-              , generateSuccessMessageIndex
               ]
 
 
@@ -51,8 +50,8 @@ addLevelData { tileSettings, walls, boardDimensions, moves } model =
     }
 
 
-initialState : LevelModel
-initialState =
+initialState : Int -> LevelModel
+initialState successMessageIndex =
     { board = Dict.empty
     , scores = Dict.empty
     , isDragging = False
@@ -61,16 +60,11 @@ initialState =
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
-    , successMessageIndex = 0
+    , successMessageIndex = successMessageIndex
     , hubInfoWindow = InfoWindow.hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
-
-
-generateSuccessMessageIndex : Cmd LevelMsg
-generateSuccessMessageIndex =
-    randomSuccessMessageIndex RandomSuccessMessageIndex
 
 
 
@@ -156,9 +150,6 @@ update msg model =
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
-
-        RandomSuccessMessageIndex i ->
-            noOutMsg { model | successMessageIndex = i } []
 
         ShowInfo info ->
             noOutMsg { model | hubInfoWindow = InfoWindow.show info } []

@@ -41,7 +41,6 @@ type LevelMsg
     | ShiftBoard
     | ResetMove
     | CheckLevelComplete
-    | RandomSuccessMessageIndex Int
     | ShowInfo String
     | RemoveInfo
     | InfoHidden

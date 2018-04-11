@@ -40,6 +40,7 @@ type alias Model =
     , lastPlayed : Time
     , hubInfoWindow : InfoWindow Progress
     , titleAnimation : Visibility
+    , successMessageIndex : Int
     , window : Window.Size
     }
 
@@ -70,6 +71,8 @@ type Msg
     | TutorialMsg TutorialMsg
     | IntroMsg IntroMsg
     | HubMsg HubMsg
+    | GenerateSuccessMessageIndex Int
+    | IncrementSuccessMessageIndex
     | StartLevel Progress
     | RestartLevel
     | LevelWin
