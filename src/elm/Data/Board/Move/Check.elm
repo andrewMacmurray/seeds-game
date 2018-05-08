@@ -5,9 +5,9 @@ module Data.Board.Move.Check
         )
 
 import Data.Board.Block exposing (setStaticToFirstMove)
-import Data.Board.Moves exposing (isUniqueMove, lastMove, sameTileType)
 import Data.Board.Move.Bearing exposing (addBearings, validDirection)
 import Data.Board.Move.Square exposing (isValidSquare)
+import Data.Board.Moves exposing (isUniqueMove, lastMove, sameTileType)
 import Data.Board.Types exposing (..)
 import Dict
 
@@ -31,6 +31,6 @@ isValidMove curr board =
         last =
             lastMove board
     in
-        validDirection curr last
-            && sameTileType curr last
-            && isUniqueMove curr board
+    validDirection curr last
+        && sameTileType curr last
+        && isUniqueMove curr board

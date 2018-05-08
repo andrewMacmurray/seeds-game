@@ -28,26 +28,26 @@ changeBearings (( c2, t2 ) as move2) (( c1, t1 ) as move1) =
         newCurrentMove =
             setNewCurrentMove move2 move1
     in
-        if isLeft c1 c2 then
-            ( newCurrentMove
-            , ( c1, addBearing Left t1 )
-            )
-        else if isRight c1 c2 then
-            ( newCurrentMove
-            , ( c1, addBearing Right t1 )
-            )
-        else if isAbove c1 c2 then
-            ( newCurrentMove
-            , ( c1, addBearing Up t1 )
-            )
-        else if isBelow c1 c2 then
-            ( newCurrentMove
-            , ( c1, addBearing Down t1 )
-            )
-        else
-            ( newCurrentMove
-            , ( c1, addBearing Head t1 )
-            )
+    if isLeft c1 c2 then
+        ( newCurrentMove
+        , ( c1, addBearing Left t1 )
+        )
+    else if isRight c1 c2 then
+        ( newCurrentMove
+        , ( c1, addBearing Right t1 )
+        )
+    else if isAbove c1 c2 then
+        ( newCurrentMove
+        , ( c1, addBearing Up t1 )
+        )
+    else if isBelow c1 c2 then
+        ( newCurrentMove
+        , ( c1, addBearing Down t1 )
+        )
+    else
+        ( newCurrentMove
+        , ( c1, addBearing Head t1 )
+        )
 
 
 setNewCurrentMove : Move -> Move -> Move
@@ -57,7 +57,7 @@ setNewCurrentMove ( c2, t2 ) m1 =
 
 incrementMoveOrder : Move -> Int
 incrementMoveOrder ( _, tileState ) =
-    (moveOrder tileState) + 1
+    moveOrder tileState + 1
 
 
 isLeft : Coord -> Coord -> Bool

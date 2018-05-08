@@ -57,7 +57,7 @@ scrollHubToLevel offset window =
         targetDistance =
             offset - toFloat (window.height // 2) + 60
     in
-        Dom.Scroll.toY "hub" targetDistance |> Task.attempt DomNoOp
+    Dom.Scroll.toY "hub" targetDistance |> Task.attempt DomNoOp
 
 
 

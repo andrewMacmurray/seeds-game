@@ -1,14 +1,14 @@
 module Data.InfoWindow
     exposing
         ( InfoWindow
-        , show
-        , leave
         , hidden
-        , map
-        , val
-        , isVisible
-        , isLeaving
         , isHidden
+        , isLeaving
+        , isVisible
+        , leave
+        , map
+        , show
+        , val
         )
 
 import Data.Visibility exposing (..)

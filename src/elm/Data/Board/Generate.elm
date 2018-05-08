@@ -1,18 +1,18 @@
 module Data.Board.Generate
     exposing
-        ( insertNewSeeds
+        ( generateEnteringTiles
         , generateInitialTiles
-        , insertNewEnteringTiles
-        , makeBoard
         , generateRandomSeedType
-        , generateEnteringTiles
+        , insertNewEnteringTiles
+        , insertNewSeeds
+        , makeBoard
         )
 
-import Dict
-import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
+import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (..)
+import Dict
 import Random exposing (Generator)
 
 
@@ -29,7 +29,7 @@ insertNewSeeds seedType board =
                 |> List.map (setGrowingSeed seedType)
                 |> Dict.fromList
     in
-        Dict.union seedsToAdd board
+    Dict.union seedsToAdd board
 
 
 setGrowingSeed : SeedType -> ( Coord, Block ) -> ( Coord, Block )
@@ -76,12 +76,12 @@ insertNewEnteringTiles newTiles board =
                 |> List.map2 (\tile coord -> ( coord, Space <| Entering tile )) newTiles
                 |> Dict.fromList
     in
-        Dict.union tilesToAdd board
+    Dict.union tilesToAdd board
 
 
 generateEnteringTiles : (List TileType -> msg) -> List TileSetting -> Board -> Cmd msg
 generateEnteringTiles msg tileSettings board =
-    (tileGenerator tileSettings)
+    tileGenerator tileSettings
         |> Random.list (numberOfEmpties board)
         |> Random.generate msg
 
@@ -178,12 +178,12 @@ handleProb n { tileType, probability } ( val, accProb ) =
         (Probability p) =
             probability
     in
-        case val of
-            Nothing ->
-                if n <= p + accProb then
-                    ( Just tileType, p )
-                else
-                    ( Nothing, p + accProb )
-
-            Just tileType ->
+    case val of
+        Nothing ->
+            if n <= p + accProb then
                 ( Just tileType, p )
+            else
+                ( Nothing, p + accProb )
+
+        Just tileType ->
+            ( Just tileType, p )

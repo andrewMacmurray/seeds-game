@@ -1,13 +1,13 @@
 module Helpers.Css.Animation
     exposing
-        ( AnimationOptions
-        , Animation
+        ( Animation
+        , AnimationOptions
         , FillMode(..)
         , IterationCount(..)
+        , animateEase
         , animationStyle
         , animationWithOptionsStyle
         , animationWithOptionsSvg
-        , animateEase
         )
 
 import Helpers.Css.Style exposing (Style, ms)

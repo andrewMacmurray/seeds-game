@@ -15,49 +15,49 @@ sunBank percentFull =
         sunLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
     in
-        Svg.svg
-            [ viewBox "0 0 31 37"
-            , width "100%"
-            , height "100%"
+    Svg.svg
+        [ viewBox "0 0 31 37"
+        , width "100%"
+        , height "100%"
+        ]
+        [ Svg.defs []
+            [ Svg.rect
+                [ height <| toString fullHeight
+                , id "sun-level"
+                , width "50"
+                , style "transition: transform 1.5s ease"
+                , transform <| svgTranslate 0 sunLevelOffset
+                ]
+                []
             ]
-            [ Svg.defs []
-                [ Svg.rect
-                    [ height <| toString fullHeight
-                    , id "sun-level"
-                    , width "50"
-                    , style "transition: transform 1.5s ease"
-                    , transform <| svgTranslate 0 sunLevelOffset
+        , Svg.g
+            [ fill "none"
+            , fillRule "evenodd"
+            , transform "translate(-11)"
+            ]
+            [ Svg.path
+                [ sunPath
+                , fill "#FAD88A"
+                , fillOpacity ".634"
+                ]
+                []
+            , Svg.g [ transform "translate(0 20.886)" ]
+                [ Svg.mask
+                    [ fill "white"
+                    , id "sun-bank"
                     ]
-                    []
-                ]
-            , Svg.g
-                [ fill "none"
-                , fillRule "evenodd"
-                , transform "translate(-11)"
-                ]
-                [ Svg.path
+                    [ Svg.use [ xlinkHref "#sun-level" ] []
+                    ]
+                , Svg.path
                     [ sunPath
-                    , fill "#FAD88A"
-                    , fillOpacity ".634"
+                    , fill "#FFAA00"
+                    , mask "url(#sun-bank)"
+                    , transform "translate(0 -20.886)"
                     ]
                     []
-                , Svg.g [ transform "translate(0 20.886)" ]
-                    [ Svg.mask
-                        [ fill "white"
-                        , id "sun-bank"
-                        ]
-                        [ Svg.use [ xlinkHref "#sun-level" ] []
-                        ]
-                    , Svg.path
-                        [ sunPath
-                        , fill "#FFAA00"
-                        , mask "url(#sun-bank)"
-                        , transform "translate(0 -20.886)"
-                        ]
-                        []
-                    ]
                 ]
             ]
+        ]
 
 
 sunPath : Attribute msg

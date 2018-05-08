@@ -2,11 +2,11 @@ module Data.Board.Score
     exposing
         ( addScoreFromMoves
         , collectable
+        , getScoreFor
+        , initialScores
+        , levelComplete
         , scoreTileTypes
         , scoreToString
-        , getScoreFor
-        , levelComplete
-        , initialScores
         )
 
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
@@ -24,7 +24,7 @@ addScoreFromMoves board scores =
         scoreToAdd =
             currentMoves board |> List.length
     in
-        addToScore scoreToAdd tileType scores
+    addToScore scoreToAdd tileType scores
 
 
 levelComplete : Scores -> Bool
@@ -93,4 +93,4 @@ initScore { tileType, targetScore } =
         (TargetScore t) =
             Maybe.withDefault (TargetScore 0) targetScore
     in
-        ( toString tileType, Score t 0 )
+    ( toString tileType, Score t 0 )

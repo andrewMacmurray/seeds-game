@@ -25,27 +25,27 @@ summaryView ({ progress, currentLevel } as model) =
         resources =
             secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
     in
-        div
-            [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-            , style
-                [ heightStyle model.window.height
-                , background washedYellow
-                , animationStyle
-                    { name = "fade-in"
-                    , duration = 1000
-                    , timing = Linear
-                    }
-                ]
+    div
+        [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
+        , style
+            [ heightStyle model.window.height
+            , background washedYellow
+            , animationStyle
+                { name = "fade-in"
+                , duration = 1000
+                , timing = Linear
+                }
             ]
-            [ div [ style [ ( "margin-top", pc -3 ) ] ]
-                [ div
-                    [ style [ widthStyle 65, marginBottom 45 ]
-                    , class "center"
-                    ]
-                    [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-                , div [ style [ heightStyle 107 ] ] <| List.map (renderResourceBank progress currentLevel) resources
+        ]
+        [ div [ style [ ( "margin-top", pc -3 ) ] ]
+            [ div
+                [ style [ widthStyle 65, marginBottom 45 ]
+                , class "center"
                 ]
+                [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
+            , div [ style [ heightStyle 107 ] ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
+        ]
 
 
 renderResourceBank : Progress -> Maybe Progress -> TileType -> Html msg

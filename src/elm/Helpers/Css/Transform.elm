@@ -1,21 +1,21 @@
 module Helpers.Css.Transform
     exposing
         ( Transform
-        , transformStyle
-        , transformSvg
-        , transform
-        , scale
-        , translate
-        , translateX
-        , translateY
+        , fromTransform
         , rotateX
         , rotateY
         , rotateZ
-        , fromTransform
+        , scale
+        , transform
+        , transformStyle
+        , transformSvg
+        , translate
+        , translateX
+        , translateY
         )
 
 import Formatting exposing (print)
-import Helpers.Css.Format exposing (rotate_, translate_, translateY_, translateX_, scale_)
+import Helpers.Css.Format exposing (rotate_, scale_, translateX_, translateY_, translate_)
 import Helpers.Css.Style exposing (Style)
 
 

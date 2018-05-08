@@ -6,14 +6,14 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
-import Helpers.Html exposing (emptyProperty)
 import Helpers.Css.Style exposing (..)
+import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
 import Types exposing (Msg(..))
-import Scenes.Hub.Types as Hub exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -48,22 +48,22 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
         levelNumber =
             getLevelNumber ( world, level ) allLevels
     in
-        div
-            [ showInfo ( world, level ) model
-            , class "tc pointer"
-            , id <| "level-" ++ (toString levelNumber)
-            , styles
-                [ [ widthStyle 35
-                  , marginTop 50
-                  , marginBottom 50
-                  , color worldData.textColor
-                  ]
-                , offsetStyles level
-                ]
+    div
+        [ showInfo ( world, level ) model
+        , class "tc pointer"
+        , id <| "level-" ++ toString levelNumber
+        , styles
+            [ [ widthStyle 35
+              , marginTop 50
+              , marginBottom 50
+              , color worldData.textColor
+              ]
+            , offsetStyles level
             ]
-            [ renderIcon ( world, level ) worldData.seedType model
-            , renderNumber levelNumber ( world, level ) worldData model
-            ]
+        ]
+        [ renderIcon ( world, level ) worldData.seedType model
+        , renderNumber levelNumber ( world, level ) worldData model
+        ]
 
 
 offsetStyles : Int -> List Style
@@ -87,12 +87,12 @@ offsetStyles levelNumber =
                 |> sin
                 |> round
     in
-        if offsetSin == 0 then
-            center
-        else if offsetSin == 1 then
-            right
-        else
-            left
+    if offsetSin == 0 then
+        center
+    else if offsetSin == 1 then
+        right
+    else
+        left
 
 
 renderNumber :

@@ -1,9 +1,9 @@
 module Data.Board.Move.Square
     exposing
-        ( triggerMoveIfSquare
-        , hasSquareTile
+        ( hasSquareTile
         , isValidSquare
         , setAllTilesOfTypeToDragging
+        , triggerMoveIfSquare
         )
 
 import Data.Board.Block exposing (getTileType, moveOrder, setToDragging)
@@ -53,17 +53,17 @@ isValidSquare first board =
         second =
             List.head moves |> Maybe.withDefault emptyMove
     in
-        all identity
-            [ moveLongEnough moves
-            , validDirection first second
-            , sameTileType first second
-            , draggingOrderDifferent first second
-            ]
+    all identity
+        [ moveLongEnough moves
+        , validDirection first second
+        , sameTileType first second
+        , draggingOrderDifferent first second
+        ]
 
 
 draggingOrderDifferent : Move -> Move -> Bool
 draggingOrderDifferent ( _, b2 ) ( _, b1 ) =
-    moveOrder b2 < (moveOrder b1) - 1
+    moveOrder b2 < moveOrder b1 - 1
 
 
 hasSquareTile : Board -> Bool

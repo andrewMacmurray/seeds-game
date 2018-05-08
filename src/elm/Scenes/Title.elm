@@ -155,12 +155,12 @@ fade vis duration delay =
                 , iteration = Nothing
                 }
     in
-        case vis of
-            Entering ->
-                animation "fade-in"
+    case vis of
+        Entering ->
+            animation "fade-in"
 
-            Leaving ->
-                animation "fade-out"
+        Leaving ->
+            animation "fade-out"
 
-            _ ->
-                emptyStyle
+        _ ->
+            emptyStyle

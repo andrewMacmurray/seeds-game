@@ -6,9 +6,9 @@ module Data.Level.Summary
         )
 
 import Config.Levels exposing (allLevels)
+import Data.Board.Score exposing (collectable)
 import Data.Board.Tile exposing (getSeedType)
 import Data.Board.Types exposing (..)
-import Data.Board.Score exposing (collectable)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
@@ -28,11 +28,11 @@ percentComplete allLevels tileType ( w, l ) currentLevel =
         percent a b =
             (toFloat b / toFloat a) * 100
     in
-        if worldComplete ( w, l ) currentLevel then
-            100
-        else
-            Maybe.map2 percent target current
-                |> Maybe.withDefault 0
+    if worldComplete ( w, l ) currentLevel then
+        100
+    else
+        Maybe.map2 percent target current
+            |> Maybe.withDefault 0
 
 
 primarySeedType : AllLevels tutorial -> Progress -> Maybe Progress -> Maybe SeedType
@@ -81,7 +81,7 @@ uniqueMembers =
             else
                 a :: b
     in
-        List.foldr accum []
+    List.foldr accum []
 
 
 worldComplete : Progress -> Maybe Progress -> Bool

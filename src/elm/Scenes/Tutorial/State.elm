@@ -27,11 +27,11 @@ init successMessageIndex levelData config =
         ( levelModel, levelCmd ) =
             Level.init successMessageIndex levelData
     in
-        loadTutorialData config (initialState levelModel)
-            ! [ Task.perform WindowSize size
-              , Cmd.map LevelMsg levelCmd
-              , sequenceMs <| pause 500 config.sequence
-              ]
+    loadTutorialData config (initialState levelModel)
+        ! [ Task.perform WindowSize size
+          , Cmd.map LevelMsg levelCmd
+          , sequenceMs <| pause 500 config.sequence
+          ]
 
 
 initialState : LevelModel -> TutorialModel
@@ -77,7 +77,7 @@ update msg model =
                 ( levelModel, levelCmd, _ ) =
                     Level.update levelMsg model.levelModel
             in
-                noOutMsg { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
+            noOutMsg { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
 
         DragTile coord ->
             noOutMsg (handleDragTile coord model) []
@@ -205,7 +205,7 @@ handleDragTile coord model =
         tile =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
-        { model | board = addBearings ( coord, tile ) model.board }
+    { model | board = addBearings ( coord, tile ) model.board }
 
 
 subscriptions : TutorialModel -> Sub TutorialMsg

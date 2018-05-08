@@ -64,27 +64,27 @@ growingSeed window ( index, seedType, scale ) =
         delay =
             toFloat <| index * 100
     in
-        div [ class "flex items-end" ]
-            [ div
-                [ style
-                    [ widthStyle <| 50 * scale * (tileScaleFactor window)
-                    , marginLeft 5
-                    , marginRight 5
-                    , transformStyle [ Transform.scale 0 ]
-                    , ( "transform-origin", "center" )
-                    , animationWithOptionsStyle
-                        { name = "bulge-elastic"
-                        , duration = 500
-                        , timing = EaseOut
-                        , delay = Just delay
-                        , iteration = Nothing
-                        , fill = Forwards
-                        }
-                    ]
-                , class "growing-seed"
+    div [ class "flex items-end" ]
+        [ div
+            [ style
+                [ widthStyle <| 50 * scale * tileScaleFactor window
+                , marginLeft 5
+                , marginRight 5
+                , transformStyle [ Transform.scale 0 ]
+                , ( "transform-origin", "center" )
+                , animationWithOptionsStyle
+                    { name = "bulge-elastic"
+                    , duration = 500
+                    , timing = EaseOut
+                    , delay = Just delay
+                    , iteration = Nothing
+                    , fill = Forwards
+                    }
                 ]
-                [ renderSeed seedType ]
+            , class "growing-seed"
             ]
+            [ renderSeed seedType ]
+        ]
 
 
 seedsLeft : List ( Int, SeedType, Float )

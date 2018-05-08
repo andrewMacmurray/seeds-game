@@ -32,10 +32,10 @@ init successMessageIndex levelData =
         model =
             addLevelData levelData <| initialState successMessageIndex
     in
-        model
-            ! [ handleGenerateTiles levelData model
-              , Task.perform WindowSize size
-              ]
+    model
+        ! [ handleGenerateTiles levelData model
+          , Task.perform WindowSize size
+          ]
 
 
 addLevelData : LevelData tutorialConfig -> LevelModel -> LevelModel
@@ -162,7 +162,7 @@ update msg model =
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
-            withOutMsg { model | successMessageIndex = model.successMessageIndex + 1 } [] ExitWin
+            withOutMsg model [] ExitWin
 
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
@@ -298,7 +298,7 @@ handleCheckMove move model =
         newModel =
             model |> handleCheckMove_ move
     in
-        noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
+    noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
 handleCheckMove_ : Move -> LevelModel -> LevelModel

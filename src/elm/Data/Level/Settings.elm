@@ -2,14 +2,14 @@ module Data.Level.Settings
     exposing
         ( makeWorldLevels
         , rain
-        , sun
         , seed
         , seedPod
+        , sun
         )
 
-import Helpers.Dict exposing (indexedDictFrom)
-import Data.Level.Types exposing (..)
 import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (..)
+import Helpers.Dict exposing (indexedDictFrom)
 
 
 makeWorldLevels : List (LevelData tutorialConfig) -> WorldLevels tutorialConfig

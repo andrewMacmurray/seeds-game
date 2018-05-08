@@ -115,14 +115,14 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
         offsetY =
             -100
     in
-        div
-            [ style
-                [ easeAll 800
-                , transformStyle [ translate offsetX offsetY ]
-                ]
-            , classList <| showIf resourceBankVisible
+    div
+        [ style
+            [ easeAll 800
+            , transformStyle [ translate offsetX offsetY ]
             ]
-            [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
+        , classList <| showIf resourceBankVisible
+        ]
+        [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
 
 
 resourceBankOffsetX : TutorialModel -> Float
@@ -146,11 +146,11 @@ fadeLine model (( _, tile ) as move) =
         visible =
             hasLine tile
     in
-        div
-            [ style [ easeAll 500 ]
-            , classList <| showIf visible
-            ]
-            [ renderLineLayer model move ]
+    div
+        [ style [ easeAll 500 ]
+        , classList <| showIf visible
+        ]
+        [ renderLineLayer model move ]
 
 
 renderTiles : TutorialModel -> List (Html msg)
@@ -166,19 +166,19 @@ leavingStyles model (( _, block ) as move) =
         tileState =
             getTileState block
     in
-        case tileState of
-            Leaving _ order ->
-                [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
-                , transitionStyle
-                    { property = "all"
-                    , duration = 500
-                    , timing = Ease
-                    , delay = Just <| toFloat <| (order % 5) * 80
-                    }
-                ]
+    case tileState of
+        Leaving _ order ->
+            [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
+            , transitionStyle
+                { property = "all"
+                , duration = 500
+                , timing = Ease
+                , delay = Just <| toFloat <| (order % 5) * 80
+                }
+            ]
 
-            _ ->
-                []
+        _ ->
+            []
 
 
 showIf : Bool -> List ( String, Bool )

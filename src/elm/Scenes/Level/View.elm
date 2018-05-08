@@ -4,9 +4,9 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (..)
 import Views.Backdrop exposing (backdrop)
-import Views.Level.Result exposing (infoWindow)
 import Views.Level.Layout exposing (board, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)
+import Views.Level.Result exposing (infoWindow)
 import Views.Level.TopBar exposing (topBar)
 
 

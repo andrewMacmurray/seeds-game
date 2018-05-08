@@ -1,11 +1,11 @@
 module Data.Board.Wall
     exposing
         ( addWalls
-        , withColor
         , toCoords
+        , withColor
         )
 
-import Data.Board.Types exposing (Board, Coord, Block(Wall), WallColor)
+import Data.Board.Types exposing (Block(Wall), Board, Coord, WallColor)
 import Dict
 
 

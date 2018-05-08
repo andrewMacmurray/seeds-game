@@ -25,5 +25,5 @@ pause pauseDuration steps =
     steps
         |> List.head
         |> Maybe.map (\( n, msg ) -> ( n + pauseDuration, msg ))
-        |> Maybe.map (\newDelay -> [ newDelay ] ++ (List.drop 1 steps))
+        |> Maybe.map (\newDelay -> [ newDelay ] ++ List.drop 1 steps)
         |> Maybe.withDefault []

@@ -80,15 +80,15 @@ hillOffset delay offset vis =
                 }
             ]
     in
-        case vis of
-            Entering ->
-                svgStyles visibleStyles
+    case vis of
+        Entering ->
+            svgStyles visibleStyles
 
-            Visible ->
-                svgStyles visibleStyles
+        Visible ->
+            svgStyles visibleStyles
 
-            _ ->
-                svgStyles [ transformSvg [ translate 0 800 ] ]
+        _ ->
+            svgStyles [ transformSvg [ translate 0 800 ] ]
 
 
 renderFlowers : Float -> Visibility -> Svg msg

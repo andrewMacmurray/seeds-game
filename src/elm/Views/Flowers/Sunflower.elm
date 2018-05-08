@@ -38,22 +38,22 @@ fadePetal delay index petal =
         d =
             delay + 1100 + toFloat index * 60
     in
-        Svg.g
-            [ svgStyles
-                [ Transform.transform [ Transform.scale 0 ]
-                , "transform-origin: center"
-                , "opacity: 0"
-                , animationWithOptionsSvg
-                    { name = "bulge-small"
-                    , duration = 900
-                    , timing = Ease
-                    , delay = Just d
-                    , iteration = Nothing
-                    , fill = Forwards
-                    }
-                ]
+    Svg.g
+        [ svgStyles
+            [ Transform.transform [ Transform.scale 0 ]
+            , "transform-origin: center"
+            , "opacity: 0"
+            , animationWithOptionsSvg
+                { name = "bulge-small"
+                , duration = 900
+                , timing = Ease
+                , delay = Just d
+                , iteration = Nothing
+                , fill = Forwards
+                }
             ]
-            [ petal ]
+        ]
+        [ petal ]
 
 
 petals : List (Svg msg)
