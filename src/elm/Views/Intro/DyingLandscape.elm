@@ -12,7 +12,7 @@ import Svg.Attributes exposing (..)
 
 dyingLandscape : Environment -> Visibility -> Svg msg
 dyingLandscape env vis =
-    Svg.svg [ viewBox "0 -30 1023 448", class "absolute z-1 bottom-0" ]
+    Svg.svg [ viewBox "0 -30 1023 448", class "absolute z-1 bottom-0", preserveAspectRatio "none" ]
         [ Svg.g [ fill "none", fillRule "evenodd" ]
             [ Svg.g [ layerOffsetStyle 448 0 vis ]
                 [ hill1 env
