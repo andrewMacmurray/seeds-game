@@ -17,9 +17,9 @@ sunflower delay =
             , fill "#8A5D3B"
             , svgStyles
                 [ animationWithOptionsSvg
-                    { name = "bulge-small"
+                    { name = "bulge-elastic-big"
                     , duration = 1000
-                    , timing = CubicBezier 0.5 -0.36 0.19 1.04
+                    , timing = Linear
                     , delay = Just delay
                     , fill = Forwards
                     , iteration = Nothing

@@ -53,20 +53,21 @@ infoContainer infoWindow content =
 infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
-        padding =
+        containerStyles =
             [ paddingLeft ScaleConfig.windowPadding
             , paddingRight ScaleConfig.windowPadding
+            , animateEase "fade-in" 100
             ]
     in
     if isLeaving infoWindow then
         div
             [ classes [ "touch-disabled", infoContainerBaseClasses ]
-            , style padding
+            , style containerStyles
             ]
     else
         div
             [ class infoContainerBaseClasses
-            , style padding
+            , style containerStyles
             ]
 
 

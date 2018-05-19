@@ -1,6 +1,7 @@
 module Config.Animations exposing (..)
 
 import Helpers.Css.Keyframes exposing (..)
+import Helpers.Infix exposing ((=>))
 import Html exposing (Html)
 
 
@@ -10,24 +11,24 @@ internalAnimations =
         [ { name = "slide-down-scale-out"
           , frames =
                 map3 ( translateY, scale, opacity )
-                    [ ( 0, ( 0, 1, 1 ) )
-                    , ( 50, ( 40, 1, 1 ) )
-                    , ( 60, ( 40, 1.1, 1 ) )
-                    , ( 100, ( 40, 0, 0 ) )
+                    [ 0 => ( 0, 1, 1 )
+                    , 50 => ( 40, 1, 1 )
+                    , 60 => ( 40, 1.1, 1 )
+                    , 100 => ( 40, 0, 0 )
                     ]
           }
         , { name = "exit-down"
           , frames =
                 map2 ( translateY, opacity )
-                    [ ( 0, ( 0, 1 ) )
-                    , ( 100, ( 300, 0 ) )
+                    [ 0 => ( 0, 1 )
+                    , 100 => ( 300, 0 )
                     ]
           }
         , { name = "bulge-fade"
           , frames =
                 map2 ( scale, opacity )
-                    [ ( 0, ( 1, 1 ) )
-                    , ( 100, ( 2.5, 0 ) )
+                    [ 0 => ( 1, 1 )
+                    , 100 => ( 2.5, 0 )
                     ]
           }
         , { name = "bulge"
@@ -41,18 +42,29 @@ internalAnimations =
         , { name = "bulge-elastic"
           , frames =
                 map2 ( scale, opacity )
-                    [ ( 0, ( 0, 0 ) )
-                    , ( 50, ( 1.3, 0.4 ) )
-                    , ( 75, ( 0.9, 0.7 ) )
-                    , ( 100, ( 1, 1 ) )
+                    [ 0 => ( 0, 0 )
+                    , 50 => ( 1.3, 0.4 )
+                    , 75 => ( 0.9, 0.7 )
+                    , 100 => ( 1, 1 )
+                    ]
+          }
+        , { name = "bulge-elastic-big"
+          , frames =
+                map2 ( scale, opacity )
+                    [ 0 => ( 0.3, 0 )
+                    , 20 => ( 1.3, 1 )
+                    , 40 => ( 0.8, 1 )
+                    , 60 => ( 1.1, 1 )
+                    , 80 => ( 0.9, 1 )
+                    , 100 => ( 1, 1 )
                     ]
           }
         , { name = "bulge-small"
           , frames =
                 map2 ( scale, opacity )
-                    [ ( 0, ( 0, 0.5 ) )
-                    , ( 50, ( 1, 1.1 ) )
-                    , ( 100, ( 1, 1 ) )
+                    [ 0 => ( 0, 0.5 )
+                    , 50 => ( 1, 1.1 )
+                    , 100 => ( 1, 1 )
                     ]
           }
         , { name = "fade-in"
@@ -80,15 +92,15 @@ internalAnimations =
         , { name = "heart-break-left"
           , frames =
                 map2 ( translateX, rotateZ )
-                    [ ( 0, ( 0, 0 ) )
-                    , ( 100, ( -3, -2 ) )
+                    [ 0 => ( 0, 0 )
+                    , 100 => ( -3, -2 )
                     ]
           }
         , { name = "heart-break-right"
           , frames =
                 map2 ( translateX, rotateZ )
-                    [ ( 0, ( 0, 0 ) )
-                    , ( 100, ( 3, 2 ) )
+                    [ 0 => ( 0, 0 )
+                    , 100 => ( 3, 2 )
                     ]
           }
         ]
