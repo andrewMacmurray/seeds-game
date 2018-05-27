@@ -20,7 +20,7 @@ function init() {
     src: ['audio/intro.mp3']
   })
 
-  function introMusicstarted () {
+  function introMusicstarted() {
     app.ports.introMusicPlaying.send(true)
   }
 

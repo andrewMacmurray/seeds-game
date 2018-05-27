@@ -1,11 +1,11 @@
-function _bumpDebuggerPanel () {
+function _bumpDebuggerPanel() {
   var overlay = document.querySelector('.elm-overlay')
   if (overlay) {
     overlay.classList.add('z-999')
   }
 }
 
-function bumpDebuggerPanel () {
+function bumpDebuggerPanel() {
   setTimeout(_bumpDebuggerPanel, 100)
 }
 
