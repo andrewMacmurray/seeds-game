@@ -4,7 +4,9 @@ const cache = require('./cache.js')
 const util = require('./util')
 const { Howl } = require('howler')
 
+registerServiceWorker()
 init()
+
 util.bumpDebuggerPanel()
 
 function init() {
@@ -61,4 +63,12 @@ function init() {
   app.ports.cacheTimes.subscribe(times => {
     cache.setTimes(times)
   })
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+    })
+  }
 }
