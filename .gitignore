@@ -19,3 +19,4 @@ elm-stuff
 public/style.min.css
 public/main.js
 public/embed.js
+public/sw.js
