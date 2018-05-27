@@ -1,7 +1,7 @@
 module Config.Tutorial.Square exposing (..)
 
-import Data.Tutorial exposing (addBlock, seedBoard)
 import Data.Board.Types exposing (..)
+import Data.Tutorial exposing (addBlock, seedBoard)
 import Dict exposing (Dict)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 
@@ -65,17 +65,17 @@ enteringTiles =
         seed =
             Seed Sunflower
     in
-        [ Rain
-        , seed
-        , seed
-        , Rain
-        , seed
-        , Rain
-        , seed
-        , seed
-        , Rain
-        , Rain
-        , seed
-        , seed
-        , Rain
-        ]
+    [ Rain
+    , seed
+    , seed
+    , Rain
+    , seed
+    , Rain
+    , seed
+    , seed
+    , Rain
+    , Rain
+    , seed
+    , seed
+    , Rain
+    ]

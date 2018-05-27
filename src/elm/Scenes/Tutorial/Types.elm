@@ -2,8 +2,8 @@ module Scenes.Tutorial.Types exposing (..)
 
 import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Dict exposing (Dict)
+import Scenes.Level.Types exposing (LevelModel, LevelMsg)
 import Window
-import Scenes.Level.Types exposing (LevelMsg, LevelModel)
 
 
 type alias TutorialModel =

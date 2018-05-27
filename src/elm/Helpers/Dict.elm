@@ -47,4 +47,4 @@ find predicate =
                     else
                         Nothing
     in
-        Dict.foldl (findItem_ predicate) Nothing
+    Dict.foldl (findItem_ predicate) Nothing

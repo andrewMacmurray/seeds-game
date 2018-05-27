@@ -5,9 +5,9 @@ import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Intro.Types exposing (..)
-import Views.Intro.RollingHills exposing (rollingHills)
 import Views.Intro.DyingLandscape exposing (dyingLandscape)
 import Views.Intro.GrowingSeeds exposing (growingSeeds)
+import Views.Intro.RollingHills exposing (rollingHills)
 import Window
 
 

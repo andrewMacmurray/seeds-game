@@ -1,4 +1,3 @@
-
 const { Howl } = require('howler')
 
 function loadAudio () {

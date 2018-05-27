@@ -43,20 +43,20 @@ renderScore model tileType =
         scoreMargin =
             ScaleConfig.scoreIconSize // 2
     in
-        div
-            [ class "relative tc"
-            , style
-                [ marginRight scoreMargin
-                , marginLeft scoreMargin
-                ]
+    div
+        [ class "relative tc"
+        , style
+            [ marginRight scoreMargin
+            , marginLeft scoreMargin
             ]
-            [ renderScoreIcon tileType
-            , p
-                [ class "ma0 absolute left-0 right-0 f6"
-                , style [ ( "bottom", "-1.5em" ) ]
-                ]
-                [ scoreContent tileType model.scores ]
+        ]
+        [ renderScoreIcon tileType
+        , p
+            [ class "ma0 absolute left-0 right-0 f6"
+            , style [ ( "bottom", "-1.5em" ) ]
             ]
+            [ scoreContent tileType model.scores ]
+        ]
 
 
 remainingMoves : Int -> Html msg

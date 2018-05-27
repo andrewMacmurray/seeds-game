@@ -1,25 +1,25 @@
 module Helpers.Css.Keyframes
     exposing
-        ( KeyframesAnimation
+        ( Frames
         , KeyframeProp
-        , Frames
-        , color
+        , KeyframesAnimation
         , backgroundColor
-        , translateY
-        , translateX
-        , rotateZ
-        , scale
-        , opacity
+        , color
+        , embed
         , map
         , map2
         , map3
-        , embed
+        , opacity
         , render
+        , rotateZ
+        , scale
+        , translateX
+        , translateY
         )
 
 import Helpers.Css.Style exposing (pc)
 import Helpers.Css.Transform as Transform exposing (Transform, fromTransform)
-import Html exposing (node, Html)
+import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode
 
@@ -78,7 +78,7 @@ embed animations =
                 |> String.join " "
                 |> Json.Encode.string
     in
-        node "style" [ property "textContent" r ] []
+    node "style" [ property "textContent" r ] []
 
 
 
@@ -184,10 +184,10 @@ combineProps ( transforms, props ) =
         renderedProps =
             List.map renderProp props
     in
-        transforms
-            |> combineTransforms
-            |> Maybe.map (\transform -> transform :: renderedProps)
-            |> Maybe.withDefault renderedProps
+    transforms
+        |> combineTransforms
+        |> Maybe.map (\transform -> transform :: renderedProps)
+        |> Maybe.withDefault renderedProps
 
 
 combineTransforms : List KeyframeProp -> Maybe String

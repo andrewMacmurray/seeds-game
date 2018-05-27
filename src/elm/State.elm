@@ -2,14 +2,15 @@ module State exposing (..)
 
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
+import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Background exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
-import Data.Visibility exposing (Visibility(Entering, Leaving))
+import Data.Visibility exposing (Visibility(..))
 import Helpers.Delay exposing (..)
-import Helpers.OutMsg exposing (returnWithOutMsg)
+import Helpers.OutMsg exposing (returnOutMsg)
 import Ports exposing (..)
 import Scenes.Hub.State as Hub
 import Scenes.Hub.Types exposing (HubMsg(..))
@@ -33,6 +34,7 @@ init flags =
     initialState flags
         ! [ Task.perform WindowSize size
           , generateBounceKeyframes ScaleConfig.baseTileSizeY
+          , randomSuccessMessageIndex GenerateSuccessMessageIndex
           ]
 
 
@@ -45,7 +47,9 @@ initialState flags =
     , window = { height = 0, width = 0 }
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
+    , titleAnimation = Entering
     , hubInfoWindow = InfoWindow.hidden
+    , successMessageIndex = 0
     }
 
 
@@ -67,6 +71,12 @@ update msg model =
 
         IntroMsg introMsg ->
             handleIntroMsg introMsg model
+
+        GenerateSuccessMessageIndex i ->
+            { model | successMessageIndex = i } ! []
+
+        IncrementSuccessMessageIndex ->
+            { model | successMessageIndex = model.successMessageIndex + 1 } ! []
 
         StartLevel level ->
             case tutorialData level of
@@ -118,7 +128,7 @@ update msg model =
             loadRetry model ! [ delayMs 1000 CompleteSceneTransition ]
 
         FadeTitle ->
-            { model | scene = Loaded <| Title Leaving } ! []
+            { model | titleAnimation = Leaving } ! []
 
         CompleteSceneTransition ->
             { model | scene = completeSceneTransition model.scene } ! []
@@ -187,18 +197,18 @@ loadLevel : Model -> Progress -> ( Model, Cmd Msg )
 loadLevel model level =
     let
         ( levelModel, levelCmd ) =
-            Level.init <| getLevelData level
+            Level.init model.successMessageIndex <| getLevelData level
     in
-        { model | scene = Loaded <| Level levelModel } ! [ Cmd.map LevelMsg levelCmd ]
+    { model | scene = Loaded <| Level levelModel } ! [ Cmd.map LevelMsg levelCmd ]
 
 
 loadTutorial : Model -> Progress -> TutorialConfig -> ( Model, Cmd Msg )
 loadTutorial model level tutorialConfig =
     let
         ( tutorialModel, tutorialCmd ) =
-            Tutorial.init (getLevelData level) tutorialConfig
+            Tutorial.init model.successMessageIndex (getLevelData level) tutorialConfig
     in
-        { model | scene = Loaded <| Tutorial tutorialModel } ! [ Cmd.map TutorialMsg tutorialCmd ]
+    { model | scene = Loaded <| Tutorial tutorialModel } ! [ Cmd.map TutorialMsg tutorialCmd ]
 
 
 loadIntro : Model -> ( Model, Cmd Msg )
@@ -207,7 +217,7 @@ loadIntro model =
         ( introModel, introCmd ) =
             Intro.init
     in
-        { model | scene = Loaded <| Intro introModel } ! [ Cmd.map IntroMsg introCmd ]
+    { model | scene = Loaded <| Intro introModel } ! [ Cmd.map IntroMsg introCmd ]
 
 
 loadHub : Int -> Model -> ( Model, Cmd Msg )
@@ -216,7 +226,7 @@ loadHub levelNumber model =
         ( newModel, hubCmd ) =
             Hub.init levelNumber model
     in
-        { newModel | scene = Loaded Hub } ! [ Cmd.map HubMsg hubCmd ]
+    { newModel | scene = Loaded Hub } ! [ Cmd.map HubMsg hubCmd ]
 
 
 loadSummary : Model -> Model
@@ -258,7 +268,7 @@ handleLevelMsg levelMsg model =
     case model.scene of
         Loaded (Level levelModel) ->
             Level.update levelMsg levelModel
-                |> returnWithOutMsg (\lm -> { model | scene = Loaded <| Level lm }) LevelMsg
+                |> returnOutMsg (\lm -> { model | scene = Loaded <| Level lm }) LevelMsg
                 |> handleLevelOutMsg
 
         _ ->
@@ -283,7 +293,7 @@ handleTutorialMsg tutorialMsg model =
     case model.scene of
         Loaded (Tutorial tutorialModel) ->
             Tutorial.update tutorialMsg tutorialModel
-                |> returnWithOutMsg (\tm -> { model | scene = Loaded <| Tutorial tm }) TutorialMsg
+                |> returnOutMsg (\tm -> { model | scene = Loaded <| Tutorial tm }) TutorialMsg
                 |> handleTutorialOutMsg
 
         _ ->
@@ -316,7 +326,7 @@ handleHubMsg hubMsg model =
         ( newModel, cmd ) =
             Hub.update hubMsg model
     in
-        newModel ! [ Cmd.map HubMsg cmd ]
+    newModel ! [ Cmd.map HubMsg cmd ]
 
 
 handleIntroMsg : IntroMsg -> Model -> ( Model, Cmd Msg )
@@ -324,7 +334,7 @@ handleIntroMsg introMsg model =
     case model.scene of
         Loaded (Intro introModel) ->
             Intro.update introMsg introModel
-                |> returnWithOutMsg (\im -> { model | scene = Loaded <| Intro im }) IntroMsg
+                |> returnOutMsg (\im -> { model | scene = Loaded <| Intro im }) IntroMsg
                 |> handleIntroOutMsg
 
         _ ->
@@ -373,7 +383,7 @@ tutorialData level =
         ( _, levelData ) =
             getLevelConfig level
     in
-        levelData.tutorial
+    levelData.tutorial
 
 
 handleIncrementProgress : Model -> ( Model, Cmd Msg )
@@ -382,7 +392,7 @@ handleIncrementProgress model =
         progress =
             incrementProgress allLevels model.currentLevel model.progress
     in
-        { model | progress = progress } ! [ cacheProgress <| fromProgress progress ]
+    { model | progress = progress } ! [ cacheProgress <| fromProgress progress ]
 
 
 progressLevelNumber : Model -> Int
@@ -396,14 +406,15 @@ levelWinSequence model =
         backToHub =
             backToHubSequence <| levelCompleteScrollNumber model
     in
-        if shouldIncrement allLevels model.currentLevel model.progress then
-            [ ( 0, LoadSummary )
-            , ( 2000, IncrementProgress )
-            , ( 2500, ShowLoadingScreen )
-            ]
-                ++ backToHub
-        else
-            ( 0, ShowLoadingScreen ) :: backToHub
+    if shouldIncrement allLevels model.currentLevel model.progress then
+        [ ( 0, LoadSummary )
+        , ( 2000, IncrementProgress )
+        , ( 2500, ShowLoadingScreen )
+        , ( 0, IncrementSuccessMessageIndex )
+        ]
+            ++ backToHub
+    else
+        ( 0, ShowLoadingScreen ) :: backToHub
 
 
 levelLoseSequence : Model -> List ( Float, Msg )
@@ -453,7 +464,7 @@ updateTimes now model =
         newModel =
             countDownToNextLife now model
     in
-        newModel ! [ handleCacheTimes newModel ]
+    newModel ! [ handleCacheTimes newModel ]
 
 
 handleCacheTimes : Model -> Cmd msg
@@ -476,10 +487,10 @@ countDownToNextLife now model =
             lifeVal =
                 floor <| livesLeft newTimeTillNextLife
         in
-            { model
-                | timeTillNextLife = newTimeTillNextLife
-                , lastPlayed = now
-            }
+        { model
+            | timeTillNextLife = newTimeTillNextLife
+            , lastPlayed = now
+        }
 
 
 currentLevel : Model -> Progress

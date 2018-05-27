@@ -49,22 +49,22 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
         levelNumber =
             getLevelNumber ( world, level ) allLevels
     in
-        div
-            [ showInfo ( world, level ) model
-            , class "tc pointer"
-            , id <| "level-" ++ (toString levelNumber)
-            , styles
-                [ [ widthStyle 35
-                  , marginTop 50
-                  , marginBottom 50
-                  , color worldData.textColor
-                  ]
-                , offsetStyles level
-                ]
+    div
+        [ showInfo ( world, level ) model
+        , class "tc pointer"
+        , id <| "level-" ++ toString levelNumber
+        , styles
+            [ [ widthStyle 35
+              , marginTop 50
+              , marginBottom 50
+              , color worldData.textColor
+              ]
+            , offsetStyles level
             ]
-            [ renderIcon ( world, level ) worldData.seedType model
-            , renderNumber levelNumber ( world, level ) worldData model
-            ]
+        ]
+        [ renderIcon ( world, level ) worldData.seedType model
+        , renderNumber levelNumber ( world, level ) worldData model
+        ]
 
 
 offsetStyles : Int -> List Style

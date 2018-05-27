@@ -3,11 +3,11 @@ module Data.Board.Falling
         ( setFallingTiles
         )
 
-import Dict
-import Data.Board.Types exposing (..)
 import Data.Board.Block as Block
-import Helpers.Dict exposing (filterValues)
 import Data.Board.Shift as Shift
+import Data.Board.Types exposing (..)
+import Dict
+import Helpers.Dict exposing (filterValues)
 
 
 setFallingTiles : Board -> Board
@@ -22,7 +22,7 @@ setFallingTiles board =
         fallingTilesToUpdate =
             newFallingTiles beforeBoard shiftedBoard
     in
-        List.foldl (\( coord, block ) b -> Dict.insert coord block b) beforeBoard fallingTilesToUpdate
+    List.foldl (\( coord, block ) b -> Dict.insert coord block b) beforeBoard fallingTilesToUpdate
 
 
 newFallingTiles : Board -> Board -> List Move
@@ -34,8 +34,8 @@ newFallingTiles beforeBoard shiftedBoard =
         shiftedTiles =
             listsOfFallingTiles shiftedBoard
     in
-        List.map2 addFallingDistance beforeTiles shiftedTiles
-            |> List.concat
+    List.map2 addFallingDistance beforeTiles shiftedTiles
+        |> List.concat
 
 
 addFallingDistance : List Move -> List Move -> List Move

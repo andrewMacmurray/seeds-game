@@ -26,17 +26,16 @@ import Window exposing (resizes, size)
 -- Init
 
 
-init : LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
-init levelData =
+init : Int -> LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
+init successMessageIndex levelData =
     let
         model =
-            addLevelData levelData initialState
+            addLevelData levelData <| initialState successMessageIndex
     in
-        model
-            ! [ handleGenerateTiles levelData model
-              , Task.perform WindowSize size
-              , generateSuccessMessageIndex
-              ]
+    model
+        ! [ handleGenerateTiles levelData model
+          , Task.perform WindowSize size
+          ]
 
 
 addLevelData : LevelData tutorialConfig -> LevelModel -> LevelModel
@@ -51,8 +50,8 @@ addLevelData { tileSettings, walls, boardDimensions, moves } model =
     }
 
 
-initialState : LevelModel
-initialState =
+initialState : Int -> LevelModel
+initialState successMessageIndex =
     { board = Dict.empty
     , scores = Dict.empty
     , isDragging = False
@@ -61,16 +60,11 @@ initialState =
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
-    , successMessageIndex = 0
+    , successMessageIndex = successMessageIndex
     , hubInfoWindow = InfoWindow.hidden
     , mouse = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
-
-
-generateSuccessMessageIndex : Cmd LevelMsg
-generateSuccessMessageIndex =
-    randomSuccessMessageIndex RandomSuccessMessageIndex
 
 
 
@@ -157,9 +151,6 @@ update msg model =
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
-        RandomSuccessMessageIndex i ->
-            noOutMsg { model | successMessageIndex = i } []
-
         ShowInfo info ->
             noOutMsg { model | hubInfoWindow = InfoWindow.show info } []
 
@@ -171,7 +162,7 @@ update msg model =
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
-            withOutMsg { model | successMessageIndex = model.successMessageIndex + 1 } [] ExitWin
+            withOutMsg model [] ExitWin
 
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
@@ -307,7 +298,7 @@ handleCheckMove move model =
         newModel =
             model |> handleCheckMove_ move
     in
-        noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
+    noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
 handleCheckMove_ : Move -> LevelModel -> LevelModel

@@ -38,13 +38,13 @@ hubTopBar model =
                 |> floor
                 |> Transitioning
     in
-        div
-            [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
-            , style [ background washedYellow ]
-            ]
-            [ div [ style [ transformStyle [ scale 0.5 ] ] ] <| renderLivesLeft lives
-            , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
-            ]
+    div
+        [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
+        , style [ background washedYellow ]
+        ]
+        [ div [ style [ transformStyle [ scale 0.5 ] ] ] <| renderLivesLeft lives
+        , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
+        ]
 
 
 renderCountDown : Time -> Html msg
@@ -71,10 +71,10 @@ timeLeft timeRemaining =
         d =
             Date.fromTime timeRemaining
     in
-        if timeRemaining == 0 then
-            Nothing
-        else
-            Just ( minute d % 5, second d )
+    if timeRemaining == 0 then
+        Nothing
+    else
+        Just ( minute d % 5, second d )
 
 
 renderSecond : Int -> String

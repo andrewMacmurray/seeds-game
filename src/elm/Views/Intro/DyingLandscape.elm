@@ -12,7 +12,7 @@ import Svg.Attributes exposing (..)
 
 dyingLandscape : Environment -> Visibility -> Svg msg
 dyingLandscape env vis =
-    Svg.svg [ viewBox "0 -30 1023 448", class "absolute z-1 bottom-0" ]
+    Svg.svg [ viewBox "0 -30 1023 448", class "absolute z-1 bottom-0", preserveAspectRatio "none" ]
         [ Svg.g [ fill "none", fillRule "evenodd" ]
             [ Svg.g [ layerOffsetStyle 448 0 vis ]
                 [ hill1 env
@@ -126,12 +126,12 @@ renderHill path ( aliveC, deadC ) delay env =
         hill color =
             Svg.path [ d path, fill color, style <| transitionFill delay ] []
     in
-        case env of
-            Alive ->
-                hill aliveC
+    case env of
+        Alive ->
+            hill aliveC
 
-            Dead ->
-                hill deadC
+        Dead ->
+            hill deadC
 
 
 type TeardropTree
@@ -145,35 +145,35 @@ firrTree delay env =
         treeTop delayOffset =
             teardrop (delay + delayOffset) Single env
     in
-        Svg.g []
-            [ Svg.path [ d "M118.1 197.8h6.8v60.7h-6.8z", fill "#453321" ] []
-            , Svg.path [ d "M96.7 179.2l4.8-4.8L125 198l-4.8 4.8z", fill "#453321" ] []
-            , Svg.path [ d "M146.5 179.2l-4.9-4.8L118 198l4.8 4.8z", fill "#453321" ] []
-            , treeTop 0
-                ( "M121.5 164s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
-                , "M111.8 185.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z"
-                )
-            , treeTop 150
-                ( "M106.7 157.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V158z"
-                , "M97 179.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z"
-                )
-            , treeTop 300
-                ( "M135.3 157.9s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V158z"
-                , "M125.7 179.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z"
-                )
-            , treeTop 450
-                ( "M94.4 150.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
-                , "M84.7 172.3c0-8 9.1-20.8 9.7-21.6V182a9.7 9.7 0 0 1-9.7-9.7z"
-                )
-            , treeTop 550
-                ( "M121.5 146s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V146z"
-                , "M111.8 167.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z"
-                )
-            , treeTop 650
-                ( "M148.6 150.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
-                , "M139 172.3c0-8 9-20.8 9.6-21.6V182a9.7 9.7 0 0 1-9.6-9.7z"
-                )
-            ]
+    Svg.g []
+        [ Svg.path [ d "M118.1 197.8h6.8v60.7h-6.8z", fill "#453321" ] []
+        , Svg.path [ d "M96.7 179.2l4.8-4.8L125 198l-4.8 4.8z", fill "#453321" ] []
+        , Svg.path [ d "M146.5 179.2l-4.9-4.8L118 198l4.8 4.8z", fill "#453321" ] []
+        , treeTop 0
+            ( "M121.5 164s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
+            , "M111.8 185.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z"
+            )
+        , treeTop 150
+            ( "M106.7 157.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V158z"
+            , "M97 179.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z"
+            )
+        , treeTop 300
+            ( "M135.3 157.9s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V158z"
+            , "M125.7 179.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z"
+            )
+        , treeTop 450
+            ( "M94.4 150.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
+            , "M84.7 172.3c0-8 9.1-20.8 9.7-21.6V182a9.7 9.7 0 0 1-9.7-9.7z"
+            )
+        , treeTop 550
+            ( "M121.5 146s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V146z"
+            , "M111.8 167.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z"
+            )
+        , treeTop 650
+            ( "M148.6 150.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7v-31.3z"
+            , "M139 172.3c0-8 9-20.8 9.6-21.6V182a9.7 9.7 0 0 1-9.6-9.7z"
+            )
+        ]
 
 
 pine : Float -> Environment -> ( String, String, String ) -> Svg msg
@@ -205,10 +205,10 @@ teardrop delay treeType environment ( path1, path2 ) =
             else
                 deadTreeColors
     in
-        Svg.g [ fillRule "nonzero" ]
-            [ Svg.path [ d path1, fill l, style <| transitionFill delay ] []
-            , Svg.path [ d path2, fill r, style <| transitionFill delay ] []
-            ]
+    Svg.g [ fillRule "nonzero" ]
+        [ Svg.path [ d path1, fill l, style <| transitionFill delay ] []
+        , Svg.path [ d path2, fill r, style <| transitionFill delay ] []
+        ]
 
 
 circleTree : Float -> Environment -> Svg msg
@@ -225,18 +225,18 @@ circleTree delay env =
         transitionStyle delayOffset =
             style <| transitionFill (delay + delayOffset)
     in
-        Svg.g []
-            [ Svg.path [ d "M266.3 337.4h6.2v35.5h-6.2z", fill "#6D4D2D" ] []
-            , Svg.path [ d "M247.6 320.2l3.3-3.4 21.4 20.6-3.4 3.4z", fill "#6D4D2D" ] []
-            , Svg.path [ d "M305.3 306.3L302 303l-36 34.5 3.4 3.4z", fill "#6D4D2D" ] []
-            , Svg.path [ d "M253.6 283.6l3.4-3.5 35.8 34.6-3.3 3.5z", fill "#6D4D2D" ] []
-            , Svg.path [ d "M303 284h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 0, fill l ] []
-            , Svg.path [ d "M302 284h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 0, fill r ] []
-            , Svg.path [ d "M257 259h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 300, fill l ] []
-            , Svg.path [ d "M256 259h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 300, fill r ] []
-            , Svg.path [ d "M251 297h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 600, fill l ] []
-            , Svg.path [ d "M250 297h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 600, fill r ] []
-            ]
+    Svg.g []
+        [ Svg.path [ d "M266.3 337.4h6.2v35.5h-6.2z", fill "#6D4D2D" ] []
+        , Svg.path [ d "M247.6 320.2l3.3-3.4 21.4 20.6-3.4 3.4z", fill "#6D4D2D" ] []
+        , Svg.path [ d "M305.3 306.3L302 303l-36 34.5 3.4 3.4z", fill "#6D4D2D" ] []
+        , Svg.path [ d "M253.6 283.6l3.4-3.5 35.8 34.6-3.3 3.5z", fill "#6D4D2D" ] []
+        , Svg.path [ d "M303 284h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 0, fill l ] []
+        , Svg.path [ d "M302 284h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 0, fill r ] []
+        , Svg.path [ d "M257 259h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 300, fill l ] []
+        , Svg.path [ d "M256 259h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 300, fill r ] []
+        , Svg.path [ d "M251 297h-.5a12.5 12.5 0 1 0 .5 25v-25z", transitionStyle 600, fill l ] []
+        , Svg.path [ d "M250 297h.5a12.5 12.5 0 1 1-.5 25v-25z", transitionStyle 600, fill r ] []
+        ]
 
 
 circleTreeColors : ( String, String )

@@ -1,11 +1,11 @@
 module Helpers.Css.Transition
     exposing
         ( Transition
-        , easeAll
         , ease
+        , easeAll
+        , transition
         , transitionStyle
         , transitionSvg
-        , transition
         )
 
 import Helpers.Css.Style exposing (Style, ms)

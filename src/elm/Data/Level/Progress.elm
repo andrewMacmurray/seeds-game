@@ -1,13 +1,13 @@
 module Data.Level.Progress
     exposing
-        ( levelData
-        , levelConfig
+        ( completedLevel
+        , currentLevelSeedType
         , getLevelNumber
         , incrementProgress
-        , shouldIncrement
+        , levelConfig
+        , levelData
         , reachedLevel
-        , completedLevel
-        , currentLevelSeedType
+        , shouldIncrement
         )
 
 import Data.Board.Types exposing (..)
@@ -29,7 +29,7 @@ levelConfig allLevels ( w, l ) =
         levelData =
             worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
     in
-        Maybe.map2 (,) worldData levelData
+    Maybe.map2 (,) worldData levelData
 
 
 currentLevelSeedType : AllLevels tutorial -> Maybe Progress -> Progress -> SeedType
@@ -63,7 +63,7 @@ getLevelNumber : Progress -> AllLevels tutorial -> Int
 getLevelNumber ( world, level ) allLevels =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w allLevels) 0
-        |> ((+) level)
+        |> (+) level
 
 
 worldSize : Int -> AllLevels tutorial -> Int
@@ -99,7 +99,7 @@ shouldIncrement allLevels currentLevel progress =
         prog =
             getLevelNumber progress allLevels
     in
-        curr >= prog
+    curr >= prog
 
 
 handleIncrement : Progress -> WorldData tutorial -> Progress

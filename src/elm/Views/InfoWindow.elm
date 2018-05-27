@@ -1,13 +1,13 @@
 module Views.InfoWindow exposing (..)
 
 import Config.Color exposing (..)
+import Config.Scale as ScaleConfig
 import Data.InfoWindow exposing (..)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Config.Scale as ScaleConfig
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg
@@ -53,21 +53,22 @@ infoContainer infoWindow content =
 infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
-        padding =
+        containerStyles =
             [ paddingLeft ScaleConfig.windowPadding
             , paddingRight ScaleConfig.windowPadding
+            , animateEase "fade-in" 100
             ]
     in
-        if isLeaving infoWindow then
-            div
-                [ classes [ "touch-disabled", infoContainerBaseClasses ]
-                , style padding
-                ]
-        else
-            div
-                [ class infoContainerBaseClasses
-                , style padding
-                ]
+    if isLeaving infoWindow then
+        div
+            [ classes [ "touch-disabled", infoContainerBaseClasses ]
+            , style containerStyles
+            ]
+    else
+        div
+            [ class infoContainerBaseClasses
+            , style containerStyles
+            ]
 
 
 infoContainerBaseClasses : String

@@ -7,13 +7,13 @@ import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
-import Helpers.Html exposing (emptyProperty)
 import Helpers.Css.Style exposing (..)
+import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import State exposing (getLevelConfig)
 import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
+import State exposing (getLevelConfig)
 import Types exposing (Msg(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
@@ -28,12 +28,12 @@ info { hubInfoWindow } =
         content =
             getLevelConfig progress |> infoContent progress
     in
-        if isHidden hubInfoWindow then
-            span [] []
-        else if isVisible hubInfoWindow then
-            infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
-        else
-            infoContainer hubInfoWindow <| div [] content
+    if isHidden hubInfoWindow then
+        span [] []
+    else if isVisible hubInfoWindow then
+        infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
+    else
+        infoContainer hubInfoWindow <| div [] content
 
 
 infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
@@ -45,14 +45,14 @@ infoContent ( world, level ) ( worldData, levelData ) =
                 |> toString
                 |> (++) "Level "
     in
-        [ p [ class "f5 tracked", style [ marginTop 20 ] ] [ text levelText ]
-        , infoIcons levelData worldData.seedType
-        , p
-            [ class "tracked-mega pv2 ph3 dib br4"
-            , style [ backgroundColor gold, marginBottom 20, marginTop 15 ]
-            ]
-            [ text "PLAY" ]
+    [ p [ class "f5 tracked", style [ marginTop 20 ] ] [ text levelText ]
+    , infoIcons levelData worldData.seedType
+    , p
+        [ class "tracked-mega pv2 ph3 dib br4"
+        , style [ backgroundColor gold, marginBottom 20, marginTop 15 ]
         ]
+        [ text "PLAY" ]
+    ]
 
 
 infoIcons : LevelData tutorialConfig -> SeedType -> Html msg
@@ -85,12 +85,12 @@ renderIcon { targetScore, tileType } =
                 _ ->
                     span [] []
     in
-        div [ class "dib mh3" ]
-            [ div [ class "center flex flex-column" ]
-                [ tileIcon
-                , renderTargetScore targetScore
-                ]
+    div [ class "dib mh3" ]
+        [ div [ class "center flex flex-column" ]
+            [ tileIcon
+            , renderTargetScore targetScore
             ]
+        ]
 
 
 renderTargetScore : Maybe TargetScore -> Html msg

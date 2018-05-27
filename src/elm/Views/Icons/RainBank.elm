@@ -15,47 +15,47 @@ rainBank percentFull =
         waterLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
     in
-        Svg.svg
-            [ viewBox "0 0 25 36"
-            , width "100%"
-            , height "100%"
+    Svg.svg
+        [ viewBox "0 0 25 36"
+        , width "100%"
+        , height "100%"
+        ]
+        [ Svg.defs []
+            [ Svg.rect
+                [ height <| toString fullHeight
+                , width "60"
+                , id "water-level"
+                , style "transition: transform 1.5s ease"
+                , transform <| svgTranslate 0 waterLevelOffset
+                ]
+                []
             ]
-            [ Svg.defs []
-                [ Svg.rect
-                    [ height <| toString fullHeight
-                    , width "60"
-                    , id "water-level"
-                    , style "transition: transform 1.5s ease"
-                    , transform <| svgTranslate 0 waterLevelOffset
-                    ]
-                    []
+        , Svg.path
+            [ rainbankPath
+            , fill "grey"
+            , fillOpacity "0.1"
+            , transform "translate(-17 -.241)"
+            ]
+            []
+        , Svg.g
+            [ fill "none"
+            , fillRule "evenodd"
+            , transform "translate(-17 .241)"
+            ]
+            [ Svg.mask
+                [ fill "white"
+                , id "rain-bank"
+                ]
+                [ Svg.use [ xlinkHref "#water-level" ] []
                 ]
             , Svg.path
                 [ rainbankPath
-                , fill "grey"
-                , fillOpacity "0.1"
-                , transform "translate(-17 -.241)"
+                , fill "#26AAE1"
+                , mask "url(#rain-bank)"
                 ]
                 []
-            , Svg.g
-                [ fill "none"
-                , fillRule "evenodd"
-                , transform "translate(-17 .241)"
-                ]
-                [ Svg.mask
-                    [ fill "white"
-                    , id "rain-bank"
-                    ]
-                    [ Svg.use [ xlinkHref "#water-level" ] []
-                    ]
-                , Svg.path
-                    [ rainbankPath
-                    , fill "#26AAE1"
-                    , mask "url(#rain-bank)"
-                    ]
-                    []
-                ]
             ]
+        ]
 
 
 rainbankPath : Attribute msg

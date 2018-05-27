@@ -24,9 +24,8 @@ successMessages =
     indexedDictFrom 0
         [ "Amazing!"
         , "You're a Hero!"
-        , "Incredible!"
+        , "A Triumph!"
         , "You're the best!"
-        , "Stunning!"
         ]
 
 

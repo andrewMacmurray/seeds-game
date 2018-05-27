@@ -10,7 +10,7 @@ import Helpers.Dict exposing (mapValues)
 
 mapBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
 mapBlocks f model =
-    { model | board = (mapValues f) model.board }
+    { model | board = mapValues f model.board }
 
 
 mapBoard : (Board -> Board) -> HasBoard model -> HasBoard model

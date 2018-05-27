@@ -52,7 +52,7 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-        [ transformStyle [ translate x y ] ]
+    [ transformStyle [ translate x y ] ]
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
@@ -61,9 +61,9 @@ tilePosition { window } ( y, x ) =
         tileScale =
             ScaleConfig.tileScaleFactor window
     in
-        ( (toFloat y) * ScaleConfig.baseTileSizeY * tileScale
-        , (toFloat x) * ScaleConfig.baseTileSizeX * tileScale
-        )
+    ( toFloat y * ScaleConfig.baseTileSizeY * tileScale
+    , toFloat x * ScaleConfig.baseTileSizeX * tileScale
+    )
 
 
 wallStyles : Window.Size -> Move -> List Style
@@ -72,15 +72,15 @@ wallStyles window ( _, block ) =
         wallSize =
             ScaleConfig.tileScaleFactor window * 45
     in
-        case block of
-            Wall color ->
-                [ backgroundColor color
-                , widthStyle wallSize
-                , heightStyle wallSize
-                ]
+    case block of
+        Wall color ->
+            [ backgroundColor color
+            , widthStyle wallSize
+            , heightStyle wallSize
+            ]
 
-            _ ->
-                []
+        _ ->
+            []
 
 
 enteringStyles : Move -> List Style
@@ -137,7 +137,7 @@ leavingStyles model (( _, tile ) as move) =
             { property = "all"
             , duration = 800
             , timing = Ease
-            , delay = Just <| toFloat <| ((leavingOrder tile) % 5) * 80
+            , delay = Just <| toFloat <| (leavingOrder tile % 5) * 80
             }
         , opacityStyle 0.2
         , handleExitDirection move model
@@ -205,7 +205,7 @@ exitXDistance n model =
         offset =
             exitOffsetFunction <| ScaleConfig.tileScaleFactor model.window
     in
-        toFloat (baseOffset + n * scoreWidth) + offset
+    toFloat (baseOffset + n * scoreWidth) + offset
 
 
 exitOffsetFunction : Float -> Float
@@ -249,9 +249,9 @@ tileWidthHeightStyles { window } =
         tileScale =
             ScaleConfig.tileScaleFactor window
     in
-        [ widthStyle <| ScaleConfig.baseTileSizeX * tileScale
-        , heightStyle <| ScaleConfig.baseTileSizeY * tileScale
-        ]
+    [ widthStyle <| ScaleConfig.baseTileSizeX * tileScale
+    , heightStyle <| ScaleConfig.baseTileSizeY * tileScale
+    ]
 
 
 baseTileClasses : List String

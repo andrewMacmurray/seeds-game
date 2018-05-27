@@ -71,26 +71,44 @@ lifeState model =
         lives =
             model.timeTillNextLife |> livesLeft |> floor
     in
-        case model.scene of
-            Transition _ ->
-                Static lives
+    case model.scene of
+        Transition _ ->
+            Static lives
 
-            _ ->
-                Transitioning lives
+        _ ->
+            Transitioning lives
 
 
 tryAgain : Model -> Html Msg
 tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
-            [ styles [ [ background lightGreen, color "white" ], leftPill ]
-            , class "pa3 dib"
+            [ styles
+                [ [ background lightGreen
+                  , color "white"
+                  , paddingLeft 25
+                  , paddingRight 20
+                  , paddingTop 15
+                  , paddingBottom 15
+                  ]
+                , leftPill
+                ]
+            , class "dib"
             , onClick GoToHub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
-            [ styles [ [ background mediumGreen, color "white" ], rightPill ]
-            , class "pa3 dib"
+            [ styles
+                [ [ background mediumGreen
+                  , color "white"
+                  , paddingLeft 20
+                  , paddingRight 25
+                  , paddingTop 15
+                  , paddingBottom 15
+                  ]
+                , rightPill
+                ]
+            , class "dib"
             , onClick RestartLevel
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]

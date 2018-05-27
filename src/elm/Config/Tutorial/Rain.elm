@@ -1,7 +1,7 @@
 module Config.Tutorial.Rain exposing (..)
 
-import Data.Tutorial exposing (addBlock, rainBoard)
 import Data.Board.Types exposing (..)
+import Data.Tutorial exposing (addBlock, rainBoard)
 import Dict exposing (Dict)
 import Scenes.Tutorial.Types as Tutorial exposing (..)
 

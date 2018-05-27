@@ -1,17 +1,17 @@
 module Data.Board.Moves
     exposing
-        ( currentMoves
+        ( currentMoveTileType
+        , currentMoves
+        , emptyMove
+        , isUniqueMove
         , lastMove
         , moveShape
         , sameTileType
-        , currentMoveTileType
-        , isUniqueMove
-        , emptyMove
         )
 
-import Dict
-import Data.Board.Types exposing (..)
 import Data.Board.Block as Block
+import Data.Board.Types exposing (..)
+import Dict
 import Helpers.Dict exposing (filterValues, find, findValue)
 
 

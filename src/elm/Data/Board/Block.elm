@@ -1,7 +1,7 @@
 module Data.Board.Block exposing (..)
 
-import Data.Board.Types exposing (..)
 import Data.Board.Tile as TileState
+import Data.Board.Types exposing (..)
 
 
 growingOrder : Block -> Int

@@ -17,9 +17,9 @@ sunflower delay =
             , fill "#8A5D3B"
             , svgStyles
                 [ animationWithOptionsSvg
-                    { name = "bulge-small"
+                    { name = "bulge-elastic-big"
                     , duration = 1000
-                    , timing = CubicBezier 0.5 -0.36 0.19 1.04
+                    , timing = Linear
                     , delay = Just delay
                     , fill = Forwards
                     , iteration = Nothing
@@ -38,22 +38,22 @@ fadePetal delay index petal =
         d =
             delay + 1100 + toFloat index * 60
     in
-        Svg.g
-            [ svgStyles
-                [ Transform.transform [ Transform.scale 0 ]
-                , "transform-origin: center"
-                , "opacity: 0"
-                , animationWithOptionsSvg
-                    { name = "bulge-small"
-                    , duration = 900
-                    , timing = Ease
-                    , delay = Just d
-                    , iteration = Nothing
-                    , fill = Forwards
-                    }
-                ]
+    Svg.g
+        [ svgStyles
+            [ Transform.transform [ Transform.scale 0 ]
+            , "transform-origin: center"
+            , "opacity: 0"
+            , animationWithOptionsSvg
+                { name = "bulge-small"
+                , duration = 900
+                , timing = Ease
+                , delay = Just d
+                , iteration = Nothing
+                , fill = Forwards
+                }
             ]
-            [ petal ]
+        ]
+        [ petal ]
 
 
 petals : List (Svg msg)

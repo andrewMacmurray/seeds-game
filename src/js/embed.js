@@ -2,11 +2,12 @@ const { Elm } = window
 const animations = require('./bounce.js')
 const cache = require('./cache.js')
 const util = require('./util')
-const { animateHills, growSeeds } = require('./animations.js')
 const { loadAudio, playTrack, longFade } = require('./audio.js')
 
 init()
 util.bumpDebuggerPanel()
+
+window.skipToLevel = util.skipToLevel
 
 function init() {
   // Init Elm App
@@ -33,10 +34,6 @@ function init() {
       ports.receiveHubLevelOffset.send(levelEl.offsetTop)
     }
   })
-
-  // Animations
-  ports.animateHills.subscribe(animateHills)
-  ports.animateGrowingSeeds.subscribe(growSeeds)
 
   ports.generateBounceKeyframes.subscribe(tileSize => {
     const anims = [

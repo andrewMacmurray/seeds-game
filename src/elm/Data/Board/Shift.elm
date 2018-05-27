@@ -1,14 +1,14 @@
 module Data.Board.Shift
     exposing
-        ( shiftBoard
-        , groupBoardByColumn
+        ( groupBoardByColumn
+        , shiftBoard
         , yCoord
         )
 
-import List.Extra
-import Dict
-import Data.Board.Types exposing (..)
 import Data.Board.Block as Block
+import Data.Board.Types exposing (..)
+import Dict
+import List.Extra
 
 
 shiftBoard : Board -> Board
@@ -47,11 +47,11 @@ sortByLeaving row =
         walls =
             List.filter (\( _, block ) -> Block.isWall block) row
     in
-        row
-            |> List.filter (\( _, block ) -> not (Block.isWall block))
-            |> List.partition (\( coord, block ) -> Block.isLeaving block)
-            |> (\( a, b ) -> a ++ b)
-            |> reAddWalls walls
+    row
+        |> List.filter (\( _, block ) -> not (Block.isWall block))
+        |> List.partition (\( coord, block ) -> Block.isLeaving block)
+        |> (\( a, b ) -> a ++ b)
+        |> reAddWalls walls
 
 
 reAddWalls : List Move -> List Move -> List Move

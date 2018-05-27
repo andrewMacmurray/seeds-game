@@ -39,6 +39,8 @@ type alias Model =
     , timeTillNextLife : Time
     , lastPlayed : Time
     , hubInfoWindow : InfoWindow Progress
+    , titleAnimation : Visibility
+    , successMessageIndex : Int
     , window : Window.Size
     }
 
@@ -55,7 +57,7 @@ type alias SceneTransition =
 
 
 type Scene
-    = Title Visibility
+    = Title
     | Level LevelModel
     | Tutorial TutorialModel
     | Intro IntroModel
@@ -69,6 +71,8 @@ type Msg
     | TutorialMsg TutorialMsg
     | IntroMsg IntroMsg
     | HubMsg HubMsg
+    | GenerateSuccessMessageIndex Int
+    | IncrementSuccessMessageIndex
     | StartLevel Progress
     | RestartLevel
     | LevelWin
