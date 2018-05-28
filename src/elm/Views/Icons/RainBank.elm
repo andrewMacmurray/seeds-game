@@ -1,6 +1,7 @@
 module Views.Icons.RainBank exposing (..)
 
 import Helpers.Css.Style exposing (..)
+import Helpers.Css.Transform as Css exposing (translateY)
 import Html exposing (Html)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
@@ -14,6 +15,12 @@ rainBank percentFull =
 
         waterLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
+
+        offsetLevelStyles =
+            svgStyles
+                [ "transition: transform 1.5s ease"
+                , "transform:" ++ Css.transform [ translateY waterLevelOffset ]
+                ]
     in
     Svg.svg
         [ viewBox "0 0 25 36"
@@ -25,8 +32,6 @@ rainBank percentFull =
                 [ height <| toString fullHeight
                 , width "60"
                 , id "water-level"
-                , style "transition: transform 1.5s ease"
-                , transform <| svgTranslate 0 waterLevelOffset
                 ]
                 []
             ]
@@ -46,7 +51,7 @@ rainBank percentFull =
                 [ fill "white"
                 , id "rain-bank"
                 ]
-                [ Svg.use [ xlinkHref "#water-level" ] []
+                [ Svg.use [ xlinkHref "#water-level", offsetLevelStyles ] []
                 ]
             , Svg.path
                 [ rainbankPath

@@ -1,6 +1,7 @@
 module Views.Icons.SunBank exposing (..)
 
-import Helpers.Css.Style exposing (svgTranslate)
+import Helpers.Css.Style exposing (svgStyles, svgTranslate)
+import Helpers.Css.Transform as Css exposing (translateY)
 import Html exposing (Html)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
@@ -14,6 +15,12 @@ sunBank percentFull =
 
         sunLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
+
+        offsetLevelStyles =
+            svgStyles
+                [ "transition: transform 1.5s ease"
+                , "transform:" ++ Css.transform [ translateY sunLevelOffset ]
+                ]
     in
     Svg.svg
         [ viewBox "0 0 31 37"
@@ -25,8 +32,6 @@ sunBank percentFull =
                 [ height <| toString fullHeight
                 , id "sun-level"
                 , width "50"
-                , style "transition: transform 1.5s ease"
-                , transform <| svgTranslate 0 sunLevelOffset
                 ]
                 []
             ]
@@ -46,7 +51,7 @@ sunBank percentFull =
                     [ fill "white"
                     , id "sun-bank"
                     ]
-                    [ Svg.use [ xlinkHref "#sun-level" ] []
+                    [ Svg.use [ xlinkHref "#sun-level", offsetLevelStyles ] []
                     ]
                 , Svg.path
                     [ sunPath
