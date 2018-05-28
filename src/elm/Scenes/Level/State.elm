@@ -18,7 +18,6 @@ import Data.Level.Types exposing (LevelData)
 import Dict
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Mouse exposing (Position)
 import Scenes.Level.Types exposing (..)
 import Task
 import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
@@ -64,7 +63,7 @@ initialState successMessageIndex =
     , levelStatus = InProgress
     , successMessageIndex = successMessageIndex
     , hubInfoWindow = InfoWindow.hidden
-    , mouse = { y = 0, x = 0 }
+    , pointerPosition = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
 
@@ -141,8 +140,8 @@ update msg model =
                 )
                 []
 
-        StartMove move mouse ->
-            noOutMsg (handleStartMove move mouse model) []
+        StartMove move pointerPosition ->
+            noOutMsg (handleStartMove move pointerPosition model) []
 
         CheckMove position ->
             checkMoveFromPosition position model
@@ -283,12 +282,12 @@ handleDecrementRemainingMoves model =
 
 
 handleStartMove : Move -> Position -> LevelModel -> LevelModel
-handleStartMove move mouse model =
+handleStartMove move pointerPosition model =
     { model
         | isDragging = True
         , board = startMove move model.board
         , moveShape = Just Line
-        , mouse = mouse
+        , pointerPosition = pointerPosition
     }
 
 
@@ -296,7 +295,7 @@ checkMoveFromPosition : Position -> LevelModel -> ( LevelModel, Cmd LevelMsg, Ma
 checkMoveFromPosition position levelModel =
     let
         modelWithPosition =
-            { levelModel | mouse = position }
+            { levelModel | pointerPosition = position }
     in
     case moveFromPosition position levelModel of
         Just move ->

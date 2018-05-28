@@ -5,7 +5,7 @@ import Html.Attributes exposing (property)
 import Html.Events exposing (on, onWithOptions)
 import Json.Decode as Json exposing (Decoder, field, float)
 import Json.Encode exposing (string)
-import Mouse exposing (Position)
+import Scenes.Level.Types exposing (Position)
 
 
 embeddedStyle : String -> Html msg
@@ -18,7 +18,7 @@ onPointerUp msg =
     on "pointerup" <| Json.succeed msg
 
 
-onPointerDownPosition : (Mouse.Position -> msg) -> Attribute msg
+onPointerDownPosition : (Position -> msg) -> Attribute msg
 onPointerDownPosition =
     onWithOptions "pointerdown" preventDefault << tagPosition
 
@@ -28,12 +28,12 @@ onPointerMovePosition =
     onWithOptions "pointermove" preventDefault << tagPosition
 
 
-tagPosition : (Mouse.Position -> msg) -> Decoder msg
+tagPosition : (Position -> msg) -> Decoder msg
 tagPosition msg =
     positionDecoder |> Json.andThen (Json.succeed << msg)
 
 
-positionDecoder : Decoder Mouse.Position
+positionDecoder : Decoder Position
 positionDecoder =
     Json.map2 Position
         (field "x" float |> Json.map round)

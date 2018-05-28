@@ -48,8 +48,8 @@ lineDrag ({ window } as model) =
             , strokeLinecap "round"
             , x1 <| toString oX
             , y1 <| toString oY
-            , x2 <| toString model.mouse.x
-            , y2 <| toString model.mouse.y
+            , x2 <| toString model.pointerPosition.x
+            , y2 <| toString model.pointerPosition.y
             ]
             []
         ]
