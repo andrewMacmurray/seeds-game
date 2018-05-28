@@ -36,6 +36,14 @@ internalAnimations =
                     , 100 => ( 300, 0 )
                     ]
           }
+        , { name = "hover"
+          , frames =
+                map translateY
+                    [ 0 => 0
+                    , 50 => -5
+                    , 100 => 0
+                    ]
+          }
         , { name = "bulge-fade"
           , frames =
                 map2 ( scale, opacity )
@@ -46,9 +54,9 @@ internalAnimations =
         , { name = "bulge"
           , frames =
                 map scale
-                    [ ( 0, 0.5 )
-                    , ( 50, 1.3 )
-                    , ( 100, 1 )
+                    [ 0 => 0.5
+                    , 50 => 1.3
+                    , 100 => 1
                     ]
           }
         , { name = "bulge-small"
@@ -62,23 +70,23 @@ internalAnimations =
         , { name = "fade-in"
           , frames =
                 map opacity
-                    [ ( 0, 0 )
-                    , ( 100, 1 )
+                    [ 0 => 0
+                    , 100 => 1
                     ]
           }
         , { name = "fade-out"
           , frames =
                 map opacity
-                    [ ( 0, 1 )
-                    , ( 100, 0 )
+                    [ 0 => 1
+                    , 100 => 0
                     ]
           }
         , { name = "heartbeat"
           , frames =
                 map scale
-                    [ ( 0, 1 )
-                    , ( 50, 1.15 )
-                    , ( 100, 1 )
+                    [ 0 => 1
+                    , 50 => 1.15
+                    , 100 => 1
                     ]
           }
         , { name = "heart-break-left"

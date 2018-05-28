@@ -12,6 +12,7 @@ import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Helpers.Infix exposing ((=>))
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -24,6 +25,11 @@ boardMarginTop model =
 boardOffsetTop : TileConfig model -> Int
 boardOffsetTop model =
     (model.window.height - boardHeight model) // 2 + (ScaleConfig.topBarHeight // 2) - 10
+
+
+boardOffsetLeft : TileConfig model -> Int
+boardOffsetLeft model =
+    (model.window.width - boardWidth model) // 2
 
 
 boardHeight : TileConfig model -> Int
@@ -52,7 +58,12 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-    [ transformStyle [ translate x y ] ]
+    [ transformStyle
+        [ translate x y
+        , translateZ 0
+        ]
+    , "-webkit-transform-style" => "preserve-3d"
+    ]
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )

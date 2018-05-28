@@ -13,8 +13,8 @@ world : WorldData TutorialConfig
 world =
     { seedType = Lupin
     , levels = levels
-    , background = washedYellow
-    , textColor = gold
+    , background = softRed
+    , textColor = white
     , textCompleteColor = white
     , textBackgroundColor = gold
     }

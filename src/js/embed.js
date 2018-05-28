@@ -4,7 +4,9 @@ const cache = require('./cache.js')
 const util = require('./util')
 const { loadAudio, playTrack, longFade } = require('./audio.js')
 
+registerServiceWorker()
 init()
+
 util.bumpDebuggerPanel()
 
 window.skipToLevel = util.skipToLevel
@@ -61,4 +63,14 @@ function init() {
   ports.cacheTimes.subscribe(times => {
     cache.setTimes(times)
   })
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    if (util.isProduction()) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+      })
+    }
+  }
 }

@@ -1,12 +1,12 @@
 module Views.Icons.RainBank exposing (..)
 
 import Helpers.Css.Style exposing (..)
-import Html exposing (Html)
-import Svg exposing (Attribute)
+import Helpers.Css.Transform as Css exposing (translateY)
+import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
 
-rainBank : Float -> Html msg
+rainBank : Float -> Svg msg
 rainBank percentFull =
     let
         fullHeight =
@@ -14,6 +14,12 @@ rainBank percentFull =
 
         waterLevelOffset =
             (fullHeight / 100) * (100 - percentFull)
+
+        offsetLevelStyles =
+            svgStyles
+                [ "transition: transform 1.5s ease"
+                , "transform:" ++ Css.transform [ translateY waterLevelOffset ]
+                ]
     in
     Svg.svg
         [ viewBox "0 0 25 36"
@@ -25,13 +31,11 @@ rainBank percentFull =
                 [ height <| toString fullHeight
                 , width "60"
                 , id "water-level"
-                , style "transition: transform 1.5s ease"
-                , transform <| svgTranslate 0 waterLevelOffset
                 ]
                 []
             ]
         , Svg.path
-            [ rainbankPath
+            [ rainBankPath
             , fill "grey"
             , fillOpacity "0.1"
             , transform "translate(-17 -.241)"
@@ -46,10 +50,10 @@ rainBank percentFull =
                 [ fill "white"
                 , id "rain-bank"
                 ]
-                [ Svg.use [ xlinkHref "#water-level" ] []
+                [ Svg.use [ xlinkHref "#water-level", offsetLevelStyles ] []
                 ]
             , Svg.path
-                [ rainbankPath
+                [ rainBankPath
                 , fill "#26AAE1"
                 , mask "url(#rain-bank)"
                 ]
@@ -58,6 +62,22 @@ rainBank percentFull =
         ]
 
 
-rainbankPath : Attribute msg
-rainbankPath =
+rainBankFull : Svg msg
+rainBankFull =
+    Svg.svg
+        [ viewBox "0 0 25 36"
+        , width "100%"
+        , height "100%"
+        ]
+        [ Svg.path
+            [ rainBankPath
+            , fill "#26AAE1"
+            , transform "translate(-17 .241)"
+            ]
+            []
+        ]
+
+
+rainBankPath : Attribute msg
+rainBankPath =
     d "M29.5 35.2C36.2 35.2 41.6 29.8 41.6 23.1 41.3 17 37.3 9.2 29.5-0.1 21.5 9.3 17.4 17 17.4 23.1 17.4 29.8 22.8 35.2 29.5 35.2Z"

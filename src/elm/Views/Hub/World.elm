@@ -6,7 +6,9 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
+import Helpers.Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
 import Helpers.Css.Style exposing (..)
+import Helpers.Css.Timing exposing (TimingFunction(Ease, Linear))
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
@@ -15,6 +17,7 @@ import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
 import Types exposing (Msg(..))
+import Views.Icons.Triangle exposing (triangle)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -48,10 +51,16 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
     let
         levelNumber =
             getLevelNumber ( world, level ) allLevels
+
+        hasReachedLevel =
+            reachedLevel allLevels ( world, level ) model.progress
+
+        isCurrentLevel =
+            ( world, level ) == model.progress
     in
     div
         [ showInfo ( world, level ) model
-        , class "tc pointer"
+        , class "tc pointer relative"
         , id <| "level-" ++ toString levelNumber
         , styles
             [ [ widthStyle 35
@@ -62,9 +71,32 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             , offsetStyles level
             ]
         ]
-        [ renderIcon ( world, level ) worldData.seedType model
-        , renderNumber levelNumber ( world, level ) worldData model
+        [ currentLevelPointer isCurrentLevel
+        , renderIcon ( world, level ) worldData.seedType model
+        , renderNumber levelNumber hasReachedLevel worldData
         ]
+
+
+currentLevelPointer : Bool -> Html msg
+currentLevelPointer isCurrentLevel =
+    if isCurrentLevel then
+        div
+            [ class "absolute left-0 right-0"
+            , style
+                [ topStyle -30
+                , animationWithOptionsStyle
+                    { name = "hover"
+                    , timing = Ease
+                    , fill = Forwards
+                    , duration = 1500
+                    , iteration = Just Infinite
+                    , delay = Nothing
+                    }
+                ]
+            ]
+            [ triangle ]
+    else
+        span [] []
 
 
 offsetStyles : Int -> List Style
@@ -77,14 +109,9 @@ offsetStyles levelNumber =
         (levelNumber - 1)
 
 
-renderNumber :
-    Int
-    -> ( WorldNumber, LevelNumber )
-    -> WorldData TutorialConfig
-    -> HubModel model
-    -> Html Msg
-renderNumber visibleLevelNumber currentLevel worldData model =
-    if reachedLevel allLevels currentLevel model.progress then
+renderNumber : Int -> Bool -> WorldData TutorialConfig -> Html Msg
+renderNumber visibleLevelNumber hasReachedLevel worldData =
+    if hasReachedLevel then
         div
             [ class "br-100 center flex justify-center items-center"
             , style

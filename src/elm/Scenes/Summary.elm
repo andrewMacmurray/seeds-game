@@ -15,7 +15,7 @@ import Html.Attributes exposing (..)
 import Types exposing (..)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
-import Views.Icons.SunBank exposing (sunBank)
+import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -85,22 +85,20 @@ renderResourceFill tileType =
     case tileType of
         Rain ->
             div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 13 ], class "center" ] [ rainBank 100 ]
+                [ div [ style [ widthStyle 13 ], class "center" ] [ rainBankFull ]
                 , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
             div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 18 ], class "center" ] [ sunBank 100 ]
+                [ div [ style [ widthStyle 18 ], class "center" ] [ sunBankFull ]
                 , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
             div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 18 ], class "center" ] [ seedBank seedType 100 ]
-                , div [ class "relative", style [ transformStyle [ translateY -10 ] ] ] <|
-                    List.map (seedDrop seedType) <|
-                        List.range 7 57
+                [ div [ style [ widthStyle 15 ], class "center" ] [ renderSeed seedType ]
+                , div [ class "relative", style [ transformStyle [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
         _ ->

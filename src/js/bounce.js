@@ -1,6 +1,6 @@
 const Bounce = require('../../node_modules/bounce.js/bounce.min.js');
 
-function elasticBounceIn () {
+function elasticBounceIn() {
   return new Bounce()
     .translate({
       from: { x: 0, y: -300 },
@@ -12,7 +12,7 @@ function elasticBounceIn () {
     })
 }
 
-function bounceDown () {
+function bounceDown() {
   return new Bounce()
     .translate({
       from: { x: 0, y: -200 },
@@ -25,7 +25,7 @@ function bounceDown () {
     })
 }
 
-function bounceUp () {
+function bounceUp() {
   return new Bounce()
     .translate({
       from: { x: 0, y: 200 },
@@ -38,7 +38,7 @@ function bounceUp () {
     })
 }
 
-function bounceDowns (tileSize) {
+function bounceDowns(tileSize) {
   let anims = []
   for (let i = 1; i <= 8; i++) {
     const b = new Bounce()

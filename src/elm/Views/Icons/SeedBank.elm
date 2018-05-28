@@ -1,7 +1,8 @@
 module Views.Icons.SeedBank exposing (..)
 
 import Data.Board.Types exposing (..)
-import Helpers.Css.Style exposing (pc, svgTranslate)
+import Helpers.Css.Style exposing (pc, svgStyles, svgTranslate)
+import Helpers.Css.Transform as Css exposing (translateY)
 import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)
@@ -25,6 +26,12 @@ seedBank seedType percentFull =
 
         seedLevelId =
             "seed-level-" ++ stringSeedType
+
+        offsetLevelStyles =
+            svgStyles
+                [ "transition: transform 1.5s ease"
+                , "transform:" ++ Css.transform [ translateY seedLevelOffset ]
+                ]
     in
     Svg.svg
         [ viewBox "0 0 124.5 193.5"
@@ -36,8 +43,6 @@ seedBank seedType percentFull =
                 [ height <| toString fullHeight
                 , id <| seedLevelId
                 , width "100%"
-                , style "transition: transform 1.5s ease"
-                , transform <| svgTranslate 0 seedLevelOffset
                 ]
                 []
             ]
@@ -48,7 +53,12 @@ seedBank seedType percentFull =
                     [ fill "white"
                     , id seedBankId
                     ]
-                    [ Svg.use [ xlinkHref <| "#" ++ seedLevelId ] [] ]
+                    [ Svg.use
+                        [ xlinkHref <| "#" ++ seedLevelId
+                        , offsetLevelStyles
+                        ]
+                        []
+                    ]
                 , Svg.g
                     [ mask <| "url(#" ++ seedBankId ++ ")" ]
                     [ renderSeed seedType ]

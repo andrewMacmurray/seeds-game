@@ -7,7 +7,7 @@ function _bumpDebuggerPanel () {
   }
 }
 
-function bumpDebuggerPanel () {
+function bumpDebuggerPanel() {
   setTimeout(_bumpDebuggerPanel, 100)
 }
 
@@ -16,4 +16,17 @@ function skipToLevel(world, level) {
     window.location.reload()
 }
 
-module.exports = { bumpDebuggerPanel, skipToLevel }
+function isDevelopment() {
+  return window.location.hostname.includes('localhost')
+}
+
+function isProduction() {
+  return !isDevelopment()
+}
+
+module.exports = {
+  bumpDebuggerPanel,
+  isDevelopment,
+  isProduction,
+  skipToLevel
+}

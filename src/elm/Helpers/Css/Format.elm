@@ -26,6 +26,11 @@ translateY_ =
     s "translateY(" <> px_ <> s ")"
 
 
+translateZ_ : Format r (number -> r)
+translateZ_ =
+    s "translateZ(" <> px_ <> s ")"
+
+
 rotate_ : String -> Format r (number -> r)
 rotate_ dimension =
     s ("rotate" ++ dimension ++ "(") <> deg_ <> s ")"

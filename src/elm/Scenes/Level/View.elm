@@ -4,7 +4,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (..)
 import Views.Backdrop exposing (backdrop)
-import Views.Level.Layout exposing (board, handleStop)
+import Views.Level.Layout exposing (board, handleCheck, handleStop)
 import Views.Level.LineDrag exposing (handleLineDrag)
 import Views.Level.Result exposing (infoWindow)
 import Views.Level.TopBar exposing (topBar)
@@ -12,7 +12,7 @@ import Views.Level.TopBar exposing (topBar)
 
 levelView : LevelModel -> Html LevelMsg
 levelView model =
-    div [ handleStop model, class <| disableIfComplete model ]
+    div [ handleStop model, handleCheck model, class <| disableIfComplete model ]
         [ topBar model
         , infoWindow model
         , board model

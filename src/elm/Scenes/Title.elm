@@ -34,10 +34,11 @@ type alias TitleModel model =
 
 titleView : TitleModel model -> Html Msg
 titleView { window, titleAnimation, progress } =
-    div [ class "relative z-5 tc" ]
-        [ div
-            [ style [ marginTop <| percentWindowHeight 20 window ] ]
-            [ seeds titleAnimation ]
+    div
+        [ class "absolute left-0 right-0 z-5 tc"
+        , style [ bottomStyle <| toFloat window.height / 2.4 ]
+        ]
+        [ div [] [ seeds titleAnimation ]
         , p
             [ class "f3 tracked-mega"
             , styles
