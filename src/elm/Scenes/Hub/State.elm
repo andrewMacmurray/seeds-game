@@ -55,7 +55,7 @@ scrollHubToLevel : Float -> Window.Size -> Cmd HubMsg
 scrollHubToLevel offset window =
     let
         targetDistance =
-            offset - toFloat (window.height // 2) + 30
+            offset - toFloat (window.height // 2) + 20
     in
     Dom.Scroll.toY "hub" targetDistance |> Task.attempt DomNoOp
 

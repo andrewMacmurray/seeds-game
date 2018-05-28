@@ -57,7 +57,11 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-    [ transformStyle [ translate x y ] ]
+    [ transformStyle
+        [ translate x y
+        , translateZ 0
+        ]
+    ]
 
 
 tilePosition : TileConfig model -> Coord -> ( Float, Float )
