@@ -12,6 +12,7 @@ import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Helpers.Infix exposing ((=>))
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -61,6 +62,7 @@ tileCoordsStyles model coord =
         [ translate x y
         , translateZ 0
         ]
+    , "-webkit-transform-style" => "preserve-3d"
     ]
 
 
