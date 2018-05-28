@@ -3,7 +3,6 @@ module Scenes.Level.Types exposing (..)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
-import Mouse
 import Window
 
 
@@ -18,7 +17,7 @@ type alias LevelModel =
     , levelStatus : LevelStatus
     , hubInfoWindow : InfoWindow String
     , successMessageIndex : Int
-    , mouse : Mouse.Position
+    , pointerPosition : Position
     , window : Window.Size
     }
 
@@ -27,8 +26,8 @@ type LevelMsg
     = InitTiles (List ( WallColor, Coord )) (List TileType)
     | SquareMove
     | StopMove
-    | StartMove Move
-    | CheckMove Move
+    | StartMove Move Position
+    | CheckMove Position
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -46,8 +45,13 @@ type LevelMsg
     | InfoHidden
     | LevelWon
     | LevelLost
-    | MousePosition Mouse.Position
     | WindowSize Window.Size
+
+
+type alias Position =
+    { x : Int
+    , y : Int
+    }
 
 
 type LevelOutMsg

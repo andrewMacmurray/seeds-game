@@ -11,7 +11,7 @@ import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (..)
 
 
-handleLineDrag : LevelModel -> Html LevelMsg
+handleLineDrag : LevelModel -> Html msg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
@@ -19,7 +19,7 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : LevelModel -> Html LevelMsg
+lineDrag : LevelModel -> Html msg
 lineDrag ({ window } as model) =
     let
         vb =
@@ -48,8 +48,8 @@ lineDrag ({ window } as model) =
             , strokeLinecap "round"
             , x1 <| toString oX
             , y1 <| toString oY
-            , x2 <| toString model.mouse.x
-            , y2 <| toString model.mouse.y
+            , x2 <| toString model.pointerPosition.x
+            , y2 <| toString model.pointerPosition.y
             ]
             []
         ]

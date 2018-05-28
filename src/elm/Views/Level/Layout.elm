@@ -3,10 +3,9 @@ module Views.Level.Layout exposing (..)
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
 import Helpers.Css.Style exposing (..)
-import Helpers.Html exposing (emptyProperty, onMouseDownPreventDefault)
+import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onMouseEnter, onMouseUp)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
@@ -62,6 +61,14 @@ renderLineLayer model (( coord, _ ) as move) =
 handleStop : LevelModel -> Attribute LevelMsg
 handleStop model =
     if model.isDragging then
-        onMouseUp StopMove
+        onPointerUp StopMove
+    else
+        emptyProperty
+
+
+handleCheck : LevelModel -> Attribute LevelMsg
+handleCheck model =
+    if model.isDragging then
+        onPointerMovePosition CheckMove
     else
         emptyProperty
