@@ -26,6 +26,11 @@ boardOffsetTop model =
     (model.window.height - boardHeight model) // 2 + (ScaleConfig.topBarHeight // 2) - 10
 
 
+boardOffsetLeft : TileConfig model -> Int
+boardOffsetLeft model =
+    (model.window.width - boardWidth model) // 2
+
+
 boardHeight : TileConfig model -> Int
 boardHeight model =
     round (ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor model.window) * model.boardDimensions.y

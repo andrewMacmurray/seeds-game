@@ -3,10 +3,9 @@ module Views.Level.Tile exposing (..)
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Types exposing (..)
 import Helpers.Css.Style exposing (..)
-import Helpers.Html exposing (onMouseDownPreventDefault)
+import Helpers.Html exposing (emptyProperty, onPointerDownPosition, preventDefault)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onMouseEnter)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Styles exposing (..)
 import Window exposing (Size)
@@ -29,6 +28,7 @@ renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
             , tileCoordsStyles config coord
             , extraStyles
             ]
+        , attribute "touch-action" "none"
         , class "dib absolute"
         ]
         [ innerTile config.window config.moveShape move
@@ -39,10 +39,10 @@ renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
 
 hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
 hanldeMoveEvents model move =
-    if model.isDragging then
-        onMouseEnter <| CheckMove move
+    if not model.isDragging then
+        onPointerDownPosition <| StartMove move
     else
-        onMouseDownPreventDefault <| StartMove move
+        emptyProperty
 
 
 tracer : Window.Size -> Move -> Html msg

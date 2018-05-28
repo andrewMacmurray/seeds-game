@@ -1,6 +1,6 @@
 module Data.Board.Move.Check
     exposing
-        ( addToMove
+        ( addMoveToBoard
         , startMove
         )
 
@@ -12,8 +12,8 @@ import Data.Board.Types exposing (..)
 import Dict
 
 
-addToMove : Move -> Board -> Board
-addToMove curr board =
+addMoveToBoard : Move -> Board -> Board
+addMoveToBoard curr board =
     if isValidMove curr board || isValidSquare curr board then
         addBearings curr board
     else

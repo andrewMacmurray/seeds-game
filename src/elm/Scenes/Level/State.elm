@@ -1,11 +1,12 @@
 module Scenes.Level.State exposing (..)
 
+import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
 import Config.Text exposing (failureMessage, getSuccessMessage, randomSuccessMessageIndex)
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
 import Data.Board.Map exposing (..)
-import Data.Board.Move.Check exposing (addToMove, startMove)
+import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
 import Data.Board.Moves exposing (currentMoveTileType)
 import Data.Board.Score exposing (addScoreFromMoves, initialScores, levelComplete)
@@ -17,9 +18,10 @@ import Data.Level.Types exposing (LevelData)
 import Dict
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
-import Mouse exposing (downs, moves)
+import Mouse exposing (Position)
 import Scenes.Level.Types exposing (..)
 import Task
+import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
 import Window exposing (resizes, size)
 
 
@@ -139,11 +141,11 @@ update msg model =
                 )
                 []
 
-        StartMove move ->
-            noOutMsg (handleStartMove move model) []
+        StartMove move mouse ->
+            noOutMsg (handleStartMove move mouse model) []
 
-        CheckMove move ->
-            handleCheckMove move model
+        CheckMove position ->
+            checkMoveFromPosition position model
 
         SquareMove ->
             noOutMsg (handleSquareMove model) []
@@ -167,9 +169,6 @@ update msg model =
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
             withOutMsg model [] ExitLose
-
-        MousePosition position ->
-            noOutMsg { model | mouse = position } []
 
         WindowSize size ->
             noOutMsg { model | window = size } []
@@ -283,30 +282,75 @@ handleDecrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> LevelModel -> LevelModel
-handleStartMove move model =
+handleStartMove : Move -> Position -> LevelModel -> LevelModel
+handleStartMove move mouse model =
     { model
         | isDragging = True
         , board = startMove move model.board
         , moveShape = Just Line
+        , mouse = mouse
     }
 
 
-handleCheckMove : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
-handleCheckMove move model =
+checkMoveFromPosition : Position -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+checkMoveFromPosition position levelModel =
+    let
+        modelWithPosition =
+            { levelModel | mouse = position }
+    in
+    case moveFromPosition position levelModel of
+        Just move ->
+            checkMoveWithSquareTrigger move modelWithPosition
+
+        Nothing ->
+            noOutMsg modelWithPosition []
+
+
+checkMoveWithSquareTrigger : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+checkMoveWithSquareTrigger move model =
     let
         newModel =
-            model |> handleCheckMove_ move
+            model |> handleCheckMove move
     in
     noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
-handleCheckMove_ : Move -> LevelModel -> LevelModel
-handleCheckMove_ move model =
+handleCheckMove : Move -> LevelModel -> LevelModel
+handleCheckMove move model =
     if model.isDragging then
-        { model | board = addToMove move model.board }
+        { model | board = addMoveToBoard move model.board }
     else
         model
+
+
+moveFromPosition : Position -> LevelModel -> Maybe Move
+moveFromPosition position levelModel =
+    moveFromCoord levelModel.board <| coordsFromPosition position levelModel
+
+
+moveFromCoord : Board -> Coord -> Maybe Move
+moveFromCoord board coord =
+    board |> Dict.get coord |> Maybe.map ((,) coord)
+
+
+coordsFromPosition : Position -> LevelModel -> Coord
+coordsFromPosition position levelModel =
+    let
+        positionY =
+            toFloat <| position.y - boardOffsetTop levelModel
+
+        positionX =
+            toFloat <| position.x - boardOffsetLeft levelModel
+
+        scaleFactorY =
+            tileScaleFactor levelModel.window * baseTileSizeY
+
+        scaleFactorX =
+            tileScaleFactor levelModel.window * baseTileSizeX
+    in
+    ( floor <| positionY / scaleFactorY
+    , floor <| positionX / scaleFactorX
+    )
 
 
 handleSquareMove : LevelModel -> LevelModel
@@ -342,17 +386,5 @@ hasWon { scores, levelStatus } =
 
 
 subscriptions : LevelModel -> Sub LevelMsg
-subscriptions model =
-    Sub.batch
-        [ subscribeDrag model
-        , downs MousePosition
-        , resizes WindowSize
-        ]
-
-
-subscribeDrag : LevelModel -> Sub LevelMsg
-subscribeDrag model =
-    if model.isDragging then
-        moves MousePosition
-    else
-        Sub.none
+subscriptions _ =
+    resizes WindowSize

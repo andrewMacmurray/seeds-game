@@ -11,7 +11,7 @@ import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (..)
 
 
-handleLineDrag : LevelModel -> Html LevelMsg
+handleLineDrag : LevelModel -> Html msg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
@@ -19,7 +19,7 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : LevelModel -> Html LevelMsg
+lineDrag : LevelModel -> Html msg
 lineDrag ({ window } as model) =
     let
         vb =
