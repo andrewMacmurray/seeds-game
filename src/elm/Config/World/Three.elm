@@ -26,7 +26,7 @@ levels =
         [ { walls = yellowWalls firstLevelWalls
           , boardDimensions = { x = 6, y = 8 }
           , tutorial = Nothing
-          , moves = 10
+          , moves = 20
           , tileSettings =
                 [ rain
                     (Probability 20)

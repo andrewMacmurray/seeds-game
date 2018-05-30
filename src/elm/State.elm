@@ -104,7 +104,7 @@ update msg model =
             model
                 ! [ sequenceMs
                         [ ( 10, ShowLoadingScreen )
-                        , ( 500, LoadLevel <| currentLevel model )
+                        , ( 600, LoadLevel <| currentLevel model )
                         , ( 2500, HideLoadingScreen )
                         ]
                   ]
