@@ -1,117 +1,117 @@
 module Data.Board.Block exposing (..)
 
-import Data.Board.Tile as TileState
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 
 
 growingOrder : Block -> Int
 growingOrder =
-    foldBlock TileState.growingOrder 0
+    fold Tile.growingOrder 0
 
 
 leavingOrder : Block -> Int
 leavingOrder =
-    foldBlock TileState.leavingOrder 0
+    fold Tile.leavingOrder 0
 
 
 isLeaving : Block -> Bool
 isLeaving =
-    foldBlock TileState.isLeaving False
+    fold Tile.isLeaving False
 
 
 isDragging : Block -> Bool
 isDragging =
-    foldBlock TileState.isDragging False
+    fold Tile.isDragging False
 
 
 isGrowing : Block -> Bool
 isGrowing =
-    foldBlock TileState.isGrowing False
+    fold Tile.isGrowing False
 
 
 isFalling : Block -> Bool
 isFalling =
-    foldBlock TileState.isFalling False
+    fold Tile.isFalling False
 
 
 hasLine : Block -> Bool
 hasLine =
-    foldBlock TileState.hasLine False
+    fold Tile.hasLine False
 
 
 moveOrder : Block -> Int
 moveOrder =
-    foldBlock TileState.moveOrder 0
+    fold Tile.moveOrder 0
 
 
 isCurrentMove : Block -> Bool
 isCurrentMove =
-    foldBlock TileState.isCurrentMove False
+    fold Tile.isCurrentMove False
 
 
 setToDragging : MoveOrder -> Block -> Block
 setToDragging moveOrder =
-    mapBlock <| TileState.setToDragging moveOrder
+    map <| Tile.setToDragging moveOrder
 
 
 setStaticToFirstMove : Block -> Block
 setStaticToFirstMove =
-    mapBlock TileState.setStaticToFirstMove
+    map Tile.setStaticToFirstMove
 
 
 addBearing : MoveBearing -> Block -> Block
 addBearing moveBearing =
-    mapBlock <| TileState.addBearing moveBearing
+    map <| Tile.addBearing moveBearing
 
 
 setGrowingToStatic : Block -> Block
 setGrowingToStatic =
-    mapBlock TileState.setGrowingToStatic
+    map Tile.setGrowingToStatic
 
 
 growSeedPod : SeedType -> Block -> Block
 growSeedPod seedType =
-    mapBlock (TileState.growSeedPod seedType)
+    map (Tile.growSeedPod seedType)
 
 
 setToFalling : Int -> Block -> Block
 setToFalling fallingDistance =
-    mapBlock <| TileState.setToFalling fallingDistance
+    map <| Tile.setToFalling fallingDistance
 
 
 setEnteringToStatic : Block -> Block
 setEnteringToStatic =
-    mapBlock TileState.setEnteringToSatic
+    map Tile.setEnteringToSatic
 
 
 setFallingToStatic : Block -> Block
 setFallingToStatic =
-    mapBlock TileState.setFallingToStatic
+    map Tile.setFallingToStatic
 
 
 setLeavingToEmpty : Block -> Block
 setLeavingToEmpty =
-    mapBlock TileState.setLeavingToEmpty
+    map Tile.setLeavingToEmpty
 
 
 setDraggingToGrowing : Block -> Block
 setDraggingToGrowing =
-    mapBlock TileState.setDraggingToGrowing
+    map Tile.setDraggingToGrowing
 
 
 setToLeaving : Block -> Block
 setToLeaving =
-    mapBlock TileState.setToLeaving
+    map Tile.setToLeaving
 
 
 getTileType : Block -> Maybe TileType
 getTileType =
-    foldBlock TileState.getTileType Nothing
+    fold Tile.getTileType Nothing
 
 
 getTileState : Block -> TileState
 getTileState =
-    foldBlock identity Empty
+    fold identity Empty
 
 
 isWall : Block -> Bool
@@ -124,8 +124,8 @@ isWall block =
             False
 
 
-mapBlock : (TileState -> TileState) -> Block -> Block
-mapBlock fn block =
+map : (TileState -> TileState) -> Block -> Block
+map fn block =
     case block of
         Space tileState ->
             Space <| fn tileState
@@ -134,8 +134,8 @@ mapBlock fn block =
             wall
 
 
-foldBlock : (TileState -> a) -> a -> Block -> a
-foldBlock fn default block =
+fold : (TileState -> a) -> a -> Block -> a
+fold fn default block =
     case block of
         Wall _ ->
             default

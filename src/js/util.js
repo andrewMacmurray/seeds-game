@@ -9,16 +9,4 @@ function bumpDebuggerPanel() {
   setTimeout(_bumpDebuggerPanel, 100)
 }
 
-function isDevelopment() {
-  return window.location.hostname.includes('localhost')
-}
-
-function isProduction() {
-  return !isDevelopment()
-}
-
-module.exports = {
-  bumpDebuggerPanel,
-  isDevelopment,
-  isProduction
-}
+module.exports = { bumpDebuggerPanel }

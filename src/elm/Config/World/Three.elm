@@ -60,7 +60,7 @@ levels =
                 ]
           }
         , { walls = []
-          , moves = 10
+          , moves = 15
           , boardDimensions = { x = 8, y = 8 }
           , tutorial = Nothing
           , tileSettings =

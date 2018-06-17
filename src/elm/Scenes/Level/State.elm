@@ -62,7 +62,7 @@ initialState successMessageIndex =
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
     , successMessageIndex = successMessageIndex
-    , hubInfoWindow = InfoWindow.hidden
+    , infoWindow = InfoWindow.hidden
     , pointerPosition = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
@@ -153,13 +153,13 @@ update msg model =
             handleCheckLevelComplete model
 
         ShowInfo info ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.show info } []
+            noOutMsg { model | infoWindow = InfoWindow.show info } []
 
         RemoveInfo ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.leave model.hubInfoWindow } []
+            noOutMsg { model | infoWindow = InfoWindow.leave model.infoWindow } []
 
         InfoHidden ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.hidden } []
+            noOutMsg { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won

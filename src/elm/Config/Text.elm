@@ -16,16 +16,16 @@ getSuccessMessage i =
         ii =
             i % Dict.size successMessages
     in
-        Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
+    Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
 
 
 successMessages : Dict Int String
 successMessages =
     indexedDictFrom 0
         [ "Amazing!"
-        , "You're a Hero!"
-        , "A Triumph!"
-        , "You're the best!"
+        , "Awesome!"
+        , "Success!"
+        , "Much Win!"
         ]
 
 

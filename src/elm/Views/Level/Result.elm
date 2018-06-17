@@ -8,13 +8,13 @@ import Views.InfoWindow exposing (infoContainer)
 
 
 infoWindow : LevelModel -> Html msg
-infoWindow { hubInfoWindow } =
+infoWindow { infoWindow } =
     let
         infoContent =
-            val hubInfoWindow |> Maybe.withDefault ""
+            val infoWindow |> Maybe.withDefault ""
     in
-    if isHidden hubInfoWindow then
+    if isHidden infoWindow then
         span [] []
     else
-        infoContainer hubInfoWindow <|
+        infoContainer infoWindow <|
             div [ class "pv5 f3 tracked-mega" ] [ text infoContent ]

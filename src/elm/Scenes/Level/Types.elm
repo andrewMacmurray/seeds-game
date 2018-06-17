@@ -15,7 +15,7 @@ type alias LevelModel =
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
     , levelStatus : LevelStatus
-    , hubInfoWindow : InfoWindow String
+    , infoWindow : InfoWindow String
     , successMessageIndex : Int
     , pointerPosition : Position
     , window : Window.Size

@@ -4,7 +4,7 @@ const cache = require('./cache.js')
 const util = require('./util')
 const { Howl } = require('howler')
 
-registerServiceWorker()
+// registerServiceWorker()
 init()
 
 util.bumpDebuggerPanel()
@@ -67,10 +67,8 @@ function init() {
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    if (util.isProduction()) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-      })
-    }
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+    })
   }
 }
