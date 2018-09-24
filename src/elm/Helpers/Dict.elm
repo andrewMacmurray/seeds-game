@@ -1,4 +1,11 @@
-module Helpers.Dict exposing (..)
+module Helpers.Dict exposing
+    ( filterValues
+    , find
+    , findValue
+    , indexedDictFrom
+    , insertWith
+    , mapValues
+    )
 
 import Dict exposing (Dict)
 
@@ -17,6 +24,7 @@ insertWith : (a -> a -> a) -> comparable -> a -> Dict comparable a -> Dict compa
 insertWith f k v dict =
     if Dict.member k dict then
         Dict.update k (Maybe.map (\x -> f v x)) dict
+
     else
         Dict.insert k v dict
 
@@ -44,6 +52,7 @@ find predicate =
                 Nothing ->
                     if predicate k v then
                         Just ( k, v )
+
                     else
                         Nothing
     in

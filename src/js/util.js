@@ -16,17 +16,7 @@ function skipToLevel(world, level) {
     window.location.reload()
 }
 
-function isDevelopment() {
-  return window.location.hostname.includes('localhost')
-}
-
-function isProduction() {
-  return !isDevelopment()
-}
-
 module.exports = {
   bumpDebuggerPanel,
-  isDevelopment,
-  isProduction,
   skipToLevel
 }

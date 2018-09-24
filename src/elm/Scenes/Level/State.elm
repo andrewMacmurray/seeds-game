@@ -17,11 +17,12 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
 import Dict
 import Helpers.Delay exposing (sequenceMs, trigger)
-import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
+import Helpers.Exit exposing (ExitMsg, continue, exitWith)
 import Scenes.Level.Types exposing (..)
 import Task
 import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
 import Window exposing (resizes, size)
+
 
 
 -- Init
@@ -62,7 +63,7 @@ initialState successMessageIndex =
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
     , successMessageIndex = successMessageIndex
-    , hubInfoWindow = InfoWindow.hidden
+    , infoWindow = InfoWindow.hidden
     , pointerPosition = { y = 0, x = 0 }
     , window = { height = 0, width = 0 }
     }
@@ -72,11 +73,11 @@ initialState successMessageIndex =
 -- Update
 
 
-update : LevelMsg -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+update : LevelMsg -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
 update msg model =
     case msg of
         InitTiles walls tiles ->
-            noOutMsg
+            continue
                 (model
                     |> handleMakeBoard tiles
                     |> mapBoard (addWalls walls)
@@ -86,13 +87,13 @@ update msg model =
         StopMove ->
             case currentMoveTileType model.board of
                 Just SeedPod ->
-                    noOutMsg model [ growSeedPodsSequence model.moveShape ]
+                    continue model [ growSeedPodsSequence model.moveShape ]
 
                 _ ->
-                    noOutMsg model [ removeTilesSequence model.moveShape ]
+                    continue model [ removeTilesSequence model.moveShape ]
 
         SetLeavingTiles ->
-            noOutMsg
+            continue
                 (model
                     |> handleAddScore
                     |> mapBlocks setToLeaving
@@ -100,10 +101,10 @@ update msg model =
                 []
 
         SetFallingTiles ->
-            noOutMsg (mapBoard setFallingTiles model) []
+            continue (mapBoard setFallingTiles model) []
 
         ShiftBoard ->
-            noOutMsg
+            continue
                 (model
                     |> mapBoard shiftBoard
                     |> mapBlocks setFallingToStatic
@@ -112,28 +113,28 @@ update msg model =
                 []
 
         SetGrowingSeedPods ->
-            noOutMsg (mapBlocks setDraggingToGrowing model) []
+            continue (mapBlocks setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
-            noOutMsg model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
+            continue model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
 
         InsertGrowingSeeds seedType ->
-            noOutMsg (handleInsertNewSeeds seedType model) []
+            continue (handleInsertNewSeeds seedType model) []
 
         ResetGrowingSeeds ->
-            noOutMsg (mapBlocks setGrowingToStatic model) []
+            continue (mapBlocks setGrowingToStatic model) []
 
         GenerateEnteringTiles ->
-            noOutMsg model [ generateEnteringTiles InsertEnteringTiles model.tileSettings model.board ]
+            continue model [ generateEnteringTiles InsertEnteringTiles model.tileSettings model.board ]
 
         InsertEnteringTiles tiles ->
-            noOutMsg (handleInsertEnteringTiles tiles model) []
+            continue (handleInsertEnteringTiles tiles model) []
 
         ResetEntering ->
-            noOutMsg (mapBlocks setEnteringToStatic model) []
+            continue (mapBlocks setEnteringToStatic model) []
 
         ResetMove ->
-            noOutMsg
+            continue
                 (model
                     |> handleResetMove
                     |> handleDecrementRemainingMoves
@@ -141,36 +142,36 @@ update msg model =
                 []
 
         StartMove move pointerPosition ->
-            noOutMsg (handleStartMove move pointerPosition model) []
+            continue (handleStartMove move pointerPosition model) []
 
         CheckMove position ->
             checkMoveFromPosition position model
 
         SquareMove ->
-            noOutMsg (handleSquareMove model) []
+            continue (handleSquareMove model) []
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
         ShowInfo info ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.show info } []
+            continue { model | infoWindow = InfoWindow.show info } []
 
         RemoveInfo ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.leave model.hubInfoWindow } []
+            continue { model | infoWindow = InfoWindow.leave model.infoWindow } []
 
         InfoHidden ->
-            noOutMsg { model | hubInfoWindow = InfoWindow.hidden } []
+            continue { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
             -- outMsg signals to parent component that level has been won
-            withOutMsg model [] ExitWin
+            exitWith Win model []
 
         LevelLost ->
             -- outMsg signals to parent component that level has been lost
-            withOutMsg model [] ExitLose
+            exitWith Lose model []
 
         WindowSize size ->
-            noOutMsg { model | window = size } []
+            continue { model | window = size } []
 
 
 
@@ -183,6 +184,7 @@ growSeedPodsSequence moveShape =
         [ ( initialDelay moveShape, SetGrowingSeedPods )
         , ( 0, ResetMove )
         , ( 800, GrowPodsToSeeds )
+        , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         ]
 
@@ -224,6 +226,7 @@ initialDelay : Maybe MoveShape -> Float
 initialDelay moveShape =
     if moveShape == Just Square then
         200
+
     else
         0
 
@@ -232,6 +235,7 @@ fallDelay : Maybe MoveShape -> Float
 fallDelay moveShape =
     if moveShape == Just Square then
         500
+
     else
         350
 
@@ -277,6 +281,7 @@ handleDecrementRemainingMoves : LevelModel -> LevelModel
 handleDecrementRemainingMoves model =
     if model.remainingMoves < 1 then
         { model | remainingMoves = 0 }
+
     else
         { model | remainingMoves = model.remainingMoves - 1 }
 
@@ -291,7 +296,7 @@ handleStartMove move pointerPosition model =
     }
 
 
-checkMoveFromPosition : Position -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+checkMoveFromPosition : Position -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
 checkMoveFromPosition position levelModel =
     let
         modelWithPosition =
@@ -302,22 +307,23 @@ checkMoveFromPosition position levelModel =
             checkMoveWithSquareTrigger move modelWithPosition
 
         Nothing ->
-            noOutMsg modelWithPosition []
+            continue modelWithPosition []
 
 
-checkMoveWithSquareTrigger : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+checkMoveWithSquareTrigger : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
 checkMoveWithSquareTrigger move model =
     let
         newModel =
             model |> handleCheckMove move
     in
-    noOutMsg newModel [ triggerMoveIfSquare SquareMove newModel.board ]
+    continue newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
 
 handleCheckMove : Move -> LevelModel -> LevelModel
 handleCheckMove move model =
     if model.isDragging then
         { model | board = addMoveToBoard move model.board }
+
     else
         model
 
@@ -360,14 +366,16 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, Maybe LevelOutMsg )
+handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
 handleCheckLevelComplete model =
     if hasWon model then
-        noOutMsg { model | levelStatus = Win } [ winSequence model ]
+        continue { model | levelStatus = Win } [ winSequence model ]
+
     else if hasLost model then
-        noOutMsg { model | levelStatus = Lose } [ loseSequence ]
+        continue { model | levelStatus = Lose } [ loseSequence ]
+
     else
-        noOutMsg model []
+        continue model []
 
 
 hasLost : LevelModel -> Bool

@@ -66,7 +66,3 @@ type TutorialMsg
     | DisableTutorial
     | ExitTutorial
     | WindowSize Window.Size
-
-
-type TutorialOutMsg
-    = ExitToLevel

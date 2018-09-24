@@ -1,6 +1,8 @@
 module Views.Level.Tile exposing (..)
 
 import Config.Scale exposing (tileScaleFactor)
+import Data.Board.Block as Block
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerDownPosition, preventDefault)
@@ -8,6 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Styles exposing (..)
+import Views.Seed.All exposing (renderSeed)
 import Window exposing (Size)
 
 
@@ -66,7 +69,7 @@ makeInnerTile extraStyles window (( _, tile ) as move) =
         [ classes baseTileClasses
         , styles [ extraStyles, baseTileStyles window move ]
         ]
-        []
+        [ innerSeed tile ]
 
 
 baseTileStyles : Window.Size -> Move -> List Style
@@ -76,5 +79,25 @@ baseTileStyles window (( _, tile ) as move) =
         , enteringStyles move
         , fallingStyles move
         , widthHeight <| round <| tileSizeMap tile * tileScaleFactor window
-        , tileColorMap tile
+        , tileBackgroundMap tile
         ]
+
+
+innerSeed : Block -> Html msg
+innerSeed =
+    Block.fold (tileElementMap innerSeed_) <| span [] []
+
+
+innerSeed_ : TileType -> Html msg
+innerSeed_ tileType =
+    case tileType of
+        Seed seedType ->
+            renderSeed seedType
+
+        _ ->
+            span [] []
+
+
+tileElementMap : (TileType -> Html msg) -> TileState -> Html msg
+tileElementMap =
+    Tile.map <| span [] []

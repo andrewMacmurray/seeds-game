@@ -41,7 +41,3 @@ type IntroMsg
     | KillEnvironment
     | IntroComplete
     | WindowSize Window.Size
-
-
-type IntroOutMsg
-    = ExitIntro

@@ -2,9 +2,9 @@ module Views.Level.Styles exposing (..)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Board.Block exposing (..)
+import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
-import Data.Board.Tile as TileState
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Helpers.Css.Animation exposing (..)
@@ -12,7 +12,6 @@ import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
-import Helpers.Infix exposing ((=>))
 import Scenes.Level.Types as Level exposing (..)
 import Window
 
@@ -62,7 +61,6 @@ tileCoordsStyles model coord =
         [ translate x y
         , translateZ 0
         ]
-    , "-webkit-transform-style" => "preserve-3d"
     ]
 
 
@@ -277,14 +275,14 @@ centerBlock =
     "ma absolute top-0 left-0 right-0 bottom-0"
 
 
-tileColorMap : Block -> List Style
-tileColorMap =
-    foldBlock (tileStyleMap tileColors) []
+tileBackgroundMap : Block -> List Style
+tileBackgroundMap =
+    Block.fold (tileStyleMap tileBackground) []
 
 
 tileSizeMap : Block -> Float
 tileSizeMap =
-    foldBlock (tileTypeMap 0 tileSize) 0
+    Block.fold (Tile.map 0 tileSize) 0
 
 
 strokeColors : TileType -> String
@@ -319,8 +317,8 @@ seedStrokeColors seedType =
             darkBrown
 
 
-tileColors : TileType -> List Style
-tileColors tile =
+tileBackground : TileType -> List Style
+tileBackground tile =
     case tile of
         Rain ->
             [ backgroundColor lightBlue ]
@@ -331,8 +329,8 @@ tileColors tile =
         SeedPod ->
             [ background seedPodGradient ]
 
-        Seed seedType ->
-            [ backgroundImage <| seedBackgrounds seedType ] ++ frameBackgroundImage
+        Seed _ ->
+            []
 
 
 seedBackgrounds : SeedType -> String
@@ -372,17 +370,9 @@ tileSize tile =
 
 tileClassMap : (TileType -> String) -> TileState -> String
 tileClassMap =
-    tileTypeMap ""
+    Tile.map ""
 
 
 tileStyleMap : (TileType -> List Style) -> TileState -> List Style
 tileStyleMap =
-    tileTypeMap []
-
-
-tileTypeMap : a -> (TileType -> a) -> TileState -> a
-tileTypeMap default fn tileState =
-    tileState
-        |> TileState.getTileType
-        |> Maybe.map fn
-        |> Maybe.withDefault default
+    Tile.map []

@@ -1,9 +1,9 @@
-module Scenes.Intro.State exposing (..)
+module Scenes.Intro.State exposing (init, initialState, sequence, subscriptions, update)
 
 import Config.Color as Color
 import Data.Visibility exposing (..)
 import Helpers.Delay exposing (sequenceMs, trigger)
-import Helpers.OutMsg exposing (noOutMsg, withOutMsg)
+import Helpers.Exit exposing (ExitMsg, continue, exit)
 import Scenes.Intro.Types exposing (..)
 import Task
 import Window exposing (resizes, size)
@@ -54,53 +54,53 @@ sequence =
         ]
 
 
-update : IntroMsg -> IntroModel -> ( IntroModel, Cmd IntroMsg, Maybe IntroOutMsg )
+update : IntroMsg -> IntroModel -> ( IntroModel, Cmd IntroMsg, ExitMsg () )
 update msg model =
     case msg of
         ShowDyingLandscape ->
-            noOutMsg { model | scene = DyingLandscape Alive Entering } []
+            continue { model | scene = DyingLandscape Alive Entering } []
 
         HideDyingLandscape ->
-            noOutMsg { model | scene = DyingLandscape Dead Leaving } []
+            continue { model | scene = DyingLandscape Dead Leaving } []
 
         ShowGrowingSeeds ->
-            noOutMsg { model | scene = GrowingSeeds Entering } []
+            continue { model | scene = GrowingSeeds Entering } []
 
         HideGrowingSeeds ->
-            noOutMsg { model | scene = GrowingSeeds Leaving } []
+            continue { model | scene = GrowingSeeds Leaving } []
 
         ShowRollingHills ->
-            noOutMsg { model | scene = RollingHills Entering } []
+            continue { model | scene = RollingHills Entering } []
 
         InitRollingHills ->
-            noOutMsg { model | scene = RollingHills Hidden } []
+            continue { model | scene = RollingHills Hidden } []
 
         BloomFlowers ->
-            noOutMsg { model | scene = RollingHills Visible } []
+            continue { model | scene = RollingHills Visible } []
 
         ShowText ->
-            noOutMsg { model | textVisible = True } []
+            continue { model | textVisible = True } []
 
         SetText text ->
-            noOutMsg { model | text = text, textVisible = True } []
+            continue { model | text = text, textVisible = True } []
 
         HideText ->
-            noOutMsg { model | textVisible = False } []
+            continue { model | textVisible = False } []
 
         SetBackdrop bg ->
-            noOutMsg { model | backdrop = bg } []
+            continue { model | backdrop = bg } []
 
         SetTextColor color ->
-            noOutMsg { model | textColor = color } []
+            continue { model | textColor = color } []
 
         KillEnvironment ->
-            noOutMsg { model | scene = DyingLandscape Dead Visible } []
+            continue { model | scene = DyingLandscape Dead Visible } []
 
         WindowSize size ->
-            noOutMsg { model | window = size } []
+            continue { model | window = size } []
 
         IntroComplete ->
-            withOutMsg model [] ExitIntro
+            exit model []
 
 
 subscriptions : IntroModel -> Sub IntroMsg

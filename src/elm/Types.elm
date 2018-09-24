@@ -56,6 +56,10 @@ type alias SceneTransition =
     }
 
 
+type alias HasScene a =
+    { a | scene : SceneState }
+
+
 type Scene
     = Title
     | Level LevelModel

@@ -3,6 +3,14 @@ module Data.Board.Tile exposing (..)
 import Data.Board.Types exposing (..)
 
 
+map : a -> (TileType -> a) -> TileState -> a
+map default fn tileState =
+    tileState
+        |> getTileType
+        |> Maybe.map fn
+        |> Maybe.withDefault default
+
+
 growingOrder : TileState -> Int
 growingOrder tileState =
     case tileState of
