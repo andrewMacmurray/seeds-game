@@ -5,14 +5,15 @@
   "scripts": {
     "deploy-production": "npm run build && firebase deploy -P production",
     "deploy-staging": "npm run build && firebase deploy -P staging",
-    "dev": "npm run elm-dev & npm run css-dev & npm run js-dev",
-    "build": "npm run elm-build && npm run js-build && npm run sw-generate && npm run css-build",
+    "dev": "npm run elm-dev & npm run css-dev & npm run copy-pep & npm run js-dev",
+    "build": "npm run elm-build && npm run js-build && npm run copy-pep && npm run css-build && npm run sw-generate",
     "elm-dev": "elm-live src/elm/App.elm --output=public/main.js --dir=public --open --debug --pushstate",
     "elm-build": "elm-make src/elm/App.elm --output=public/main.js && npm run compress-main",
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
     "js-dev": "watchify src/js/embed.js -o public/embed.js -v",
     "js-build": "browserify src/js/embed.js -o public/embed.js -t [ babelify --presets [ env ] ]",
+    "copy-pep": "cp node_modules/pepjs/dist/pep.min.js public",
     "sw-generate": "workbox injectManifest",
     "compress-main": "uglifyjs -c -m -o public/main.js public/main.js",
     "compress-embed": "uglifyjs -c -m -o public/embed.js public/embed.js",
@@ -32,6 +33,7 @@
     "bounce.js": "^0.8.2",
     "elm": "^0.18.0",
     "howler": "^2.0.9",
+    "pepjs": "^0.4.3",
     "tachyons-custom": "^4.5.4"
   },
   "devDependencies": {
