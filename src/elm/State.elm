@@ -90,7 +90,7 @@ initialState flags =
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Just ( 2, 2 )
-    , window = { height = 0, width = 0 }
+    , window = flags.window
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
     , titleAnimation = Entering

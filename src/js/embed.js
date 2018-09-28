@@ -18,7 +18,8 @@ function init() {
     flags: {
       now: Date.now(),
       times: cache.getTimes(),
-      rawProgress: cache.getProgress()
+      rawProgress: cache.getProgress(),
+      window: { height: window.innerHeight, width: window.innerWidth }
     }
   });
 

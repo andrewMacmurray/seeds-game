@@ -26,6 +26,7 @@ type alias Flags =
     { now : Float
     , times : Maybe Times
     , rawProgress : Maybe RawProgress
+    , window : Window.Size
     }
 
 
