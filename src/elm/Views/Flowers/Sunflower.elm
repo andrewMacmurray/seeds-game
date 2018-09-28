@@ -1,4 +1,4 @@
-module Views.Flowers.Sunflower exposing (..)
+module Views.Flowers.Sunflower exposing (fadePetal, petals, sunflower)
 
 import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsSvg)
 import Helpers.Css.Style exposing (svgStyles)

@@ -1,27 +1,27 @@
-module Helpers.Css.Keyframes
-    exposing
-        ( Frames
-        , KeyframeProp
-        , KeyframesAnimation
-        , backgroundColor
-        , color
-        , embed
-        , map
-        , map2
-        , map3
-        , opacity
-        , render
-        , rotateZ
-        , scale
-        , translateX
-        , translateY
-        )
+module Helpers.Css.Keyframes exposing
+    ( Frames
+    , KeyframeProp
+    , KeyframesAnimation
+    , backgroundColor
+    , color
+    , embed
+    , map
+    , map2
+    , map3
+    , opacity
+    , render
+    , rotateZ
+    , scale
+    , translateX
+    , translateY
+    )
 
-import Helpers.Css.Style exposing (pc)
+import Helpers.Css.Format exposing (pc)
 import Helpers.Css.Transform as Transform exposing (Transform, fromTransform)
 import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode
+
 
 
 {-
@@ -194,6 +194,7 @@ combineTransforms : List KeyframeProp -> Maybe String
 combineTransforms transforms =
     if List.isEmpty transforms then
         Nothing
+
     else
         transforms
             |> List.map renderTransform
@@ -206,7 +207,7 @@ renderProp : KeyframeProp -> String
 renderProp prop =
     case prop of
         OpacityKey n ->
-            "opacity: " ++ toString n
+            "opacity: " ++ Debug.toString n
 
         ColorKey c ->
             "color: " ++ c

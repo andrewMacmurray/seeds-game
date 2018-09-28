@@ -1,27 +1,37 @@
-module Types exposing (..)
+module Types exposing
+    ( Flags
+    , HasScene
+    , Model
+    , Msg(..)
+    , RawProgress
+    , Scene(..)
+    , SceneState(..)
+    , SceneTransition
+    , Times
+    )
 
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
 import Data.Visibility exposing (Visibility)
+import Data.Window as Window
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
 import Scenes.Level.Types exposing (LevelModel, LevelMsg)
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
-import Time exposing (Time)
-import Window
+import Time exposing (Posix)
 
 
 type alias Flags =
-    { now : Time
+    { now : Float
     , times : Maybe Times
     , rawProgress : Maybe RawProgress
     }
 
 
 type alias Times =
-    { timeTillNextLife : Time
-    , lastPlayed : Time
+    { timeTillNextLife : Float
+    , lastPlayed : Float
     }
 
 
@@ -36,8 +46,8 @@ type alias Model =
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
-    , timeTillNextLife : Time
-    , lastPlayed : Time
+    , timeTillNextLife : Float
+    , lastPlayed : Float
     , hubInfoWindow : InfoWindow Progress
     , titleAnimation : Visibility
     , successMessageIndex : Int
@@ -97,8 +107,8 @@ type Msg
     | GoToIntro
     | IntroMusicPlaying Bool
     | ClearCache
-    | WindowSize Window.Size
-    | UpdateTimes Time
+    | WindowSize Int Int
+    | UpdateTimes Posix
       -- Summary and Retry
     | IncrementProgress
     | DecrementLives

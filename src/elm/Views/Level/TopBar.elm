@@ -1,4 +1,4 @@
-module Views.Level.TopBar exposing (..)
+module Views.Level.TopBar exposing (moveCounterColor, remainingMoves, renderScore, renderScoreIcon, scoreContent, scoreIcon, scoreIconUrl, tickFadeIn, topBar)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
@@ -20,18 +20,17 @@ topBar : LevelModel -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
-        , style
-            [ heightStyle ScaleConfig.topBarHeight
-            , color gold
-            , backgroundColor washedYellow
-            ]
+        , styleAttr (heightStyle ScaleConfig.topBarHeight)
+        , styleAttr (color gold)
+        , styleAttr (backgroundColor washedYellow)
         ]
         [ div
-            [ style [ widthStyle <| boardFullWidth model, heightStyle ScaleConfig.topBarHeight ]
+            [ styleAttr (widthStyle <| boardFullWidth model)
+            , styleAttr (heightStyle ScaleConfig.topBarHeight)
             , class "flex items-center justify-center relative"
             ]
             [ remainingMoves model.remainingMoves
-            , div [ style [ marginTop -16, ( "padding", "0 9px" ) ], class "flex justify-center" ] <|
+            , div [ styleAttr (marginTop -16), style "padding" "0 9px", class "flex justify-center" ] <|
                 List.map (renderScore model) (scoreTileTypes model.tileSettings)
             ]
         ]
@@ -45,51 +44,47 @@ renderScore model tileType =
     in
     div
         [ class "relative tc"
-        , style
-            [ marginRight scoreMargin
-            , marginLeft scoreMargin
-            ]
+        , styleAttr (marginRight scoreMargin)
+        , styleAttr (marginLeft scoreMargin)
         ]
         [ renderScoreIcon tileType
         , p
             [ class "ma0 absolute left-0 right-0 f6"
-            , style [ ( "bottom", "-1.5em" ) ]
+            , style "bottom" "-1.5em"
             ]
             [ scoreContent tileType model.scores ]
         ]
 
 
 remainingMoves : Int -> Html msg
-remainingMoves remainingMoves =
+remainingMoves moves =
     div
-        [ style [ leftStyle 8 ], class "absolute top-1" ]
+        [ styleAttr (leftStyle 8), class "absolute top-1" ]
         [ div
-            [ style
-                [ widthStyle 20
-                , heightStyle 20
-                , paddingAll 17
-                ]
+            [ styleAttr (widthStyle 20)
+            , styleAttr (heightStyle 20)
+            , styleAttr (paddingAll 17)
             , class "br-100 flex items-center justify-center"
             ]
             [ p
                 [ class "ma0 f3"
-                , style
-                    [ color <| moveCounterColor remainingMoves
-                    , easeAll 1000
-                    ]
+                , styleAttr (color <| moveCounterColor moves)
+                , styleAttr (easeAll 1000)
                 ]
-                [ text <| toString remainingMoves ]
+                [ text <| String.fromInt moves ]
             ]
-        , p [ style [ color darkYellow ], class "ma0 tracked f7 mt1 tc" ] [ text "moves" ]
+        , p [ styleAttr (color darkYellow), class "ma0 tracked f7 mt1 tc" ] [ text "moves" ]
         ]
 
 
 moveCounterColor : Int -> String
-moveCounterColor remainingMoves =
-    if remainingMoves > 5 then
+moveCounterColor moves =
+    if moves > 5 then
         lightGreen
-    else if remainingMoves > 2 then
+
+    else if moves > 2 then
         fadedOrange
+
     else
         pinkRed
 
@@ -98,6 +93,7 @@ scoreContent : TileType -> Scores -> Html msg
 scoreContent tileType scores =
     if getScoreFor tileType scores == Just 0 then
         tickFadeIn tileType scores
+
     else
         text <| scoreToString tileType scores
 
@@ -106,10 +102,10 @@ tickFadeIn : TileType -> Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
-            [ style
-                [ topStyle 1
-                , transformStyle [ scale 0 ]
-                , animationWithOptionsStyle
+            [ styleAttr (topStyle 1)
+            , styleAttr (transformStyle [ scale 0 ])
+            , styleAttr
+                (animationWithOptionsStyle
                     { name = "bulge"
                     , duration = 600
                     , delay = Just 800
@@ -117,15 +113,13 @@ tickFadeIn tileType scores =
                     , fill = Forwards
                     , iteration = Nothing
                     }
-                ]
+                )
             , class "absolute top-0 left-0 right-0"
             ]
             [ tickBackground ]
         , div
-            [ style
-                [ animateEase "fade-out" 500
-                , opacityStyle 1
-                ]
+            [ styleAttr (animateEase "fade-out" 500)
+            , styleAttr (opacityStyle 1)
             ]
             [ text <| scoreToString tileType scores ]
         ]
@@ -142,11 +136,9 @@ scoreIcon tileType scoreIconSize =
         Just url ->
             div
                 [ class "bg-center contain"
-                , style
-                    [ backgroundImage url
-                    , widthStyle scoreIconSize
-                    , heightStyle scoreIconSize
-                    ]
+                , styleAttr (backgroundImage url)
+                , styleAttr (widthStyle scoreIconSize)
+                , styleAttr (heightStyle scoreIconSize)
                 ]
                 []
 

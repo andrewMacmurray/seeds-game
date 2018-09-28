@@ -1,4 +1,4 @@
-module Views.InfoWindow exposing (..)
+module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoContainer_)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
@@ -14,37 +14,39 @@ infoContainer : InfoWindow a -> Html msg -> Html msg
 infoContainer infoWindow content =
     if isHidden infoWindow then
         span [] []
+
     else if isVisible infoWindow then
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , style
-                    [ background seedPodGradient
-                    , color white
-                    , animationStyle
+                , styleAttr (background seedPodGradient)
+                , styleAttr (color white)
+                , styleAttr
+                    (animationStyle
                         { name = "elastic-bounce-in"
                         , duration = 2000
                         , timing = Linear
                         }
-                    , widthStyle 380
-                    ]
+                    )
+                , styleAttr (widthStyle 380)
                 ]
                 [ content ]
             ]
+
     else
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , style
-                    [ background seedPodGradient
-                    , color white
-                    , widthStyle 380
-                    , animationStyle
+                , styleAttr (background seedPodGradient)
+                , styleAttr (color white)
+                , styleAttr (widthStyle 380)
+                , styleAttr
+                    (animationStyle
                         { name = "exit-down"
                         , duration = 700
                         , timing = CubicBezier 0.93 -0.36 0.57 0.96
                         }
-                    ]
+                    )
                 ]
                 [ content ]
             ]
@@ -61,14 +63,11 @@ infoContainer_ infoWindow =
     in
     if isLeaving infoWindow then
         div
-            [ classes [ "touch-disabled", infoContainerBaseClasses ]
-            , style containerStyles
-            ]
+            (styles containerStyles ++ [ classes [ "touch-disabled", infoContainerBaseClasses ] ])
+
     else
         div
-            [ class infoContainerBaseClasses
-            , style containerStyles
-            ]
+            (styles containerStyles ++ [ class infoContainerBaseClasses ])
 
 
 infoContainerBaseClasses : String

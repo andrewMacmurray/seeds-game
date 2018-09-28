@@ -1,4 +1,4 @@
-module Views.Lives exposing (..)
+module Views.Lives exposing (life, renderLivesLeft)
 
 import Data.Transit as Transit exposing (Transit)
 import Helpers.Css.Animation exposing (..)
@@ -10,6 +10,14 @@ import Html.Attributes exposing (..)
 import Views.Icons.Heart exposing (..)
 
 
+type alias Heart =
+    { active : Bool
+    , currentLife : Bool
+    , breaking : Bool
+    , lifeState : Transit Int
+    }
+
+
 renderLivesLeft : Transit Int -> List (Html msg)
 renderLivesLeft lifeState =
     let
@@ -17,12 +25,12 @@ renderLivesLeft lifeState =
             Transit.val lifeState
     in
     List.range 1 5
-        |> List.map (\n -> ( n <= lives, n == lives, n == lives + 1, lifeState ))
+        |> List.map (\n -> Heart (n <= lives) (n == lives) (n == lives + 1) lifeState)
         |> List.map life
 
 
-life : ( Bool, Bool, Bool, Transit Int ) -> Html msg
-life ( active, currentLife, breaking, lifeState ) =
+life : Heart -> Html msg
+life { active, currentLife, breaking, lifeState } =
     let
         animation =
             if currentLife then
@@ -34,32 +42,34 @@ life ( active, currentLife, breaking, lifeState ) =
                     , delay = Nothing
                     , fill = Forwards
                     }
+
             else
                 emptyStyle
 
         visibleHeart =
             if active then
                 heart
+
             else if breaking && Transit.isTransitioning lifeState then
                 breakingHeart
+
             else
                 brokenHeart
 
         adjustScale =
             if active then
                 emptyStyle
+
             else
                 transformStyle [ scale 1.11 ]
     in
     div
-        [ style
-            [ widthStyle 35
-            , heightStyle 35
-            , marginLeft 10
-            , marginRight 10
-            , animation
-            , adjustScale
-            ]
+        [ styleAttr (widthStyle 35)
+        , styleAttr (heightStyle 35)
+        , styleAttr (marginLeft 10)
+        , styleAttr (marginRight 10)
+        , styleAttr animation
+        , styleAttr adjustScale
         , class "dib"
         ]
         [ visibleHeart ]

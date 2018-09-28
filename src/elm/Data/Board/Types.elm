@@ -1,7 +1,8 @@
-module Data.Board.Types exposing (..)
+module Data.Board.Types exposing (Block(..), Board, BoardConfig, BoardDimensions, Coord, FallingDistance, GrowingOrder, HasBoard, LeavingOrder, Move, MoveBearing(..), MoveOrder, MoveShape(..), Score, Scores, SeedType(..), TileConfig, TileState(..), TileType(..), WallColor, X, Y)
 
 import Dict exposing (Dict)
-import Window
+import Data.Window as Window
+
 
 
 -- Extensible Records for working with a Board

@@ -1,9 +1,9 @@
-module Scenes.Level.Types exposing (..)
+module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..), Position)
 
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
-import Window
+import Data.Window as Window
 
 
 type alias LevelModel =
@@ -45,7 +45,7 @@ type LevelMsg
     | InfoHidden
     | LevelWon
     | LevelLost
-    | WindowSize Window.Size
+    | WindowSize Int Int
 
 
 type alias Position =

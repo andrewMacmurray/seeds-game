@@ -1,5 +1,36 @@
-module Scenes.Level.State exposing (..)
+module Scenes.Level.State exposing
+    ( addLevelData
+    , checkMoveFromPosition
+    , checkMoveWithSquareTrigger
+    , coordsFromPosition
+    , fallDelay
+    , growSeedPodsSequence
+    , handleAddScore
+    , handleCheckLevelComplete
+    , handleCheckMove
+    , handleDecrementRemainingMoves
+    , handleGenerateTiles
+    , handleInsertEnteringTiles
+    , handleInsertNewSeeds
+    , handleMakeBoard
+    , handleResetMove
+    , handleSquareMove
+    , handleStartMove
+    , hasLost
+    , hasWon
+    , init
+    , initialDelay
+    , initialState
+    , loseSequence
+    , moveFromCoord
+    , moveFromPosition
+    , removeTilesSequence
+    , subscriptions
+    , update
+    , winSequence
+    )
 
+import Browser.Events
 import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
 import Config.Text exposing (failureMessage, getSuccessMessage, randomSuccessMessageIndex)
 import Data.Board.Block exposing (..)
@@ -15,13 +46,13 @@ import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
+import Data.Window as Window
 import Dict
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exitWith)
 import Scenes.Level.Types exposing (..)
 import Task
 import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
-import Window exposing (resizes, size)
 
 
 
@@ -34,10 +65,14 @@ init successMessageIndex levelData =
         model =
             addLevelData levelData <| initialState successMessageIndex
     in
-    model
-        ! [ handleGenerateTiles levelData model
-          , Task.perform WindowSize size
-          ]
+    ( model
+    , Cmd.batch
+        [ handleGenerateTiles levelData model
+
+        -- FIXME
+        -- , Task.perform WindowSize size
+        ]
+    )
 
 
 addLevelData : LevelData tutorialConfig -> LevelModel -> LevelModel
@@ -170,8 +205,8 @@ update msg model =
             -- outMsg signals to parent component that level has been lost
             exitWith Lose model []
 
-        WindowSize size ->
-            continue { model | window = size } []
+        WindowSize width height ->
+            continue { model | window = Window.Size width height } []
 
 
 
@@ -335,7 +370,7 @@ moveFromPosition position levelModel =
 
 moveFromCoord : Board -> Coord -> Maybe Move
 moveFromCoord board coord =
-    board |> Dict.get coord |> Maybe.map ((,) coord)
+    board |> Dict.get coord |> Maybe.map (\b -> ( coord, b ))
 
 
 coordsFromPosition : Position -> LevelModel -> Coord
@@ -394,4 +429,4 @@ hasWon { scores, levelStatus } =
 
 subscriptions : LevelModel -> Sub LevelMsg
 subscriptions _ =
-    resizes WindowSize
+    Browser.Events.onResize WindowSize

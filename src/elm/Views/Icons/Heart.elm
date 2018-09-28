@@ -1,7 +1,8 @@
-module Views.Icons.Heart exposing (..)
+module Views.Icons.Heart exposing (HeartState(..), breakAnimation, breakingHeart, brokenHeart, heart, heartBreak)
 
 import Config.Color exposing (..)
-import Helpers.Css.Style exposing (ms, svgStyles)
+import Helpers.Css.Format exposing (ms)
+import Helpers.Css.Style exposing (svgStyles)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 

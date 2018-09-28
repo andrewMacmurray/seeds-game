@@ -1,9 +1,10 @@
-module Scenes.Title exposing (..)
+module Scenes.Title exposing (TitleModel, fade, fadeInStyles, fadeOutStyles, fadeSeeds, handleStart, percentWindowHeight, seedEntranceDelays, seedExitDelays, seeds, titleView)
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Level.Types exposing (Progress)
 import Data.Visibility exposing (..)
+import Data.Window as Window
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
@@ -14,7 +15,7 @@ import Types exposing (Msg(..))
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
-import Window
+
 
 
 -- Model
@@ -36,22 +37,20 @@ titleView : TitleModel model -> Html Msg
 titleView { window, titleAnimation, progress } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , style [ bottomStyle <| toFloat window.height / 2.4 ]
+        , (\( a, b ) -> style a b) (bottomStyle <| toFloat window.height / 2.4)
         ]
         [ div [] [ seeds titleAnimation ]
         , p
-            [ class "f3 tracked-mega"
-            , styles
+            (batchStyles
                 [ [ color darkYellow, marginTop 45 ]
                 , fadeInStyles titleAnimation 1500 500
                 , fadeOutStyles titleAnimation 1000 500
                 ]
-            ]
+                [ class "f3 tracked-mega" ]
+            )
             [ text "seeds" ]
         , button
-            [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart progress
-            , styles
+            (batchStyles
                 [ [ ( "border", "none" )
                   , marginTop 15
                   , color white
@@ -60,7 +59,10 @@ titleView { window, titleAnimation, progress } =
                 , fadeInStyles titleAnimation 800 2500
                 , fadeOutStyles titleAnimation 1000 0
                 ]
-            ]
+                [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
+                , handleStart progress
+                ]
+            )
             [ text "PLAY" ]
         ]
 
@@ -69,6 +71,7 @@ handleStart : Progress -> Attribute Msg
 handleStart progress =
     if progress == ( 1, 1 ) then
         onClick GoToIntro
+
     else
         onClick GoToHub
 
@@ -81,11 +84,9 @@ percentWindowHeight percent window =
 seeds : Visibility -> Html msg
 seeds vis =
     div
-        [ style
-            [ maxWidth 450
-            , paddingLeft ScaleConfig.windowPadding
-            , paddingRight ScaleConfig.windowPadding
-            ]
+        [ styleAttr (maxWidth 450)
+        , styleAttr (paddingLeft ScaleConfig.windowPadding)
+        , styleAttr (paddingRight ScaleConfig.windowPadding)
         , class "flex center"
         ]
         (List.map3 (fadeSeeds vis)
@@ -113,9 +114,7 @@ seedExitDelays interval =
 fadeSeeds : Visibility -> Float -> Float -> Html msg -> Html msg
 fadeSeeds vis entranceDelay exitDelay seed =
     div
-        [ styles [ fadeInStyles vis 1000 entranceDelay, fadeOutStyles vis 1000 exitDelay ]
-        , class "mh2"
-        ]
+        (batchStyles [ fadeInStyles vis 1000 entranceDelay, fadeOutStyles vis 1000 exitDelay ] [ class "mh2" ])
         [ seed ]
 
 

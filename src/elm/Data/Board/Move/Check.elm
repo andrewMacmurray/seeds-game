@@ -1,8 +1,7 @@
-module Data.Board.Move.Check
-    exposing
-        ( addMoveToBoard
-        , startMove
-        )
+module Data.Board.Move.Check exposing
+    ( addMoveToBoard
+    , startMove
+    )
 
 import Data.Board.Block exposing (setStaticToFirstMove)
 import Data.Board.Move.Bearing exposing (addBearings, validDirection)
@@ -16,6 +15,7 @@ addMoveToBoard : Move -> Board -> Board
 addMoveToBoard curr board =
     if isValidMove curr board || isValidSquare curr board then
         addBearings curr board
+
     else
         board
 

@@ -1,4 +1,4 @@
-module Config.Wall exposing (..)
+module Config.Wall exposing (borders, centerColumns, corners, innerBorders, s, standardWalls, w, yellowWalls)
 
 import Config.Color exposing (blockYellow)
 import Data.Board.Types exposing (Coord, WallColor)

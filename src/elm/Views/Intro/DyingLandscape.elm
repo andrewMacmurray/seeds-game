@@ -1,4 +1,4 @@
-module Views.Intro.DyingLandscape exposing (..)
+module Views.Intro.DyingLandscape exposing (TeardropTree(..), circleTree, circleTreeColors, deadTreeColors, dyingLandscape, firrTree, hill1, hill2, hill3, hill4, hill5, hill6, layerOffsetStyle, multipleTeardropTreeColors, pine, renderHill, singleTeardropTreeColors, teardrop, transitionFill)
 
 import Data.Visibility exposing (..)
 import Helpers.Css.Style exposing (svgStyles)
@@ -200,8 +200,10 @@ teardrop delay treeType environment ( path1, path2 ) =
         ( l, r ) =
             if environment == Alive && treeType == Single then
                 singleTeardropTreeColors
+
             else if environment == Alive && treeType == Multiple then
                 multipleTeardropTreeColors
+
             else
                 deadTreeColors
     in

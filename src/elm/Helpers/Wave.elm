@@ -1,4 +1,4 @@
-module Helpers.Wave exposing (..)
+module Helpers.Wave exposing (Wave, wave)
 
 
 type alias Wave a =
@@ -28,7 +28,9 @@ wave { left, center, right } n =
     in
     if offsetSin == 0 then
         center
+
     else if offsetSin == 1 then
         right
+
     else
         left

@@ -1,4 +1,4 @@
-module Views.Loading exposing (..)
+module Views.Loading exposing (loadingScreen, loadingScreenBackground, loadingScreenColor, transitionClasses)
 
 import Config.Color exposing (gold, rainBlue)
 import Config.Levels exposing (allLevels)
@@ -19,12 +19,10 @@ loadingScreen model =
             [ "w-100 h-100 fixed z-999 top-0 left-0 flex items-center justify-center"
             , transitionClasses model
             ]
-        , style
-            [ loadingScreenBackground model.loadingScreen
-            , easeAll 600
-            ]
+        , (\( a, b ) -> style a b) (loadingScreenBackground model.loadingScreen)
+        , (\( a, b ) -> style a b) (easeAll 600)
         ]
-        [ div [ style [ widthStyle 50 ] ]
+        [ div [ (\( a, b ) -> style a b) (widthStyle 50) ]
             [ renderSeed <| currentLevelSeedType allLevels model.currentLevel model.progress
             ]
         ]

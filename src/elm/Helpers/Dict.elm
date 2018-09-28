@@ -44,13 +44,13 @@ findValue f =
 find : (comparable -> a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
 find predicate =
     let
-        findItem_ predicate k v acc =
+        findItem_ pd k v acc =
             case acc of
                 Just _ ->
                     acc
 
                 Nothing ->
-                    if predicate k v then
+                    if pd k v then
                         Just ( k, v )
 
                     else

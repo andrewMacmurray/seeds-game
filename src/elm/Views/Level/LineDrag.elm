@@ -1,8 +1,9 @@
-module Views.Level.LineDrag exposing (..)
+module Views.Level.LineDrag exposing (handleLineDrag, lastMoveOrigin, lineDrag)
 
 import Config.Scale as ScaleConfig
 import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
+import Helpers.Css.Format exposing (px)
 import Helpers.Css.Style exposing (..)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
@@ -15,6 +16,7 @@ handleLineDrag : LevelModel -> Html msg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
+
     else
         span [] []
 
@@ -23,7 +25,7 @@ lineDrag : LevelModel -> Html msg
 lineDrag ({ window } as model) =
     let
         vb =
-            "0 0 " ++ toString window.width ++ " " ++ toString window.height
+            "0 0 " ++ String.fromInt window.width ++ " " ++ String.fromInt window.height
 
         ( oY, oX ) =
             lastMoveOrigin model
@@ -44,12 +46,12 @@ lineDrag ({ window } as model) =
         ]
         [ line
             [ svgStyle "stroke" strokeColor
-            , strokeWidth <| toString <| 6 * tileScale
+            , strokeWidth <| String.fromFloat <| 6 * tileScale
             , strokeLinecap "round"
-            , x1 <| toString oX
-            , y1 <| toString oY
-            , x2 <| toString model.pointerPosition.x
-            , y2 <| toString model.pointerPosition.y
+            , x1 <| String.fromFloat oX
+            , y1 <| String.fromFloat oY
+            , x2 <| String.fromInt model.pointerPosition.x
+            , y2 <| String.fromInt model.pointerPosition.y
             ]
             []
         ]

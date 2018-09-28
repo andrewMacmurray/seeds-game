@@ -1,9 +1,8 @@
-module Data.Board.Shift
-    exposing
-        ( groupBoardByColumn
-        , shiftBoard
-        , yCoord
-        )
+module Data.Board.Shift exposing
+    ( groupBoardByColumn
+    , shiftBoard
+    , yCoord
+    )
 
 import Data.Board.Block as Block
 import Data.Board.Types exposing (..)
@@ -25,6 +24,8 @@ groupBoardByColumn board =
         |> Dict.toList
         |> List.sortBy xCoord
         |> List.Extra.groupWhile sameColumn
+        -- WARNING quick fix need to check!
+        |> List.map Tuple.second
 
 
 shiftRow : List Move -> List Move

@@ -1,10 +1,9 @@
-module Data.Board.Move.Square
-    exposing
-        ( hasSquareTile
-        , isValidSquare
-        , setAllTilesOfTypeToDragging
-        , triggerMoveIfSquare
-        )
+module Data.Board.Move.Square exposing
+    ( hasSquareTile
+    , isValidSquare
+    , setAllTilesOfTypeToDragging
+    , triggerMoveIfSquare
+    )
 
 import Data.Board.Block exposing (getTileType, moveOrder, setToDragging)
 import Data.Board.Move.Bearing exposing (validDirection)
@@ -19,6 +18,7 @@ triggerMoveIfSquare : msg -> Board -> Cmd msg
 triggerMoveIfSquare msg board =
     if hasSquareTile board then
         trigger msg
+
     else
         Cmd.none
 
@@ -40,6 +40,7 @@ setDraggingIfMatch : TileType -> Coord -> Block -> Block
 setDraggingIfMatch tileType ( y, x ) block =
     if getTileType block == Just tileType then
         setToDragging (x + 1 + (y * 8)) block
+
     else
         block
 

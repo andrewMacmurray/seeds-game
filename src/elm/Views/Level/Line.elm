@@ -1,15 +1,15 @@
-module Views.Level.Line exposing (..)
+module Views.Level.Line exposing (line_, renderLine, transformMap)
 
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
+import Data.Window as Window
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (strokeColors)
-import Window
 
 
 renderLine : Window.Size -> Move -> Html msg
@@ -42,8 +42,8 @@ line_ window tileType bearing =
             tileScaleFactor window
     in
     svg
-        [ width <| toString <| 50 * tileScale
-        , height <| toString <| 9 * tileScale
+        [ width <| Debug.toString <| 50 * tileScale
+        , height <| Debug.toString <| 9 * tileScale
         , svgStyles
             [ transformMap window bearing
             , "margin: auto"
@@ -51,10 +51,10 @@ line_ window tileType bearing =
         , class "absolute bottom-0 right-0 left-0 top-0 z-0"
         ]
         [ line
-            [ strokeWidth <| toString <| 11 * tileScale
+            [ strokeWidth <| Debug.toString <| 11 * tileScale
             , x1 "0"
             , y1 "0"
-            , x2 <| toString <| 50 * tileScale
+            , x2 <| Debug.toString <| 50 * tileScale
             , y2 "0"
             , svgStyle "stroke" <| strokeColors tileType
             ]

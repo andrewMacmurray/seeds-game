@@ -1,14 +1,19 @@
-module Scenes.Hub.View exposing (..)
+module Scenes.Hub.View exposing
+    ( hubTopBar
+    , hubView
+    , renderCountDown
+    , renderSecond
+    , renderTime
+    , timeLeft
+    )
 
 import Config.Color exposing (darkYellow, pinkRed, washedYellow)
 import Data.Transit exposing (Transit(..))
-import Date exposing (minute, second)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import State exposing (livesLeft)
-import Time exposing (Time)
 import Types exposing (..)
 import Views.Hub.InfoWindow exposing (handleHideInfo, info)
 import Views.Hub.World exposing (renderWorlds)
@@ -23,7 +28,7 @@ hubView model =
         , div
             [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             , id "hub"
-            , style [ heightStyle model.window.height ]
+            , (\( a, b ) -> style a b) (heightStyle model.window.height)
             ]
             (renderWorlds model)
         ]
@@ -40,14 +45,14 @@ hubTopBar model =
     in
     div
         [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
-        , style [ background washedYellow ]
+        , (\( a, b ) -> style a b) (background washedYellow)
         ]
-        [ div [ style [ transformStyle [ scale 0.5 ] ] ] <| renderLivesLeft lives
-        , div [ class "f7", style [ color darkYellow ] ] [ renderCountDown model.timeTillNextLife ]
+        [ div [ (\( a, b ) -> style a b) (transformStyle [ scale 0.5 ]) ] <| renderLivesLeft lives
+        , div [ class "f7", (\( a, b ) -> style a b) (color darkYellow) ] [ renderCountDown model.timeTillNextLife ]
         ]
 
 
-renderCountDown : Time -> Html msg
+renderCountDown : Float -> Html msg
 renderCountDown timeRemaining =
     case timeLeft timeRemaining of
         Nothing ->
@@ -55,31 +60,35 @@ renderCountDown timeRemaining =
 
         Just t ->
             div []
-                [ p [ style [ marginTop -2 ], class "dib ma1 mt0" ] [ text "Next life in: " ]
-                , p [ style [ color pinkRed ], class "dib ma1 mt0" ] [ text <| renderTime t ]
+                [ p [ (\( a, b ) -> style a b) (marginTop -2), class "dib ma1 mt0" ] [ text "Next life in: " ]
+                , p [ (\( a, b ) -> style a b) (color pinkRed), class "dib ma1 mt0" ] [ text <| renderTime t ]
                 ]
 
 
 renderTime : ( Int, Int ) -> String
 renderTime ( m, s ) =
-    toString m ++ ":" ++ renderSecond s
+    String.fromInt m ++ ":" ++ renderSecond s
 
 
-timeLeft : Time -> Maybe ( Int, Int )
+timeLeft : Float -> Maybe ( Int, Int )
 timeLeft timeRemaining =
-    let
-        d =
-            Date.fromTime timeRemaining
-    in
+    -- let
+    --     d =
+    --         Date.fromTime timeRemaining
+    -- in
+    -- FIXME
     if timeRemaining == 0 then
         Nothing
+
     else
-        Just ( minute d % 5, second d )
+        -- Just ( modBy 5 (minute d), second d )
+        Just ( 1, 1 )
 
 
 renderSecond : Int -> String
 renderSecond n =
     if n < 10 then
-        "0" ++ toString n
+        "0" ++ String.fromInt n
+
     else
-        toString n
+        String.fromInt n

@@ -1,6 +1,44 @@
-module Config.Color exposing (..)
+module Config.Color exposing
+    ( blockYellow
+    , brown
+    , brownYellow
+    , chocolate
+    , crimson
+    , darkBrown
+    , darkRed
+    , darkYellow
+    , fadedOrange
+    , gold
+    , green
+    , greyYellow
+    , lightBlue
+    , lightBrown
+    , lightGold
+    , lightGray
+    , lightGreen
+    , lightOrange
+    , lightYellow
+    , meadowGreen
+    , mediumGreen
+    , midnightBlue
+    , orange
+    , pinkRed
+    , purple
+    , rainBlue
+    , seedPodGradient
+    , seedPodGradient_
+    , silver
+    , skyGreen
+    , skyYellow
+    , softRed
+    , transparent
+    , transparentGray
+    , washedYellow
+    , white
+    , yellow
+    )
 
-import Helpers.Css.Style exposing (deg, gradientStop, linearGradient, pc)
+import Helpers.Css.Format exposing (deg, gradientStop, linearGradient, pc)
 
 
 seedPodGradient : String

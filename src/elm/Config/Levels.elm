@@ -1,4 +1,4 @@
-module Config.Levels exposing (..)
+module Config.Levels exposing (allLevels, defaultLevel, defaultWorld, lifeRecoveryInterval, maxLives)
 
 import Config.World.One as One
 import Config.World.Three as Three
@@ -8,7 +8,6 @@ import Data.Level.Settings exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
-import Time exposing (Time, minute)
 
 
 allLevels : AllLevels TutorialConfig
@@ -53,6 +52,6 @@ maxLives =
     5
 
 
-lifeRecoveryInterval : Time
+lifeRecoveryInterval : Float
 lifeRecoveryInterval =
-    5 * minute
+    5 * (60 * 1000)

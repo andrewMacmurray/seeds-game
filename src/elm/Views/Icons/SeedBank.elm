@@ -1,7 +1,7 @@
-module Views.Icons.SeedBank exposing (..)
+module Views.Icons.SeedBank exposing (seedBank)
 
 import Data.Board.Types exposing (..)
-import Helpers.Css.Style exposing (pc, svgStyles, svgTranslate)
+import Helpers.Css.Style exposing (svgStyles)
 import Helpers.Css.Transform as Css exposing (translateY)
 import Html exposing (Html)
 import Svg
@@ -19,7 +19,7 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> toString |> String.toLower
+            seedType |> Debug.toString |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType
@@ -40,7 +40,7 @@ seedBank seedType percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| toString fullHeight
+                [ height <| String.fromFloat fullHeight
                 , id <| seedLevelId
                 , width "100%"
                 ]

@@ -1,4 +1,4 @@
-module Scenes.Summary exposing (..)
+module Scenes.Summary exposing (drop, renderResourceBank, renderResourceFill, seedDrop, summaryView)
 
 import Config.Color exposing (gold, rainBlue, washedYellow)
 import Config.Levels exposing (allLevels)
@@ -30,23 +30,24 @@ summaryView ({ progress, currentLevel } as model) =
     in
     div
         [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , style
-            [ heightStyle model.window.height
-            , background washedYellow
-            , animationStyle
+        , (\( a, b ) -> style a b) (heightStyle model.window.height)
+        , (\( a, b ) -> style a b) (background washedYellow)
+        , (\( a, b ) -> style a b)
+            (animationStyle
                 { name = "fade-in"
                 , duration = 1000
                 , timing = Linear
                 }
-            ]
+            )
         ]
-        [ div [ style [ marginTop -100 ] ]
+        [ div [ (\( a, b ) -> style a b) (marginTop -100) ]
             [ div
-                [ style [ widthStyle 65, marginBottom 30 ]
+                [ (\( a, b ) -> style a b) (widthStyle 65)
+                , (\( a, b ) -> style a b) (marginBottom 30)
                 , class "center"
                 ]
                 [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-            , div [ style [ heightStyle 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
+            , div [ (\( a, b ) -> style a b) (heightStyle 50) ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
         ]
 
@@ -59,19 +60,19 @@ renderResourceBank progress currentLevel tileType =
     in
     case tileType of
         Rain ->
-            div [ style [ widthStyle 40 ], class "dib ph1 mh4" ]
+            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , rainBank fillLevel
                 ]
 
         Sun ->
-            div [ style [ widthStyle 40 ], class "dib mh4" ]
+            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib mh4" ]
                 [ renderResourceFill tileType
                 , sunBank fillLevel
                 ]
 
         Seed seedType ->
-            div [ style [ widthStyle 40 ], class "dib ph1 mh4" ]
+            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , seedBank seedType fillLevel
                 ]
@@ -84,21 +85,21 @@ renderResourceFill : TileType -> Html msg
 renderResourceFill tileType =
     case tileType of
         Rain ->
-            div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 13 ], class "center" ] [ rainBankFull ]
+            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
+                [ div [ (\( a, b ) -> style a b) (widthStyle 13), class "center" ] [ rainBankFull ]
                 , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
-            div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 18 ], class "center" ] [ sunBankFull ]
+            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
+                [ div [ (\( a, b ) -> style a b) (widthStyle 18), class "center" ] [ sunBankFull ]
                 , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
-            div [ style [ heightStyle 50 ] ]
-                [ div [ style [ widthStyle 15 ], class "center" ] [ renderSeed seedType ]
-                , div [ class "relative", style [ transformStyle [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
+            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
+                [ div [ (\( a, b ) -> style a b) (widthStyle 15), class "center" ] [ renderSeed seedType ]
+                , div [ class "relative", (\( a, b ) -> style a b) (transformStyle [ translateY -10 ]) ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
         _ ->
@@ -109,16 +110,18 @@ seedDrop : SeedType -> Int -> Html msg
 seedDrop seedType n =
     let
         d =
-            if n % 3 == 0 then
+            if modBy 3 n == 0 then
                 30
-            else if n % 3 == 1 then
+
+            else if modBy 3 n == 1 then
                 60
+
             else
                 90
     in
     div
-        [ style
-            [ transformStyle
+        [ (\( a, b ) -> style a b)
+            (transformStyle
                 [ translateX <|
                     wave
                         { left = -5
@@ -127,15 +130,15 @@ seedDrop seedType n =
                         }
                         (n - 1)
                 ]
-            ]
+            )
         ]
         [ div
             [ class "absolute top-0 left-0 right-0 center"
-            , style
-                [ widthStyle 5
-                , heightStyle 8
-                , opacityStyle 0
-                , animationWithOptionsStyle
+            , (\( a, b ) -> style a b) (widthStyle 5)
+            , (\( a, b ) -> style a b) (heightStyle 8)
+            , (\( a, b ) -> style a b) (opacityStyle 0)
+            , (\( a, b ) -> style a b)
+                (animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
                     , delay = Just <| toFloat <| n * d
@@ -143,7 +146,7 @@ seedDrop seedType n =
                     , iteration = Nothing
                     , fill = Forwards
                     }
-                ]
+                )
             ]
             [ renderSeed seedType ]
         ]
@@ -153,16 +156,18 @@ drop : String -> Int -> Html msg
 drop bgColor n =
     let
         d =
-            if n % 3 == 0 then
+            if modBy 3 n == 0 then
                 30
-            else if n % 3 == 1 then
+
+            else if modBy 3 n == 1 then
                 60
+
             else
                 90
     in
     div
-        [ style
-            [ transformStyle
+        [ (\( a, b ) -> style a b)
+            (transformStyle
                 [ translateX <|
                     wave
                         { left = -5
@@ -171,16 +176,16 @@ drop bgColor n =
                         }
                         (n - 1)
                 ]
-            ]
+            )
         ]
         [ div
             [ class "br-100 absolute left-0 right-0 center"
-            , style
-                [ widthStyle 6
-                , heightStyle 6
-                , background bgColor
-                , opacityStyle 0
-                , animationWithOptionsStyle
+            , (\( a, b ) -> style a b) (widthStyle 6)
+            , (\( a, b ) -> style a b) (heightStyle 6)
+            , (\( a, b ) -> style a b) (background bgColor)
+            , (\( a, b ) -> style a b) (opacityStyle 0)
+            , (\( a, b ) -> style a b)
+                (animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
                     , delay = Just <| toFloat <| n * d
@@ -188,7 +193,7 @@ drop bgColor n =
                     , iteration = Nothing
                     , fill = Forwards
                     }
-                ]
+                )
             ]
             []
         ]

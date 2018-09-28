@@ -1,6 +1,40 @@
-module Helpers.Css.Style exposing (..)
+module Helpers.Css.Style exposing
+    ( Style
+    , addStyles
+    , background
+    , backgroundColor
+    , backgroundImage
+    , batchStyles
+    , bottomStyle
+    , classes
+    , color
+    , displayStyle
+    , emptyStyle
+    , frameBackgroundImage
+    , heightStyle
+    , leftPill
+    , leftStyle
+    , marginBottom
+    , marginLeft
+    , marginRight
+    , marginTop
+    , maxWidth
+    , opacityStyle
+    , paddingAll
+    , paddingBottom
+    , paddingLeft
+    , paddingRight
+    , paddingTop
+    , rightPill
+    , styleAttr
+    , styles
+    , svgStyle
+    , svgStyles
+    , topStyle
+    , widthHeight
+    , widthStyle
+    )
 
-import Formatting exposing (..)
 import Helpers.Css.Format exposing (..)
 import Html exposing (Attribute)
 import Html.Attributes exposing (class, style)
@@ -17,9 +51,24 @@ classes =
     class << String.join " "
 
 
-styles : List (List Style) -> Attribute msg
+addStyles : List Style -> List (Attribute msg) -> List (Attribute msg)
+addStyles styleList attrs =
+    attrs ++ styles styleList
+
+
+batchStyles : List (List Style) -> List (Attribute msg) -> List (Attribute msg)
+batchStyles styleList attrs =
+    attrs ++ (styles <| List.concat styleList)
+
+
+styles : List Style -> List (Attribute msg)
 styles =
-    style << List.concat
+    List.map styleAttr
+
+
+styleAttr : Style -> Attribute msg
+styleAttr ( a, b ) =
+    style a b
 
 
 svgStyles : List String -> Svg.Attribute msg
@@ -99,7 +148,7 @@ leftStyle n =
 
 color : String -> Style
 color =
-    (,) "color"
+    \b -> ( "color", b )
 
 
 rightPill : List Style
@@ -131,12 +180,12 @@ backgroundImage url =
 
 backgroundColor : String -> Style
 backgroundColor =
-    (,) "background-color"
+    \b -> ( "background-color", b )
 
 
 background : String -> Style
 background =
-    (,) "background"
+    \b -> ( "background", b )
 
 
 widthHeight : number -> List Style
@@ -163,44 +212,9 @@ heightStyle height =
 
 displayStyle : String -> Style
 displayStyle =
-    (,) "display"
+    \b -> ( "display", b )
 
 
 opacityStyle : number -> Style
 opacityStyle number =
-    ( "opacity", toString number )
-
-
-pc : number -> String
-pc =
-    print pc_
-
-
-px : number -> String
-px =
-    print px_
-
-
-ms : number -> String
-ms =
-    print ms_
-
-
-deg : number -> String
-deg =
-    print deg_
-
-
-gradientStop : String -> number -> String
-gradientStop =
-    print gradientStop_
-
-
-linearGradient : String -> String
-linearGradient =
-    print linearGradient_
-
-
-svgTranslate : number -> number -> String
-svgTranslate =
-    print svgTranslate_
+    ( "opacity", Debug.toString number )

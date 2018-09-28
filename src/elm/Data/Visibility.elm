@@ -1,4 +1,4 @@
-module Data.Visibility exposing (..)
+module Data.Visibility exposing (Visibility(..))
 
 
 type Visibility

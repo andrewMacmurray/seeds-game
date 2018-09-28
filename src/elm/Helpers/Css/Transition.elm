@@ -1,15 +1,15 @@
-module Helpers.Css.Transition
-    exposing
-        ( Transition
-        , ease
-        , easeAll
-        , transition
-        , transitionStyle
-        , transitionSvg
-        )
+module Helpers.Css.Transition exposing
+    ( Transition
+    , ease
+    , easeAll
+    , transition
+    , transitionStyle
+    , transitionSvg
+    )
 
-import Helpers.Css.Style exposing (Style, ms)
-import Helpers.Css.Timing exposing (TimingFunction(Ease), timingToString)
+import Helpers.Css.Format exposing (ms)
+import Helpers.Css.Style exposing (Style)
+import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
 import Helpers.Maybe exposing (catMaybes)
 
 
@@ -56,7 +56,7 @@ ease property duration =
 
 transitionStyle : Transition -> Style
 transitionStyle =
-    transition >> (,) "transition"
+    transition >> (\b -> ( "transition", b ))
 
 
 transitionSvg : Transition -> String

@@ -1,4 +1,4 @@
-module Views.Hub.InfoWindow exposing (..)
+module Views.Hub.InfoWindow exposing (handleHideInfo, info, infoContent, infoIcons, infoIconsContainer, renderIcon, renderTargetScore, renderWeather)
 
 import Config.Color exposing (..)
 import Config.Levels exposing (allLevels)
@@ -30,8 +30,10 @@ info { hubInfoWindow } =
     in
     if isHidden hubInfoWindow then
         span [] []
+
     else if isVisible hubInfoWindow then
         infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
+
     else
         infoContainer hubInfoWindow <| div [] content
 
@@ -42,14 +44,16 @@ infoContent ( world, level ) ( worldData, levelData ) =
         levelText =
             allLevels
                 |> getLevelNumber ( world, level )
-                |> toString
+                |> String.fromInt
                 |> (++) "Level "
     in
-    [ p [ class "f5 tracked", style [ marginTop 20 ] ] [ text levelText ]
+    [ p [ class "f5 tracked", styleAttr (marginTop 20) ] [ text levelText ]
     , infoIcons levelData worldData.seedType
     , p
         [ class "tracked-mega pv2 ph3 dib br4"
-        , style [ backgroundColor gold, marginBottom 20, marginTop 15 ]
+        , styleAttr (backgroundColor gold)
+        , styleAttr (marginBottom 20)
+        , styleAttr (marginTop 15)
         ]
         [ text "PLAY" ]
     ]
@@ -65,7 +69,7 @@ infoIcons levelData seedType =
 
 infoIconsContainer : List (Html msg) -> Html msg
 infoIconsContainer =
-    div [ class "flex justify-center items-end", style [ marginTop 25, marginBottom 15 ] ]
+    div [ class "flex justify-center items-end", styleAttr (marginTop 25), styleAttr (marginBottom 15) ]
 
 
 renderIcon : TileSetting -> Html msg
@@ -80,7 +84,7 @@ renderIcon { targetScore, tileType } =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ style [ widthStyle 35, heightStyle 53 ] ] [ renderSeed seedType ]
+                    div [ styleAttr (widthStyle 35), styleAttr (heightStyle 53) ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
@@ -97,7 +101,7 @@ renderTargetScore : Maybe TargetScore -> Html msg
 renderTargetScore ts =
     case ts of
         Just (TargetScore t) ->
-            p [ class "f6 mb0", style [ marginTop 10 ] ] [ text <| toString t ]
+            p [ class "f6 mb0", styleAttr (marginTop 10) ] [ text <| String.fromInt t ]
 
         Nothing ->
             span [] []
@@ -106,14 +110,12 @@ renderTargetScore ts =
 renderWeather : String -> Html msg
 renderWeather color =
     div
-        [ style
-            [ widthStyle 25
-            , heightStyle 25
-            , marginLeft 2.5
-            , marginRight 2.5
-            , marginBottom 5
-            , background color
-            ]
+        [ styleAttr (widthStyle 25)
+        , styleAttr (heightStyle 25)
+        , styleAttr (marginLeft 2.5)
+        , styleAttr (marginRight 2.5)
+        , styleAttr (marginBottom 5)
+        , styleAttr (background color)
         , classes [ "br-100" ]
         ]
         []
@@ -123,5 +125,6 @@ handleHideInfo : HubModel model -> Attribute Msg
 handleHideInfo model =
     if isVisible model.hubInfoWindow then
         onClick <| HubMsg HideLevelInfo
+
     else
         emptyProperty

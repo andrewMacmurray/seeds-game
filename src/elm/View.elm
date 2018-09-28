@@ -1,4 +1,4 @@
-module View exposing (..)
+module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
 
 import Config.Animations exposing (internalAnimations)
 import Config.Color exposing (darkYellow)
@@ -81,6 +81,6 @@ reset =
     p
         [ onClick ClearCache
         , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
-        , style [ color darkYellow ]
+        , (\( a, b ) -> style a b) (color darkYellow)
         ]
         [ text "reset" ]

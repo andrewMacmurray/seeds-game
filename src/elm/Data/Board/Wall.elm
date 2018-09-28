@@ -1,11 +1,10 @@
-module Data.Board.Wall
-    exposing
-        ( addWalls
-        , toCoords
-        , withColor
-        )
+module Data.Board.Wall exposing
+    ( addWalls
+    , toCoords
+    , withColor
+    )
 
-import Data.Board.Types exposing (Block(Wall), Board, Coord, WallColor)
+import Data.Board.Types exposing (Block(..), Board, Coord, WallColor)
 import Dict
 
 
@@ -21,7 +20,7 @@ addWall_ ( wallColor, coord ) currentBoard =
 
 withColor : WallColor -> List Coord -> List ( WallColor, Coord )
 withColor color =
-    List.map ((,) color)
+    List.map (\b -> ( color, b ))
 
 
 toCoords : List (List Bool) -> List Coord
@@ -36,5 +35,6 @@ toCoord : Int -> Int -> Bool -> List Coord
 toCoord i j x =
     if x then
         [ ( i, j ) ]
+
     else
         []

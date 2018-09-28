@@ -1,8 +1,9 @@
-module Scenes.Retry exposing (..)
+module Scenes.Retry exposing (lifeState, retryView, tryAgain)
 
 import Config.Color exposing (..)
 import Data.Transit exposing (Transit(..))
 import Helpers.Css.Animation exposing (..)
+import Helpers.Css.Format exposing (pc)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
@@ -18,23 +19,23 @@ retryView : Model -> Html Msg
 retryView model =
     div
         [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , style
-            [ heightStyle model.window.height
-            , background washedYellow
-            , animationStyle
+        , styleAttr (heightStyle model.window.height)
+        , styleAttr (background washedYellow)
+        , styleAttr
+            (animationStyle
                 { name = "fade-in"
                 , duration = 1000
                 , timing = Linear
                 }
-            ]
+            )
         ]
-        [ div [ class "tc", style [ ( "margin-top", pc -8 ) ] ]
+        [ div [ class "tc", style "margin-top" (pc -8) ]
             [ div [] <| renderLivesLeft <| lifeState model
-            , div [ style [ color darkYellow ] ]
+            , div [ styleAttr (color darkYellow) ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ style
-                        [ animationWithOptionsStyle
+                    [ styleAttr
+                        (animationWithOptionsStyle
                             { name = "fade-in"
                             , duration = 1000
                             , delay = Just 2500
@@ -42,14 +43,14 @@ retryView model =
                             , iteration = Nothing
                             , fill = Forwards
                             }
-                        ]
+                        )
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
-                [ style
-                    [ animationWithOptionsStyle
+                [ styleAttr
+                    (animationWithOptionsStyle
                         { name = "bounce-up"
                         , duration = 1500
                         , delay = Just 3000
@@ -57,8 +58,8 @@ retryView model =
                         , fill = Forwards
                         , iteration = Nothing
                         }
-                    , transformStyle [ translate 0 (toFloat <| model.window.height + 100) ]
-                    ]
+                    )
+                , styleAttr (transformStyle [ translate 0 (toFloat <| model.window.height + 100) ])
                 ]
                 [ tryAgain model ]
             ]
@@ -81,9 +82,9 @@ lifeState model =
 
 tryAgain : Model -> Html Msg
 tryAgain model =
-    div [ style [ marginTop 50 ], class "pointer" ]
+    div [ styleAttr (marginTop 50), class "pointer" ]
         [ div
-            [ styles
+            (batchStyles
                 [ [ background lightGreen
                   , color "white"
                   , paddingLeft 25
@@ -93,23 +94,25 @@ tryAgain model =
                   ]
                 , leftPill
                 ]
-            , class "dib"
-            , onClick GoToHub
-            ]
+                [ class "dib"
+                , onClick GoToHub
+                ]
+            )
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
-            [ styles
-                [ [ background mediumGreen
+            (batchStyles
+                [ [ background lightGreen
                   , color "white"
-                  , paddingLeft 20
-                  , paddingRight 25
+                  , paddingLeft 25
+                  , paddingRight 20
                   , paddingTop 15
                   , paddingBottom 15
                   ]
                 , rightPill
                 ]
-            , class "dib"
-            , onClick RestartLevel
-            ]
+                [ class "dib"
+                , onClick RestartLevel
+                ]
+            )
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]

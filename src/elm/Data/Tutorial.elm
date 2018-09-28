@@ -1,12 +1,11 @@
-module Data.Tutorial
-    exposing
-        ( addBlock
-        , getText
-        , rainBoard
-        , seedBoard
-        , seedPodBoard
-        , sunBoard
-        )
+module Data.Tutorial exposing
+    ( addBlock
+    , getText
+    , rainBoard
+    , seedBoard
+    , seedPodBoard
+    , sunBoard
+    )
 
 import Data.Board.Generate exposing (makeBoard)
 import Data.Board.Types exposing (..)

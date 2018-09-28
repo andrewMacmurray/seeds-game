@@ -1,5 +1,6 @@
 module Scenes.Tutorial.State exposing (handleDragTile, handleSquareMove, init, initialState, loadTutorialData, resetVisibilities, skipSequence, subscriptions, update)
 
+import Browser.Events
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Map exposing (..)
@@ -8,6 +9,7 @@ import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (LevelData)
+import Data.Window as Window
 import Dict
 import Helpers.Delay exposing (pause, sequenceMs, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exit)
@@ -15,7 +17,6 @@ import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
 import Scenes.Level.Types exposing (LevelModel)
 import Scenes.Tutorial.Types exposing (..)
 import Task
-import Window exposing (resizes, size)
 
 
 
@@ -28,11 +29,14 @@ init successMessageIndex levelData config =
         ( levelModel, levelCmd ) =
             Level.init successMessageIndex levelData
     in
-    loadTutorialData config (initialState levelModel)
-        ! [ Task.perform WindowSize size
-          , Cmd.map LevelMsg levelCmd
-          , sequenceMs <| pause 500 config.sequence
-          ]
+    ( loadTutorialData config (initialState levelModel)
+    , Cmd.batch
+        [ -- Task.perform WindowSize size
+          -- FIXME
+          Cmd.map LevelMsg levelCmd
+        , sequenceMs <| pause 500 config.sequence
+        ]
+    )
 
 
 initialState : LevelModel -> TutorialModel
@@ -164,8 +168,8 @@ update msg model =
         ExitTutorial ->
             exit model [ trigger ResetVisibilities ]
 
-        WindowSize size ->
-            continue { model | window = size } []
+        WindowSize width height ->
+            continue { model | window = Window.Size width height } []
 
 
 
@@ -212,6 +216,6 @@ handleDragTile coord model =
 subscriptions : TutorialModel -> Sub TutorialMsg
 subscriptions model =
     Sub.batch
-        [ resizes WindowSize
+        [ Browser.Events.onResize WindowSize
         , Level.subscriptions model.levelModel |> Sub.map LevelMsg
         ]

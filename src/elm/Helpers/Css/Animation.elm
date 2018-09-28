@@ -1,17 +1,17 @@
-module Helpers.Css.Animation
-    exposing
-        ( Animation
-        , AnimationOptions
-        , FillMode(..)
-        , IterationCount(..)
-        , animateEase
-        , animationStyle
-        , animationWithOptionsStyle
-        , animationWithOptionsSvg
-        )
+module Helpers.Css.Animation exposing
+    ( Animation
+    , AnimationOptions
+    , FillMode(..)
+    , IterationCount(..)
+    , animateEase
+    , animationStyle
+    , animationWithOptionsStyle
+    , animationWithOptionsSvg
+    )
 
-import Helpers.Css.Style exposing (Style, ms)
-import Helpers.Css.Timing exposing (TimingFunction(Ease), timingToString)
+import Helpers.Css.Format exposing (ms)
+import Helpers.Css.Style exposing (Style)
+import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
 import Helpers.Maybe exposing (catMaybes)
 
 
@@ -69,12 +69,12 @@ animateEase name duration =
 
 animationStyle : Animation -> Style
 animationStyle =
-    animation >> (,) "animation"
+    animation >> (\b -> ( "animation", b ))
 
 
 animationWithOptionsStyle : AnimationOptions -> Style
 animationWithOptionsStyle =
-    animationWithOptions >> (,) "animation"
+    animationWithOptions >> (\b -> ( "animation", b ))
 
 
 animationWithOptionsSvg : AnimationOptions -> String
@@ -114,7 +114,7 @@ combineProperties anim =
 
 fillToString : FillMode -> String
 fillToString =
-    toString >> String.toLower
+    Debug.toString >> String.toLower
 
 
 iterationToString : IterationCount -> String
@@ -124,4 +124,4 @@ iterationToString iter =
             "infinite"
 
         Count n ->
-            toString n
+            Debug.toString n

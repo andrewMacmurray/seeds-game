@@ -1,6 +1,6 @@
-module Views.Icons.SunBank exposing (..)
+module Views.Icons.SunBank exposing (sunBank, sunBankFull, sunPath)
 
-import Helpers.Css.Style exposing (svgStyles, svgTranslate)
+import Helpers.Css.Style exposing (svgStyles)
 import Helpers.Css.Transform as Css exposing (translateY)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
@@ -28,7 +28,7 @@ sunBank percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| toString fullHeight
+                [ height <| Debug.toString fullHeight
                 , id "sun-level"
                 , width "50"
                 ]

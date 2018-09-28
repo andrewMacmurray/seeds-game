@@ -1,7 +1,17 @@
-module Views.Intro.RollingHills exposing (..)
+module Views.Intro.RollingHills exposing
+    ( flowers
+    , flowersLeft
+    , flowersRight
+    , hillOffset
+    , hills
+    , hillsStyle
+    , originCenter
+    , renderFlowers
+    , rollingHills
+    )
 
 import Data.Visibility exposing (..)
-import Helpers.Css.Style exposing (svgStyle, svgStyles, svgTranslate, widthStyle)
+import Helpers.Css.Style exposing (svgStyle, svgStyles, widthStyle)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform as Transform exposing (transformSvg, translate)
 import Helpers.Css.Transition exposing (transitionSvg)
@@ -15,7 +25,7 @@ import Views.Flowers.Sunflower exposing (sunflower)
 rollingHills : Visibility -> Html msg
 rollingHills vis =
     div [ id "rolling-hills" ]
-        [ div [ class "relative z-5 center", Html.Attributes.style [ widthStyle 200 ] ] [ sunflower 0 ]
+        [ div [ class "relative z-5 center", (\( a, b ) -> Html.Attributes.style a b) (widthStyle 200) ] [ sunflower 0 ]
         , div [ class "fixed w-100 bottom-0 left-0 z-1" ] [ hills vis ]
         ]
 

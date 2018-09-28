@@ -1,4 +1,4 @@
-module Views.Icons.RainBank exposing (..)
+module Views.Icons.RainBank exposing (rainBank, rainBankFull, rainBankPath)
 
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Transform as Css exposing (translateY)
@@ -28,7 +28,7 @@ rainBank percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| toString fullHeight
+                [ height <| Debug.toString fullHeight
                 , width "60"
                 , id "water-level"
                 ]

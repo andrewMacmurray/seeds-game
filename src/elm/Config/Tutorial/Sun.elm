@@ -1,4 +1,4 @@
-module Config.Tutorial.Sun exposing (..)
+module Config.Tutorial.Sun exposing (boardDimensions, config, initialBoard, sequence, text)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, sunBoard)

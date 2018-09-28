@@ -1,7 +1,8 @@
-module Data.Level.Types exposing (..)
+module Data.Level.Types exposing (AllLevels, CurrentLevelConfig, LevelData, LevelNumber, Probability(..), Progress, TargetScore(..), TileSetting, WorldData, WorldLevels, WorldNumber)
 
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType, WallColor)
 import Dict exposing (Dict)
+
 
 
 -- Identifier for a level

@@ -1,17 +1,16 @@
-module Scenes.Hub.Types exposing (..)
+module Scenes.Hub.Types exposing (HubModel, HubMsg(..))
 
+import Browser.Dom as Dom
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (Progress)
-import Dom
-import Time exposing (Time)
-import Window
+import Data.Window as Window
 
 
 type alias HubModel mainModel =
     { mainModel
         | hubInfoWindow : InfoWindow Progress
         , window : Window.Size
-        , timeTillNextLife : Time
+        , timeTillNextLife : Float
         , progress : Progress
     }
 

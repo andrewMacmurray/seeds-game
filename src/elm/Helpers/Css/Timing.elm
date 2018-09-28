@@ -1,8 +1,7 @@
-module Helpers.Css.Timing
-    exposing
-        ( TimingFunction(..)
-        , timingToString
-        )
+module Helpers.Css.Timing exposing
+    ( TimingFunction(..)
+    , timingToString
+    )
 
 
 type TimingFunction
@@ -40,12 +39,12 @@ cubicBezier_ : number -> number -> number -> number -> String
 cubicBezier_ a b c d =
     String.join ""
         [ "cubic-bezier("
-        , toString a
+        , Debug.toString a
         , ","
-        , toString b
+        , Debug.toString b
         , ","
-        , toString c
+        , Debug.toString c
         , ","
-        , toString d
+        , Debug.toString d
         , ")"
         ]

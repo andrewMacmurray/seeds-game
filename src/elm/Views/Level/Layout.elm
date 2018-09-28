@@ -1,4 +1,4 @@
-module Views.Level.Layout exposing (..)
+module Views.Level.Layout exposing (board, boardLayout, handleCheck, handleStop, renderLineLayer, renderLines, renderTiles)
 
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
@@ -38,22 +38,21 @@ boardLayout : LevelModel -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
-        , style
-            [ widthStyle <| boardWidth model
-            , boardMarginTop model
-            ]
+        , styleAttr (widthStyle <| boardWidth model)
+        , styleAttr (boardMarginTop model)
         ]
 
 
 renderLineLayer : TileConfig model -> Move -> Html msg
 renderLineLayer model (( coord, _ ) as move) =
     div
-        [ styles
+        (batchStyles
             [ tileWidthHeightStyles model
             , tileCoordsStyles model coord
             ]
-        , class "dib absolute touch-disabled"
-        ]
+            [ class "dib absolute touch-disabled"
+            ]
+        )
         [ renderLine model.window move
         ]
 
@@ -62,6 +61,7 @@ handleStop : LevelModel -> Attribute LevelMsg
 handleStop model =
     if model.isDragging then
         onPointerUp StopMove
+
     else
         emptyProperty
 
@@ -70,5 +70,6 @@ handleCheck : LevelModel -> Attribute LevelMsg
 handleCheck model =
     if model.isDragging then
         onPointerMovePosition CheckMove
+
     else
         emptyProperty

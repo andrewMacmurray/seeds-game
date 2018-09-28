@@ -1,4 +1,4 @@
-module Views.Seed.Twin exposing (..)
+module Views.Seed.Twin exposing (lupin, marigold, sunflower, twin)
 
 import Config.Color exposing (brown, chocolate, crimson, darkRed, gold, lightBrown)
 import Svg exposing (..)

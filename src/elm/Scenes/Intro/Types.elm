@@ -1,7 +1,7 @@
-module Scenes.Intro.Types exposing (..)
+module Scenes.Intro.Types exposing (Environment(..), IntroModel, IntroMsg(..), Scene(..))
 
 import Data.Visibility exposing (Visibility)
-import Window
+import Data.Window as Window
 
 
 type alias IntroModel =
@@ -40,4 +40,4 @@ type IntroMsg
     | HideText
     | KillEnvironment
     | IntroComplete
-    | WindowSize Window.Size
+    | WindowSize Int Int

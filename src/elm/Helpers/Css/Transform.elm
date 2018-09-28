@@ -1,22 +1,20 @@
-module Helpers.Css.Transform
-    exposing
-        ( Transform
-        , fromTransform
-        , rotateX
-        , rotateY
-        , rotateZ
-        , scale
-        , transform
-        , transformStyle
-        , transformSvg
-        , translate
-        , translateX
-        , translateY
-        , translateZ
-        )
+module Helpers.Css.Transform exposing
+    ( Transform
+    , fromTransform
+    , rotateX
+    , rotateY
+    , rotateZ
+    , scale
+    , transform
+    , transformStyle
+    , transformSvg
+    , translate
+    , translateX
+    , translateY
+    , translateZ
+    )
 
-import Formatting exposing (print)
-import Helpers.Css.Format exposing (rotate_, scale_, translateX_, translateY_, translateZ_, translate_)
+import Helpers.Css.Format as Format
 import Helpers.Css.Style exposing (Style)
 
 
@@ -57,7 +55,7 @@ transformSvg =
 
 transformStyle : List Transform -> Style
 transformStyle =
-    transform >> (,) "transform"
+    transform >> (\b -> ( "transform", b ))
 
 
 transform : List Transform -> String
@@ -109,25 +107,25 @@ fromTransform : Transform -> String
 fromTransform ts =
     case ts of
         RotateZ n ->
-            (print <| rotate_ "Z") n
+            Format.rotateZ n
 
         RotateX n ->
-            (print <| rotate_ "X") n
+            Format.rotateX n
 
         RotateY n ->
-            (print <| rotate_ "Y") n
+            Format.rotateY n
 
         Scale n ->
-            print scale_ n
+            Format.scale n
 
         Translate { x, y } ->
-            print translate_ x y
+            Format.translate x y
 
         TranslateX n ->
-            print translateX_ n
+            Format.translateX n
 
         TranslateY n ->
-            print translateY_ n
+            Format.translateY n
 
         TranslateZ n ->
-            print translateZ_ n
+            Format.translateZ n

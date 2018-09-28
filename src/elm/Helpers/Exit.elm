@@ -1,6 +1,15 @@
-module Helpers.Exit exposing (..)
+module Helpers.Exit exposing
+    ( ExitMsg(..)
+    , continue
+    , exit
+    , exitWith
+    , loadScene
+    , mapScene
+    , onExit
+    , onExitDo
+    )
 
-import Types exposing (HasScene, Scene, SceneState(Loaded))
+import Types exposing (HasScene, Scene, SceneState(..))
 
 
 type ExitMsg a
@@ -64,4 +73,6 @@ loadScene :
     -> ( subModel, Cmd subMsg )
     -> ( HasScene mainModel, Cmd mainMsg )
 loadScene scene sceneMsg mainModel ( subModel, subMsg ) =
-    { mainModel | scene = Loaded <| scene subModel } ! [ Cmd.map sceneMsg subMsg ]
+    ( { mainModel | scene = Loaded <| scene subModel }
+    , Cmd.map sceneMsg subMsg
+    )

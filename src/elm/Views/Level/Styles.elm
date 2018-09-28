@@ -1,4 +1,40 @@
-module Views.Level.Styles exposing (..)
+module Views.Level.Styles exposing
+    ( baseTileClasses
+    , boardFullWidth
+    , boardHeight
+    , boardMarginTop
+    , boardOffsetLeft
+    , boardOffsetTop
+    , boardWidth
+    , centerBlock
+    , draggingStyles
+    , enteringStyles
+    , exitOffsetFunction
+    , exitXDistance
+    , exitYdistance
+    , fallingStyles
+    , getLeavingStyle
+    , growingStyles
+    , handleExitDirection
+    , leavingStyles
+    , moveTracerStyles
+    , newLeavingStyles
+    , prepareLeavingStyle
+    , seedBackgrounds
+    , seedStrokeColors
+    , strokeColors
+    , tileBackground
+    , tileBackgroundMap
+    , tileClassMap
+    , tileCoordsStyles
+    , tilePosition
+    , tileSize
+    , tileSizeMap
+    , tileStyleMap
+    , tileWidth
+    , tileWidthHeightStyles
+    , wallStyles
+    )
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
@@ -6,6 +42,7 @@ import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
+import Data.Window as Window
 import Dict exposing (Dict)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
@@ -13,7 +50,6 @@ import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
 import Scenes.Level.Types as Level exposing (..)
-import Window
 
 
 boardMarginTop : LevelModel -> Style
@@ -111,7 +147,7 @@ growingStyles ( coord, block ) =
                 { property = "all"
                 , duration = 400
                 , timing = Ease
-                , delay = Just <| toFloat <| growingOrder block % 5 * 70
+                , delay = Just <| toFloat <| modBy 5 (growingOrder block) * 70
                 }
             , opacityStyle 0
             , ( "pointer-events", "none" )
@@ -129,7 +165,7 @@ fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
             [ animationStyle
-                { name = "bounce-down-" ++ toString distance
+                { name = "bounce-down-" ++ Debug.toString distance
                 , duration = 900
                 , timing = Linear
                 }
@@ -146,11 +182,12 @@ leavingStyles model (( _, tile ) as move) =
             { property = "all"
             , duration = 800
             , timing = Ease
-            , delay = Just <| toFloat <| (leavingOrder tile % 5) * 80
+            , delay = Just <| toFloat <| modBy 5 (leavingOrder tile) * 80
             }
         , opacityStyle 0.2
         , handleExitDirection move model
         ]
+
     else
         []
 
@@ -174,7 +211,7 @@ handleExitDirection ( coord, block ) model =
 getLeavingStyle : TileType -> LevelModel -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
-        |> Dict.get (toString tileType)
+        |> Dict.get (Debug.toString tileType)
         |> Maybe.withDefault emptyStyle
 
 
@@ -188,7 +225,7 @@ newLeavingStyles model =
 
 prepareLeavingStyle : LevelModel -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
-    ( toString tileType
+    ( Debug.toString tileType
     , transformStyle
         [ translate (exitXDistance i model) -(exitYdistance model)
         , scale 0.5
@@ -231,6 +268,7 @@ moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
         [ animateEase "bulge-fade" 800 ]
+
     else
         [ displayStyle "none"
         ]
@@ -241,13 +279,16 @@ draggingStyles moveShape ( _, tileState ) =
     if moveShape == Just Square then
         [ easeAll 500
         ]
+
     else if isLeaving tileState then
         [ easeAll 100
         ]
+
     else if isDragging tileState then
         [ transformStyle [ scale 0.8 ]
         , easeAll 300
         ]
+
     else
         []
 

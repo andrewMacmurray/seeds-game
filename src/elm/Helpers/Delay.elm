@@ -1,18 +1,17 @@
-module Helpers.Delay exposing (..)
+module Helpers.Delay exposing (delayMs, pause, sequenceMs, trigger)
 
 import Delay
 import Task
-import Time exposing (millisecond)
 
 
 sequenceMs : List ( Float, msg ) -> Cmd msg
 sequenceMs steps =
-    Delay.sequence <| Delay.withUnit millisecond <| steps
+    Delay.sequence <| Delay.withUnit Delay.Millisecond <| steps
 
 
 delayMs : Float -> msg -> Cmd msg
 delayMs time =
-    Delay.after time millisecond
+    Delay.after time Delay.Millisecond
 
 
 trigger : msg -> Cmd msg

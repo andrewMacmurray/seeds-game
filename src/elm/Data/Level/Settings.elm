@@ -1,11 +1,10 @@
-module Data.Level.Settings
-    exposing
-        ( makeWorldLevels
-        , rain
-        , seed
-        , seedPod
-        , sun
-        )
+module Data.Level.Settings exposing
+    ( makeWorldLevels
+    , rain
+    , seed
+    , seedPod
+    , sun
+    )
 
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)

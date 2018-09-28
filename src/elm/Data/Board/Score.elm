@@ -1,13 +1,12 @@
-module Data.Board.Score
-    exposing
-        ( addScoreFromMoves
-        , collectable
-        , getScoreFor
-        , initialScores
-        , levelComplete
-        , scoreTileTypes
-        , scoreToString
-        )
+module Data.Board.Score exposing
+    ( addScoreFromMoves
+    , collectable
+    , getScoreFor
+    , initialScores
+    , levelComplete
+    , scoreTileTypes
+    , scoreToString
+    )
 
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Types exposing (..)
@@ -35,7 +34,7 @@ levelComplete scores =
 targetReached : TileType -> Scores -> Bool
 targetReached tileType scores =
     scores
-        |> Dict.get (toString tileType)
+        |> Dict.get (Debug.toString tileType)
         |> Maybe.map (\s -> s.current == s.target)
         |> Maybe.withDefault False
 
@@ -43,26 +42,27 @@ targetReached tileType scores =
 scoreToString : TileType -> Scores -> String
 scoreToString tileType scores =
     getScoreFor tileType scores
-        |> Maybe.map toString
+        |> Maybe.map Debug.toString
         |> Maybe.withDefault ""
 
 
 getScoreFor : TileType -> Scores -> Maybe Int
 getScoreFor tileType scores =
     scores
-        |> Dict.get (toString tileType)
+        |> Dict.get (Debug.toString tileType)
         |> Maybe.map (\{ target, current } -> target - current)
 
 
 addToScore : Int -> TileType -> Scores -> Scores
 addToScore score tileType scores =
-    scores |> Dict.update (toString tileType) (Maybe.map (updateScore score))
+    scores |> Dict.update (Debug.toString tileType) (Maybe.map (updateScore score))
 
 
 updateScore : Int -> Score -> Score
 updateScore n score =
     if score.current + n >= score.target then
         { score | current = score.target }
+
     else
         { score | current = score.current + n }
 
@@ -93,4 +93,4 @@ initScore { tileType, targetScore } =
         (TargetScore t) =
             Maybe.withDefault (TargetScore 0) targetScore
     in
-    ( toString tileType, Score t 0 )
+    ( Debug.toString tileType, Score t 0 )

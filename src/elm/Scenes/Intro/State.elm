@@ -1,20 +1,24 @@
 module Scenes.Intro.State exposing (init, initialState, sequence, subscriptions, update)
 
+import Browser.Events
 import Config.Color as Color
 import Data.Visibility exposing (..)
+import Data.Window as Window
 import Helpers.Delay exposing (sequenceMs, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exit)
 import Scenes.Intro.Types exposing (..)
 import Task
-import Window exposing (resizes, size)
 
 
 init : ( IntroModel, Cmd IntroMsg )
 init =
-    initialState
-        ! [ Task.perform WindowSize size
-          , sequence
-          ]
+    ( initialState
+    , Cmd.batch
+        [ -- FIXME
+          -- Task.perform WindowSize size
+          sequence
+        ]
+    )
 
 
 initialState : IntroModel
@@ -96,8 +100,8 @@ update msg model =
         KillEnvironment ->
             continue { model | scene = DyingLandscape Dead Visible } []
 
-        WindowSize size ->
-            continue { model | window = size } []
+        WindowSize width height ->
+            continue { model | window = Window.Size width height } []
 
         IntroComplete ->
             exit model []
@@ -105,4 +109,4 @@ update msg model =
 
 subscriptions : IntroModel -> Sub IntroMsg
 subscriptions _ =
-    resizes WindowSize
+    Browser.Events.onResize WindowSize
