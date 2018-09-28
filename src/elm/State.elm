@@ -76,9 +76,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
     , Cmd.batch
-        [ -- Task.perform WindowSize size
-          -- FIXME
-          generateBounceKeyframes ScaleConfig.baseTileSizeY
+        [ generateBounceKeyframes ScaleConfig.baseTileSizeY
         , randomSuccessMessageIndex GenerateSuccessMessageIndex
         ]
     )
