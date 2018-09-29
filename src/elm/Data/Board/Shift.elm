@@ -7,7 +7,7 @@ module Data.Board.Shift exposing
 import Data.Board.Block as Block
 import Data.Board.Types exposing (..)
 import Dict
-import List.Extra
+import Helpers.List exposing (groupWhile, splitAt)
 
 
 shiftBoard : Board -> Board
@@ -23,9 +23,7 @@ groupBoardByColumn board =
     board
         |> Dict.toList
         |> List.sortBy xCoord
-        |> List.Extra.groupWhile sameColumn
-        -- WARNING quick fix need to check!
-        |> List.map Tuple.second
+        |> groupWhile sameColumn
 
 
 shiftRow : List Move -> List Move
@@ -63,7 +61,7 @@ reAddWalls walls row =
 addWall : Move -> List Move -> List Move
 addWall (( ( y, x ), w ) as wall) row =
     row
-        |> List.Extra.splitAt y
+        |> splitAt y
         |> (\( a, b ) -> a ++ [ wall ] ++ b)
 
 

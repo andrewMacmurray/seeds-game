@@ -58,6 +58,26 @@ internalAnimations =
                     , ( 100, 1 )
                     ]
           }
+        , { name = "bulge-elastic"
+          , frames =
+                map2 ( scale, opacity )
+                    [ ( 0, ( 0, 0 ) )
+                    , ( 50, ( 1.3, 0.4 ) )
+                    , ( 75, ( 0.9, 0.7 ) )
+                    , ( 100, ( 1, 1 ) )
+                    ]
+          }
+        , { name = "bulge-elastic-big"
+          , frames =
+                map2 ( scale, opacity )
+                    [ ( 0, ( 0.3, 0 ) )
+                    , ( 20, ( 1.3, 1 ) )
+                    , ( 40, ( 0.8, 1 ) )
+                    , ( 60, ( 1.1, 1 ) )
+                    , ( 80, ( 0.9, 1 ) )
+                    , ( 100, ( 1, 1 ) )
+                    ]
+          }
         , { name = "bulge-small"
           , frames =
                 map2 ( scale, opacity )

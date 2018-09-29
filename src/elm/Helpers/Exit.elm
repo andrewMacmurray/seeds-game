@@ -36,21 +36,21 @@ exitWith a model cmds =
 onExit : (model -> model) -> List (Cmd msg) -> ( model, Cmd msg, ExitMsg a ) -> ( model, Cmd msg )
 onExit modelF cmds ( model, cmd, exitMsg ) =
     case exitMsg of
-        Exit ->
-            ( modelF model, Cmd.batch <| cmd :: cmds )
+        Continue ->
+            ( model, cmd )
 
         _ ->
-            ( model, cmd )
+            ( modelF model, Cmd.batch <| cmd :: cmds )
 
 
 onExitDo : List (Cmd msg) -> ( model, Cmd msg, ExitMsg a ) -> ( model, Cmd msg )
 onExitDo cmds ( model, cmd, exitMsg ) =
     case exitMsg of
-        Exit ->
-            ( model, Cmd.batch <| cmd :: cmds )
+        Continue ->
+            ( model, cmd )
 
         _ ->
-            ( model, cmd )
+            ( model, Cmd.batch <| cmd :: cmds )
 
 
 mapScene :

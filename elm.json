@@ -13,8 +13,7 @@
             "elm/json": "1.0.0",
             "elm/random": "1.0.0",
             "elm/svg": "1.0.1",
-            "elm/time": "1.0.0",
-            "elm-community/list-extra": "8.0.0"
+            "elm/time": "1.0.0"
         },
         "indirect": {
             "elm/url": "1.0.0",

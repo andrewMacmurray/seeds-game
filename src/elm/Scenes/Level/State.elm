@@ -198,11 +198,9 @@ update msg model =
             continue { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
-            -- outMsg signals to parent component that level has been won
             exitWith Win model []
 
         LevelLost ->
-            -- outMsg signals to parent component that level has been lost
             exitWith Lose model []
 
         WindowSize width height ->

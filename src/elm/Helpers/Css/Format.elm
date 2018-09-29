@@ -114,4 +114,4 @@ gradientStop color percent =
 
 linearGradient : String -> String
 linearGradient x =
-    join [ "linearGradient(", x, ")" ]
+    join [ "linear-gradient(", x, ")" ]
