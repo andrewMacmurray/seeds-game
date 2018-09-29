@@ -20,5 +20,4 @@ type HubMsg
     | HideLevelInfo
     | SetInfoState (InfoWindow Progress)
     | ScrollHubToLevel Int
-    | ReceiveHubLevelOffset Float
     | DomNoOp (Result Dom.Error ())

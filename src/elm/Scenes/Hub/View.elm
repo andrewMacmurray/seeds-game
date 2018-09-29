@@ -28,7 +28,7 @@ hubView model =
         , div
             [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             , id "hub"
-            , (\( a, b ) -> style a b) (heightStyle model.window.height)
+            , styleAttr (heightStyle model.window.height)
             ]
             (renderWorlds model)
         ]
@@ -45,10 +45,10 @@ hubTopBar model =
     in
     div
         [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
-        , (\( a, b ) -> style a b) (background washedYellow)
+        , styleAttr (background washedYellow)
         ]
-        [ div [ (\( a, b ) -> style a b) (transformStyle [ scale 0.5 ]) ] <| renderLivesLeft lives
-        , div [ class "f7", (\( a, b ) -> style a b) (color darkYellow) ] [ renderCountDown model.timeTillNextLife ]
+        [ div [ styleAttr (transformStyle [ scale 0.5 ]) ] <| renderLivesLeft lives
+        , div [ class "f7", styleAttr (color darkYellow) ] [ renderCountDown model.timeTillNextLife ]
         ]
 
 
@@ -60,8 +60,8 @@ renderCountDown timeRemaining =
 
         Just t ->
             div []
-                [ p [ (\( a, b ) -> style a b) (marginTop -2), class "dib ma1 mt0" ] [ text "Next life in: " ]
-                , p [ (\( a, b ) -> style a b) (color pinkRed), class "dib ma1 mt0" ] [ text <| renderTime t ]
+                [ p [ styleAttr (marginTop -2), class "dib ma1 mt0" ] [ text "Next life in: " ]
+                , p [ styleAttr (color pinkRed), class "dib ma1 mt0" ] [ text <| renderTime t ]
                 ]
 
 

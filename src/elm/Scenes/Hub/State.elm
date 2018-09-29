@@ -1,10 +1,10 @@
-module Scenes.Hub.State exposing (init, scrollHubToLevel, subscriptions, update)
+module Scenes.Hub.State exposing (init, scrollHubToLevel, update)
 
+import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow
 import Data.Window as Window
 import Delay exposing (after)
 import Helpers.Delay exposing (sequenceMs)
-import Ports exposing (receiveHubLevelOffset, scrollToHubLevel)
 import Scenes.Hub.Types as Hub exposing (..)
 import Task exposing (Task)
 
@@ -43,12 +43,7 @@ update msg model =
 
         ScrollHubToLevel level ->
             ( model
-            , scrollToHubLevel level
-            )
-
-        ReceiveHubLevelOffset offset ->
-            ( model
-            , scrollHubToLevel offset model.window
+            , scrollHubToLevel level
             )
 
         DomNoOp _ ->
@@ -61,21 +56,19 @@ update msg model =
 -- Update Helpers
 
 
-scrollHubToLevel : Float -> Window.Size -> Cmd HubMsg
-scrollHubToLevel offset window =
-    let
-        targetDistance =
-            offset - toFloat (window.height // 2) + 20
-    in
-    -- Dom.Scroll.toY "hub" targetDistance |> Task.attempt DomNoOp
-    -- FIXME
-    Cmd.none
+scrollHubToLevel : Int -> Cmd HubMsg
+scrollHubToLevel levelNumber =
+    getLevelId levelNumber
+        |> Dom.getElement
+        |> Task.andThen scrollLevelToView
+        |> Task.attempt DomNoOp
 
 
+scrollLevelToView : Dom.Element -> Task Dom.Error ()
+scrollLevelToView { element, viewport } =
+    Dom.setViewportOf "hub" 0 <| element.y - viewport.height / 2
 
--- Subscriptions
 
-
-subscriptions : HubModel model -> Sub HubMsg
-subscriptions _ =
-    receiveHubLevelOffset ReceiveHubLevelOffset
+getLevelId : Int -> String
+getLevelId levelNumber =
+    "level-" ++ String.fromInt levelNumber

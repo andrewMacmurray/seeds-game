@@ -33,14 +33,6 @@ function init() {
 
   ports.fadeMusic.subscribe(() => longFade(introMusic));
 
-  // Scroll
-  ports.scrollToHubLevel.subscribe(level => {
-    const levelEl = document.getElementById("level-" + level);
-    if (levelEl) {
-      ports.receiveHubLevelOffset.send(levelEl.offsetTop);
-    }
-  });
-
   ports.generateBounceKeyframes.subscribe(tileSize => {
     const anims = [
       animations.elasticBounceIn(),

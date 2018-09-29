@@ -7,17 +7,9 @@ port module Ports exposing
     , generateBounceKeyframes
     , introMusicPlaying
     , playIntroMusic
-    , receiveHubLevelOffset
-    , scrollToHubLevel
     )
 
 import Types exposing (RawProgress, Times)
-
-
-port scrollToHubLevel : Int -> Cmd msg
-
-
-port receiveHubLevelOffset : (Float -> msg) -> Sub msg
 
 
 port generateBounceKeyframes : Float -> Cmd msg

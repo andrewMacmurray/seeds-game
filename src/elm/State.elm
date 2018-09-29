@@ -87,7 +87,7 @@ initialState flags =
     { scene = Loaded Title
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
-    , currentLevel = Just ( 2, 2 )
+    , currentLevel = Nothing
     , window = flags.window
     , lastPlayed = initLastPlayed flags
     , timeTillNextLife = initTimeTillNextLife flags
@@ -611,9 +611,6 @@ sceneSubscriptions model =
 
         Loaded (Tutorial tutorialModel) ->
             Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
-
-        Loaded Hub ->
-            Sub.map HubMsg <| Hub.subscriptions model
 
         Loaded (Intro introModel) ->
             Sub.map IntroMsg <| Intro.subscriptions introModel
