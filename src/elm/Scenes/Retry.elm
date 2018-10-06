@@ -19,7 +19,7 @@ retryView : Model -> Html Msg
 retryView model =
     div
         [ style
-            [ heightStyle <| toFloat model.window.height
+            [ height <| toFloat model.window.height
             , background washedYellow
             , animationStyle
                 { name = "fade-in"

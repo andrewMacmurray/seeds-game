@@ -44,7 +44,7 @@ life { active, currentLife, breaking, lifeState } =
                     }
 
             else
-                emptyStyle
+                empty
 
         visibleHeart =
             if active then
@@ -58,7 +58,7 @@ life { active, currentLife, breaking, lifeState } =
 
         adjustScale =
             if active then
-                emptyStyle
+                empty
 
             else
                 transform [ scale 1.11 ]
@@ -66,7 +66,7 @@ life { active, currentLife, breaking, lifeState } =
     div
         [ style
             [ width 35
-            , heightStyle 35
+            , height 35
             , marginLeft 10
             , marginRight 10
             , animation

@@ -1,7 +1,7 @@
 module Views.Flowers.Sunflower exposing (sunflower)
 
 import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsStyle, animationWithOptionsSvg)
-import Helpers.Css.Style as Style exposing (opacityStyle, svgStyles, transformOrigin)
+import Helpers.Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform as Transform
 import Svg exposing (Svg)
@@ -25,7 +25,7 @@ sunflower delay =
                     , iteration = Nothing
                     }
                 , transformOrigin "40% 45%"
-                , opacityStyle 0
+                , Style.opacity 0
                 ]
             ]
             []
@@ -42,7 +42,7 @@ fadePetal delay index petal =
         [ svgStyles
             [ Style.transform [ Transform.scale 0 ]
             , transformOrigin "center"
-            , opacityStyle 0
+            , Style.opacity 0
             , animationWithOptionsStyle
                 { name = "bulge-small"
                 , duration = 900

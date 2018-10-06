@@ -39,7 +39,7 @@ renderTile_ : List Style -> TileConfig model -> Move -> Html msg
 renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
     div
         [ styles
-            [ tileWidthHeightStyles config
+            [ tileWidthheights config
             , tileCoordsStyles config coord
             , extraStyles
             ]

@@ -32,7 +32,7 @@ module Views.Level.Styles exposing
     , tileSizeMap
     , tileStyleMap
     , tileWidth
-    , tileWidthHeightStyles
+    , tileWidthheights
     , wallStyles
     )
 
@@ -121,7 +121,7 @@ wallStyles window ( _, block ) =
         Wall color ->
             [ backgroundColor color
             , width wallSize
-            , heightStyle wallSize
+            , height wallSize
             ]
 
         _ ->
@@ -149,7 +149,7 @@ growingStyles ( coord, block ) =
                 , timing = Ease
                 , delay = Just <| toFloat <| modBy 5 (growingOrder block) * 70
                 }
-            , opacityStyle 0
+            , opacity 0
             , property "pointer-events" "none"
             ]
 
@@ -184,7 +184,7 @@ leavingStyles model (( _, tile ) as move) =
             , timing = Ease
             , delay = Just <| toFloat <| modBy 5 (leavingOrder tile) * 80
             }
-        , opacityStyle 0.2
+        , opacity 0.2
         , handleExitDirection move model
         ]
 
@@ -205,14 +205,14 @@ handleExitDirection ( coord, block ) model =
             getLeavingStyle (Seed seedType) model
 
         _ ->
-            emptyStyle
+            empty
 
 
 getLeavingStyle : TileType -> LevelModel -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Debug.toString tileType)
-        |> Maybe.withDefault emptyStyle
+        |> Maybe.withDefault empty
 
 
 newLeavingStyles : LevelModel -> Dict String Style
@@ -293,14 +293,14 @@ draggingStyles moveShape ( _, tileState ) =
         []
 
 
-tileWidthHeightStyles : TileConfig model -> List Style
-tileWidthHeightStyles { window } =
+tileWidthheights : TileConfig model -> List Style
+tileWidthheights { window } =
     let
         tileScale =
             ScaleConfig.tileScaleFactor window
     in
     [ width <| ScaleConfig.baseTileSizeX * tileScale
-    , heightStyle <| ScaleConfig.baseTileSizeY * tileScale
+    , height <| ScaleConfig.baseTileSizeY * tileScale
     ]
 
 

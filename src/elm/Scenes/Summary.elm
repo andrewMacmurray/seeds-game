@@ -30,7 +30,7 @@ summaryView ({ progress, currentLevel } as model) =
     in
     div
         [ style
-            [ heightStyle <| toFloat model.window.height
+            [ height <| toFloat model.window.height
             , background washedYellow
             , animationStyle
                 { name = "fade-in"
@@ -49,7 +49,7 @@ summaryView ({ progress, currentLevel } as model) =
                 , class "center"
                 ]
                 [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-            , div [ style [ heightStyle 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
+            , div [ style [ height 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
         ]
 
@@ -87,19 +87,19 @@ renderResourceFill : TileType -> Html msg
 renderResourceFill tileType =
     case tileType of
         Rain ->
-            div [ style [ heightStyle 50 ] ]
+            div [ style [ height 50 ] ]
                 [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
                 , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
-            div [ style [ heightStyle 50 ] ]
+            div [ style [ height 50 ] ]
                 [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
                 , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
-            div [ style [ heightStyle 50 ] ]
+            div [ style [ height 50 ] ]
                 [ div [ style [ width 15 ], class "center" ] [ renderSeed seedType ]
                 , div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
@@ -137,8 +137,8 @@ seedDrop seedType n =
         [ div
             [ style
                 [ width 5
-                , heightStyle 8
-                , opacityStyle 0
+                , height 8
+                , opacity 0
                 , animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
@@ -183,9 +183,9 @@ drop bgColor n =
         [ div
             [ style
                 [ width 6
-                , heightStyle 6
+                , height 6
                 , background bgColor
-                , opacityStyle 0
+                , opacity 0
                 , animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150

@@ -92,7 +92,7 @@ currentLevelPointer isCurrentLevel =
     if isCurrentLevel then
         div
             [ style
-                [ topStyle -30
+                [ top -30
                 , animationWithOptionsStyle
                     { name = "hover"
                     , timing = Ease
@@ -128,7 +128,7 @@ renderNumber visibleLevelNumber hasReachedLevel worldData =
                 [ backgroundColor worldData.textBackgroundColor
                 , marginTop 10
                 , width 25
-                , heightStyle 25
+                , height 25
                 ]
             , class "br-100 center flex justify-center items-center"
             ]

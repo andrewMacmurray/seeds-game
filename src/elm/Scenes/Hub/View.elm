@@ -27,7 +27,7 @@ hubView model =
         , info model
         , div
             [ id "hub"
-            , style [ heightStyle <| toFloat model.window.height ]
+            , style [ height <| toFloat model.window.height ]
             , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             ]
             (renderWorlds model)

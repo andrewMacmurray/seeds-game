@@ -75,7 +75,7 @@ tutorialView model =
             [ handleSkip model
             , style
                 [ color greyYellow
-                , bottomStyle 30
+                , bottom 30
                 , transitionStyle
                     { property = "all"
                     , duration = 800
@@ -106,7 +106,7 @@ tutorialBoard model =
         , classList <| showIf model.boardVisible
         , style
             [ width <| toFloat <| boardWidth model
-            , heightStyle <| toFloat <| boardHeight model
+            , height <| toFloat <| boardHeight model
             , easeAll 500
             ]
         ]

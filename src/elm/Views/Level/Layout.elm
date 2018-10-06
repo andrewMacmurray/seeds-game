@@ -49,7 +49,7 @@ renderLineLayer : TileConfig model -> Move -> Html msg
 renderLineLayer model (( coord, _ ) as move) =
     div
         [ styles
-            [ tileWidthHeightStyles model
+            [ tileWidthheights model
             , tileCoordsStyles model coord
             ]
         , class "dib absolute touch-disabled"

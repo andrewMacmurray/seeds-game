@@ -1,7 +1,7 @@
 module Views.Intro.DyingLandscape exposing (dyingLandscape)
 
 import Data.Visibility exposing (..)
-import Helpers.Css.Style as Style exposing (Style, opacityStyle, svgStyle, svgStyles)
+import Helpers.Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (translateY)
 import Helpers.Css.Transition exposing (transitionStyle)
@@ -86,7 +86,7 @@ layerOffsetStyle offset delay vis =
                     , timing = Linear
                     , delay = Just delay
                     }
-                , opacityStyle 0
+                , Style.opacity 0
                 ]
 
 

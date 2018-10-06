@@ -101,7 +101,7 @@ renderIcon { targetScore, tileType } =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ style [ width 35, heightStyle 53 ] ] [ renderSeed seedType ]
+                    div [ style [ width 35, height 53 ] ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
@@ -129,7 +129,7 @@ renderWeather color =
     div
         [ style
             [ width 25
-            , heightStyle 25
+            , height 25
             , marginLeft 2.5
             , marginRight 2.5
             , marginBottom 5

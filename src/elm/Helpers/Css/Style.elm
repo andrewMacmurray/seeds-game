@@ -4,23 +4,23 @@ module Helpers.Css.Style exposing
     , backgroundColor
     , backgroundImage
     , borderNone
-    , bottomStyle
+    , bottom
     , classes
     , color
     , displayStyle
-    , emptyStyle
+    , empty
     , frameBackgroundImage
-    , heightStyle
+    , height
+    , left
     , leftAuto
     , leftPill
-    , leftStyle
     , marginAuto
     , marginBottom
     , marginLeft
     , marginRight
     , marginTop
     , maxWidth
-    , opacityStyle
+    , opacity
     , paddingAll
     , paddingBottom
     , paddingHorizontal
@@ -36,7 +36,7 @@ module Helpers.Css.Style exposing
     , styles
     , svgStyle
     , svgStyles
-    , topStyle
+    , top
     , transform
     , transformOrigin
     , width
@@ -46,7 +46,7 @@ module Helpers.Css.Style exposing
 import Helpers.Css.Transform as Transform exposing (Transform)
 import Helpers.Css.Unit exposing (..)
 import Html exposing (Attribute, Html)
-import Html.Attributes exposing (class)
+import Html.Attributes
 import Svg
 import Svg.Attributes
 
@@ -62,7 +62,11 @@ property =
 
 classes : List String -> Attribute msg
 classes =
-    class << String.join " "
+    Html.Attributes.class << String.join " "
+
+
+
+-- Html
 
 
 styles : List (List Style) -> Attribute msg
@@ -73,6 +77,19 @@ styles =
 style : List Style -> Attribute msg
 style =
     renderHtmlStyles
+
+
+renderHtmlStyles : List Style -> Attribute msg
+renderHtmlStyles xs =
+    let
+        css =
+            xs |> List.foldl (\(Style prop val) acc -> acc ++ (prop ++ ":" ++ val ++ ";")) ""
+    in
+    Html.Attributes.attribute "style" css
+
+
+
+-- Svg
 
 
 svgStyles : List Style -> Svg.Attribute msg
@@ -88,21 +105,16 @@ svgStyle =
 
 
 renderSvgStyle : Style -> String
-renderSvgStyle (Style k v) =
-    k ++ ":" ++ v
+renderSvgStyle (Style prop val) =
+    prop ++ ":" ++ val
 
 
-renderHtmlStyles : List Style -> Attribute msg
-renderHtmlStyles xs =
-    let
-        css =
-            xs |> List.foldl (\(Style prop val) acc -> String.append acc (prop ++ ":" ++ val ++ ";")) ""
-    in
-    Html.Attributes.attribute "style" css
+
+-- Properties
 
 
-emptyStyle : Style
-emptyStyle =
+empty : Style
+empty =
     Style "" ""
 
 
@@ -190,18 +202,18 @@ rightAuto =
     Style "margin-right" "auto"
 
 
-topStyle : Float -> Style
-topStyle n =
+top : Float -> Style
+top n =
     Style "top" <| px n
 
 
-bottomStyle : Float -> Style
-bottomStyle n =
+bottom : Float -> Style
+bottom n =
     Style "bottom" <| px n
 
 
-leftStyle : Float -> Style
-leftStyle n =
+left : Float -> Style
+left n =
     Style "left" <| px n
 
 
@@ -255,7 +267,7 @@ background =
 widthHeight : Float -> List Style
 widthHeight n =
     [ width n
-    , heightStyle n
+    , height n
     ]
 
 
@@ -269,9 +281,9 @@ maxWidth n =
     Style "max-width" <| px n
 
 
-heightStyle : Float -> Style
-heightStyle height =
-    Style "height" <| px height
+height : Float -> Style
+height h =
+    Style "height" <| px h
 
 
 displayStyle : String -> Style
@@ -279,8 +291,8 @@ displayStyle d =
     Style "display" <| d
 
 
-opacityStyle : Float -> Style
-opacityStyle o =
+opacity : Float -> Style
+opacity o =
     Style "opacity" <| String.fromFloat o
 
 

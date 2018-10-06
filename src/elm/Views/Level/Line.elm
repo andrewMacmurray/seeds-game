@@ -82,4 +82,4 @@ lineTransforms window bearing =
             Style.transform [ rotateZ 90, translate xOffset 1.5 ]
 
         _ ->
-            Style.emptyStyle
+            Style.empty

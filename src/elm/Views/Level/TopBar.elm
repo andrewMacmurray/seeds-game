@@ -31,7 +31,7 @@ topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
         , style
-            [ heightStyle ScaleConfig.topBarHeight
+            [ height ScaleConfig.topBarHeight
             , color gold
             , backgroundColor washedYellow
             ]
@@ -39,7 +39,7 @@ topBar model =
         [ div
             [ style
                 [ width <| toFloat <| boardFullWidth model
-                , heightStyle ScaleConfig.topBarHeight
+                , height ScaleConfig.topBarHeight
                 ]
             , class "flex items-center justify-center relative"
             ]
@@ -83,11 +83,11 @@ renderScore model tileType =
 remainingMoves : Int -> Html msg
 remainingMoves moves =
     div
-        [ style [ leftStyle 8 ], class "absolute top-1" ]
+        [ style [ left 8 ], class "absolute top-1" ]
         [ div
             [ style
                 [ width 20
-                , heightStyle 20
+                , height 20
                 , paddingAll 17
                 ]
             , class "br-100 flex items-center justify-center"
@@ -135,7 +135,7 @@ tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
             [ style
-                [ topStyle 1
+                [ top 1
                 , transform [ scale 0 ]
                 , animationWithOptionsStyle
                     { name = "bulge"
@@ -152,7 +152,7 @@ tickFadeIn tileType scores =
         , div
             [ style
                 [ animateEase "fade-out" 500
-                , opacityStyle 1
+                , opacity 1
                 ]
             ]
             [ text <| scoreToString tileType scores ]
@@ -173,7 +173,7 @@ scoreIcon tileType scoreIconSize =
                 , style
                     [ backgroundImage url
                     , width scoreIconSize
-                    , heightStyle scoreIconSize
+                    , height scoreIconSize
                     ]
                 ]
                 []

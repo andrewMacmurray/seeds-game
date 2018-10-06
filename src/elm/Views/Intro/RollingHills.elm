@@ -11,7 +11,7 @@ module Views.Intro.RollingHills exposing
     )
 
 import Data.Visibility exposing (..)
-import Helpers.Css.Style as Style exposing (Style, opacityStyle, svgStyle, svgStyles, transformOrigin)
+import Helpers.Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform as Transform exposing (translate)
 import Helpers.Css.Transition exposing (transitionStyle)
@@ -65,16 +65,16 @@ hillsStyle : Visibility -> Attribute msg
 hillsStyle vis =
     case vis of
         Hidden ->
-            svgStyle <| opacityStyle 0
+            svgStyle <| Style.opacity 0
 
         Leaving ->
-            svgStyle <| opacityStyle 0
+            svgStyle <| Style.opacity 0
 
         Entering ->
-            svgStyle <| opacityStyle 1
+            svgStyle <| Style.opacity 1
 
         Visible ->
-            svgStyle <| opacityStyle 1
+            svgStyle <| Style.opacity 1
 
 
 hillOffset : Float -> Float -> Visibility -> Attribute msg

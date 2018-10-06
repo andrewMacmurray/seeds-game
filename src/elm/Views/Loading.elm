@@ -4,7 +4,7 @@ import Config.Color exposing (gold, rainBlue)
 import Config.Levels exposing (allLevels)
 import Data.Background exposing (..)
 import Data.Level.Progress exposing (currentLevelSeedType)
-import Helpers.Css.Style exposing (Style, backgroundColor, classes, emptyStyle, style, width)
+import Helpers.Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
 import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -34,7 +34,7 @@ loadingScreenBackground : Maybe Background -> Style
 loadingScreenBackground sceneTransition =
     sceneTransition
         |> Maybe.map (loadingScreenColor >> backgroundColor)
-        |> Maybe.withDefault emptyStyle
+        |> Maybe.withDefault empty
 
 
 loadingScreenColor : Background -> String

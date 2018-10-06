@@ -12,7 +12,7 @@ import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (Style, emptyStyle, marginLeft, marginRight, opacityStyle, style, transform, transformOrigin, width)
+import Helpers.Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, transform, transformOrigin, width)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Css.Transform as Transform
 import Helpers.Css.Transition exposing (ease)

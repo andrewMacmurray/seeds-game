@@ -49,7 +49,7 @@ titleView : TitleModel model -> Html Msg
 titleView { window, titleAnimation, progress } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , style [ bottomStyle <| toFloat window.height / 2.4 ]
+        , style [ bottom <| toFloat window.height / 2.4 ]
         ]
         [ div [] [ seeds titleAnimation ]
         , p
@@ -138,7 +138,7 @@ fadeOutStyles vis duration delay =
     case vis of
         Leaving ->
             [ fade vis duration delay
-            , opacityStyle 1
+            , opacity 1
             ]
 
         _ ->
@@ -150,7 +150,7 @@ fadeInStyles vis duration delay =
     case vis of
         Entering ->
             [ fade vis duration delay
-            , opacityStyle 0
+            , opacity 0
             ]
 
         _ ->
@@ -178,4 +178,4 @@ fade vis duration delay =
             animation "fade-out"
 
         _ ->
-            emptyStyle
+            empty
