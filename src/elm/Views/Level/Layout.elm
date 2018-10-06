@@ -5,7 +5,7 @@ import Dict
 import Helpers.Css.Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
@@ -38,7 +38,7 @@ boardLayout : LevelModel -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
         [ class "relative z-3 center flex flex-wrap"
-        , styleAttr (widthStyle <| boardWidth model)
+        , styleAttr (width <| toFloat <| boardWidth model)
         , styleAttr (boardMarginTop model)
         ]
 

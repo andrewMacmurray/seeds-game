@@ -1,5 +1,6 @@
 module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..), Position)
 
+import Config.Color exposing (Color)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
@@ -23,7 +24,7 @@ type alias LevelModel =
 
 
 type LevelMsg
-    = InitTiles (List ( WallColor, Coord )) (List TileType)
+    = InitTiles (List ( Color, Coord )) (List TileType)
     | SquareMove
     | StopMove
     | StartMove Move Position

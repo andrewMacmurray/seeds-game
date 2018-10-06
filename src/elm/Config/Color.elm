@@ -1,5 +1,6 @@
 module Config.Color exposing
-    ( blockYellow
+    ( Color
+    , blockYellow
     , brown
     , brownYellow
     , chocolate
@@ -26,7 +27,6 @@ module Config.Color exposing
     , purple
     , rainBlue
     , seedPodGradient
-    , seedPodGradient_
     , silver
     , skyGreen
     , skyYellow
@@ -38,10 +38,14 @@ module Config.Color exposing
     , yellow
     )
 
-import Helpers.Css.Format exposing (deg, gradientStop, linearGradient, pc)
+import Helpers.Css.Unit exposing (deg, pc)
 
 
-seedPodGradient : String
+type alias Color =
+    String
+
+
+seedPodGradient : Color
 seedPodGradient =
     linearGradient seedPodGradient_
 
@@ -57,176 +61,186 @@ seedPodGradient_ =
         ]
 
 
-darkRed : String
+gradientStop : String -> Float -> String
+gradientStop stopColor percent =
+    String.join " " [ stopColor, pc percent ]
+
+
+linearGradient : String -> String
+linearGradient x =
+    String.join "" [ "linear-gradient(", x, ")" ]
+
+
+darkRed : Color
 darkRed =
     "rgb(191, 30, 45)"
 
 
-crimson : String
+crimson : Color
 crimson =
     "rgb(237, 31, 36)"
 
 
-softRed : String
+softRed : Color
 softRed =
     "rgb(235, 76, 72)"
 
 
-pinkRed : String
+pinkRed : Color
 pinkRed =
     "rgb(255, 116, 116)"
 
 
-fadedOrange : String
+fadedOrange : Color
 fadedOrange =
     "rgb(247, 179, 113)"
 
 
-lightOrange : String
+lightOrange : Color
 lightOrange =
     "rgb(238, 124, 51)"
 
 
-orange : String
+orange : Color
 orange =
     "rgb(241, 101, 34)"
 
 
-gold : String
+gold : Color
 gold =
     "rgb(255, 160, 0)"
 
 
-lightGold : String
+lightGold : Color
 lightGold =
     "rgb(255, 199, 19)"
 
 
-darkYellow : String
+darkYellow : Color
 darkYellow =
     "rgb(201, 153, 6)"
 
 
-brownYellow : String
+brownYellow : Color
 brownYellow =
     "rgb(105, 88, 35)"
 
 
-yellow : String
+yellow : Color
 yellow =
     "rgb(255, 234, 124)"
 
 
-skyYellow : String
+skyYellow : Color
 skyYellow =
     "rgb(255, 227, 137)"
 
 
-blockYellow : String
+blockYellow : Color
 blockYellow =
     "rgb(246, 224, 111)"
 
 
-lightYellow : String
+lightYellow : Color
 lightYellow =
     "rgb(255, 251, 179)"
 
 
-washedYellow : String
+washedYellow : Color
 washedYellow =
     "rgb(255, 254, 224)"
 
 
-greyYellow : String
+greyYellow : Color
 greyYellow =
     "rgba(195, 167, 82, 0.65)"
 
 
-lightBrown : String
+lightBrown : Color
 lightBrown =
     "rgb(167, 123, 82)"
 
 
-brown : String
+brown : Color
 brown =
     "rgb(119, 76, 40)"
 
 
-darkBrown : String
+darkBrown : Color
 darkBrown =
     "rgb(97, 62, 16)"
 
 
-chocolate : String
+chocolate : Color
 chocolate =
     "rgb(57, 35, 21)"
 
 
-mediumGreen : String
+mediumGreen : Color
 mediumGreen =
     "rgb(78, 168, 59)"
 
 
-green : String
+green : Color
 green =
     "rgb(113, 175, 68)"
 
 
-lightGreen : String
+lightGreen : Color
 lightGreen =
     "rgb(119, 193, 66)"
 
 
-skyGreen : String
+skyGreen : Color
 skyGreen =
     "rgb(166, 255, 150)"
 
 
-meadowGreen : String
+meadowGreen : Color
 meadowGreen =
     "rgb(91, 201, 120)"
 
 
-lightBlue : String
+lightBlue : Color
 lightBlue =
     "rgb(38, 170, 224)"
 
 
-rainBlue : String
+rainBlue : Color
 rainBlue =
     "rgb(97, 188, 255)"
 
 
-midnightBlue : String
+midnightBlue : Color
 midnightBlue =
     "rgb(6, 24, 35)"
 
 
-purple : String
+purple : Color
 purple =
     "rgb(173, 81, 126)"
 
 
-silver : String
+silver : Color
 silver =
     "rgb(226, 226, 226)"
 
 
-lightGray : String
+lightGray : Color
 lightGray =
     "rgb(180, 180, 180)"
 
 
-transparent : String
+transparent : Color
 transparent =
     "rgba(0, 0, 0, 0)"
 
 
-transparentGray : String
+transparentGray : Color
 transparentGray =
     "rgba(149, 149, 149, 0.2)"
 
 
-white : String
+white : Color
 white =
     "rgb(255, 255, 255)"

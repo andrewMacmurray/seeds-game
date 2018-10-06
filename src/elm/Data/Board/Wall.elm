@@ -4,21 +4,22 @@ module Data.Board.Wall exposing
     , withColor
     )
 
-import Data.Board.Types exposing (Block(..), Board, Coord, WallColor)
+import Config.Color exposing (Color)
+import Data.Board.Types exposing (Block(..), Board, Coord)
 import Dict
 
 
-addWalls : List ( WallColor, Coord ) -> Board -> Board
+addWalls : List ( Color, Coord ) -> Board -> Board
 addWalls coords board =
     List.foldl addWall_ board coords
 
 
-addWall_ : ( WallColor, Coord ) -> Board -> Board
+addWall_ : ( Color, Coord ) -> Board -> Board
 addWall_ ( wallColor, coord ) currentBoard =
     Dict.update coord (Maybe.map (always <| Wall wallColor)) currentBoard
 
 
-withColor : WallColor -> List Coord -> List ( WallColor, Coord )
+withColor : Color -> List Coord -> List ( Color, Coord )
 withColor color =
     List.map (\b -> ( color, b ))
 

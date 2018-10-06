@@ -28,7 +28,7 @@ hubView model =
         , div
             [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             , id "hub"
-            , styleAttr (heightStyle model.window.height)
+            , styleAttr (heightStyle <| toFloat model.window.height)
             ]
             (renderWorlds model)
         ]
@@ -47,7 +47,7 @@ hubTopBar model =
         [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         , styleAttr (background washedYellow)
         ]
-        [ div [ styleAttr (transformStyle [ scale 0.5 ]) ] <| renderLivesLeft lives
+        [ div [ styleAttr (transform [ scale 0.5 ]) ] <| renderLivesLeft lives
         , div [ class "f7", styleAttr (color darkYellow) ] [ renderCountDown model.timeTillNextLife ]
         ]
 

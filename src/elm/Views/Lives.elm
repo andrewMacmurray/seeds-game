@@ -4,9 +4,9 @@ import Data.Transit as Transit exposing (Transit)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (scale, transformStyle)
+import Helpers.Css.Transform exposing (scale)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Views.Icons.Heart exposing (..)
 
 
@@ -61,10 +61,10 @@ life { active, currentLife, breaking, lifeState } =
                 emptyStyle
 
             else
-                transformStyle [ scale 1.11 ]
+                transform [ scale 1.11 ]
     in
     div
-        [ styleAttr (widthStyle 35)
+        [ styleAttr (width 35)
         , styleAttr (heightStyle 35)
         , styleAttr (marginLeft 10)
         , styleAttr (marginRight 10)

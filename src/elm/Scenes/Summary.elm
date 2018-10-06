@@ -8,10 +8,10 @@ import Data.Level.Types exposing (Progress)
 import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (transform, transformStyle, translateX, translateY)
+import Helpers.Css.Transform exposing (translateX, translateY)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Types exposing (..)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
@@ -30,9 +30,9 @@ summaryView ({ progress, currentLevel } as model) =
     in
     div
         [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , (\( a, b ) -> style a b) (heightStyle model.window.height)
-        , (\( a, b ) -> style a b) (background washedYellow)
-        , (\( a, b ) -> style a b)
+        , styleAttr (heightStyle <| toFloat model.window.height)
+        , styleAttr (background washedYellow)
+        , styleAttr
             (animationStyle
                 { name = "fade-in"
                 , duration = 1000
@@ -40,14 +40,14 @@ summaryView ({ progress, currentLevel } as model) =
                 }
             )
         ]
-        [ div [ (\( a, b ) -> style a b) (marginTop -100) ]
+        [ div [ styleAttr (marginTop -100) ]
             [ div
-                [ (\( a, b ) -> style a b) (widthStyle 65)
-                , (\( a, b ) -> style a b) (marginBottom 30)
+                [ styleAttr (width 65)
+                , styleAttr (marginBottom 30)
                 , class "center"
                 ]
                 [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-            , div [ (\( a, b ) -> style a b) (heightStyle 50) ] <| List.map (renderResourceBank progress currentLevel) resources
+            , div [ styleAttr (heightStyle 50) ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
         ]
 
@@ -60,19 +60,19 @@ renderResourceBank progress currentLevel tileType =
     in
     case tileType of
         Rain ->
-            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib ph1 mh4" ]
+            div [ styleAttr (width 40), class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , rainBank fillLevel
                 ]
 
         Sun ->
-            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib mh4" ]
+            div [ styleAttr (width 40), class "dib mh4" ]
                 [ renderResourceFill tileType
                 , sunBank fillLevel
                 ]
 
         Seed seedType ->
-            div [ (\( a, b ) -> style a b) (widthStyle 40), class "dib ph1 mh4" ]
+            div [ styleAttr (width 40), class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , seedBank seedType fillLevel
                 ]
@@ -85,21 +85,21 @@ renderResourceFill : TileType -> Html msg
 renderResourceFill tileType =
     case tileType of
         Rain ->
-            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
-                [ div [ (\( a, b ) -> style a b) (widthStyle 13), class "center" ] [ rainBankFull ]
+            div [ styleAttr (heightStyle 50) ]
+                [ div [ styleAttr (width 13), class "center" ] [ rainBankFull ]
                 , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
-            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
-                [ div [ (\( a, b ) -> style a b) (widthStyle 18), class "center" ] [ sunBankFull ]
+            div [ styleAttr (heightStyle 50) ]
+                [ div [ styleAttr (width 18), class "center" ] [ sunBankFull ]
                 , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
-            div [ (\( a, b ) -> style a b) (heightStyle 50) ]
-                [ div [ (\( a, b ) -> style a b) (widthStyle 15), class "center" ] [ renderSeed seedType ]
-                , div [ class "relative", (\( a, b ) -> style a b) (transformStyle [ translateY -10 ]) ] <| List.map (seedDrop seedType) <| List.range 7 57
+            div [ styleAttr (heightStyle 50) ]
+                [ div [ styleAttr (width 15), class "center" ] [ renderSeed seedType ]
+                , div [ class "relative", styleAttr (transform [ translateY -10 ]) ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
         _ ->
@@ -120,8 +120,8 @@ seedDrop seedType n =
                 90
     in
     div
-        [ (\( a, b ) -> style a b)
-            (transformStyle
+        [ styleAttr
+            (transform
                 [ translateX <|
                     wave
                         { left = -5
@@ -134,10 +134,10 @@ seedDrop seedType n =
         ]
         [ div
             [ class "absolute top-0 left-0 right-0 center"
-            , (\( a, b ) -> style a b) (widthStyle 5)
-            , (\( a, b ) -> style a b) (heightStyle 8)
-            , (\( a, b ) -> style a b) (opacityStyle 0)
-            , (\( a, b ) -> style a b)
+            , styleAttr (width 5)
+            , styleAttr (heightStyle 8)
+            , styleAttr (opacityStyle 0)
+            , styleAttr
                 (animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
@@ -166,8 +166,8 @@ drop bgColor n =
                 90
     in
     div
-        [ (\( a, b ) -> style a b)
-            (transformStyle
+        [ styleAttr
+            (transform
                 [ translateX <|
                     wave
                         { left = -5
@@ -180,11 +180,11 @@ drop bgColor n =
         ]
         [ div
             [ class "br-100 absolute left-0 right-0 center"
-            , (\( a, b ) -> style a b) (widthStyle 6)
-            , (\( a, b ) -> style a b) (heightStyle 6)
-            , (\( a, b ) -> style a b) (background bgColor)
-            , (\( a, b ) -> style a b) (opacityStyle 0)
-            , (\( a, b ) -> style a b)
+            , styleAttr (width 6)
+            , styleAttr (heightStyle 6)
+            , styleAttr (background bgColor)
+            , styleAttr (opacityStyle 0)
+            , styleAttr
                 (animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150

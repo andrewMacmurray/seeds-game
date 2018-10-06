@@ -1,8 +1,8 @@
 module Views.Icons.Heart exposing (HeartState(..), breakAnimation, breakingHeart, brokenHeart, heart, heartBreak)
 
 import Config.Color exposing (..)
-import Helpers.Css.Format exposing (ms)
-import Helpers.Css.Style exposing (svgStyles)
+import Helpers.Css.Style as Style exposing (svgStyles, transformOrigin)
+import Helpers.Css.Unit exposing (ms)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
@@ -47,24 +47,16 @@ brokenHeart =
 heartBreak : HeartState -> Svg msg
 heartBreak heartState =
     let
-        ( l, r ) =
+        ( breakLeft, breakRight ) =
             case heartState of
                 Breaking ->
-                    ( [ "transform-origin: bottom"
-                      , breakAnimation "heart-break-left" 200 100
-                      ]
-                    , [ "transform-origin: bottom"
-                      , breakAnimation "heart-break-right" 200 100
-                      ]
+                    ( breakAnimation "heart-break-left" 200 100
+                    , breakAnimation "heart-break-right" 200 100
                     )
 
                 Broken ->
-                    ( [ "transform-origin: bottom"
-                      , breakAnimation "heart-break-left" 0 0
-                      ]
-                    , [ "transform-origin: bottom"
-                      , breakAnimation "heart-break-right" 0 0
-                      ]
+                    ( breakAnimation "heart-break-left" 0 0
+                    , breakAnimation "heart-break-right" 0 0
                     )
     in
     Svg.svg
@@ -76,13 +68,19 @@ heartBreak heartState =
             [ Svg.path
                 [ d "M28 4.5a15.5 15.5 0 0 1 22 21.9l-22 22c-.3.2-.7.4-1 .4v-8.9l-5.7-9.8 5.7-8.7-5.7-8.3L27 5.7l1-1.2z"
                 , fill lightGray
-                , svgStyles r
+                , svgStyles
+                    [ transformOrigin "bottom"
+                    , Style.property "animation" breakLeft
+                    ]
                 ]
                 []
             , Svg.path
                 [ d "M26.4 4.5A15.5 15.5 0 0 0 4.5 26.4l22 22c.3.2.6.4 1 .4v-8.9l-5.6-9.8 5.5-8.7-5.5-8.3 5.5-7.4-1-1.2z"
                 , fill silver
-                , svgStyles l
+                , svgStyles
+                    [ transformOrigin "bottom"
+                    , Style.property "animation" breakRight
+                    ]
                 ]
                 []
             ]

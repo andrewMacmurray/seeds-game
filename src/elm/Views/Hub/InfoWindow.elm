@@ -10,7 +10,7 @@ import Data.Level.Types exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
 import State exposing (getLevelConfig)
@@ -84,7 +84,7 @@ renderIcon { targetScore, tileType } =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ styleAttr (widthStyle 35), styleAttr (heightStyle 53) ] [ renderSeed seedType ]
+                    div [ styleAttr (width 35), styleAttr (heightStyle 53) ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
@@ -110,7 +110,7 @@ renderTargetScore ts =
 renderWeather : String -> Html msg
 renderWeather color =
     div
-        [ styleAttr (widthStyle 25)
+        [ styleAttr (width 25)
         , styleAttr (heightStyle 25)
         , styleAttr (marginLeft 2.5)
         , styleAttr (marginRight 2.5)

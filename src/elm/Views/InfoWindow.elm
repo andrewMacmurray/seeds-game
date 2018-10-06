@@ -7,7 +7,7 @@ import Helpers.Css.Animation exposing (..)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg
@@ -28,7 +28,7 @@ infoContainer infoWindow content =
                         , timing = Linear
                         }
                     )
-                , styleAttr (widthStyle 380)
+                , styleAttr (width 380)
                 ]
                 [ content ]
             ]
@@ -39,7 +39,7 @@ infoContainer infoWindow content =
                 [ class "pa3 br3 tc relative"
                 , styleAttr (background seedPodGradient)
                 , styleAttr (color white)
-                , styleAttr (widthStyle 380)
+                , styleAttr (width 380)
                 , styleAttr
                     (animationStyle
                         { name = "exit-down"

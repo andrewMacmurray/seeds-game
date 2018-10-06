@@ -1,4 +1,15 @@
-module Scenes.Tutorial.View exposing (fadeLine, handleSkip, leavingStyles, renderLines_, renderResourceBank, renderTiles, resourceBankOffsetX, showIf, tutorialBoard, tutorialView)
+module Scenes.Tutorial.View exposing
+    ( fadeLine
+    , handleSkip
+    , leavingStyles
+    , renderLines_
+    , renderResourceBank
+    , renderTiles
+    , resourceBankOffsetX
+    , showIf
+    , tutorialBoard
+    , tutorialView
+    )
 
 import Config.Color exposing (darkYellow, greyYellow)
 import Config.Scale as ScaleConfig
@@ -6,14 +17,14 @@ import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Css.Format exposing (pc)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Helpers.Css.Unit exposing (pc)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial.Types exposing (..)
 import Views.Level.Layout exposing (renderLineLayer, renderLines)
@@ -38,7 +49,7 @@ tutorialView model =
         , classList <| showIf model.canvasVisible
         ]
         [ div
-            [ style "margin-top" (pc -3)
+            [ styleAttr <| Style.property "margin-top" (pc -3)
             , styleAttr
                 (transitionStyle
                     { property = "all"
@@ -91,8 +102,8 @@ tutorialBoard model =
     div
         [ class "center relative"
         , classList <| showIf model.boardVisible
-        , styleAttr (widthStyle <| boardWidth model)
-        , styleAttr (heightStyle <| boardHeight model)
+        , styleAttr (width <| toFloat <| boardWidth model)
+        , styleAttr (heightStyle <| toFloat <| boardHeight model)
         , styleAttr (easeAll 500)
         ]
         [ div [ class "absolute z-5" ] [ renderResourceBank model ]
@@ -115,7 +126,7 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     in
     div
         [ styleAttr (easeAll 800)
-        , styleAttr (transformStyle [ translate offsetX offsetY ])
+        , styleAttr (transform [ translate offsetX offsetY ])
         , classList <| showIf resourceBankVisible
         ]
         [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
@@ -164,7 +175,7 @@ leavingStyles model (( _, block ) as move) =
     in
     case tileState of
         Leaving _ order ->
-            [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
+            [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionStyle
                 { property = "all"
                 , duration = 500

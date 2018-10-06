@@ -1,11 +1,11 @@
-module Views.Level.Line exposing (line_, renderLine, transformMap)
+module Views.Level.Line exposing (renderLine)
 
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
 import Data.Window as Window
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Style as Style exposing (Style, marginAuto, svgStyle, svgStyles)
+import Helpers.Css.Transform as Transform exposing (..)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -42,44 +42,44 @@ line_ window tileType bearing =
             tileScaleFactor window
     in
     svg
-        [ width <| Debug.toString <| 50 * tileScale
-        , height <| Debug.toString <| 9 * tileScale
+        [ width <| String.fromFloat <| 50 * tileScale
+        , height <| String.fromFloat <| 9 * tileScale
         , svgStyles
-            [ transformMap window bearing
-            , "margin: auto"
+            [ marginAuto
+            , lineTransforms window bearing
             ]
         , class "absolute bottom-0 right-0 left-0 top-0 z-0"
         ]
         [ line
-            [ strokeWidth <| Debug.toString <| 11 * tileScale
+            [ strokeWidth <| String.fromFloat <| 11 * tileScale
             , x1 "0"
             , y1 "0"
-            , x2 <| Debug.toString <| 50 * tileScale
+            , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , svgStyle "stroke" <| strokeColors tileType
+            , svgStyle <| Style.stroke <| strokeColors tileType
             ]
             []
         ]
 
 
-transformMap : Window.Size -> MoveBearing -> String
-transformMap window bearing =
+lineTransforms : Window.Size -> MoveBearing -> Style
+lineTransforms window bearing =
     let
         xOffset =
             tileScaleFactor window * 25
     in
     case bearing of
         Left ->
-            transformSvg [ translate -xOffset 1.5 ]
+            Style.transform [ translate -xOffset 1.5 ]
 
         Right ->
-            transformSvg [ translate xOffset 1.5 ]
+            Style.transform [ translate xOffset 1.5 ]
 
         Up ->
-            transformSvg [ rotateZ 90, translate -xOffset 1.5 ]
+            Style.transform [ rotateZ 90, translate -xOffset 1.5 ]
 
         Down ->
-            transformSvg [ rotateZ 90, translate xOffset 1.5 ]
+            Style.transform [ rotateZ 90, translate xOffset 1.5 ]
 
         _ ->
-            ""
+            Style.emptyStyle

@@ -17,12 +17,12 @@ import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLeve
 import Data.Level.Types exposing (..)
 import Dict
 import Helpers.Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
@@ -43,7 +43,7 @@ renderWorld : HubModel model -> ( WorldNumber, WorldData TutorialConfig ) -> Htm
 renderWorld model (( _, worldData ) as world) =
     div [ styleAttr (backgroundColor worldData.background), class "pa5 flex" ]
         [ div
-            [ styleAttr (widthStyle 300), class "center" ]
+            [ styleAttr (width 300), class "center" ]
             (worldData.levels
                 |> Dict.toList
                 |> List.reverse
@@ -70,7 +70,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
     in
     div
         (batchStyles
-            [ [ widthStyle 35
+            [ [ width 35
               , marginTop 50
               , marginBottom 50
               , color worldData.textColor
@@ -114,8 +114,8 @@ currentLevelPointer isCurrentLevel =
 offsetStyles : Int -> List Style
 offsetStyles levelNumber =
     wave
-        { center = [ ( "margin-left", "auto" ), ( "margin-right", "auto" ) ]
-        , right = [ ( "margin-left", "auto" ) ]
+        { center = [ leftAuto, rightAuto ]
+        , right = [ leftAuto ]
         , left = []
         }
         (levelNumber - 1)
@@ -128,7 +128,7 @@ renderNumber visibleLevelNumber hasReachedLevel worldData =
             [ class "br-100 center flex justify-center items-center"
             , styleAttr (backgroundColor worldData.textBackgroundColor)
             , styleAttr (marginTop 10)
-            , styleAttr (widthStyle 25)
+            , styleAttr (width 25)
             , styleAttr (heightStyle 25)
             ]
             [ p [ styleAttr (color worldData.textCompleteColor), class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]

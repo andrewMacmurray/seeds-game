@@ -4,12 +4,11 @@ module Helpers.Css.Transition exposing
     , easeAll
     , transition
     , transitionStyle
-    , transitionSvg
     )
 
-import Helpers.Css.Format exposing (ms)
-import Helpers.Css.Style exposing (Style)
+import Helpers.Css.Style as Style exposing (Style)
 import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
+import Helpers.Css.Unit exposing (ms)
 import Helpers.Maybe exposing (catMaybes)
 
 
@@ -56,12 +55,7 @@ ease property duration =
 
 transitionStyle : Transition -> Style
 transitionStyle =
-    transition >> (\b -> ( "transition", b ))
-
-
-transitionSvg : Transition -> String
-transitionSvg =
-    transition >> (++) "transition: "
+    transition >> Style.property "transition"
 
 
 transition : Transition -> String

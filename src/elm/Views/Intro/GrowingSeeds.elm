@@ -1,22 +1,29 @@
-module Views.Intro.GrowingSeeds exposing (growingSeed, growingSeeds, mainSeedStyles, seedsLeft, seedsRight, sideSeedsContainer)
+module Views.Intro.GrowingSeeds exposing
+    ( growingSeed
+    , growingSeeds
+    , mainSeedStyles
+    , seedsLeft
+    , seedsRight
+    , sideSeedsContainer
+    )
 
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (Style, emptyStyle, marginLeft, marginRight, opacityStyle, styleAttr, widthStyle)
+import Helpers.Css.Style exposing (Style, emptyStyle, marginLeft, marginRight, opacityStyle, styleAttr, transform, transformOrigin, width)
 import Helpers.Css.Timing exposing (TimingFunction(..))
-import Helpers.Css.Transform as Transform exposing (transform, transformStyle)
+import Helpers.Css.Transform as Transform
 import Helpers.Css.Transition exposing (ease)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
 
 
 growingSeeds : Window.Size -> Visibility -> Html msg
 growingSeeds window vis =
-    div [ class "flex justify-center", id "growing-seeds" ] <|
+    div [ class "flex justify-center" ] <|
         [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) seedsLeft
         , div [ mainSeedStyles vis ] [ growingSeed window ( 0, Sunflower, 1.1 ) ]
         , sideSeedsContainer vis <| List.map (growingSeed window) seedsRight
@@ -45,10 +52,10 @@ sideSeedsContainer : Visibility -> List (Html msg) -> Html msg
 sideSeedsContainer vis =
     case vis of
         Leaving ->
-            div [ class "o-0 flex justify-center", (\( a, b ) -> style a b) (ease "opacity" 1500) ]
+            div [ class "o-0 flex justify-center", styleAttr <| ease "opacity" 1500 ]
 
         Entering ->
-            div [ class "o-100 flex justify-center", (\( a, b ) -> style a b) (ease "opacity" 1500) ]
+            div [ class "o-100 flex justify-center", styleAttr <| ease "opacity" 1500 ]
 
         Visible ->
             div [ class "o-100 flex justify-center" ]
@@ -65,11 +72,11 @@ growingSeed window ( index, seedType, scale ) =
     in
     div [ class "flex items-end" ]
         [ div
-            [ styleAttr (widthStyle <| 50 * scale * tileScaleFactor window)
+            [ styleAttr (width <| 50 * scale * tileScaleFactor window)
             , styleAttr (marginLeft 5)
             , styleAttr (marginRight 5)
-            , styleAttr (transformStyle [ Transform.scale 0 ])
-            , style "transform-origin" "center"
+            , styleAttr (transform [ Transform.scale 0 ])
+            , styleAttr (transformOrigin "center")
             , styleAttr
                 (animationWithOptionsStyle
                     { name = "bulge-elastic"

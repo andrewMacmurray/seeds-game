@@ -9,9 +9,9 @@ module Helpers.Css.Animation exposing
     , animationWithOptionsSvg
     )
 
-import Helpers.Css.Format exposing (ms)
-import Helpers.Css.Style exposing (Style)
+import Helpers.Css.Style as Style exposing (Style)
 import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
+import Helpers.Css.Unit exposing (ms)
 import Helpers.Maybe exposing (catMaybes)
 
 
@@ -69,12 +69,12 @@ animateEase name duration =
 
 animationStyle : Animation -> Style
 animationStyle =
-    animation >> (\b -> ( "animation", b ))
+    animation >> Style.property "animation"
 
 
 animationWithOptionsStyle : AnimationOptions -> Style
 animationWithOptionsStyle =
-    animationWithOptions >> (\b -> ( "animation", b ))
+    animationWithOptions >> Style.property "animation"
 
 
 animationWithOptionsSvg : AnimationOptions -> String

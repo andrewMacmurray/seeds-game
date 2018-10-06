@@ -1,16 +1,26 @@
-module Views.Level.TopBar exposing (moveCounterColor, remainingMoves, renderScore, renderScoreIcon, scoreContent, scoreIcon, scoreIconUrl, tickFadeIn, topBar)
+module Views.Level.TopBar exposing
+    ( moveCounterColor
+    , remainingMoves
+    , renderScore
+    , renderScoreIcon
+    , scoreContent
+    , scoreIcon
+    , scoreIconUrl
+    , tickFadeIn
+    , topBar
+    )
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (LevelModel)
 import Views.Icons.Tick exposing (tickBackground)
 import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
@@ -25,12 +35,18 @@ topBar model =
         , styleAttr (backgroundColor washedYellow)
         ]
         [ div
-            [ styleAttr (widthStyle <| boardFullWidth model)
+            [ styleAttr (width <| toFloat <| boardFullWidth model)
             , styleAttr (heightStyle ScaleConfig.topBarHeight)
             , class "flex items-center justify-center relative"
             ]
             [ remainingMoves model.remainingMoves
-            , div [ styleAttr (marginTop -16), style "padding" "0 9px", class "flex justify-center" ] <|
+            , Style.batch div
+                [ [ marginTop -16 ]
+                , paddingHorizontal 0
+                , paddingVertical 9
+                ]
+                [ class "flex justify-center" ]
+              <|
                 List.map (renderScore model) (scoreTileTypes model.tileSettings)
             ]
         ]
@@ -44,13 +60,13 @@ renderScore model tileType =
     in
     div
         [ class "relative tc"
-        , styleAttr (marginRight scoreMargin)
-        , styleAttr (marginLeft scoreMargin)
+        , styleAttr (marginRight <| toFloat scoreMargin)
+        , styleAttr (marginLeft <| toFloat scoreMargin)
         ]
         [ renderScoreIcon tileType
         , p
             [ class "ma0 absolute left-0 right-0 f6"
-            , style "bottom" "-1.5em"
+            , Html.Attributes.style "bottom" "-1.5em"
             ]
             [ scoreContent tileType model.scores ]
         ]
@@ -61,7 +77,7 @@ remainingMoves moves =
     div
         [ styleAttr (leftStyle 8), class "absolute top-1" ]
         [ div
-            [ styleAttr (widthStyle 20)
+            [ styleAttr (width 20)
             , styleAttr (heightStyle 20)
             , styleAttr (paddingAll 17)
             , class "br-100 flex items-center justify-center"
@@ -103,7 +119,7 @@ tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
             [ styleAttr (topStyle 1)
-            , styleAttr (transformStyle [ scale 0 ])
+            , styleAttr (transform [ scale 0 ])
             , styleAttr
                 (animationWithOptionsStyle
                     { name = "bulge"
@@ -130,14 +146,14 @@ renderScoreIcon tileType =
     scoreIcon tileType ScaleConfig.scoreIconSize
 
 
-scoreIcon : TileType -> number -> Html msg
+scoreIcon : TileType -> Float -> Html msg
 scoreIcon tileType scoreIconSize =
     case scoreIconUrl tileType of
         Just url ->
             div
                 [ class "bg-center contain"
                 , styleAttr (backgroundImage url)
-                , styleAttr (widthStyle scoreIconSize)
+                , styleAttr (width scoreIconSize)
                 , styleAttr (heightStyle scoreIconSize)
                 ]
                 []

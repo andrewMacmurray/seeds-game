@@ -3,10 +3,10 @@ module Scenes.Retry exposing (lifeState, retryView, tryAgain)
 import Config.Color exposing (..)
 import Data.Transit exposing (Transit(..))
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Format exposing (pc)
 import Helpers.Css.Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
+import Helpers.Css.Unit exposing (pc)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -19,7 +19,7 @@ retryView : Model -> Html Msg
 retryView model =
     div
         [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , styleAttr (heightStyle model.window.height)
+        , styleAttr (heightStyle <| toFloat model.window.height)
         , styleAttr (background washedYellow)
         , styleAttr
             (animationStyle
@@ -59,7 +59,7 @@ retryView model =
                         , iteration = Nothing
                         }
                     )
-                , styleAttr (transformStyle [ translate 0 (toFloat <| model.window.height + 100) ])
+                , styleAttr <| transform [ translate 0 (toFloat <| model.window.height + 100) ]
                 ]
                 [ tryAgain model ]
             ]

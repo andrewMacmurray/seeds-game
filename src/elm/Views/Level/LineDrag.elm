@@ -1,10 +1,10 @@
-module Views.Level.LineDrag exposing (handleLineDrag, lastMoveOrigin, lineDrag)
+module Views.Level.LineDrag exposing (handleLineDrag)
 
 import Config.Scale as ScaleConfig
 import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
-import Helpers.Css.Format exposing (px)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (svgStyle)
+import Helpers.Css.Unit exposing (px)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
@@ -39,13 +39,13 @@ lineDrag ({ window } as model) =
             ScaleConfig.tileScaleFactor window
     in
     svg
-        [ width <| px window.width
-        , height <| px window.height
+        [ width <| px <| toFloat window.width
+        , height <| px <| toFloat window.height
         , viewBox vb
         , class "fixed top-0 right-0 z-2 touch-disabled"
         ]
         [ line
-            [ svgStyle "stroke" strokeColor
+            [ svgStyle <| Style.stroke strokeColor
             , strokeWidth <| String.fromFloat <| 6 * tileScale
             , strokeLinecap "round"
             , x1 <| String.fromFloat oX

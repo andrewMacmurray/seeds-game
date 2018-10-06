@@ -11,10 +11,10 @@ module Views.Intro.RollingHills exposing
     )
 
 import Data.Visibility exposing (..)
-import Helpers.Css.Style exposing (svgStyle, svgStyles, widthStyle)
+import Helpers.Css.Style as Style exposing (Style, opacityStyle, svgStyle, svgStyles, transformOrigin)
 import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform as Transform exposing (transformSvg, translate)
-import Helpers.Css.Transition exposing (transitionSvg)
+import Helpers.Css.Transform as Transform exposing (translate)
+import Helpers.Css.Transition exposing (transitionStyle)
 import Html exposing (Html, div)
 import Html.Attributes
 import Svg exposing (Attribute, Svg)
@@ -25,7 +25,7 @@ import Views.Flowers.Sunflower exposing (sunflower)
 rollingHills : Visibility -> Html msg
 rollingHills vis =
     div [ id "rolling-hills" ]
-        [ div [ class "relative z-5 center", (\( a, b ) -> Html.Attributes.style a b) (widthStyle 200) ] [ sunflower 0 ]
+        [ div [ class "relative z-5 center", svgStyle <| Style.width 200 ] [ sunflower 0 ]
         , div [ class "fixed w-100 bottom-0 left-0 z-1" ] [ hills vis ]
         ]
 
@@ -65,24 +65,24 @@ hillsStyle : Visibility -> Attribute msg
 hillsStyle vis =
     case vis of
         Hidden ->
-            style "opacity: 0"
+            svgStyle <| opacityStyle 0
 
         Leaving ->
-            style "opacity: 0"
+            svgStyle <| opacityStyle 0
 
         Entering ->
-            style "opacity: 1"
+            svgStyle <| opacityStyle 1
 
         Visible ->
-            style "opacity: 1"
+            svgStyle <| opacityStyle 1
 
 
 hillOffset : Float -> Float -> Visibility -> Attribute msg
 hillOffset delay offset vis =
     let
         visibleStyles =
-            [ transformSvg [ translate 0 offset ]
-            , transitionSvg
+            [ Style.transform [ translate 0 offset ]
+            , transitionStyle
                 { property = "all"
                 , duration = 2000
                 , delay = Just delay
@@ -98,7 +98,7 @@ hillOffset delay offset vis =
             svgStyles visibleStyles
 
         _ ->
-            svgStyles [ transformSvg [ translate 0 800 ] ]
+            svgStyles [ Style.transform [ translate 0 800 ] ]
 
 
 renderFlowers : Float -> Visibility -> Svg msg
@@ -120,13 +120,13 @@ flowersRight : Float -> Svg msg
 flowersRight delay =
     Svg.g []
         [ Svg.g
-            [ svgStyles [ originCenter, transformSvg [ translate 600 -360, Transform.scale 0.08 ] ] ]
+            [ svgStyles [ originCenter, Style.transform [ translate 600 -360, Transform.scale 0.08 ] ] ]
             [ sunflower <| delay + 300 ]
         , Svg.g
-            [ svgStyles [ originCenter, transformSvg [ translate 700 -390, Transform.scale 0.06 ] ] ]
+            [ svgStyles [ originCenter, Style.transform [ translate 700 -390, Transform.scale 0.06 ] ] ]
             [ sunflower <| delay + 450 ]
         , Svg.g
-            [ svgStyles [ originCenter, transformSvg [ translate 800 -400, Transform.scale 0.05 ] ] ]
+            [ svgStyles [ originCenter, Style.transform [ translate 800 -400, Transform.scale 0.05 ] ] ]
             [ sunflower <| delay + 650 ]
         ]
 
@@ -134,12 +134,12 @@ flowersRight delay =
 flowersLeft : Float -> Svg msg
 flowersLeft delay =
     Svg.g []
-        [ Svg.g [ svgStyles [ originCenter, transformSvg [ translate 400 -350, Transform.scale 0.08 ] ] ] [ sunflower <| delay + 0 ]
-        , Svg.g [ svgStyles [ originCenter, transformSvg [ translate 300 -380, Transform.scale 0.06 ] ] ] [ sunflower <| delay + 250 ]
-        , Svg.g [ svgStyles [ originCenter, transformSvg [ translate 200 -400, Transform.scale 0.05 ] ] ] [ sunflower <| delay + 600 ]
+        [ Svg.g [ svgStyles [ originCenter, Style.transform [ translate 400 -350, Transform.scale 0.08 ] ] ] [ sunflower <| delay + 0 ]
+        , Svg.g [ svgStyles [ originCenter, Style.transform [ translate 300 -380, Transform.scale 0.06 ] ] ] [ sunflower <| delay + 250 ]
+        , Svg.g [ svgStyles [ originCenter, Style.transform [ translate 200 -400, Transform.scale 0.05 ] ] ] [ sunflower <| delay + 600 ]
         ]
 
 
-originCenter : String
+originCenter : Style
 originCenter =
-    "transform-origin: center"
+    transformOrigin "center"

@@ -25,7 +25,7 @@ successMessages =
         [ "Amazing!"
         , "Awesome!"
         , "Success!"
-        , "Much Win!"
+        , "Win!"
         ]
 
 

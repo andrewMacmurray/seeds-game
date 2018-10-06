@@ -1,8 +1,9 @@
 module Views.Icons.SeedBank exposing (seedBank)
 
 import Data.Board.Types exposing (..)
-import Helpers.Css.Style exposing (svgStyles)
+import Helpers.Css.Style as Style exposing (svgStyles)
 import Helpers.Css.Transform as Css exposing (translateY)
+import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)
@@ -29,8 +30,8 @@ seedBank seedType percentFull =
 
         offsetLevelStyles =
             svgStyles
-                [ "transition: transform 1.5s ease"
-                , "transform:" ++ Css.transform [ translateY seedLevelOffset ]
+                [ easeAll 1500
+                , Style.transform [ translateY seedLevelOffset ]
                 ]
     in
     Svg.svg

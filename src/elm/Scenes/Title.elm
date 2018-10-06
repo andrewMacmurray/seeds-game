@@ -1,4 +1,16 @@
-module Scenes.Title exposing (TitleModel, fade, fadeInStyles, fadeOutStyles, fadeSeeds, handleStart, percentWindowHeight, seedEntranceDelays, seedExitDelays, seeds, titleView)
+module Scenes.Title exposing
+    ( TitleModel
+    , fade
+    , fadeInStyles
+    , fadeOutStyles
+    , fadeSeeds
+    , handleStart
+    , percentWindowHeight
+    , seedEntranceDelays
+    , seedExitDelays
+    , seeds
+    , titleView
+    )
 
 import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
@@ -37,7 +49,7 @@ titleView : TitleModel model -> Html Msg
 titleView { window, titleAnimation, progress } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , (\( a, b ) -> style a b) (bottomStyle <| toFloat window.height / 2.4)
+        , styleAttr (bottomStyle <| toFloat window.height / 2.4)
         ]
         [ div [] [ seeds titleAnimation ]
         , p
@@ -51,7 +63,7 @@ titleView { window, titleAnimation, progress } =
             [ text "seeds" ]
         , button
             (batchStyles
-                [ [ ( "border", "none" )
+                [ [ borderNone
                   , marginTop 15
                   , color white
                   , backgroundColor lightOrange

@@ -1,21 +1,18 @@
 module Helpers.Css.Transform exposing
     ( Transform
     , fromTransform
+    , render
     , rotateX
     , rotateY
     , rotateZ
     , scale
-    , transform
-    , transformStyle
-    , transformSvg
     , translate
     , translateX
     , translateY
     , translateZ
     )
 
-import Helpers.Css.Format as Format
-import Helpers.Css.Style exposing (Style)
+import Helpers.Css.Unit exposing (..)
 
 
 type Transform
@@ -35,31 +32,8 @@ type alias XY =
     }
 
 
-
-{-
-   myTransform =
-       transformStyle
-           [ translate 10 10
-           , scale 2
-           , rotateZ 10
-           ]
-
-    -- ("transform", "translate(10px, 10px) scale(2) rotateZ(10deg)")
--}
-
-
-transformSvg : List Transform -> String
-transformSvg =
-    transform >> (++) "transform: "
-
-
-transformStyle : List Transform -> Style
-transformStyle =
-    transform >> (\b -> ( "transform", b ))
-
-
-transform : List Transform -> String
-transform =
+render : List Transform -> String
+render =
     List.map fromTransform >> String.join " "
 
 
@@ -107,25 +81,71 @@ fromTransform : Transform -> String
 fromTransform ts =
     case ts of
         RotateZ n ->
-            Format.rotateZ n
+            rotate_ "Z" n
 
         RotateX n ->
-            Format.rotateX n
+            rotate_ "X" n
 
         RotateY n ->
-            Format.rotateY n
+            rotate_ "Y" n
 
         Scale n ->
-            Format.scale n
+            scale_ n
 
         Translate { x, y } ->
-            Format.translate x y
+            translate_ x y
 
         TranslateX n ->
-            Format.translateX n
+            translateX_ n
 
         TranslateY n ->
-            Format.translateY n
+            translateY_ n
 
         TranslateZ n ->
-            Format.translateZ n
+            translateZ_ n
+
+
+scale_ : Float -> String
+scale_ n =
+    join [ "scale(", String.fromFloat n, ")" ]
+
+
+translate_ : Float -> Float -> String
+translate_ x y =
+    join [ "translate(", px x, ",", px y, ")" ]
+
+
+translateX_ : Float -> String
+translateX_ n =
+    join [ "translateX(", px n, ")" ]
+
+
+translateY_ : Float -> String
+translateY_ n =
+    join [ "translateY(", px n, ")" ]
+
+
+translateZ_ : Float -> String
+translateZ_ n =
+    join [ "translateZ(", px n, ")" ]
+
+
+rotate_ : String -> Float -> String
+rotate_ axis n =
+    join [ "rotate", axis, "(", deg n, ")" ]
+
+
+svgTranslate : Float -> Float -> String
+svgTranslate x y =
+    join
+        [ "translate("
+        , String.fromFloat x
+        , " "
+        , String.fromFloat y
+        , ")"
+        ]
+
+
+join : List String -> String
+join =
+    String.join ""

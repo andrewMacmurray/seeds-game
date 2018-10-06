@@ -54,7 +54,7 @@ import Scenes.Level.Types as Level exposing (..)
 
 boardMarginTop : LevelModel -> Style
 boardMarginTop model =
-    marginTop <| boardOffsetTop model
+    marginTop <| toFloat <| boardOffsetTop model
 
 
 boardOffsetTop : TileConfig model -> Int
@@ -93,7 +93,7 @@ tileCoordsStyles model coord =
         ( y, x ) =
             tilePosition model coord
     in
-    [ transformStyle
+    [ transform
         [ translate x y
         , translateZ 0
         ]
@@ -120,7 +120,7 @@ wallStyles window ( _, block ) =
     case block of
         Wall color ->
             [ backgroundColor color
-            , widthStyle wallSize
+            , width wallSize
             , heightStyle wallSize
             ]
 
@@ -142,7 +142,7 @@ growingStyles : Move -> List Style
 growingStyles ( coord, block ) =
     case getTileState block of
         Growing SeedPod _ ->
-            [ transformStyle [ scale 4 ]
+            [ transform [ scale 4 ]
             , transitionStyle
                 { property = "all"
                 , duration = 400
@@ -150,7 +150,7 @@ growingStyles ( coord, block ) =
                 , delay = Just <| toFloat <| modBy 5 (growingOrder block) * 70
                 }
             , opacityStyle 0
-            , ( "pointer-events", "none" )
+            , property "pointer-events" "none"
             ]
 
         Growing (Seed _) _ ->
@@ -226,7 +226,7 @@ newLeavingStyles model =
 prepareLeavingStyle : LevelModel -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
     ( Debug.toString tileType
-    , transformStyle
+    , transform
         [ translate (exitXDistance i model) -(exitYdistance model)
         , scale 0.5
         ]
@@ -285,7 +285,7 @@ draggingStyles moveShape ( _, tileState ) =
         ]
 
     else if isDragging tileState then
-        [ transformStyle [ scale 0.8 ]
+        [ transform [ scale 0.8 ]
         , easeAll 300
         ]
 
@@ -299,7 +299,7 @@ tileWidthHeightStyles { window } =
         tileScale =
             ScaleConfig.tileScaleFactor window
     in
-    [ widthStyle <| ScaleConfig.baseTileSizeX * tileScale
+    [ width <| ScaleConfig.baseTileSizeX * tileScale
     , heightStyle <| ScaleConfig.baseTileSizeY * tileScale
     ]
 

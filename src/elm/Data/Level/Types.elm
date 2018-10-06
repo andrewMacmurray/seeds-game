@@ -1,6 +1,19 @@
-module Data.Level.Types exposing (AllLevels, CurrentLevelConfig, LevelData, LevelNumber, Probability(..), Progress, TargetScore(..), TileSetting, WorldData, WorldLevels, WorldNumber)
+module Data.Level.Types exposing
+    ( AllLevels
+    , CurrentLevelConfig
+    , LevelData
+    , LevelNumber
+    , Probability(..)
+    , Progress
+    , TargetScore(..)
+    , TileSetting
+    , WorldData
+    , WorldLevels
+    , WorldNumber
+    )
 
-import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType, WallColor)
+import Config.Color exposing (Color)
+import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
 import Dict exposing (Dict)
 
 
@@ -48,7 +61,7 @@ type alias LevelNumber =
 
 type alias LevelData tutorialData =
     { tileSettings : List TileSetting
-    , walls : List ( WallColor, Coord )
+    , walls : List ( Color, Coord )
     , boardDimensions : BoardDimensions
     , tutorial : Maybe tutorialData
     , moves : Int

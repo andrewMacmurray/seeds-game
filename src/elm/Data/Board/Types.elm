@@ -1,7 +1,30 @@
-module Data.Board.Types exposing (Block(..), Board, BoardConfig, BoardDimensions, Coord, FallingDistance, GrowingOrder, HasBoard, LeavingOrder, Move, MoveBearing(..), MoveOrder, MoveShape(..), Score, Scores, SeedType(..), TileConfig, TileState(..), TileType(..), WallColor, X, Y)
+module Data.Board.Types exposing
+    ( Block(..)
+    , Board
+    , BoardConfig
+    , BoardDimensions
+    , Coord
+    , FallingDistance
+    , GrowingOrder
+    , HasBoard
+    , LeavingOrder
+    , Move
+    , MoveBearing(..)
+    , MoveOrder
+    , MoveShape(..)
+    , Score
+    , Scores
+    , SeedType(..)
+    , TileConfig
+    , TileState(..)
+    , TileType(..)
+    , X
+    , Y
+    )
 
-import Dict exposing (Dict)
+import Config.Color exposing (Color)
 import Data.Window as Window
+import Dict exposing (Dict)
 
 
 
@@ -72,12 +95,8 @@ type alias X =
 
 
 type Block
-    = Wall WallColor
+    = Wall Color
     | Space TileState
-
-
-type alias WallColor =
-    String
 
 
 type TileState

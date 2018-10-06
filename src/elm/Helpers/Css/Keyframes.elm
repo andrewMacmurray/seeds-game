@@ -9,21 +9,42 @@ module Helpers.Css.Keyframes exposing
     , map2
     , map3
     , opacity
-    , render
     , rotateZ
     , scale
     , translateX
     , translateY
     )
 
-import Helpers.Css.Format exposing (pc)
 import Helpers.Css.Transform as Transform exposing (Transform, fromTransform)
+import Helpers.Css.Unit exposing (pc)
 import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode
 
 
 
+-- myAnim =
+--     keyframes "fade-in-out"
+--         [ ( 0, [ opacity 0 ] )
+--         , ( 50, [ opacity 1 ] )
+--         , ( 100, [ opacity 0 ] )
+--         ]
+--
+--
+-- myAnim2 =
+--     keyframes "bulge-fade"
+--         [ ( 0, [ opacity 1, transform [ scale 1, translateX 100 ] ] )
+--         , ( 100, [ opacity 0, transform [ scale 2.5, translateX 200 ] ] )
+--         ]
+--
+--
+-- myAnim3 =
+--     keyframes "animation-3"
+--         [ frame 0 [ opacity 0, transform [ translateX 0, translateY 10 ] ]
+--         , frame 50 [ opacity 1, transform [ translateX 100 ] ]
+--         , frame 100 [ opacity 0, transform [ translateX 0 ] ]
+--         ]
+--
 {-
     -- example usage
 
@@ -207,7 +228,7 @@ renderProp : KeyframeProp -> String
 renderProp prop =
     case prop of
         OpacityKey n ->
-            "opacity: " ++ Debug.toString n
+            "opacity: " ++ String.fromFloat n
 
         ColorKey c ->
             "color: " ++ c

@@ -1,7 +1,7 @@
-module Views.Flowers.Sunflower exposing (fadePetal, petals, sunflower)
+module Views.Flowers.Sunflower exposing (sunflower)
 
-import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsSvg)
-import Helpers.Css.Style exposing (svgStyles)
+import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsStyle, animationWithOptionsSvg)
+import Helpers.Css.Style as Style exposing (opacityStyle, svgStyles, transformOrigin)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform as Transform
 import Svg exposing (Svg)
@@ -16,7 +16,7 @@ sunflower delay =
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
             , fill "#8A5D3B"
             , svgStyles
-                [ animationWithOptionsSvg
+                [ animationWithOptionsStyle
                     { name = "bulge-elastic-big"
                     , duration = 1000
                     , timing = Linear
@@ -24,8 +24,8 @@ sunflower delay =
                     , fill = Forwards
                     , iteration = Nothing
                     }
-                , "transform-origin: 40% 45%"
-                , "opacity: 0"
+                , transformOrigin "40% 45%"
+                , opacityStyle 0
                 ]
             ]
             []
@@ -40,10 +40,12 @@ fadePetal delay index petal =
     in
     Svg.g
         [ svgStyles
-            [ Transform.transform [ Transform.scale 0 ]
-            , "transform-origin: center"
-            , "opacity: 0"
-            , animationWithOptionsSvg
+            [ Style.transform [ Transform.scale 0 ]
+
+            -- , "transform-origin: center"
+            , transformOrigin "center"
+            , opacityStyle 0
+            , animationWithOptionsStyle
                 { name = "bulge-small"
                 , duration = 900
                 , timing = Ease

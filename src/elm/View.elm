@@ -2,7 +2,7 @@ module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
 
 import Config.Animations exposing (internalAnimations)
 import Config.Color exposing (darkYellow)
-import Helpers.Css.Style exposing (color)
+import Helpers.Css.Style exposing (color, styleAttr)
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -81,6 +81,6 @@ reset =
     p
         [ onClick ClearCache
         , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
-        , (\( a, b ) -> style a b) (color darkYellow)
+        , styleAttr (color darkYellow)
         ]
         [ text "reset" ]
