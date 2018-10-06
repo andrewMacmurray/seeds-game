@@ -41,8 +41,6 @@ fadePetal delay index petal =
     Svg.g
         [ svgStyles
             [ Style.transform [ Transform.scale 0 ]
-
-            -- , "transform-origin: center"
             , transformOrigin "center"
             , opacityStyle 0
             , animationWithOptionsStyle

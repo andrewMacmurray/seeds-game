@@ -41,9 +41,9 @@ renderWorlds model =
 
 renderWorld : HubModel model -> ( WorldNumber, WorldData TutorialConfig ) -> Html Msg
 renderWorld model (( _, worldData ) as world) =
-    div [ styleAttr (backgroundColor worldData.background), class "pa5 flex" ]
+    div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
-            [ styleAttr (width 300), class "center" ]
+            [ style [ width 300 ], class "center" ]
             (worldData.levels
                 |> Dict.toList
                 |> List.reverse
@@ -69,7 +69,7 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             ( world, level ) == model.progress
     in
     div
-        (batchStyles
+        [ styles
             [ [ width 35
               , marginTop 50
               , marginBottom 50
@@ -77,11 +77,10 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
               ]
             , offsetStyles level
             ]
-            [ showInfo ( world, level ) model
-            , class "tc pointer relative"
-            , id <| "level-" ++ String.fromInt levelNumber
-            ]
-        )
+        , showInfo ( world, level ) model
+        , class "tc pointer relative"
+        , id <| "level-" ++ String.fromInt levelNumber
+        ]
         [ currentLevelPointer isCurrentLevel
         , renderIcon ( world, level ) worldData.seedType model
         , renderNumber levelNumber hasReachedLevel worldData
@@ -92,10 +91,9 @@ currentLevelPointer : Bool -> Html msg
 currentLevelPointer isCurrentLevel =
     if isCurrentLevel then
         div
-            [ class "absolute left-0 right-0"
-            , styleAttr (topStyle -30)
-            , styleAttr
-                (animationWithOptionsStyle
+            [ style
+                [ topStyle -30
+                , animationWithOptionsStyle
                     { name = "hover"
                     , timing = Ease
                     , fill = Forwards
@@ -103,7 +101,8 @@ currentLevelPointer isCurrentLevel =
                     , iteration = Just Infinite
                     , delay = Nothing
                     }
-                )
+                ]
+            , class "absolute left-0 right-0"
             ]
             [ triangle ]
 
@@ -125,16 +124,18 @@ renderNumber : Int -> Bool -> WorldData TutorialConfig -> Html Msg
 renderNumber visibleLevelNumber hasReachedLevel worldData =
     if hasReachedLevel then
         div
-            [ class "br-100 center flex justify-center items-center"
-            , styleAttr (backgroundColor worldData.textBackgroundColor)
-            , styleAttr (marginTop 10)
-            , styleAttr (width 25)
-            , styleAttr (heightStyle 25)
+            [ style
+                [ backgroundColor worldData.textBackgroundColor
+                , marginTop 10
+                , width 25
+                , heightStyle 25
+                ]
+            , class "br-100 center flex justify-center items-center"
             ]
-            [ p [ styleAttr (color worldData.textCompleteColor), class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
+            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
 
     else
-        p [ styleAttr (color worldData.textColor) ] [ text <| String.fromInt visibleLevelNumber ]
+        p [ style [ color worldData.textColor ] ] [ text <| String.fromInt visibleLevelNumber ]
 
 
 showInfo : Progress -> HubModel model -> Attribute Msg

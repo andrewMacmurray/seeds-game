@@ -12,10 +12,11 @@ import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (Style, emptyStyle, marginLeft, marginRight, opacityStyle, styleAttr, transform, transformOrigin, width)
+import Helpers.Css.Style exposing (Style, emptyStyle, marginLeft, marginRight, opacityStyle, style, transform, transformOrigin, width)
 import Helpers.Css.Timing exposing (TimingFunction(..))
 import Helpers.Css.Transform as Transform
 import Helpers.Css.Transition exposing (ease)
+import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
@@ -34,8 +35,8 @@ mainSeedStyles : Visibility -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
-            styleAttr <|
-                animationWithOptionsStyle
+            style
+                [ animationWithOptionsStyle
                     { name = "slide-down-scale-out"
                     , duration = 2000
                     , delay = Just 500
@@ -43,19 +44,20 @@ mainSeedStyles vis =
                     , fill = Forwards
                     , iteration = Nothing
                     }
+                ]
 
         _ ->
-            styleAttr emptyStyle
+            emptyProperty
 
 
 sideSeedsContainer : Visibility -> List (Html msg) -> Html msg
 sideSeedsContainer vis =
     case vis of
         Leaving ->
-            div [ class "o-0 flex justify-center", styleAttr <| ease "opacity" 1500 ]
+            div [ class "o-0 flex justify-center", style [ ease "opacity" 1500 ] ]
 
         Entering ->
-            div [ class "o-100 flex justify-center", styleAttr <| ease "opacity" 1500 ]
+            div [ class "o-100 flex justify-center", style [ ease "opacity" 1500 ] ]
 
         Visible ->
             div [ class "o-100 flex justify-center" ]
@@ -72,13 +74,13 @@ growingSeed window ( index, seedType, scale ) =
     in
     div [ class "flex items-end" ]
         [ div
-            [ styleAttr (width <| 50 * scale * tileScaleFactor window)
-            , styleAttr (marginLeft 5)
-            , styleAttr (marginRight 5)
-            , styleAttr (transform [ Transform.scale 0 ])
-            , styleAttr (transformOrigin "center")
-            , styleAttr
-                (animationWithOptionsStyle
+            [ style
+                [ width <| 50 * scale * tileScaleFactor window
+                , marginLeft 5
+                , marginRight 5
+                , transform [ Transform.scale 0 ]
+                , transformOrigin "center"
+                , animationWithOptionsStyle
                     { name = "bulge-elastic"
                     , duration = 500
                     , timing = EaseOut
@@ -86,7 +88,7 @@ growingSeed window ( index, seedType, scale ) =
                     , iteration = Nothing
                     , fill = Forwards
                     }
-                )
+                ]
             , class "growing-seed"
             ]
             [ renderSeed seedType ]

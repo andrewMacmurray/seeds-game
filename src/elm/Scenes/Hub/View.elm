@@ -9,10 +9,10 @@ module Scenes.Hub.View exposing
 
 import Config.Color exposing (darkYellow, pinkRed, washedYellow)
 import Data.Transit exposing (Transit(..))
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, id)
 import State exposing (livesLeft)
 import Types exposing (..)
 import Views.Hub.InfoWindow exposing (handleHideInfo, info)
@@ -26,9 +26,9 @@ hubView model =
         [ hubTopBar model
         , info model
         , div
-            [ class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
-            , id "hub"
-            , styleAttr (heightStyle <| toFloat model.window.height)
+            [ id "hub"
+            , style [ heightStyle <| toFloat model.window.height ]
+            , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             ]
             (renderWorlds model)
         ]
@@ -44,11 +44,11 @@ hubTopBar model =
                 |> Transitioning
     in
     div
-        [ class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
-        , styleAttr (background washedYellow)
+        [ style [ background washedYellow ]
+        , class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         ]
-        [ div [ styleAttr (transform [ scale 0.5 ]) ] <| renderLivesLeft lives
-        , div [ class "f7", styleAttr (color darkYellow) ] [ renderCountDown model.timeTillNextLife ]
+        [ div [ style [ transform [ scale 0.5 ] ] ] <| renderLivesLeft lives
+        , div [ style [ color darkYellow ], class "f7" ] [ renderCountDown model.timeTillNextLife ]
         ]
 
 
@@ -60,8 +60,8 @@ renderCountDown timeRemaining =
 
         Just t ->
             div []
-                [ p [ styleAttr (marginTop -2), class "dib ma1 mt0" ] [ text "Next life in: " ]
-                , p [ styleAttr (color pinkRed), class "dib ma1 mt0" ] [ text <| renderTime t ]
+                [ p [ style [ marginTop -2 ], class "dib ma1 mt0" ] [ text "Next life in: " ]
+                , p [ style [ color pinkRed ], class "dib ma1 mt0" ] [ text <| renderTime t ]
                 ]
 
 

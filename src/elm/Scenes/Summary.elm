@@ -6,7 +6,7 @@ import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
 import Data.Level.Types exposing (Progress)
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (translateX, translateY)
 import Helpers.Wave exposing (wave)
@@ -29,25 +29,27 @@ summaryView ({ progress, currentLevel } as model) =
             secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
     in
     div
-        [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , styleAttr (heightStyle <| toFloat model.window.height)
-        , styleAttr (background washedYellow)
-        , styleAttr
-            (animationStyle
+        [ style
+            [ heightStyle <| toFloat model.window.height
+            , background washedYellow
+            , animationStyle
                 { name = "fade-in"
                 , duration = 1000
                 , timing = Linear
                 }
-            )
+            ]
+        , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
-        [ div [ styleAttr (marginTop -100) ]
+        [ div [ style [ marginTop -100 ] ]
             [ div
-                [ styleAttr (width 65)
-                , styleAttr (marginBottom 30)
+                [ style
+                    [ width 65
+                    , marginBottom 30
+                    ]
                 , class "center"
                 ]
                 [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-            , div [ styleAttr (heightStyle 50) ] <| List.map (renderResourceBank progress currentLevel) resources
+            , div [ style [ heightStyle 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
         ]
 
@@ -60,19 +62,19 @@ renderResourceBank progress currentLevel tileType =
     in
     case tileType of
         Rain ->
-            div [ styleAttr (width 40), class "dib ph1 mh4" ]
+            div [ style [ width 40 ], class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , rainBank fillLevel
                 ]
 
         Sun ->
-            div [ styleAttr (width 40), class "dib mh4" ]
+            div [ style [ width 40 ], class "dib mh4" ]
                 [ renderResourceFill tileType
                 , sunBank fillLevel
                 ]
 
         Seed seedType ->
-            div [ styleAttr (width 40), class "dib ph1 mh4" ]
+            div [ style [ width 40 ], class "dib ph1 mh4" ]
                 [ renderResourceFill tileType
                 , seedBank seedType fillLevel
                 ]
@@ -85,21 +87,21 @@ renderResourceFill : TileType -> Html msg
 renderResourceFill tileType =
     case tileType of
         Rain ->
-            div [ styleAttr (heightStyle 50) ]
-                [ div [ styleAttr (width 13), class "center" ] [ rainBankFull ]
+            div [ style [ heightStyle 50 ] ]
+                [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
                 , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
-            div [ styleAttr (heightStyle 50) ]
-                [ div [ styleAttr (width 18), class "center" ] [ sunBankFull ]
+            div [ style [ heightStyle 50 ] ]
+                [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
                 , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
-            div [ styleAttr (heightStyle 50) ]
-                [ div [ styleAttr (width 15), class "center" ] [ renderSeed seedType ]
-                , div [ class "relative", styleAttr (transform [ translateY -10 ]) ] <| List.map (seedDrop seedType) <| List.range 7 57
+            div [ style [ heightStyle 50 ] ]
+                [ div [ style [ width 15 ], class "center" ] [ renderSeed seedType ]
+                , div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
         _ ->
@@ -120,8 +122,8 @@ seedDrop seedType n =
                 90
     in
     div
-        [ styleAttr
-            (transform
+        [ style
+            [ transform
                 [ translateX <|
                     wave
                         { left = -5
@@ -130,15 +132,14 @@ seedDrop seedType n =
                         }
                         (n - 1)
                 ]
-            )
+            ]
         ]
         [ div
-            [ class "absolute top-0 left-0 right-0 center"
-            , styleAttr (width 5)
-            , styleAttr (heightStyle 8)
-            , styleAttr (opacityStyle 0)
-            , styleAttr
-                (animationWithOptionsStyle
+            [ style
+                [ width 5
+                , heightStyle 8
+                , opacityStyle 0
+                , animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
                     , delay = Just <| toFloat <| n * d
@@ -146,7 +147,8 @@ seedDrop seedType n =
                     , iteration = Nothing
                     , fill = Forwards
                     }
-                )
+                ]
+            , class "absolute top-0 left-0 right-0 center"
             ]
             [ renderSeed seedType ]
         ]
@@ -166,8 +168,8 @@ drop bgColor n =
                 90
     in
     div
-        [ styleAttr
-            (transform
+        [ style
+            [ transform
                 [ translateX <|
                     wave
                         { left = -5
@@ -176,16 +178,15 @@ drop bgColor n =
                         }
                         (n - 1)
                 ]
-            )
+            ]
         ]
         [ div
-            [ class "br-100 absolute left-0 right-0 center"
-            , styleAttr (width 6)
-            , styleAttr (heightStyle 6)
-            , styleAttr (background bgColor)
-            , styleAttr (opacityStyle 0)
-            , styleAttr
-                (animationWithOptionsStyle
+            [ style
+                [ width 6
+                , heightStyle 6
+                , background bgColor
+                , opacityStyle 0
+                , animationWithOptionsStyle
                     { name = "fade-slide-down"
                     , duration = 150
                     , delay = Just <| toFloat <| n * d
@@ -193,7 +194,8 @@ drop bgColor n =
                     , iteration = Nothing
                     , fill = Forwards
                     }
-                )
+                ]
+            , class "br-100 absolute left-0 right-0 center"
             ]
             []
         ]

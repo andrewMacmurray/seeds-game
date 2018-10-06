@@ -18,10 +18,10 @@ import Data.Level.Types exposing (Progress)
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Types exposing (Msg(..))
 import Views.Seed.Circle exposing (foxglove)
@@ -49,20 +49,20 @@ titleView : TitleModel model -> Html Msg
 titleView { window, titleAnimation, progress } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , styleAttr (bottomStyle <| toFloat window.height / 2.4)
+        , style [ bottomStyle <| toFloat window.height / 2.4 ]
         ]
         [ div [] [ seeds titleAnimation ]
         , p
-            (batchStyles
+            [ styles
                 [ [ color darkYellow, marginTop 45 ]
                 , fadeInStyles titleAnimation 1500 500
                 , fadeOutStyles titleAnimation 1000 500
                 ]
-                [ class "f3 tracked-mega" ]
-            )
+            , class "f3 tracked-mega"
+            ]
             [ text "seeds" ]
         , button
-            (batchStyles
+            [ styles
                 [ [ borderNone
                   , marginTop 15
                   , color white
@@ -71,10 +71,9 @@ titleView { window, titleAnimation, progress } =
                 , fadeInStyles titleAnimation 800 2500
                 , fadeOutStyles titleAnimation 1000 0
                 ]
-                [ class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-                , handleStart progress
-                ]
-            )
+            , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
+            , handleStart progress
+            ]
             [ text "PLAY" ]
         ]
 
@@ -96,9 +95,11 @@ percentWindowHeight percent window =
 seeds : Visibility -> Html msg
 seeds vis =
     div
-        [ styleAttr (maxWidth 450)
-        , styleAttr (paddingLeft ScaleConfig.windowPadding)
-        , styleAttr (paddingRight ScaleConfig.windowPadding)
+        [ style
+            [ maxWidth 450
+            , paddingLeft ScaleConfig.windowPadding
+            , paddingRight ScaleConfig.windowPadding
+            ]
         , class "flex center"
         ]
         (List.map3 (fadeSeeds vis)
@@ -126,7 +127,9 @@ seedExitDelays interval =
 fadeSeeds : Visibility -> Float -> Float -> Html msg -> Html msg
 fadeSeeds vis entranceDelay exitDelay seed =
     div
-        (batchStyles [ fadeInStyles vis 1000 entranceDelay, fadeOutStyles vis 1000 exitDelay ] [ class "mh2" ])
+        [ styles [ fadeInStyles vis 1000 entranceDelay, fadeOutStyles vis 1000 exitDelay ]
+        , class "mh2"
+        ]
         [ seed ]
 
 

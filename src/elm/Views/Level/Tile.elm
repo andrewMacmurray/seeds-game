@@ -17,10 +17,10 @@ import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window as Window exposing (Size)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerDownPosition)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (attribute, class)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
@@ -37,18 +37,15 @@ renderTile model (( ( y, x ) as coord, tile ) as move) =
 
 renderTile_ : List Style -> TileConfig model -> Move -> Html msg
 renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
-    let
-        attrs =
-            List.concat
-                [ styles <| tileWidthHeightStyles config
-                , styles <| tileCoordsStyles config coord
-                , styles extraStyles
-                , [ attribute "touch-action" "none"
-                  , class "dib absolute"
-                  ]
-                ]
-    in
-    div attrs
+    div
+        [ styles
+            [ tileWidthHeightStyles config
+            , tileCoordsStyles config coord
+            , extraStyles
+            ]
+        , attribute "touch-action" "none"
+        , class "dib absolute"
+        ]
         [ innerTile config.window config.moveShape move
         , tracer config.window move
         , wall config.window move
@@ -71,11 +68,11 @@ tracer window move =
 
 wall : Window.Size -> Move -> Html msg
 wall window move =
-    let
-        attrs =
-            (styles <| wallStyles window move) ++ [ class centerBlock ]
-    in
-    div attrs []
+    div
+        [ style <| wallStyles window move
+        , class centerBlock
+        ]
+        []
 
 
 innerTile : Window.Size -> Maybe MoveShape -> Move -> Html msg
@@ -85,11 +82,14 @@ innerTile window moveShape move =
 
 makeInnerTile : List Style -> Window.Size -> Move -> Html msg
 makeInnerTile extraStyles window (( _, tile ) as move) =
-    let
-        attrs =
-            (styles <| List.concat [ extraStyles, baseTileStyles window move ]) ++ [ classes baseTileClasses ]
-    in
-    div attrs [ innerSeed tile ]
+    div
+        [ styles
+            [ extraStyles
+            , baseTileStyles window move
+            ]
+        , classes baseTileClasses
+        ]
+        [ innerSeed tile ]
 
 
 baseTileStyles : Window.Size -> Move -> List Style

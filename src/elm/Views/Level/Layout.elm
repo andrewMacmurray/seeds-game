@@ -2,7 +2,7 @@ module Views.Level.Layout exposing (board, boardLayout, handleCheck, handleStop,
 
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -37,22 +37,23 @@ renderLines model =
 boardLayout : LevelModel -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
-        [ class "relative z-3 center flex flex-wrap"
-        , styleAttr (width <| toFloat <| boardWidth model)
-        , styleAttr (boardMarginTop model)
+        [ style
+            [ width <| toFloat <| boardWidth model
+            , boardMarginTop model
+            ]
+        , class "relative z-3 center flex flex-wrap"
         ]
 
 
 renderLineLayer : TileConfig model -> Move -> Html msg
 renderLineLayer model (( coord, _ ) as move) =
     div
-        (batchStyles
+        [ styles
             [ tileWidthHeightStyles model
             , tileCoordsStyles model coord
             ]
-            [ class "dib absolute touch-disabled"
-            ]
-        )
+        , class "dib absolute touch-disabled"
+        ]
         [ renderLine model.window move
         ]
 

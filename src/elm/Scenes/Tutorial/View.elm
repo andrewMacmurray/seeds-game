@@ -37,50 +37,52 @@ tutorialView : TutorialModel -> Html TutorialMsg
 tutorialView model =
     div
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
-        , styleAttr (backgroundColor "rgba(255, 252, 227, 0.98)")
-        , styleAttr
-            (transitionStyle
+        , style
+            [ backgroundColor "rgba(255, 252, 227, 0.98)"
+            , transitionStyle
                 { property = "all"
                 , duration = 1200
                 , timing = Linear
                 , delay = Nothing
                 }
-            )
+            ]
         , classList <| showIf model.canvasVisible
         ]
         [ div
-            [ styleAttr <| Style.property "margin-top" (pc -3)
-            , styleAttr
-                (transitionStyle
+            [ style
+                [ Style.property "margin-top" (pc -3)
+                , transitionStyle
                     { property = "all"
                     , duration = 800
                     , timing = Linear
                     , delay = Nothing
                     }
-                )
+                ]
             , classList <| showIf model.containerVisible
             , class "tc"
             ]
             [ tutorialBoard model
             , p
-                [ styleAttr (color darkYellow)
-                , styleAttr (easeAll 500)
+                [ style
+                    [ color darkYellow
+                    , easeAll 500
+                    ]
                 , classList <| showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
             ]
         , p
             [ handleSkip model
-            , styleAttr (color greyYellow)
-            , styleAttr (bottomStyle 30)
-            , styleAttr
-                (transitionStyle
+            , style
+                [ color greyYellow
+                , bottomStyle 30
+                , transitionStyle
                     { property = "all"
                     , duration = 800
                     , timing = Linear
                     , delay = Just 800
                     }
-                )
+                ]
             , classList <| showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
             ]
@@ -102,9 +104,11 @@ tutorialBoard model =
     div
         [ class "center relative"
         , classList <| showIf model.boardVisible
-        , styleAttr (width <| toFloat <| boardWidth model)
-        , styleAttr (heightStyle <| toFloat <| boardHeight model)
-        , styleAttr (easeAll 500)
+        , style
+            [ width <| toFloat <| boardWidth model
+            , heightStyle <| toFloat <| boardHeight model
+            , easeAll 500
+            ]
         ]
         [ div [ class "absolute z-5" ] [ renderResourceBank model ]
         , div [ class "absolute z-2" ] <| renderTiles model
@@ -125,8 +129,10 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
             -100
     in
     div
-        [ styleAttr (easeAll 800)
-        , styleAttr (transform [ translate offsetX offsetY ])
+        [ style
+            [ easeAll 800
+            , transform [ translate offsetX offsetY ]
+            ]
         , classList <| showIf resourceBankVisible
         ]
         [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
@@ -154,7 +160,7 @@ fadeLine model (( _, tile ) as move) =
             hasLine tile
     in
     div
-        [ styleAttr (easeAll 500)
+        [ style [ easeAll 500 ]
         , classList <| showIf visible
         ]
         [ renderLineLayer model move ]

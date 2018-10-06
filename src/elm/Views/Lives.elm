@@ -2,7 +2,7 @@ module Views.Lives exposing (life, renderLivesLeft)
 
 import Data.Transit as Transit exposing (Transit)
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (scale)
 import Html exposing (..)
@@ -64,12 +64,14 @@ life { active, currentLife, breaking, lifeState } =
                 transform [ scale 1.11 ]
     in
     div
-        [ styleAttr (width 35)
-        , styleAttr (heightStyle 35)
-        , styleAttr (marginLeft 10)
-        , styleAttr (marginRight 10)
-        , styleAttr animation
-        , styleAttr adjustScale
+        [ style
+            [ width 35
+            , heightStyle 35
+            , marginLeft 10
+            , marginRight 10
+            , animation
+            , adjustScale
+            ]
         , class "dib"
         ]
         [ visibleHeart ]

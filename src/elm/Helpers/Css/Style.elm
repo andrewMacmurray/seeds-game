@@ -1,10 +1,8 @@
 module Helpers.Css.Style exposing
     ( Style
-    , addStyles
     , background
     , backgroundColor
     , backgroundImage
-    , batchStyles
     , borderNone
     , bottomStyle
     , classes
@@ -34,7 +32,7 @@ module Helpers.Css.Style exposing
     , rightAuto
     , rightPill
     , stroke
-    , styleAttr
+    , style
     , styles
     , svgStyle
     , svgStyles
@@ -48,18 +46,13 @@ module Helpers.Css.Style exposing
 import Helpers.Css.Transform as Transform exposing (Transform)
 import Helpers.Css.Unit exposing (..)
 import Html exposing (Attribute, Html)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import Svg
 import Svg.Attributes
 
 
 type Style
     = Style String String
-
-
-styleAttr : Style -> Attribute msg
-styleAttr (Style k v) =
-    style k v
 
 
 property : String -> String -> Style
@@ -72,19 +65,14 @@ classes =
     class << String.join " "
 
 
-addStyles : List Style -> List (Attribute msg) -> List (Attribute msg)
-addStyles styleList attrs =
-    attrs ++ styles styleList
-
-
-batchStyles : List (List Style) -> List (Attribute msg) -> List (Attribute msg)
-batchStyles styleList attrs =
-    attrs ++ (styles <| List.concat styleList)
-
-
-styles : List Style -> List (Attribute msg)
+styles : List (List Style) -> Attribute msg
 styles =
-    List.map styleAttr
+    renderHtmlStyles << List.concat
+
+
+style : List Style -> Attribute msg
+style =
+    renderHtmlStyles
 
 
 svgStyles : List Style -> Svg.Attribute msg
@@ -102,6 +90,15 @@ svgStyle =
 renderSvgStyle : Style -> String
 renderSvgStyle (Style k v) =
     k ++ ":" ++ v
+
+
+renderHtmlStyles : List Style -> Attribute msg
+renderHtmlStyles xs =
+    let
+        css =
+            xs |> List.foldl (\(Style prop val) acc -> String.append acc (prop ++ ":" ++ val ++ ";")) ""
+    in
+    Html.Attributes.attribute "style" css
 
 
 emptyStyle : Style
@@ -290,13 +287,3 @@ opacityStyle o =
 stroke : String -> Style
 stroke =
     Style "stroke"
-
-
-
--- Units
--- Util
-
-
-join : List String -> String
-join =
-    String.join ""

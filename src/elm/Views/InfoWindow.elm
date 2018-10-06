@@ -4,7 +4,7 @@ import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.InfoWindow exposing (..)
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -19,16 +19,16 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , styleAttr (background seedPodGradient)
-                , styleAttr (color white)
-                , styleAttr
-                    (animationStyle
+                , style
+                    [ background seedPodGradient
+                    , color white
+                    , animationStyle
                         { name = "elastic-bounce-in"
                         , duration = 2000
                         , timing = Linear
                         }
-                    )
-                , styleAttr (width 380)
+                    , width 380
+                    ]
                 ]
                 [ content ]
             ]
@@ -37,16 +37,16 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , styleAttr (background seedPodGradient)
-                , styleAttr (color white)
-                , styleAttr (width 380)
-                , styleAttr
-                    (animationStyle
+                , style
+                    [ background seedPodGradient
+                    , color white
+                    , width 380
+                    , animationStyle
                         { name = "exit-down"
                         , duration = 700
                         , timing = CubicBezier 0.93 -0.36 0.57 0.96
                         }
-                    )
+                    ]
                 ]
                 [ content ]
             ]
@@ -56,18 +56,26 @@ infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
         containerStyles =
-            [ paddingLeft ScaleConfig.windowPadding
-            , paddingRight ScaleConfig.windowPadding
-            , animateEase "fade-in" 100
-            ]
+            style
+                [ paddingLeft ScaleConfig.windowPadding
+                , paddingRight ScaleConfig.windowPadding
+                , animateEase "fade-in" 100
+                ]
     in
     if isLeaving infoWindow then
         div
-            (styles containerStyles ++ [ classes [ "touch-disabled", infoContainerBaseClasses ] ])
+            [ classes
+                [ "touch-disabled"
+                , infoContainerBaseClasses
+                ]
+            , containerStyles
+            ]
 
     else
         div
-            (styles containerStyles ++ [ class infoContainerBaseClasses ])
+            [ classes [ infoContainerBaseClasses ]
+            , containerStyles
+            ]
 
 
 infoContainerBaseClasses : String

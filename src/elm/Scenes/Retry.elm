@@ -3,12 +3,12 @@ module Scenes.Retry exposing (lifeState, retryView, tryAgain)
 import Config.Color exposing (..)
 import Data.Transit exposing (Transit(..))
 import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Css.Timing exposing (..)
 import Helpers.Css.Transform exposing (..)
 import Helpers.Css.Unit exposing (pc)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import State exposing (livesLeft)
 import Types exposing (..)
@@ -18,24 +18,27 @@ import Views.Lives exposing (renderLivesLeft)
 retryView : Model -> Html Msg
 retryView model =
     div
-        [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , styleAttr (heightStyle <| toFloat model.window.height)
-        , styleAttr (background washedYellow)
-        , styleAttr
-            (animationStyle
+        [ style
+            [ heightStyle <| toFloat model.window.height
+            , background washedYellow
+            , animationStyle
                 { name = "fade-in"
                 , duration = 1000
                 , timing = Linear
                 }
-            )
+            ]
+        , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
-        [ div [ class "tc", style "margin-top" (pc -8) ]
+        [ div
+            [ style [ Style.property "margin-top" <| pc -8 ]
+            , class "tc"
+            ]
             [ div [] <| renderLivesLeft <| lifeState model
-            , div [ styleAttr (color darkYellow) ]
+            , div [ style [ color darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ styleAttr
-                        (animationWithOptionsStyle
+                    [ style
+                        [ animationWithOptionsStyle
                             { name = "fade-in"
                             , duration = 1000
                             , delay = Just 2500
@@ -43,14 +46,14 @@ retryView model =
                             , iteration = Nothing
                             , fill = Forwards
                             }
-                        )
+                        ]
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
-                [ styleAttr
-                    (animationWithOptionsStyle
+                [ style
+                    [ animationWithOptionsStyle
                         { name = "bounce-up"
                         , duration = 1500
                         , delay = Just 3000
@@ -58,8 +61,8 @@ retryView model =
                         , fill = Forwards
                         , iteration = Nothing
                         }
-                    )
-                , styleAttr <| transform [ translate 0 (toFloat <| model.window.height + 100) ]
+                    , transform [ translate 0 (toFloat <| model.window.height + 100) ]
+                    ]
                 ]
                 [ tryAgain model ]
             ]
@@ -82,9 +85,9 @@ lifeState model =
 
 tryAgain : Model -> Html Msg
 tryAgain model =
-    div [ styleAttr (marginTop 50), class "pointer" ]
+    div [ style [ marginTop 50 ], class "pointer" ]
         [ div
-            (batchStyles
+            [ styles
                 [ [ background lightGreen
                   , color "white"
                   , paddingLeft 25
@@ -94,13 +97,12 @@ tryAgain model =
                   ]
                 , leftPill
                 ]
-                [ class "dib"
-                , onClick GoToHub
-                ]
-            )
+            , class "dib"
+            , onClick GoToHub
+            ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
-            (batchStyles
+            [ styles
                 [ [ background lightGreen
                   , color "white"
                   , paddingLeft 25
@@ -110,9 +112,8 @@ tryAgain model =
                   ]
                 , rightPill
                 ]
-                [ class "dib"
-                , onClick RestartLevel
-                ]
-            )
+            , class "dib"
+            , onClick RestartLevel
+            ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]

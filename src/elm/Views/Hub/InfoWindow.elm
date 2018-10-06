@@ -1,4 +1,13 @@
-module Views.Hub.InfoWindow exposing (handleHideInfo, info, infoContent, infoIcons, infoIconsContainer, renderIcon, renderTargetScore, renderWeather)
+module Views.Hub.InfoWindow exposing
+    ( handleHideInfo
+    , info
+    , infoContent
+    , infoIcons
+    , infoIconsContainer
+    , renderIcon
+    , renderTargetScore
+    , renderWeather
+    )
 
 import Config.Color exposing (..)
 import Config.Levels exposing (allLevels)
@@ -7,7 +16,7 @@ import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
-import Helpers.Css.Style exposing (..)
+import Helpers.Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -47,13 +56,15 @@ infoContent ( world, level ) ( worldData, levelData ) =
                 |> String.fromInt
                 |> (++) "Level "
     in
-    [ p [ class "f5 tracked", styleAttr (marginTop 20) ] [ text levelText ]
+    [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
     , infoIcons levelData worldData.seedType
     , p
-        [ class "tracked-mega pv2 ph3 dib br4"
-        , styleAttr (backgroundColor gold)
-        , styleAttr (marginBottom 20)
-        , styleAttr (marginTop 15)
+        [ style
+            [ backgroundColor gold
+            , marginBottom 20
+            , marginTop 15
+            ]
+        , class "tracked-mega pv2 ph3 dib br4"
         ]
         [ text "PLAY" ]
     ]
@@ -69,7 +80,13 @@ infoIcons levelData seedType =
 
 infoIconsContainer : List (Html msg) -> Html msg
 infoIconsContainer =
-    div [ class "flex justify-center items-end", styleAttr (marginTop 25), styleAttr (marginBottom 15) ]
+    div
+        [ style
+            [ marginTop 25
+            , marginBottom 15
+            ]
+        , class "flex justify-center items-end"
+        ]
 
 
 renderIcon : TileSetting -> Html msg
@@ -84,7 +101,7 @@ renderIcon { targetScore, tileType } =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ styleAttr (width 35), styleAttr (heightStyle 53) ] [ renderSeed seedType ]
+                    div [ style [ width 35, heightStyle 53 ] ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
@@ -101,7 +118,7 @@ renderTargetScore : Maybe TargetScore -> Html msg
 renderTargetScore ts =
     case ts of
         Just (TargetScore t) ->
-            p [ class "f6 mb0", styleAttr (marginTop 10) ] [ text <| String.fromInt t ]
+            p [ style [ marginTop 10 ], class "f6 mb0" ] [ text <| String.fromInt t ]
 
         Nothing ->
             span [] []
@@ -110,12 +127,14 @@ renderTargetScore ts =
 renderWeather : String -> Html msg
 renderWeather color =
     div
-        [ styleAttr (width 25)
-        , styleAttr (heightStyle 25)
-        , styleAttr (marginLeft 2.5)
-        , styleAttr (marginRight 2.5)
-        , styleAttr (marginBottom 5)
-        , styleAttr (background color)
+        [ style
+            [ width 25
+            , heightStyle 25
+            , marginLeft 2.5
+            , marginRight 2.5
+            , marginBottom 5
+            , background color
+            ]
         , classes [ "br-100" ]
         ]
         []
