@@ -1,9 +1,9 @@
 module Views.Flowers.Sunflower exposing (sunflower)
 
-import Helpers.Css.Animation exposing (FillMode(..), animationWithOptionsStyle, animationWithOptionsSvg)
-import Helpers.Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform as Transform
+import Css.Animation exposing (FillMode(..), animationWithOptionsStyle, animationWithOptionsSvg)
+import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
+import Css.Timing exposing (..)
+import Css.Transform as Transform
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 

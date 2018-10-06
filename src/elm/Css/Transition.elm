@@ -1,4 +1,4 @@
-module Helpers.Css.Transition exposing
+module Css.Transition exposing
     ( Transition
     , ease
     , easeAll
@@ -6,9 +6,9 @@ module Helpers.Css.Transition exposing
     , transitionStyle
     )
 
-import Helpers.Css.Style as Style exposing (Style)
-import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
-import Helpers.Css.Unit exposing (ms)
+import Css.Style as Style exposing (Style)
+import Css.Timing exposing (TimingFunction(..), timingToString)
+import Css.Unit exposing (ms)
 import Helpers.Maybe exposing (catMaybes)
 
 

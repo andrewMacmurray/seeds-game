@@ -1,4 +1,4 @@
-module Helpers.Css.Style exposing
+module Css.Style exposing
     ( Style
     , background
     , backgroundColor
@@ -43,12 +43,12 @@ module Helpers.Css.Style exposing
     , widthHeight
     )
 
-import Helpers.Css.Transform as Transform exposing (Transform)
-import Helpers.Css.Unit exposing (..)
+import Css.Transform as Transform exposing (Transform)
+import Css.Unit exposing (..)
 import Html exposing (Attribute, Html)
 import Html.Attributes
 import Svg
-import Svg.Attributes
+import Svg.Attributes exposing (accumulate)
 
 
 type Style
@@ -80,12 +80,14 @@ style =
 
 
 renderHtmlStyles : List Style -> Attribute msg
-renderHtmlStyles xs =
+renderHtmlStyles allStyles =
     let
-        css =
-            xs |> List.foldl (\(Style prop val) acc -> acc ++ (prop ++ ":" ++ val ++ ";")) ""
+        accumulateStyle (Style prop val) acc =
+            acc ++ (prop ++ ":" ++ val ++ ";")
     in
-    Html.Attributes.attribute "style" css
+    allStyles
+        |> List.foldl accumulateStyle ""
+        |> Html.Attributes.attribute "style"
 
 
 

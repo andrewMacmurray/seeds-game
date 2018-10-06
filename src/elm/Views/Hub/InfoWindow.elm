@@ -9,14 +9,14 @@ module Views.Hub.InfoWindow exposing
     , renderWeather
     )
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Levels exposing (allLevels)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
-import Helpers.Css.Style as Style exposing (..)
+import Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)

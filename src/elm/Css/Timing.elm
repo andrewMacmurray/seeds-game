@@ -1,4 +1,4 @@
-module Helpers.Css.Timing exposing
+module Css.Timing exposing
     ( TimingFunction(..)
     , timingToString
     )

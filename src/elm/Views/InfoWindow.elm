@@ -1,11 +1,11 @@
 module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoContainer_)
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.InfoWindow exposing (..)
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Timing exposing (..)
+import Css.Animation exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 

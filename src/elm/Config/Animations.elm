@@ -1,6 +1,6 @@
 module Config.Animations exposing (internalAnimations)
 
-import Helpers.Css.Keyframes exposing (..)
+import Css.Keyframes exposing (..)
 import Html exposing (Html)
 
 

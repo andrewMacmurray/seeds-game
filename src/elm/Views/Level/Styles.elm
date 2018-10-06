@@ -36,7 +36,7 @@ module Views.Level.Styles exposing
     , wallStyles
     )
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
@@ -44,11 +44,11 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window as Window
 import Dict exposing (Dict)
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (..)
-import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Css.Animation exposing (..)
+import Css.Style exposing (..)
+import Css.Timing exposing (..)
+import Css.Transform exposing (..)
+import Css.Transition exposing (easeAll, transitionStyle)
 import Scenes.Level.Types as Level exposing (..)
 
 

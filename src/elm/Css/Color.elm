@@ -1,4 +1,4 @@
-module Config.Color exposing
+module Css.Color exposing
     ( Color
     , blockYellow
     , brown
@@ -38,7 +38,7 @@ module Config.Color exposing
     , yellow
     )
 
-import Helpers.Css.Unit exposing (deg, pc)
+import Css.Unit exposing (deg, pc)
 
 
 type alias Color =

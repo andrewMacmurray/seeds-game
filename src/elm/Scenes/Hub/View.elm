@@ -7,10 +7,10 @@ module Scenes.Hub.View exposing
     , timeLeft
     )
 
-import Config.Color exposing (darkYellow, pinkRed, washedYellow)
+import Css.Color exposing (darkYellow, pinkRed, washedYellow)
 import Data.Transit exposing (Transit(..))
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Transform exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Transform exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import State exposing (livesLeft)

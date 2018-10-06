@@ -1,4 +1,4 @@
-module Helpers.Css.Animation exposing
+module Css.Animation exposing
     ( Animation
     , AnimationOptions
     , FillMode(..)
@@ -9,9 +9,9 @@ module Helpers.Css.Animation exposing
     , animationWithOptionsSvg
     )
 
-import Helpers.Css.Style as Style exposing (Style)
-import Helpers.Css.Timing exposing (TimingFunction(..), timingToString)
-import Helpers.Css.Unit exposing (ms)
+import Css.Style as Style exposing (Style)
+import Css.Timing exposing (TimingFunction(..), timingToString)
+import Css.Unit exposing (ms)
 import Helpers.Maybe exposing (catMaybes)
 
 

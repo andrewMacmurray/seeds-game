@@ -1,6 +1,6 @@
 module Views.Icons.Triangle exposing (triangle)
 
-import Config.Color exposing (lightGold)
+import Css.Color exposing (lightGold)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 

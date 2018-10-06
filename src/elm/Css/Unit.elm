@@ -1,4 +1,4 @@
-module Helpers.Css.Unit exposing (deg, ms, pc, px)
+module Css.Unit exposing (deg, ms, pc, px)
 
 
 deg : Float -> String

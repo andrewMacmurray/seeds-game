@@ -1,8 +1,8 @@
 module Views.Icons.RainBank exposing (rainBank, rainBankFull)
 
-import Helpers.Css.Style as Style exposing (svgStyles)
-import Helpers.Css.Transform as Css exposing (translateY)
-import Helpers.Css.Transition exposing (easeAll)
+import Css.Style as Style exposing (svgStyles)
+import Css.Transform as Css exposing (translateY)
+import Css.Transition exposing (easeAll)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 

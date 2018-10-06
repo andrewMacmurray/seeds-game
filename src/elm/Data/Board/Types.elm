@@ -22,7 +22,7 @@ module Data.Board.Types exposing
     , Y
     )
 
-import Config.Color exposing (Color)
+import Css.Color exposing (Color)
 import Data.Window as Window
 import Dict exposing (Dict)
 

@@ -1,4 +1,12 @@
-module Config.Scale exposing (baseTileSizeX, baseTileSizeY, scoreIconSize, smallestWindowDimension, tileScaleFactor, topBarHeight, windowPadding)
+module Config.Scale exposing
+    ( baseTileSizeX
+    , baseTileSizeY
+    , scoreIconSize
+    , smallestWindowDimension
+    , tileScaleFactor
+    , topBarHeight
+    , windowPadding
+    )
 
 import Data.Window as Window
 

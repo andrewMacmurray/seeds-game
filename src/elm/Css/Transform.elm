@@ -1,4 +1,4 @@
-module Helpers.Css.Transform exposing
+module Css.Transform exposing
     ( Transform
     , fromTransform
     , render
@@ -12,7 +12,7 @@ module Helpers.Css.Transform exposing
     , translateZ
     )
 
-import Helpers.Css.Unit exposing (..)
+import Css.Unit exposing (..)
 
 
 type Transform

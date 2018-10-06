@@ -11,11 +11,11 @@ import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, transform, transformOrigin, width)
-import Helpers.Css.Timing exposing (TimingFunction(..))
-import Helpers.Css.Transform as Transform
-import Helpers.Css.Transition exposing (ease)
+import Css.Animation exposing (..)
+import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, transform, transformOrigin, width)
+import Css.Timing exposing (TimingFunction(..))
+import Css.Transform as Transform
+import Css.Transition exposing (ease)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)

@@ -1,7 +1,7 @@
 module Scenes.Intro.State exposing (init, initialState, sequence, subscriptions, update)
 
 import Browser.Events
-import Config.Color as Color
+import Css.Color as Color
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Helpers.Delay exposing (sequenceMs, trigger)

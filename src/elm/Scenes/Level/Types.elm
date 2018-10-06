@@ -1,6 +1,6 @@
 module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..), Position)
 
-import Config.Color exposing (Color)
+import Css.Color exposing (Color)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)

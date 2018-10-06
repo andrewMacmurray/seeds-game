@@ -4,7 +4,7 @@ module Data.Board.Wall exposing
     , withColor
     )
 
-import Config.Color exposing (Color)
+import Css.Color exposing (Color)
 import Data.Board.Types exposing (Block(..), Board, Coord)
 import Dict
 

@@ -11,17 +11,17 @@ module Scenes.Tutorial.View exposing
     , tutorialView
     )
 
-import Config.Color exposing (darkYellow, greyYellow)
+import Css.Color exposing (darkYellow, greyYellow)
 import Config.Scale as ScaleConfig
 import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Timing exposing (TimingFunction(..))
-import Helpers.Css.Transform exposing (..)
-import Helpers.Css.Transition exposing (easeAll, transitionStyle)
-import Helpers.Css.Unit exposing (pc)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (TimingFunction(..))
+import Css.Transform exposing (..)
+import Css.Transition exposing (easeAll, transitionStyle)
+import Css.Unit exposing (pc)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)

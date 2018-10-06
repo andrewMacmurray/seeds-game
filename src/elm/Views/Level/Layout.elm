@@ -2,7 +2,7 @@ module Views.Level.Layout exposing (board, boardLayout, handleCheck, handleStop,
 
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
-import Helpers.Css.Style as Style exposing (..)
+import Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
 import Html.Attributes exposing (class)

@@ -12,14 +12,14 @@ module Scenes.Title exposing
     , titleView
     )
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Level.Types exposing (Progress)
 import Data.Visibility exposing (..)
 import Data.Window as Window
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Timing exposing (..)
+import Css.Animation exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)

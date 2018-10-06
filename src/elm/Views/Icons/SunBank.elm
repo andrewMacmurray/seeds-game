@@ -1,8 +1,8 @@
 module Views.Icons.SunBank exposing (sunBank, sunBankFull, sunPath)
 
-import Helpers.Css.Style as Style exposing (svgStyles)
-import Helpers.Css.Transform exposing (translateY)
-import Helpers.Css.Transition exposing (easeAll, transitionStyle)
+import Css.Style as Style exposing (svgStyles)
+import Css.Transform exposing (translateY)
+import Css.Transition exposing (easeAll, transitionStyle)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 

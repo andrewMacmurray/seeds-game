@@ -1,8 +1,8 @@
 module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
 
 import Config.Animations exposing (internalAnimations)
-import Config.Color exposing (darkYellow)
-import Helpers.Css.Style exposing (color, style)
+import Css.Color exposing (darkYellow)
+import Css.Style exposing (color, style)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)

@@ -11,10 +11,10 @@ module Views.Intro.RollingHills exposing
     )
 
 import Data.Visibility exposing (..)
-import Helpers.Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform as Transform exposing (translate)
-import Helpers.Css.Transition exposing (transitionStyle)
+import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
+import Css.Timing exposing (..)
+import Css.Transform as Transform exposing (translate)
+import Css.Transition exposing (transitionStyle)
 import Html exposing (Html, div)
 import Html.Attributes
 import Svg exposing (Attribute, Svg)

@@ -1,8 +1,8 @@
 module Scenes.Intro.View exposing (introView, renderScene, textOffset)
 
 import Data.Window as Window
-import Helpers.Css.Style as Style exposing (Style, background, color, marginTop, style, width)
-import Helpers.Css.Transition exposing (easeAll)
+import Css.Style as Style exposing (Style, background, color, marginTop, style, width)
+import Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Scenes.Intro.Types exposing (..)

@@ -16,9 +16,9 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
-import Helpers.Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Timing exposing (TimingFunction(..))
+import Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (TimingFunction(..))
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)

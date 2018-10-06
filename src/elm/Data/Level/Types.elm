@@ -12,7 +12,7 @@ module Data.Level.Types exposing
     , WorldNumber
     )
 
-import Config.Color exposing (Color)
+import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
 import Dict exposing (Dict)
 

@@ -1,4 +1,4 @@
-module Helpers.Css.Keyframes exposing
+module Css.Keyframes exposing
     ( Frames
     , KeyframeProp
     , KeyframesAnimation
@@ -15,8 +15,8 @@ module Helpers.Css.Keyframes exposing
     , translateY
     )
 
-import Helpers.Css.Transform as Transform exposing (Transform, fromTransform)
-import Helpers.Css.Unit exposing (pc)
+import Css.Transform as Transform exposing (Transform, fromTransform)
+import Css.Unit exposing (pc)
 import Html exposing (Html, node)
 import Html.Attributes exposing (property)
 import Json.Encode

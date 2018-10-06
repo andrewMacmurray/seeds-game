@@ -10,15 +10,15 @@ module Views.Level.TopBar exposing
     , topBar
     )
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style as Style exposing (..)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (..)
-import Helpers.Css.Transition exposing (easeAll)
+import Css.Animation exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (..)
+import Css.Transform exposing (..)
+import Css.Transition exposing (easeAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (LevelModel)
