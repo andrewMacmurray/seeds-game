@@ -130,7 +130,7 @@ update msg model =
             case tutorialData level of
                 Just tutorialConfig ->
                     ( model
-                    , sequenceMs
+                    , sequence
                         [ ( 600, SetCurrentLevel <| Just level )
                         , ( 10, ShowLoadingScreen )
                         , ( 2500, LoadTutorial level tutorialConfig )
@@ -140,7 +140,7 @@ update msg model =
 
                 Nothing ->
                     ( model
-                    , sequenceMs
+                    , sequence
                         [ ( 600, SetCurrentLevel <| Just level )
                         , ( 10, ShowLoadingScreen )
                         , ( 1000, LoadLevel level )
@@ -150,7 +150,7 @@ update msg model =
 
         RestartLevel ->
             ( model
-            , sequenceMs
+            , sequence
                 [ ( 10, ShowLoadingScreen )
                 , ( 600, LoadLevel <| currentLevel model )
                 , ( 2500, HideLoadingScreen )
@@ -171,12 +171,12 @@ update msg model =
 
         LoadSummary ->
             ( loadSummary model
-            , delayMs 1000 CompleteSceneTransition
+            , delay 1000 CompleteSceneTransition
             )
 
         LoadRetry ->
             ( loadRetry model
-            , delayMs 1000 CompleteSceneTransition
+            , delay 1000 CompleteSceneTransition
             )
 
         FadeTitle ->
@@ -191,12 +191,12 @@ update msg model =
 
         LevelWin ->
             ( model
-            , sequenceMs <| levelWinSequence model
+            , sequence <| levelWinSequence model
             )
 
         LevelLose ->
             ( model
-            , sequenceMs <| levelLoseSequence model
+            , sequence <| levelLoseSequence model
             )
 
         ShowLoadingScreen ->
@@ -221,7 +221,7 @@ update msg model =
 
         GoToHub ->
             ( model
-            , sequenceMs
+            , sequence
                 [ ( 0, ShowLoadingScreen )
                 , ( 1000, LoadHub <| progressLevelNumber model )
                 , ( 2000, HideLoadingScreen )
@@ -235,7 +235,7 @@ update msg model =
 
         IntroMusicPlaying playing ->
             ( model
-            , sequenceMs
+            , sequence
                 [ ( 0, FadeTitle )
                 , ( 2000, LoadIntro )
                 ]

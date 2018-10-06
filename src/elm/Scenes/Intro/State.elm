@@ -1,10 +1,10 @@
-module Scenes.Intro.State exposing (init, initialState, sequence, subscriptions, update)
+module Scenes.Intro.State exposing (init, initialState, subscriptions, update)
 
 import Browser.Events
 import Css.Color as Color
 import Data.Visibility exposing (..)
 import Data.Window as Window
-import Helpers.Delay exposing (sequenceMs, trigger)
+import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exit)
 import Scenes.Intro.Types exposing (..)
 import Task
@@ -16,7 +16,7 @@ init =
     , Cmd.batch
         [ -- FIXME
           -- Task.perform WindowSize size
-          sequence
+          introSequence
         ]
     )
 
@@ -32,9 +32,9 @@ initialState =
     }
 
 
-sequence : Cmd IntroMsg
-sequence =
-    sequenceMs
+introSequence : Cmd IntroMsg
+introSequence =
+    sequence
         [ ( 100, SetBackdrop Color.skyGreen )
         , ( 1000, ShowDyingLandscape )
         , ( 4000, SetBackdrop Color.skyYellow )

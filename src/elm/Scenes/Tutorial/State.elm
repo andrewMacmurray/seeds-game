@@ -11,7 +11,7 @@ import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (LevelData)
 import Data.Window as Window
 import Dict
-import Helpers.Delay exposing (pause, sequenceMs, trigger)
+import Helpers.Delay exposing (pause, sequence, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exit)
 import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
 import Scenes.Level.Types exposing (LevelModel)
@@ -34,7 +34,7 @@ init successMessageIndex levelData config =
         [ -- Task.perform WindowSize size
           -- FIXME
           Cmd.map LevelMsg levelCmd
-        , sequenceMs <| pause 500 config.sequence
+        , sequence <| pause 500 config.sequence
         ]
     )
 
@@ -189,7 +189,7 @@ resetVisibilities model =
 
 skipSequence : Cmd TutorialMsg
 skipSequence =
-    sequenceMs
+    sequence
         [ ( 0, HideCanvas )
         , ( 1500, ExitTutorial )
         , ( 0, DisableTutorial )

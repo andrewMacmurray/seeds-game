@@ -4,7 +4,7 @@ import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow
 import Data.Window as Window
 import Delay exposing (after)
-import Helpers.Delay exposing (sequenceMs)
+import Helpers.Delay exposing (sequence)
 import Scenes.Hub.Types as Hub exposing (..)
 import Task exposing (Task)
 
@@ -35,7 +35,7 @@ update msg model =
 
         HideLevelInfo ->
             ( model
-            , sequenceMs
+            , sequence
                 [ ( 0, SetInfoState <| InfoWindow.leave model.hubInfoWindow )
                 , ( 1000, SetInfoState InfoWindow.hidden )
                 ]

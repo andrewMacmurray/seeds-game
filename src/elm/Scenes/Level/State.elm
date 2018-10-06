@@ -48,7 +48,7 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
 import Data.Window as Window
 import Dict
-import Helpers.Delay exposing (sequenceMs, trigger)
+import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Exit exposing (ExitMsg, continue, exitWith)
 import Scenes.Level.Types exposing (..)
 import Task
@@ -213,7 +213,7 @@ update msg model =
 
 growSeedPodsSequence : Maybe MoveShape -> Cmd LevelMsg
 growSeedPodsSequence moveShape =
-    sequenceMs
+    sequence
         [ ( initialDelay moveShape, SetGrowingSeedPods )
         , ( 0, ResetMove )
         , ( 800, GrowPodsToSeeds )
@@ -224,7 +224,7 @@ growSeedPodsSequence moveShape =
 
 removeTilesSequence : Maybe MoveShape -> Cmd LevelMsg
 removeTilesSequence moveShape =
-    sequenceMs
+    sequence
         [ ( initialDelay moveShape, SetLeavingTiles )
         , ( 0, ResetMove )
         , ( fallDelay moveShape, SetFallingTiles )
@@ -237,7 +237,7 @@ removeTilesSequence moveShape =
 
 winSequence : LevelModel -> Cmd LevelMsg
 winSequence model =
-    sequenceMs
+    sequence
         [ ( 500, ShowInfo <| getSuccessMessage model.successMessageIndex )
         , ( 2000, RemoveInfo )
         , ( 1000, InfoHidden )
@@ -247,7 +247,7 @@ winSequence model =
 
 loseSequence : Cmd LevelMsg
 loseSequence =
-    sequenceMs
+    sequence
         [ ( 500, ShowInfo failureMessage )
         , ( 2000, RemoveInfo )
         , ( 1000, InfoHidden )
