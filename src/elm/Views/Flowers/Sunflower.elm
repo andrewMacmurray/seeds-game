@@ -1,6 +1,6 @@
 module Views.Flowers.Sunflower exposing (sunflower)
 
-import Css.Animation exposing (FillMode(..), animationWithOptionsStyle, animationWithOptionsSvg)
+import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
 import Css.Timing exposing (..)
 import Css.Transform as Transform
@@ -8,50 +8,42 @@ import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
-sunflower : Float -> Svg msg
-sunflower delay =
+sunflower : Int -> Svg msg
+sunflower delayMs =
     Svg.svg [ viewBox "-30 -25 237 220", width "100%" ]
-        [ Svg.g [] <| List.indexedMap (fadePetal delay) petals
+        [ Svg.g [] <| List.indexedMap (fadePetal delayMs) petals
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
             , fill "#8A5D3B"
-            , svgStyles
-                [ animationWithOptionsStyle
-                    { name = "bulge-elastic-big"
-                    , duration = 1000
-                    , timing = Linear
-                    , delay = Just delay
-                    , fill = Forwards
-                    , iteration = Nothing
-                    }
-                , transformOrigin "40% 45%"
-                , Style.opacity 0
-                ]
+            , svgStyles <|
+                List.concat
+                    [ animation "bulge-elastic-big" 1000
+                        |> linear
+                        |> delay delayMs
+                    , [ transformOrigin "40% 45%"
+                      , Style.opacity 0
+                      ]
+                    ]
             ]
             []
         ]
 
 
-fadePetal : Float -> Int -> Svg msg -> Svg msg
-fadePetal delay index petal =
+fadePetal : Int -> Int -> Svg msg -> Svg msg
+fadePetal delayMs index petal =
     let
         d =
-            delay + 1100 + toFloat index * 60
+            delayMs + 1100 + index * 60
     in
     Svg.g
-        [ svgStyles
-            [ Style.transform [ Transform.scale 0 ]
-            , transformOrigin "center"
-            , Style.opacity 0
-            , animationWithOptionsStyle
-                { name = "bulge-small"
-                , duration = 900
-                , timing = Ease
-                , delay = Just d
-                , iteration = Nothing
-                , fill = Forwards
-                }
-            ]
+        [ svgStyles <|
+            List.concat
+                [ [ Style.transform [ Transform.scale 0 ]
+                  , transformOrigin "center"
+                  , Style.opacity 0
+                  ]
+                , animation "bulge-small" 900 |> ease |> delay d
+                ]
         ]
         [ petal ]
 

@@ -1,14 +1,14 @@
 module Scenes.Summary exposing (drop, renderResourceBank, renderResourceFill, seedDrop, summaryView)
 
-import Css.Color exposing (gold, rainBlue, washedYellow)
 import Config.Levels exposing (allLevels)
-import Data.Board.Types exposing (..)
-import Data.Level.Summary exposing (..)
-import Data.Level.Types exposing (Progress)
-import Css.Animation exposing (..)
+import Css.Animation exposing (animation, delay, linear)
+import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
 import Css.Transform exposing (translateX, translateY)
+import Data.Board.Types exposing (..)
+import Data.Level.Summary exposing (..)
+import Data.Level.Types exposing (Progress)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -29,14 +29,17 @@ summaryView ({ progress, currentLevel } as model) =
             secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
     in
     div
-        [ style
-            [ height <| toFloat model.window.height
-            , background washedYellow
-            , animationStyle
-                { name = "fade-in"
-                , duration = 1000
-                , timing = Linear
-                }
+        [ styles
+            [ [ height <| toFloat model.window.height
+              , background washedYellow
+              ]
+            , animation "fade-in" 1000 |> linear
+
+            -- , animationStyle
+            --     { name = "fade-in"
+            --     , duration = 1000
+            --     , timing = Linear
+            --     }
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
@@ -135,18 +138,14 @@ seedDrop seedType n =
             ]
         ]
         [ div
-            [ style
-                [ width 5
-                , height 8
-                , opacity 0
-                , animationWithOptionsStyle
-                    { name = "fade-slide-down"
-                    , duration = 150
-                    , delay = Just <| toFloat <| n * d
-                    , timing = Linear
-                    , iteration = Nothing
-                    , fill = Forwards
-                    }
+            [ styles
+                [ [ width 5
+                  , height 8
+                  , opacity 0
+                  ]
+                , animation "fade-slide-down" 150
+                    |> delay (n * d)
+                    |> linear
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]
@@ -181,19 +180,15 @@ drop bgColor n =
             ]
         ]
         [ div
-            [ style
-                [ width 6
-                , height 6
-                , background bgColor
-                , opacity 0
-                , animationWithOptionsStyle
-                    { name = "fade-slide-down"
-                    , duration = 150
-                    , delay = Just <| toFloat <| n * d
-                    , timing = Linear
-                    , iteration = Nothing
-                    , fill = Forwards
-                    }
+            [ styles
+                [ [ width 6
+                  , height 6
+                  , background bgColor
+                  , opacity 0
+                  ]
+                , animation "fade-slide-down" 150
+                    |> delay (n * d)
+                    |> linear
                 ]
             , class "br-100 absolute left-0 right-0 center"
             ]

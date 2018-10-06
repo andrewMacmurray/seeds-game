@@ -1,10 +1,10 @@
 module Views.Lives exposing (life, renderLivesLeft)
 
-import Data.Transit as Transit exposing (Transit)
-import Css.Animation exposing (..)
+import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
 import Css.Transform exposing (scale)
+import Data.Transit as Transit exposing (Transit)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Icons.Heart exposing (..)
@@ -32,19 +32,14 @@ renderLivesLeft lifeState =
 life : Heart -> Html msg
 life { active, currentLife, breaking, lifeState } =
     let
-        animation =
+        animationStyles =
             if currentLife then
-                animationWithOptionsStyle
-                    { name = "heartbeat"
-                    , duration = 1000
-                    , iteration = Just Infinite
-                    , timing = Ease
-                    , delay = Nothing
-                    , fill = Forwards
-                    }
+                animation "heartbeat" 1000
+                    |> ease
+                    |> infinite
 
             else
-                empty
+                []
 
         visibleHeart =
             if active then
@@ -64,13 +59,14 @@ life { active, currentLife, breaking, lifeState } =
                 transform [ scale 1.11 ]
     in
     div
-        [ style
-            [ width 35
-            , height 35
-            , marginLeft 10
-            , marginRight 10
-            , animation
-            , adjustScale
+        [ styles
+            [ [ width 35
+              , height 35
+              , marginLeft 10
+              , marginRight 10
+              , adjustScale
+              ]
+            , animationStyles
             ]
         , class "dib"
         ]

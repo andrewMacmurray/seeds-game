@@ -1,11 +1,11 @@
 module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoContainer_)
 
-import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.InfoWindow exposing (..)
-import Css.Animation exposing (..)
+import Css.Animation exposing (animation, cubicBezier, ease, linear)
+import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
+import Data.InfoWindow exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 
@@ -19,15 +19,12 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , style
-                    [ background seedPodGradient
-                    , color white
-                    , animationStyle
-                        { name = "elastic-bounce-in"
-                        , duration = 2000
-                        , timing = Linear
-                        }
-                    , width 380
+                , styles
+                    [ animation "elastic-bounce-in" 2000 |> linear
+                    , [ background seedPodGradient
+                      , color white
+                      , width 380
+                      ]
                     ]
                 ]
                 [ content ]
@@ -37,15 +34,12 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , style
-                    [ background seedPodGradient
-                    , color white
-                    , width 380
-                    , animationStyle
-                        { name = "exit-down"
-                        , duration = 700
-                        , timing = CubicBezier 0.93 -0.36 0.57 0.96
-                        }
+                , styles
+                    [ [ background seedPodGradient
+                      , color white
+                      , width 380
+                      ]
+                    , animation "exit-down" 700 |> cubicBezier 0.93 -0.36 0.57 0.96
                     ]
                 ]
                 [ content ]
@@ -56,10 +50,11 @@ infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
         containerStyles =
-            style
-                [ paddingLeft ScaleConfig.windowPadding
-                , paddingRight ScaleConfig.windowPadding
-                , animateEase "fade-in" 100
+            styles
+                [ [ paddingLeft ScaleConfig.windowPadding
+                  , paddingRight ScaleConfig.windowPadding
+                  ]
+                , animation "fade-in" 100 |> ease
                 ]
     in
     if isLeaving infoWindow then

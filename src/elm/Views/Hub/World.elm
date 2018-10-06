@@ -11,14 +11,14 @@ module Views.Hub.World exposing
     )
 
 import Config.Levels exposing (allLevels)
+import Css.Animation exposing (animation, ease, infinite)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (TimingFunction(..))
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
-import Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
-import Css.Style as Style exposing (..)
-import Css.Timing exposing (TimingFunction(..))
 import Helpers.Html exposing (emptyProperty)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
@@ -91,16 +91,11 @@ currentLevelPointer : Bool -> Html msg
 currentLevelPointer isCurrentLevel =
     if isCurrentLevel then
         div
-            [ style
-                [ top -30
-                , animationWithOptionsStyle
-                    { name = "hover"
-                    , timing = Ease
-                    , fill = Forwards
-                    , duration = 1500
-                    , iteration = Just Infinite
-                    , delay = Nothing
-                    }
+            [ styles
+                [ [ top -30 ]
+                , animation "hover" 1500
+                    |> ease
+                    |> infinite
                 ]
             , class "absolute left-0 right-0"
             ]

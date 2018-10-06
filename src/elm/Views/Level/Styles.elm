@@ -36,19 +36,19 @@ module Views.Level.Styles exposing
     , wallStyles
     )
 
-import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
+import Css.Animation exposing (animation, ease, linear)
+import Css.Color exposing (..)
+import Css.Style exposing (..)
+import Css.Timing exposing (..)
+import Css.Transform exposing (..)
+import Css.Transition exposing (easeAll, transitionStyle)
 import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window as Window
 import Dict exposing (Dict)
-import Css.Animation exposing (..)
-import Css.Style exposing (..)
-import Css.Timing exposing (..)
-import Css.Transform exposing (..)
-import Css.Transition exposing (easeAll, transitionStyle)
 import Scenes.Level.Types as Level exposing (..)
 
 
@@ -132,7 +132,7 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            [ animateEase "bounce-down" 1000 ]
+            animation "bounce-down" 1000 |> ease
 
         _ ->
             []
@@ -154,7 +154,7 @@ growingStyles ( coord, block ) =
             ]
 
         Growing (Seed _) _ ->
-            [ animateEase "bulge" 500 ]
+            animation "bulge" 500 |> ease
 
         _ ->
             []
@@ -164,12 +164,7 @@ fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
-            [ animationStyle
-                { name = "bounce-down-" ++ Debug.toString distance
-                , duration = 900
-                , timing = Linear
-                }
-            ]
+            animation ("bounce-down-" ++ String.fromInt distance) 900 |> linear
 
         _ ->
             []
@@ -267,7 +262,7 @@ exitYdistance model =
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        [ animateEase "bulge-fade" 800 ]
+        animation "bulge-fade" 800 |> ease
 
     else
         [ displayStyle "none"

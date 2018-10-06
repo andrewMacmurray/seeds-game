@@ -8,14 +8,14 @@ module Views.Intro.GrowingSeeds exposing
     )
 
 import Config.Scale exposing (tileScaleFactor)
+import Css.Animation exposing (animation, delay, ease, easeOut)
+import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
+import Css.Timing exposing (TimingFunction(..))
+import Css.Transform as Transform
+import Css.Transition as Transition
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
-import Css.Animation exposing (..)
-import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, transform, transformOrigin, width)
-import Css.Timing exposing (TimingFunction(..))
-import Css.Transform as Transform
-import Css.Transition exposing (ease)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -35,15 +35,10 @@ mainSeedStyles : Visibility -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
-            style
-                [ animationWithOptionsStyle
-                    { name = "slide-down-scale-out"
-                    , duration = 2000
-                    , delay = Just 500
-                    , timing = Ease
-                    , fill = Forwards
-                    , iteration = Nothing
-                    }
+            styles
+                [ animation "slide-down-scale-out" 2000
+                    |> delay 500
+                    |> ease
                 ]
 
         _ ->
@@ -54,10 +49,10 @@ sideSeedsContainer : Visibility -> List (Html msg) -> Html msg
 sideSeedsContainer vis =
     case vis of
         Leaving ->
-            div [ class "o-0 flex justify-center", style [ ease "opacity" 1500 ] ]
+            div [ class "o-0 flex justify-center", style [ Transition.ease "opacity" 1500 ] ]
 
         Entering ->
-            div [ class "o-100 flex justify-center", style [ ease "opacity" 1500 ] ]
+            div [ class "o-100 flex justify-center", style [ Transition.ease "opacity" 1500 ] ]
 
         Visible ->
             div [ class "o-100 flex justify-center" ]
@@ -69,25 +64,21 @@ sideSeedsContainer vis =
 growingSeed : Window.Size -> ( Int, SeedType, Float ) -> Html msg
 growingSeed window ( index, seedType, scale ) =
     let
-        delay =
-            toFloat <| index * 100
+        delayMs =
+            index * 100
     in
     div [ class "flex items-end" ]
         [ div
-            [ style
-                [ width <| 50 * scale * tileScaleFactor window
-                , marginLeft 5
-                , marginRight 5
-                , transform [ Transform.scale 0 ]
-                , transformOrigin "center"
-                , animationWithOptionsStyle
-                    { name = "bulge-elastic"
-                    , duration = 500
-                    , timing = EaseOut
-                    , delay = Just delay
-                    , iteration = Nothing
-                    , fill = Forwards
-                    }
+            [ styles
+                [ [ width <| 50 * scale * tileScaleFactor window
+                  , marginLeft 5
+                  , marginRight 5
+                  , transform [ Transform.scale 0 ]
+                  , transformOrigin "center"
+                  ]
+                , animation "bulge-elastic" 500
+                    |> easeOut
+                    |> delay delayMs
                 ]
             , class "growing-seed"
             ]

@@ -10,11 +10,11 @@ module Views.Intro.RollingHills exposing
     , rollingHills
     )
 
-import Data.Visibility exposing (..)
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
 import Css.Timing exposing (..)
 import Css.Transform as Transform exposing (translate)
 import Css.Transition exposing (transitionStyle)
+import Data.Visibility exposing (..)
 import Html exposing (Html, div)
 import Html.Attributes
 import Svg exposing (Attribute, Svg)
@@ -101,7 +101,7 @@ hillOffset delay offset vis =
             svgStyles [ Style.transform [ translate 0 800 ] ]
 
 
-renderFlowers : Float -> Visibility -> Svg msg
+renderFlowers : Int -> Visibility -> Svg msg
 renderFlowers delay vis =
     case vis of
         Visible ->
@@ -111,12 +111,12 @@ renderFlowers delay vis =
             Svg.g [] []
 
 
-flowers : Float -> Svg msg
+flowers : Int -> Svg msg
 flowers delay =
     Svg.g [ class "dn db-ns" ] [ flowersLeft delay, flowersRight delay ]
 
 
-flowersRight : Float -> Svg msg
+flowersRight : Int -> Svg msg
 flowersRight delay =
     Svg.g []
         [ Svg.g
@@ -131,7 +131,7 @@ flowersRight delay =
         ]
 
 
-flowersLeft : Float -> Svg msg
+flowersLeft : Int -> Svg msg
 flowersLeft delay =
     Svg.g []
         [ Svg.g [ svgStyles [ originCenter, Style.transform [ translate 400 -350, Transform.scale 0.08 ] ] ] [ sunflower <| delay + 0 ]

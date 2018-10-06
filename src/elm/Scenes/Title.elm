@@ -12,14 +12,14 @@ module Scenes.Title exposing
     , titleView
     )
 
-import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
+import Css.Animation exposing (animation, delay, linear)
+import Css.Color exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Timing exposing (..)
 import Data.Level.Types exposing (Progress)
 import Data.Visibility exposing (..)
 import Data.Window as Window
-import Css.Animation exposing (..)
-import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -114,68 +114,77 @@ seeds vis =
         )
 
 
-seedEntranceDelays : Float -> List Float
+seedEntranceDelays : Int -> List Int
 seedEntranceDelays interval =
     [ 3, 2, 1, 2, 3 ] |> List.map ((*) interval)
 
 
-seedExitDelays : Float -> List Float
+seedExitDelays : Int -> List Int
 seedExitDelays interval =
     [ 0, 1, 2, 1, 0 ] |> List.map ((*) interval)
 
 
-fadeSeeds : Visibility -> Float -> Float -> Html msg -> Html msg
+fadeSeeds : Visibility -> Int -> Int -> Html msg -> Html msg
 fadeSeeds vis entranceDelay exitDelay seed =
     div
-        [ styles [ fadeInStyles vis 1000 entranceDelay, fadeOutStyles vis 1000 exitDelay ]
+        [ styles
+            [ fadeInStyles vis 1000 entranceDelay
+            , fadeOutStyles vis 1000 exitDelay
+            ]
         , class "mh2"
         ]
         [ seed ]
 
 
-fadeOutStyles : Visibility -> Float -> Float -> List Style
+fadeOutStyles : Visibility -> Int -> Int -> List Style
 fadeOutStyles vis duration delay =
     case vis of
         Leaving ->
-            [ fade vis duration delay
-            , opacity 1
-            ]
+            List.concat
+                [ fade vis duration delay
+                , [ opacity 1 ]
+                ]
 
         _ ->
             []
 
 
-fadeInStyles : Visibility -> Float -> Float -> List Style
+fadeInStyles : Visibility -> Int -> Int -> List Style
 fadeInStyles vis duration delay =
     case vis of
         Entering ->
-            [ fade vis duration delay
-            , opacity 0
-            ]
+            List.concat
+                [ fade vis duration delay
+                , [ opacity 0 ]
+                ]
 
         _ ->
             []
 
 
-fade : Visibility -> Float -> Float -> Style
-fade vis duration delay =
+fade : Visibility -> Int -> Int -> List Style
+fade vis duration delayMs =
     let
-        animation name =
-            animationWithOptionsStyle
-                { name = name
-                , duration = duration
-                , delay = Just delay
-                , timing = Linear
-                , fill = Forwards
-                , iteration = Nothing
-                }
+        fadeDirection name =
+            animation name duration
+                |> delay delayMs
+                |> linear
+
+        -- animationWithOptionsStyle
+        --     { name = name
+        --     , duration = duration
+        --     , delay = Just delay
+        --     , timing = Linear
+        --     , fill = Forwards
+        --     , iteration = Nothing
+        --     }
     in
     case vis of
         Entering ->
-            animation "fade-in"
+            fadeDirection "fade-in"
 
         Leaving ->
-            animation "fade-out"
+            fadeDirection "fade-out"
 
         _ ->
-            empty
+            []

@@ -1,12 +1,12 @@
 module Scenes.Retry exposing (lifeState, retryView, tryAgain)
 
+import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color exposing (..)
-import Data.Transit exposing (Transit(..))
-import Css.Animation exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
+import Data.Transit exposing (Transit(..))
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -18,14 +18,11 @@ import Views.Lives exposing (renderLivesLeft)
 retryView : Model -> Html Msg
 retryView model =
     div
-        [ style
-            [ height <| toFloat model.window.height
-            , background washedYellow
-            , animationStyle
-                { name = "fade-in"
-                , duration = 1000
-                , timing = Linear
-                }
+        [ styles
+            [ [ height <| toFloat model.window.height
+              , background washedYellow
+              ]
+            , animation "fade-in" 1000 |> linear
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
@@ -37,31 +34,17 @@ retryView model =
             , div [ style [ color darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ style
-                        [ animationWithOptionsStyle
-                            { name = "fade-in"
-                            , duration = 1000
-                            , delay = Just 2500
-                            , timing = Ease
-                            , iteration = Nothing
-                            , fill = Forwards
-                            }
-                        ]
+                    [ styles [ animation "fade-in" 1000 |> delay 2500 |> ease ]
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
-                [ style
-                    [ animationWithOptionsStyle
-                        { name = "bounce-up"
-                        , duration = 1500
-                        , delay = Just 3000
-                        , timing = Linear
-                        , fill = Forwards
-                        , iteration = Nothing
-                        }
-                    , transform [ translate 0 (toFloat <| model.window.height + 100) ]
+                [ styles
+                    [ animation "bounce-up" 1500
+                        |> delay 3000
+                        |> linear
+                    , [ transform [ translate 0 (toFloat <| model.window.height + 100) ] ]
                     ]
                 ]
                 [ tryAgain model ]
@@ -103,7 +86,7 @@ tryAgain model =
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
             [ styles
-                [ [ background lightGreen
+                [ [ background mediumGreen
                   , color "white"
                   , paddingLeft 25
                   , paddingRight 20

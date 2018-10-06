@@ -10,15 +10,15 @@ module Views.Level.TopBar exposing
     , topBar
     )
 
-import Css.Color exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
-import Data.Board.Types exposing (..)
-import Css.Animation exposing (..)
+import Css.Animation exposing (animation, delay, ease)
+import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (easeAll)
+import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Data.Board.Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Scenes.Level.Types exposing (LevelModel)
@@ -134,25 +134,21 @@ tickFadeIn : TileType -> Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
-            [ style
-                [ top 1
-                , transform [ scale 0 ]
-                , animationWithOptionsStyle
-                    { name = "bulge"
-                    , duration = 600
-                    , delay = Just 800
-                    , timing = Ease
-                    , fill = Forwards
-                    , iteration = Nothing
-                    }
+            [ styles
+                [ [ top 1
+                  , transform [ scale 0 ]
+                  ]
+                , animation "bulge" 600
+                    |> ease
+                    |> delay 800
                 ]
             , class "absolute top-0 left-0 right-0"
             ]
             [ tickBackground ]
         , div
-            [ style
-                [ animateEase "fade-out" 500
-                , opacity 1
+            [ styles
+                [ [ opacity 1 ]
+                , animation "fade-out" 500 |> ease
                 ]
             ]
             [ text <| scoreToString tileType scores ]

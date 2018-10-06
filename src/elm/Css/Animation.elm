@@ -1,127 +1,117 @@
-module Css.Animation exposing
-    ( Animation
-    , AnimationOptions
-    , FillMode(..)
-    , IterationCount(..)
-    , animateEase
-    , animationStyle
-    , animationWithOptionsStyle
-    , animationWithOptionsSvg
-    )
+module Css.Animation exposing (animation, cubicBezier, delay, ease, easeIn, easeInOut, easeOut, infinite, linear)
 
-import Css.Style as Style exposing (Style)
-import Css.Timing exposing (TimingFunction(..), timingToString)
+import Css.Style exposing (Style, property)
 import Css.Unit exposing (ms)
-import Helpers.Maybe exposing (catMaybes)
-
-
-type alias AnimationOptions =
-    { name : String
-    , timing : TimingFunction
-    , duration : Float
-    , delay : Maybe Float
-    , fill : FillMode
-    , iteration : Maybe IterationCount
-    }
-
-
-type alias Animation =
-    { name : String
-    , duration : Float
-    , timing : TimingFunction
-    }
-
-
-type FillMode
-    = Forwards
-    | Backwards
-    | Both
-
-
-type IterationCount
-    = Infinite
-    | Count Int
 
 
 
-{- myAnim =
-   animationWithOptionsStyle
-       { name = "fade"
-       , duration = 300
-       , delay = Nothing
-       , timing = EaseInOut
-       , fill = Forwards
-       , iteration = Nothing
-       }
-
-   -- ("animation", "fade 300ms ease-in-out forwards")
--}
+-- myDiv =
+--     div
+--         [ styles
+--             [ animation "fade-in" 500
+--                 |> delay 500
+--                 |> infinite
+--             ]
+--         ]
+--         []
 
 
-animateEase : String -> Float -> Style
-animateEase name duration =
-    animationStyle
-        { name = name
-        , duration = duration
-        , timing = Ease
-        }
-
-
-animationStyle : Animation -> Style
-animationStyle =
-    animation >> Style.property "animation"
-
-
-animationWithOptionsStyle : AnimationOptions -> Style
-animationWithOptionsStyle =
-    animationWithOptions >> Style.property "animation"
-
-
-animationWithOptionsSvg : AnimationOptions -> String
-animationWithOptionsSvg =
-    animationWithOptions >> (++) "animation: "
-
-
-animation : Animation -> String
-animation { name, duration, timing } =
-    animationWithOptions
-        { name = name
-        , duration = duration
-        , delay = Nothing
-        , timing = timing
-        , fill = Forwards
-        , iteration = Nothing
-        }
-
-
-animationWithOptions : AnimationOptions -> String
-animationWithOptions =
-    combineProperties
-        >> catMaybes
-        >> String.join " "
-
-
-combineProperties : AnimationOptions -> List (Maybe String)
-combineProperties anim =
-    [ Just anim.name
-    , Just <| ms anim.duration
-    , Just <| timingToString anim.timing
-    , Maybe.map ms anim.delay
-    , Just <| fillToString anim.fill
-    , Maybe.map iterationToString anim.iteration
+animation : String -> Int -> List Style
+animation name duration =
+    [ animationName name
+    , animationDuration duration
+    , fillForwards
     ]
 
 
-fillToString : FillMode -> String
-fillToString =
-    Debug.toString >> String.toLower
+delay : Int -> List Style -> List Style
+delay duration xs =
+    animationDelay duration :: xs
 
 
-iterationToString : IterationCount -> String
-iterationToString iter =
-    case iter of
-        Infinite ->
-            "infinite"
+ease : List Style -> List Style
+ease xs =
+    animationTimingFunction "ease" :: xs
 
-        Count n ->
-            Debug.toString n
+
+easeIn : List Style -> List Style
+easeIn xs =
+    animationTimingFunction "ease-in" :: xs
+
+
+easeOut : List Style -> List Style
+easeOut xs =
+    animationTimingFunction "ease-out" :: xs
+
+
+easeInOut : List Style -> List Style
+easeInOut xs =
+    animationTimingFunction "ease-in-out" :: xs
+
+
+linear : List Style -> List Style
+linear xs =
+    animationTimingFunction "linear" :: xs
+
+
+infinite : List Style -> List Style
+infinite xs =
+    animationIterationCount "infinite" :: xs
+
+
+cubicBezier : Float -> Float -> Float -> Float -> List Style -> List Style
+cubicBezier a b c d xs =
+    animationTimingFunction (cubicBezier_ a b c d) :: xs
+
+
+
+-- Styles
+
+
+animationName : String -> Style
+animationName =
+    property "animation-name"
+
+
+animationDuration : Int -> Style
+animationDuration n =
+    property "animation-duration" <| ms <| toFloat n
+
+
+animationDelay : Int -> Style
+animationDelay n =
+    property "animation-delay" <| ms <| toFloat n
+
+
+animationTimingFunction : String -> Style
+animationTimingFunction =
+    property "animation-timing-function"
+
+
+animationIterationCount : String -> Style
+animationIterationCount =
+    property "animation-iteration-count"
+
+
+fillForwards : Style
+fillForwards =
+    property "animation-fill-mode" "forwards"
+
+
+
+-- Helpers
+
+
+cubicBezier_ : Float -> Float -> Float -> Float -> String
+cubicBezier_ a b c d =
+    String.join ""
+        [ "cubic-bezier("
+        , String.fromFloat a
+        , ","
+        , String.fromFloat b
+        , ","
+        , String.fromFloat c
+        , ","
+        , String.fromFloat d
+        , ")"
+        ]
