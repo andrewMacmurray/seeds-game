@@ -45,6 +45,10 @@ type alias Color =
     String
 
 
+
+-- Gradients
+
+
 seedPodGradient : Color
 seedPodGradient =
     linearGradient seedPodGradient_
@@ -69,6 +73,10 @@ gradientStop stopColor percent =
 linearGradient : String -> String
 linearGradient x =
     String.join "" [ "linear-gradient(", x, ")" ]
+
+
+
+-- Colors
 
 
 darkRed : Color

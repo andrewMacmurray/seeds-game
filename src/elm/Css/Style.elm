@@ -10,7 +10,6 @@ module Css.Style exposing
     , compose
     , displayStyle
     , empty
-    , frameBackgroundImage
     , height
     , left
     , leftAuto
@@ -239,26 +238,20 @@ borderNone =
     property "border" "none"
 
 
-rightPill : List Style
+rightPill : Style
 rightPill =
-    [ property "border-top-right-radius" <| px 9999
-    , property "border-bottom-right-radius" <| px 9999
-    ]
+    compose
+        [ property "border-top-right-radius" <| px 9999
+        , property "border-bottom-right-radius" <| px 9999
+        ]
 
 
-leftPill : List Style
+leftPill : Style
 leftPill =
-    [ property "border-top-left-radius" <| px 9999
-    , property "border-bottom-left-radius" <| px 9999
-    ]
-
-
-frameBackgroundImage : List Style
-frameBackgroundImage =
-    [ property "background-position" "center"
-    , property "background-repeat" "no-repeat"
-    , property "background-size" "contain"
-    ]
+    compose
+        [ property "border-top-left-radius" <| px 9999
+        , property "border-bottom-left-radius" <| px 9999
+        ]
 
 
 backgroundImage : String -> Style

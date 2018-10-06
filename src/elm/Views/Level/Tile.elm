@@ -13,11 +13,11 @@ module Views.Level.Tile exposing
     )
 
 import Config.Scale exposing (tileScaleFactor)
+import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window as Window exposing (Size)
-import Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerDownPosition)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
