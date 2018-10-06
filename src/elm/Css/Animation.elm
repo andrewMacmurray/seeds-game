@@ -1,66 +1,69 @@
-module Css.Animation exposing (animation, cubicBezier, delay, ease, easeIn, easeInOut, easeOut, infinite, linear)
+module Css.Animation exposing
+    ( AnimationProperty
+    , animation
+    , cubicBezier
+    , delay
+    , ease
+    , easeOut
+    , infinite
+    , linear
+    )
 
-import Css.Style exposing (Style, compose, property)
+import Css.Style as Style exposing (Style)
 import Css.Unit exposing (ms)
 
 
 
--- myDiv =
+-- animatedDiv =
 --     div
---         [ styles
---             [ animation (name "fade-in" 500 |> delay 500 |> infinite)
---             ]
---         ]
+--         [ style [ animation "fade-in" 500 [ delay 500, infinite ] ] ]
 --         []
 
 
-animation : String -> Int -> Style
-animation name duration =
-    compose
-        [ animationName name
-        , animationDuration duration
-        , fillForwards
-        ]
+type AnimationProperty
+    = AnimationProperty Style
 
 
-delay : Int -> Style -> Style
-delay duration s =
-    compose [ animationDelay duration, s ]
+animation : String -> Int -> List AnimationProperty -> Style
+animation name duration props =
+    [ [ animationName name
+      , animationDuration duration
+      , fillForwards
+      ]
+    , propsToStyles props
+    ]
+        |> List.concat
+        |> Style.compose
 
 
-ease : Style -> Style
-ease s =
-    compose [ animationTimingFunction "ease", s ]
+delay : Int -> AnimationProperty
+delay duration =
+    animationProperty <| animationDelay duration
 
 
-easeIn : Style -> Style
-easeIn s =
-    compose [ animationTimingFunction "ease-in", s ]
+ease : AnimationProperty
+ease =
+    animationProperty <| animationTimingFunction "ease"
 
 
-easeOut : Style -> Style
-easeOut s =
-    compose [ animationTimingFunction "ease-out", s ]
+easeOut : AnimationProperty
+easeOut =
+    animationProperty <| animationTimingFunction "ease-out"
 
 
-easeInOut : Style -> Style
-easeInOut s =
-    compose [ animationTimingFunction "ease-in-out", s ]
+linear : AnimationProperty
+linear =
+    animationProperty <| animationTimingFunction "linear"
 
 
-linear : Style -> Style
-linear s =
-    compose [ animationTimingFunction "linear", s ]
+cubicBezier : Float -> Float -> Float -> Float -> AnimationProperty
+cubicBezier a b c d =
+    animationProperty <| animationTimingFunction (cubicBezier_ a b c d)
 
 
-infinite : Style -> Style
-infinite s =
-    compose [ animationIterationCount "infinite", s ]
-
-
-cubicBezier : Float -> Float -> Float -> Float -> Style -> Style
-cubicBezier a b c d s =
-    compose [ animationTimingFunction (cubicBezier_ a b c d), s ]
+infinite : AnimationProperty
+infinite =
+    animationProperty <| animationIterationCount "infinite"
 
 
 
@@ -69,36 +72,46 @@ cubicBezier a b c d s =
 
 animationName : String -> Style
 animationName =
-    property "animation-name"
+    Style.property "animation-name"
 
 
 animationDuration : Int -> Style
 animationDuration n =
-    property "animation-duration" <| ms <| toFloat n
+    Style.property "animation-duration" <| ms <| toFloat n
 
 
 animationDelay : Int -> Style
 animationDelay n =
-    property "animation-delay" <| ms <| toFloat n
+    Style.property "animation-delay" <| ms <| toFloat n
 
 
 animationTimingFunction : String -> Style
 animationTimingFunction =
-    property "animation-timing-function"
+    Style.property "animation-timing-function"
 
 
 animationIterationCount : String -> Style
 animationIterationCount =
-    property "animation-iteration-count"
+    Style.property "animation-iteration-count"
 
 
 fillForwards : Style
 fillForwards =
-    property "animation-fill-mode" "forwards"
+    Style.property "animation-fill-mode" "forwards"
 
 
 
 -- Helpers
+
+
+animationProperty : Style -> AnimationProperty
+animationProperty =
+    AnimationProperty
+
+
+propsToStyles : List AnimationProperty -> List Style
+propsToStyles =
+    List.map (\(AnimationProperty s) -> s)
 
 
 cubicBezier_ : Float -> Float -> Float -> Float -> String

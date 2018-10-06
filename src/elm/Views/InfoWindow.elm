@@ -20,7 +20,7 @@ infoContainer infoWindow content =
             [ div
                 [ class "pa3 br3 tc relative"
                 , style
-                    [ animation "elastic-bounce-in" 2000 |> linear
+                    [ animation "elastic-bounce-in" 2000 [ linear ]
                     , background seedPodGradient
                     , color white
                     , width 380
@@ -37,7 +37,7 @@ infoContainer infoWindow content =
                     [ background seedPodGradient
                     , color white
                     , width 380
-                    , animation "exit-down" 700 |> cubicBezier 0.93 -0.36 0.57 0.96
+                    , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]
                     ]
                 ]
                 [ content ]
@@ -51,7 +51,7 @@ infoContainer_ infoWindow =
             style
                 [ paddingLeft ScaleConfig.windowPadding
                 , paddingRight ScaleConfig.windowPadding
-                , animation "fade-in" 100 |> ease
+                , animation "fade-in" 100 [ ease ]
                 ]
     in
     if isLeaving infoWindow then

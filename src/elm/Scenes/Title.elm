@@ -164,9 +164,7 @@ fade : Visibility -> Int -> Int -> Style
 fade vis duration delayMs =
     let
         fadeDirection name =
-            animation name duration
-                |> delay delayMs
-                |> linear
+            animation name duration [ delay delayMs, linear ]
     in
     case vis of
         Entering ->

@@ -132,7 +132,7 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            [ animation "bounce-down" 1000 |> ease ]
+            [ animation "bounce-down" 1000 [ ease ] ]
 
         _ ->
             []
@@ -154,7 +154,7 @@ growingStyles ( coord, block ) =
             ]
 
         Growing (Seed _) _ ->
-            [ animation "bulge" 500 |> ease ]
+            [ animation "bulge" 500 [ ease ] ]
 
         _ ->
             []
@@ -164,7 +164,7 @@ fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
-            [ animation ("bounce-down-" ++ String.fromInt distance) 900 |> linear ]
+            [ animation ("bounce-down-" ++ String.fromInt distance) 900 [ linear ] ]
 
         _ ->
             []
@@ -262,7 +262,7 @@ exitYdistance model =
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        [ animation "bulge-fade" 800 |> ease ]
+        [ animation "bulge-fade" 800 [ ease ] ]
 
     else
         [ displayStyle "none" ]

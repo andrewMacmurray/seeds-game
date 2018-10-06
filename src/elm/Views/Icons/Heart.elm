@@ -90,6 +90,4 @@ heartBreak heartState =
 
 breakAnimation : String -> Int -> Int -> Style
 breakAnimation name delayMs duration =
-    animation name duration
-        |> delay delayMs
-        |> cubicBezier 0 -2.85 0.67 2.83
+    animation name duration [ delay delayMs, cubicBezier 0 -2.85 0.67 2.83 ]

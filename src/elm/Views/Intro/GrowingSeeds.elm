@@ -35,11 +35,7 @@ mainSeedStyles : Visibility -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
-            style
-                [ animation "slide-down-scale-out" 2000
-                    |> delay 500
-                    |> ease
-                ]
+            style [ animation "slide-down-scale-out" 2000 [ delay 500, ease ] ]
 
         _ ->
             emptyProperty
@@ -75,9 +71,7 @@ growingSeed window ( index, seedType, scale ) =
                 , marginRight 5
                 , transform [ Transform.scale 0 ]
                 , transformOrigin "center"
-                , animation "bulge-elastic" 500
-                    |> easeOut
-                    |> delay delayMs
+                , animation "bulge-elastic" 500 [ easeOut, delay delayMs ]
                 ]
             , class "growing-seed"
             ]

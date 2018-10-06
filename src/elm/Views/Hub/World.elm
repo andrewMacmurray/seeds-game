@@ -93,9 +93,7 @@ currentLevelPointer isCurrentLevel =
         div
             [ style
                 [ top -30
-                , animation "hover" 1500
-                    |> ease
-                    |> infinite
+                , animation "hover" 1500 [ ease, infinite ]
                 ]
             , class "absolute left-0 right-0"
             ]

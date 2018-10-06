@@ -137,7 +137,7 @@ tickFadeIn tileType scores =
             [ style
                 [ top 1
                 , transform [ scale 0 ]
-                , animation "bulge" 600 |> ease |> delay 800
+                , animation "bulge" 600 [ ease, delay 800 ]
                 ]
             , class "absolute top-0 left-0 right-0"
             ]
@@ -145,7 +145,7 @@ tickFadeIn tileType scores =
         , div
             [ style
                 [ opacity 1
-                , animation "fade-out" 500 |> ease
+                , animation "fade-out" 500 [ ease ]
                 ]
             ]
             [ text <| scoreToString tileType scores ]

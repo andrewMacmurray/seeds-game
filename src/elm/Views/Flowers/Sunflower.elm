@@ -16,9 +16,7 @@ sunflower delayMs =
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
             , fill "#8A5D3B"
             , svgStyles
-                [ animation "bulge-elastic-big" 1000
-                    |> linear
-                    |> delay delayMs
+                [ animation "bulge-elastic-big" 1000 [ linear, delay delayMs ]
                 , transformOrigin "40% 45%"
                 , Style.opacity 0
                 ]
@@ -38,7 +36,7 @@ fadePetal delayMs index petal =
             [ Style.transform [ Transform.scale 0 ]
             , transformOrigin "center"
             , Style.opacity 0
-            , animation "bulge-small" 900 |> ease |> delay d
+            , animation "bulge-small" 900 [ ease, delay d ]
             ]
         ]
         [ petal ]

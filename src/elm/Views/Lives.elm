@@ -34,9 +34,7 @@ life { active, currentLife, breaking, lifeState } =
     let
         animationStyles =
             if currentLife then
-                animation "heartbeat" 1000
-                    |> ease
-                    |> infinite
+                animation "heartbeat" 1000 [ ease, infinite ]
 
             else
                 Style.empty
