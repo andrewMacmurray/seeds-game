@@ -39,7 +39,7 @@ life { active, currentLife, breaking, lifeState } =
                     |> infinite
 
             else
-                []
+                Style.empty
 
         visibleHeart =
             if active then
@@ -59,13 +59,12 @@ life { active, currentLife, breaking, lifeState } =
                 transform [ scale 1.11 ]
     in
     div
-        [ styles
-            [ [ width 35
-              , height 35
-              , marginLeft 10
-              , marginRight 10
-              , adjustScale
-              ]
+        [ style
+            [ width 35
+            , height 35
+            , marginLeft 10
+            , marginRight 10
+            , adjustScale
             , animationStyles
             ]
         , class "dib"

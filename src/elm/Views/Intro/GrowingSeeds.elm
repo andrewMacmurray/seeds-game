@@ -35,7 +35,7 @@ mainSeedStyles : Visibility -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
-            styles
+            style
                 [ animation "slide-down-scale-out" 2000
                     |> delay 500
                     |> ease
@@ -69,13 +69,12 @@ growingSeed window ( index, seedType, scale ) =
     in
     div [ class "flex items-end" ]
         [ div
-            [ styles
-                [ [ width <| 50 * scale * tileScaleFactor window
-                  , marginLeft 5
-                  , marginRight 5
-                  , transform [ Transform.scale 0 ]
-                  , transformOrigin "center"
-                  ]
+            [ style
+                [ width <| 50 * scale * tileScaleFactor window
+                , marginLeft 5
+                , marginRight 5
+                , transform [ Transform.scale 0 ]
+                , transformOrigin "center"
                 , animation "bulge-elastic" 500
                     |> easeOut
                     |> delay delayMs

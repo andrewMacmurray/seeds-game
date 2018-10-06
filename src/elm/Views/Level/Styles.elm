@@ -39,7 +39,7 @@ module Views.Level.Styles exposing
 import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, ease, linear)
 import Css.Color exposing (..)
-import Css.Style exposing (..)
+import Css.Style as Style exposing (..)
 import Css.Timing exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (easeAll, transitionStyle)
@@ -132,7 +132,7 @@ enteringStyles : Move -> List Style
 enteringStyles ( _, block ) =
     case getTileState block of
         Entering tile ->
-            animation "bounce-down" 1000 |> ease
+            [ animation "bounce-down" 1000 |> ease ]
 
         _ ->
             []
@@ -154,7 +154,7 @@ growingStyles ( coord, block ) =
             ]
 
         Growing (Seed _) _ ->
-            animation "bulge" 500 |> ease
+            [ animation "bulge" 500 |> ease ]
 
         _ ->
             []
@@ -164,7 +164,7 @@ fallingStyles : Move -> List Style
 fallingStyles ( _, block ) =
     case getTileState block of
         Falling tile distance ->
-            animation ("bounce-down-" ++ String.fromInt distance) 900 |> linear
+            [ animation ("bounce-down-" ++ String.fromInt distance) 900 |> linear ]
 
         _ ->
             []
@@ -200,7 +200,7 @@ handleExitDirection ( coord, block ) model =
             getLeavingStyle (Seed seedType) model
 
         _ ->
-            empty
+            Style.empty
 
 
 getLeavingStyle : TileType -> LevelModel -> Style
@@ -262,11 +262,10 @@ exitYdistance model =
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then
-        animation "bulge-fade" 800 |> ease
+        [ animation "bulge-fade" 800 |> ease ]
 
     else
-        [ displayStyle "none"
-        ]
+        [ displayStyle "none" ]
 
 
 draggingStyles : Maybe MoveShape -> Move -> List Style

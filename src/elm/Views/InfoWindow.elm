@@ -19,12 +19,11 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , styles
+                , style
                     [ animation "elastic-bounce-in" 2000 |> linear
-                    , [ background seedPodGradient
-                      , color white
-                      , width 380
-                      ]
+                    , background seedPodGradient
+                    , color white
+                    , width 380
                     ]
                 ]
                 [ content ]
@@ -34,11 +33,10 @@ infoContainer infoWindow content =
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
-                , styles
-                    [ [ background seedPodGradient
-                      , color white
-                      , width 380
-                      ]
+                , style
+                    [ background seedPodGradient
+                    , color white
+                    , width 380
                     , animation "exit-down" 700 |> cubicBezier 0.93 -0.36 0.57 0.96
                     ]
                 ]
@@ -50,10 +48,9 @@ infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
         containerStyles =
-            styles
-                [ [ paddingLeft ScaleConfig.windowPadding
-                  , paddingRight ScaleConfig.windowPadding
-                  ]
+            style
+                [ paddingLeft ScaleConfig.windowPadding
+                , paddingRight ScaleConfig.windowPadding
                 , animation "fade-in" 100 |> ease
                 ]
     in

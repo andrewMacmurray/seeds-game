@@ -45,8 +45,8 @@ topBar model =
             ]
             [ remainingMoves model.remainingMoves
             , div
-                [ styles
-                    [ [ marginTop -16 ]
+                [ style
+                    [ marginTop -16
                     , paddingHorizontal 0
                     , paddingVertical 9
                     ]
@@ -134,20 +134,17 @@ tickFadeIn : TileType -> Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
-            [ styles
-                [ [ top 1
-                  , transform [ scale 0 ]
-                  ]
-                , animation "bulge" 600
-                    |> ease
-                    |> delay 800
+            [ style
+                [ top 1
+                , transform [ scale 0 ]
+                , animation "bulge" 600 |> ease |> delay 800
                 ]
             , class "absolute top-0 left-0 right-0"
             ]
             [ tickBackground ]
         , div
-            [ styles
-                [ [ opacity 1 ]
+            [ style
+                [ opacity 1
                 , animation "fade-out" 500 |> ease
                 ]
             ]

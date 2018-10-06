@@ -7,6 +7,7 @@ module Css.Style exposing
     , bottom
     , classes
     , color
+    , compose
     , displayStyle
     , empty
     , frameBackgroundImage
@@ -48,19 +49,25 @@ import Css.Unit exposing (..)
 import Html exposing (Attribute, Html)
 import Html.Attributes
 import Svg
-import Svg.Attributes exposing (accumulate)
+import Svg.Attributes
 
 
 type Style
-    = Style String String
+    = Property String String
+    | Raw String
 
 
 property : String -> String -> Style
 property =
-    Style
+    Property
 
 
-classes : List String -> Attribute msg
+compose : List Style -> Style
+compose =
+    Raw << renderStyles_
+
+
+classes : List String -> Html.Attribute msg
 classes =
     Html.Attributes.class << String.join " "
 
@@ -69,25 +76,14 @@ classes =
 -- Html
 
 
-styles : List (List Style) -> Attribute msg
+styles : List (List Style) -> Html.Attribute msg
 styles =
-    renderHtmlStyles << List.concat
+    Html.Attributes.attribute "style" << renderStyles_ << List.concat
 
 
-style : List Style -> Attribute msg
+style : List Style -> Html.Attribute msg
 style =
-    renderHtmlStyles
-
-
-renderHtmlStyles : List Style -> Attribute msg
-renderHtmlStyles allStyles =
-    let
-        accumulateStyle (Style prop val) acc =
-            acc ++ (prop ++ ":" ++ val ++ ";")
-    in
-    allStyles
-        |> List.foldl accumulateStyle ""
-        |> Html.Attributes.attribute "style"
+    Html.Attributes.attribute "style" << renderStyles_
 
 
 
@@ -96,19 +92,31 @@ renderHtmlStyles allStyles =
 
 svgStyles : List Style -> Svg.Attribute msg
 svgStyles =
-    List.map renderSvgStyle
-        >> String.join "; "
-        >> Svg.Attributes.style
+    Svg.Attributes.style << renderStyles_
 
 
 svgStyle : Style -> Svg.Attribute msg
 svgStyle =
-    Svg.Attributes.style << renderSvgStyle
+    Svg.Attributes.style << styleToString_
 
 
-renderSvgStyle : Style -> String
-renderSvgStyle (Style prop val) =
-    prop ++ ":" ++ val
+
+-- Render Styles to String
+
+
+renderStyles_ : List Style -> String
+renderStyles_ =
+    List.map styleToString_ >> String.join ";"
+
+
+styleToString_ : Style -> String
+styleToString_ s =
+    case s of
+        Property prop val ->
+            prop ++ ":" ++ val
+
+        Raw val ->
+            val
 
 
 
@@ -117,153 +125,155 @@ renderSvgStyle (Style prop val) =
 
 empty : Style
 empty =
-    Style "" ""
+    property "" ""
 
 
 transform : List Transform -> Style
 transform transforms =
-    Style "transform" <| Transform.render transforms
+    property "transform" <| Transform.render transforms
 
 
 transformOrigin : String -> Style
 transformOrigin =
-    Style "transform-origin"
+    property "transform-origin"
 
 
 paddingAll : Float -> Style
 paddingAll n =
-    Style "padding" <| px n
+    property "padding" <| px n
 
 
-paddingHorizontal : Float -> List Style
+paddingHorizontal : Float -> Style
 paddingHorizontal n =
-    [ paddingLeft n
-    , paddingRight n
-    ]
+    compose
+        [ paddingLeft n
+        , paddingRight n
+        ]
 
 
-paddingVertical : Float -> List Style
+paddingVertical : Float -> Style
 paddingVertical n =
-    [ paddingTop n
-    , paddingBottom n
-    ]
+    compose
+        [ paddingTop n
+        , paddingBottom n
+        ]
 
 
 paddingLeft : Float -> Style
 paddingLeft n =
-    Style "padding-left" <| px n
+    property "padding-left" <| px n
 
 
 paddingRight : Float -> Style
 paddingRight n =
-    Style "padding-right" <| px n
+    property "padding-right" <| px n
 
 
 paddingTop : Float -> Style
 paddingTop n =
-    Style "padding-top" <| px n
+    property "padding-top" <| px n
 
 
 paddingBottom : Float -> Style
 paddingBottom n =
-    Style "padding-bottom" <| px n
+    property "padding-bottom" <| px n
 
 
 marginRight : Float -> Style
 marginRight n =
-    Style "margin-right" <| px n
+    property "margin-right" <| px n
 
 
 marginTop : Float -> Style
 marginTop n =
-    Style "margin-top" <| px n
+    property "margin-top" <| px n
 
 
 marginLeft : Float -> Style
 marginLeft n =
-    Style "margin-left" <| px n
+    property "margin-left" <| px n
 
 
 marginBottom : Float -> Style
 marginBottom n =
-    Style "margin-bottom" <| px n
+    property "margin-bottom" <| px n
 
 
 marginAuto : Style
 marginAuto =
-    Style "margin" "auto"
+    property "margin" "auto"
 
 
 leftAuto : Style
 leftAuto =
-    Style "margin-left" "auto"
+    property "margin-left" "auto"
 
 
 rightAuto : Style
 rightAuto =
-    Style "margin-right" "auto"
+    property "margin-right" "auto"
 
 
 top : Float -> Style
 top n =
-    Style "top" <| px n
+    property "top" <| px n
 
 
 bottom : Float -> Style
 bottom n =
-    Style "bottom" <| px n
+    property "bottom" <| px n
 
 
 left : Float -> Style
 left n =
-    Style "left" <| px n
+    property "left" <| px n
 
 
 color : String -> Style
 color c =
-    Style "color" c
+    property "color" c
 
 
 borderNone : Style
 borderNone =
-    Style "border" "none"
+    property "border" "none"
 
 
 rightPill : List Style
 rightPill =
-    [ Style "border-top-right-radius" <| px 9999
-    , Style "border-bottom-right-radius" <| px 9999
+    [ property "border-top-right-radius" <| px 9999
+    , property "border-bottom-right-radius" <| px 9999
     ]
 
 
 leftPill : List Style
 leftPill =
-    [ Style "border-top-left-radius" <| px 9999
-    , Style "border-bottom-left-radius" <| px 9999
+    [ property "border-top-left-radius" <| px 9999
+    , property "border-bottom-left-radius" <| px 9999
     ]
 
 
 frameBackgroundImage : List Style
 frameBackgroundImage =
-    [ Style "background-position" "center"
-    , Style "background-repeat" "no-repeat"
-    , Style "background-size" "contain"
+    [ property "background-position" "center"
+    , property "background-repeat" "no-repeat"
+    , property "background-size" "contain"
     ]
 
 
 backgroundImage : String -> Style
 backgroundImage url =
-    Style "background-image" <| "url(" ++ url ++ ")"
+    property "background-image" <| "url(" ++ url ++ ")"
 
 
 backgroundColor : String -> Style
 backgroundColor =
-    Style "background-color"
+    property "background-color"
 
 
 background : String -> Style
 background =
-    Style "background"
+    property "background"
 
 
 widthHeight : Float -> List Style
@@ -275,29 +285,29 @@ widthHeight n =
 
 width : Float -> Style
 width n =
-    Style "width" <| px n
+    property "width" <| px n
 
 
 maxWidth : Float -> Style
 maxWidth n =
-    Style "max-width" <| px n
+    property "max-width" <| px n
 
 
 height : Float -> Style
 height h =
-    Style "height" <| px h
+    property "height" <| px h
 
 
 displayStyle : String -> Style
 displayStyle d =
-    Style "display" <| d
+    property "display" <| d
 
 
 opacity : Float -> Style
 opacity o =
-    Style "opacity" <| String.fromFloat o
+    property "opacity" <| String.fromFloat o
 
 
 stroke : String -> Style
 stroke =
-    Style "stroke"
+    property "stroke"

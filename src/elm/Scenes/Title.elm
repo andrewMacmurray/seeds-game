@@ -140,10 +140,9 @@ fadeOutStyles : Visibility -> Int -> Int -> List Style
 fadeOutStyles vis duration delay =
     case vis of
         Leaving ->
-            List.concat
-                [ fade vis duration delay
-                , [ opacity 1 ]
-                ]
+            [ fade vis duration delay
+            , opacity 1
+            ]
 
         _ ->
             []
@@ -153,31 +152,21 @@ fadeInStyles : Visibility -> Int -> Int -> List Style
 fadeInStyles vis duration delay =
     case vis of
         Entering ->
-            List.concat
-                [ fade vis duration delay
-                , [ opacity 0 ]
-                ]
+            [ fade vis duration delay
+            , opacity 0
+            ]
 
         _ ->
             []
 
 
-fade : Visibility -> Int -> Int -> List Style
+fade : Visibility -> Int -> Int -> Style
 fade vis duration delayMs =
     let
         fadeDirection name =
             animation name duration
                 |> delay delayMs
                 |> linear
-
-        -- animationWithOptionsStyle
-        --     { name = name
-        --     , duration = duration
-        --     , delay = Just delay
-        --     , timing = Linear
-        --     , fill = Forwards
-        --     , iteration = Nothing
-        --     }
     in
     case vis of
         Entering ->
@@ -187,4 +176,4 @@ fade vis duration delayMs =
             fadeDirection "fade-out"
 
         _ ->
-            []
+            Style.empty

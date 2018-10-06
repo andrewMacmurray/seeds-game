@@ -91,8 +91,8 @@ currentLevelPointer : Bool -> Html msg
 currentLevelPointer isCurrentLevel =
     if isCurrentLevel then
         div
-            [ styles
-                [ [ top -30 ]
+            [ style
+                [ top -30
                 , animation "hover" 1500
                     |> ease
                     |> infinite

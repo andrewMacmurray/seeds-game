@@ -1,6 +1,6 @@
 module Css.Animation exposing (animation, cubicBezier, delay, ease, easeIn, easeInOut, easeOut, infinite, linear)
 
-import Css.Style exposing (Style, property)
+import Css.Style exposing (Style, compose, property)
 import Css.Unit exposing (ms)
 
 
@@ -8,60 +8,59 @@ import Css.Unit exposing (ms)
 -- myDiv =
 --     div
 --         [ styles
---             [ animation "fade-in" 500
---                 |> delay 500
---                 |> infinite
+--             [ animation (name "fade-in" 500 |> delay 500 |> infinite)
 --             ]
 --         ]
 --         []
 
 
-animation : String -> Int -> List Style
+animation : String -> Int -> Style
 animation name duration =
-    [ animationName name
-    , animationDuration duration
-    , fillForwards
-    ]
+    compose
+        [ animationName name
+        , animationDuration duration
+        , fillForwards
+        ]
 
 
-delay : Int -> List Style -> List Style
-delay duration xs =
-    animationDelay duration :: xs
+delay : Int -> Style -> Style
+delay duration s =
+    compose [ animationDelay duration, s ]
 
 
-ease : List Style -> List Style
-ease xs =
-    animationTimingFunction "ease" :: xs
+ease : Style -> Style
+ease s =
+    compose [ animationTimingFunction "ease", s ]
 
 
-easeIn : List Style -> List Style
-easeIn xs =
-    animationTimingFunction "ease-in" :: xs
+easeIn : Style -> Style
+easeIn s =
+    compose [ animationTimingFunction "ease-in", s ]
 
 
-easeOut : List Style -> List Style
-easeOut xs =
-    animationTimingFunction "ease-out" :: xs
+easeOut : Style -> Style
+easeOut s =
+    compose [ animationTimingFunction "ease-out", s ]
 
 
-easeInOut : List Style -> List Style
-easeInOut xs =
-    animationTimingFunction "ease-in-out" :: xs
+easeInOut : Style -> Style
+easeInOut s =
+    compose [ animationTimingFunction "ease-in-out", s ]
 
 
-linear : List Style -> List Style
-linear xs =
-    animationTimingFunction "linear" :: xs
+linear : Style -> Style
+linear s =
+    compose [ animationTimingFunction "linear", s ]
 
 
-infinite : List Style -> List Style
-infinite xs =
-    animationIterationCount "infinite" :: xs
+infinite : Style -> Style
+infinite s =
+    compose [ animationIterationCount "infinite", s ]
 
 
-cubicBezier : Float -> Float -> Float -> Float -> List Style -> List Style
-cubicBezier a b c d xs =
-    animationTimingFunction (cubicBezier_ a b c d) :: xs
+cubicBezier : Float -> Float -> Float -> Float -> Style -> Style
+cubicBezier a b c d s =
+    compose [ animationTimingFunction (cubicBezier_ a b c d), s ]
 
 
 

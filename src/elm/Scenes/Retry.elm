@@ -18,10 +18,9 @@ import Views.Lives exposing (renderLivesLeft)
 retryView : Model -> Html Msg
 retryView model =
     div
-        [ styles
-            [ [ height <| toFloat model.window.height
-              , background washedYellow
-              ]
+        [ style
+            [ height <| toFloat model.window.height
+            , background washedYellow
             , animation "fade-in" 1000 |> linear
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
@@ -34,17 +33,17 @@ retryView model =
             , div [ style [ color darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ styles [ animation "fade-in" 1000 |> delay 2500 |> ease ]
+                    [ style [ animation "fade-in" 1000 |> delay 2500 |> ease ]
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
-                [ styles
+                [ style
                     [ animation "bounce-up" 1500
                         |> delay 3000
                         |> linear
-                    , [ transform [ translate 0 (toFloat <| model.window.height + 100) ] ]
+                    , transform [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
                 [ tryAgain model ]

@@ -29,17 +29,10 @@ summaryView ({ progress, currentLevel } as model) =
             secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
     in
     div
-        [ styles
-            [ [ height <| toFloat model.window.height
-              , background washedYellow
-              ]
+        [ style
+            [ height <| toFloat model.window.height
+            , background washedYellow
             , animation "fade-in" 1000 |> linear
-
-            -- , animationStyle
-            --     { name = "fade-in"
-            --     , duration = 1000
-            --     , timing = Linear
-            --     }
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
@@ -138,11 +131,10 @@ seedDrop seedType n =
             ]
         ]
         [ div
-            [ styles
-                [ [ width 5
-                  , height 8
-                  , opacity 0
-                  ]
+            [ style
+                [ width 5
+                , height 8
+                , opacity 0
                 , animation "fade-slide-down" 150
                     |> delay (n * d)
                     |> linear
@@ -180,12 +172,11 @@ drop bgColor n =
             ]
         ]
         [ div
-            [ styles
-                [ [ width 6
-                  , height 6
-                  , background bgColor
-                  , opacity 0
-                  ]
+            [ style
+                [ width 6
+                , height 6
+                , background bgColor
+                , opacity 0
                 , animation "fade-slide-down" 150
                     |> delay (n * d)
                     |> linear
