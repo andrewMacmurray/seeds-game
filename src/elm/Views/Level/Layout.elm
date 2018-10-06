@@ -1,8 +1,8 @@
 module Views.Level.Layout exposing (board, boardLayout, handleCheck, handleStop, renderLineLayer, renderLines, renderTiles)
 
+import Css.Style as Style exposing (..)
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
-import Css.Style as Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
 import Html.Attributes exposing (class)

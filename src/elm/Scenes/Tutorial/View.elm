@@ -11,17 +11,16 @@ module Scenes.Tutorial.View exposing
     , tutorialView
     )
 
-import Css.Color exposing (darkYellow, greyYellow)
 import Config.Scale as ScaleConfig
+import Css.Color exposing (darkYellow, greyYellow)
+import Css.Style as Style exposing (..)
+import Css.Transform exposing (..)
+import Css.Transition exposing (delay, linear, transitionAll)
+import Css.Unit exposing (pc)
 import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Css.Style as Style exposing (..)
-import Css.Timing exposing (TimingFunction(..))
-import Css.Transform exposing (..)
-import Css.Transition exposing (easeAll, transitionStyle)
-import Css.Unit exposing (pc)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
@@ -39,24 +38,14 @@ tutorialView model =
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
         , style
             [ backgroundColor "rgba(255, 252, 227, 0.98)"
-            , transitionStyle
-                { property = "all"
-                , duration = 1200
-                , timing = Linear
-                , delay = Nothing
-                }
+            , transitionAll 1200 [ linear ]
             ]
         , classList <| showIf model.canvasVisible
         ]
         [ div
             [ style
                 [ Style.property "margin-top" (pc -3)
-                , transitionStyle
-                    { property = "all"
-                    , duration = 800
-                    , timing = Linear
-                    , delay = Nothing
-                    }
+                , transitionAll 800 [ linear ]
                 ]
             , classList <| showIf model.containerVisible
             , class "tc"
@@ -65,7 +54,7 @@ tutorialView model =
             , p
                 [ style
                     [ color darkYellow
-                    , easeAll 500
+                    , transitionAll 500 []
                     ]
                 , classList <| showIf model.textVisible
                 ]
@@ -76,12 +65,7 @@ tutorialView model =
             , style
                 [ color greyYellow
                 , bottom 30
-                , transitionStyle
-                    { property = "all"
-                    , duration = 800
-                    , timing = Linear
-                    , delay = Just 800
-                    }
+                , transitionAll 800 [ linear, delay 800 ]
                 ]
             , classList <| showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
@@ -107,7 +91,7 @@ tutorialBoard model =
         , style
             [ width <| toFloat <| boardWidth model
             , height <| toFloat <| boardHeight model
-            , easeAll 500
+            , transitionAll 500 []
             ]
         ]
         [ div [ class "absolute z-5" ] [ renderResourceBank model ]
@@ -130,7 +114,7 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     in
     div
         [ style
-            [ easeAll 800
+            [ transitionAll 800 []
             , transform [ translate offsetX offsetY ]
             ]
         , classList <| showIf resourceBankVisible
@@ -160,7 +144,7 @@ fadeLine model (( _, tile ) as move) =
             hasLine tile
     in
     div
-        [ style [ easeAll 500 ]
+        [ style [ transitionAll 500 [] ]
         , classList <| showIf visible
         ]
         [ renderLineLayer model move ]
@@ -182,12 +166,7 @@ leavingStyles model (( _, block ) as move) =
     case tileState of
         Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
-            , transitionStyle
-                { property = "all"
-                , duration = 500
-                , timing = Ease
-                , delay = Just <| toFloat <| modBy 5 order * 80
-                }
+            , transitionAll 500 [ delay <| modBy 5 order * 80 ]
             ]
 
         _ ->

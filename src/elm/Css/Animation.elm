@@ -1,5 +1,5 @@
 module Css.Animation exposing
-    ( AnimationProperty
+    ( AnimationOption
     , animation
     , cubicBezier
     , delay
@@ -20,50 +20,50 @@ import Css.Unit exposing (ms)
 --         []
 
 
-type AnimationProperty
-    = AnimationProperty Style
+type AnimationOption
+    = AnimationOption Style
 
 
-animation : String -> Int -> List AnimationProperty -> Style
-animation name duration props =
+animation : String -> Int -> List AnimationOption -> Style
+animation name duration options =
     [ [ animationName name
       , animationDuration duration
       , fillForwards
       ]
-    , propsToStyles props
+    , toStyles options
     ]
         |> List.concat
         |> Style.compose
 
 
-delay : Int -> AnimationProperty
+delay : Int -> AnimationOption
 delay duration =
-    animationProperty <| animationDelay duration
+    animationOption <| animationDelay duration
 
 
-ease : AnimationProperty
+ease : AnimationOption
 ease =
-    animationProperty <| animationTimingFunction "ease"
+    animationOption <| animationTimingFunction "ease"
 
 
-easeOut : AnimationProperty
+easeOut : AnimationOption
 easeOut =
-    animationProperty <| animationTimingFunction "ease-out"
+    animationOption <| animationTimingFunction "ease-out"
 
 
-linear : AnimationProperty
+linear : AnimationOption
 linear =
-    animationProperty <| animationTimingFunction "linear"
+    animationOption <| animationTimingFunction "linear"
 
 
-cubicBezier : Float -> Float -> Float -> Float -> AnimationProperty
+cubicBezier : Float -> Float -> Float -> Float -> AnimationOption
 cubicBezier a b c d =
-    animationProperty <| animationTimingFunction (cubicBezier_ a b c d)
+    animationOption <| animationTimingFunction (cubicBezier_ a b c d)
 
 
-infinite : AnimationProperty
+infinite : AnimationOption
 infinite =
-    animationProperty <| animationIterationCount "infinite"
+    animationOption <| animationIterationCount "infinite"
 
 
 
@@ -104,14 +104,14 @@ fillForwards =
 -- Helpers
 
 
-animationProperty : Style -> AnimationProperty
-animationProperty =
-    AnimationProperty
+animationOption : Style -> AnimationOption
+animationOption =
+    AnimationOption
 
 
-propsToStyles : List AnimationProperty -> List Style
-propsToStyles =
-    List.map (\(AnimationProperty s) -> s)
+toStyles : List AnimationOption -> List Style
+toStyles =
+    List.map (\(AnimationOption s) -> s)
 
 
 cubicBezier_ : Float -> Float -> Float -> Float -> String

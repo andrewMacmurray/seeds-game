@@ -11,9 +11,8 @@ module Views.Intro.RollingHills exposing
     )
 
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
-import Css.Timing exposing (..)
 import Css.Transform as Transform exposing (translate)
-import Css.Transition exposing (transitionStyle)
+import Css.Transition exposing (cubicBezier, delay, transitionAll)
 import Data.Visibility exposing (..)
 import Html exposing (Html, div)
 import Html.Attributes
@@ -77,17 +76,12 @@ hillsStyle vis =
             svgStyle <| Style.opacity 1
 
 
-hillOffset : Float -> Float -> Visibility -> Attribute msg
-hillOffset delay offset vis =
+hillOffset : Int -> Float -> Visibility -> Attribute msg
+hillOffset ms offset vis =
     let
         visibleStyles =
             [ Style.transform [ translate 0 offset ]
-            , transitionStyle
-                { property = "all"
-                , duration = 2000
-                , delay = Just delay
-                , timing = CubicBezier 0 0 0 1
-                }
+            , transitionAll 2000 [ delay ms, cubicBezier 0 0 0 1 ]
             ]
     in
     case vis of

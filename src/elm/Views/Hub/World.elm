@@ -13,7 +13,6 @@ module Views.Hub.World exposing
 import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (TimingFunction(..))
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)

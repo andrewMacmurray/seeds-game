@@ -2,7 +2,7 @@ module Views.Icons.RainBank exposing (rainBank, rainBankFull)
 
 import Css.Style as Style exposing (svgStyles)
 import Css.Transform as Css exposing (translateY)
-import Css.Transition exposing (easeAll)
+import Css.Transition exposing (transitionAll)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -18,7 +18,7 @@ rainBank percentFull =
 
         offsetLevelStyles =
             svgStyles
-                [ easeAll 1500
+                [ transitionAll 1500 []
                 , Style.transform [ translateY waterLevelOffset ]
                 ]
     in

@@ -10,9 +10,8 @@ module Views.Intro.GrowingSeeds exposing
 import Config.Scale exposing (tileScaleFactor)
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
-import Css.Timing exposing (TimingFunction(..))
 import Css.Transform as Transform
-import Css.Transition as Transition
+import Css.Transition as Transition exposing (transition)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window
@@ -45,10 +44,10 @@ sideSeedsContainer : Visibility -> List (Html msg) -> Html msg
 sideSeedsContainer vis =
     case vis of
         Leaving ->
-            div [ class "o-0 flex justify-center", style [ Transition.ease "opacity" 1500 ] ]
+            div [ class "o-0 flex justify-center", style [ transition "opacity" 1500 [] ] ]
 
         Entering ->
-            div [ class "o-100 flex justify-center", style [ Transition.ease "opacity" 1500 ] ]
+            div [ class "o-100 flex justify-center", style [ transition "opacity" 1500 [] ] ]
 
         Visible ->
             div [ class "o-100 flex justify-center" ]

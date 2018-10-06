@@ -4,7 +4,6 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, cubicBezier, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Data.InfoWindow exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)

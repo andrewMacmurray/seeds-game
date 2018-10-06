@@ -1,8 +1,8 @@
 module Scenes.Intro.View exposing (introView, renderScene, textOffset)
 
-import Data.Window as Window
 import Css.Style as Style exposing (Style, background, color, marginTop, style, width)
-import Css.Transition exposing (easeAll)
+import Css.Transition exposing (transitionAll)
+import Data.Window as Window
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Scenes.Intro.Types exposing (..)
@@ -16,7 +16,7 @@ introView model =
     div
         [ style
             [ background model.backdrop
-            , easeAll 1500
+            , transitionAll 1500 []
             ]
         , class "fixed top-0 left-0 w-100 h-100 z-1"
         ]
@@ -24,7 +24,7 @@ introView model =
             [ style
                 [ textOffset model.window
                 , color model.textColor
-                , easeAll 1000
+                , transitionAll 1000 []
                 ]
             , classList
                 [ ( "o-0", not model.textVisible )

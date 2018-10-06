@@ -4,7 +4,6 @@ import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
@@ -135,7 +134,7 @@ seedDrop seedType n =
                 [ width 5
                 , height 8
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay (n * d), linear ]
+                , animation "fade-slide-down" 150 [ delay <| n * d, linear ]
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]

@@ -1,74 +1,105 @@
 module Css.Transition exposing
-    ( Transition
-    , ease
-    , easeAll
+    ( cubicBezier
+    , delay
+    , easeOut
+    , linear
     , transition
-    , transitionStyle
+    , transitionAll
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Timing exposing (TimingFunction(..), timingToString)
 import Css.Unit exposing (ms)
-import Helpers.Maybe exposing (catMaybes)
 
 
-type alias Transition =
-    { property : String
-    , duration : Float
-    , timing : TimingFunction
-    , delay : Maybe Float
-    }
+type TransitionOption
+    = TransitionOption Style
 
 
-
-{-
-   -- example usage
-    myTransit =
-        transitionStyle
-            { property = "all"
-            , duration = 500
-            , timing = Ease
-            , delay = Nothing
-            }
--}
-
-
-easeAll : Float -> Style
-easeAll duration =
-    transitionStyle
-        { property = "all"
-        , duration = duration
-        , timing = Ease
-        , delay = Nothing
-        }
-
-
-ease : String -> Float -> Style
-ease property duration =
-    transitionStyle
-        { property = property
-        , duration = duration
-        , timing = Ease
-        , delay = Nothing
-        }
-
-
-transitionStyle : Transition -> Style
-transitionStyle =
-    transition >> Style.property "transition"
-
-
-transition : Transition -> String
-transition =
-    combineAllProperties
-        >> catMaybes
-        >> String.join " "
-
-
-combineAllProperties : Transition -> List (Maybe String)
-combineAllProperties ts =
-    [ Just <| ts.property
-    , Just <| ms ts.duration
-    , Just <| timingToString ts.timing
-    , Maybe.map ms ts.delay
+transition : String -> Int -> List TransitionOption -> Style
+transition prop duration options =
+    [ [ transitionProperty prop
+      , transitionDuration duration
+      , transitionTimingFunction "ease"
+      ]
+    , toStyles options
     ]
+        |> List.concat
+        |> Style.compose
+
+
+transitionAll : Int -> List TransitionOption -> Style
+transitionAll =
+    transition "all"
+
+
+easeOut : TransitionOption
+easeOut =
+    transitionOption <| transitionTimingFunction "ease-out"
+
+
+linear : TransitionOption
+linear =
+    transitionOption <| transitionTimingFunction "linear"
+
+
+cubicBezier : Float -> Float -> Float -> Float -> TransitionOption
+cubicBezier a b c d =
+    transitionOption <| transitionTimingFunction <| cubicBezier_ a b c d
+
+
+delay : Int -> TransitionOption
+delay =
+    transitionOption << transitionDelay
+
+
+
+-- Styles
+
+
+transitionDelay : Int -> Style
+transitionDelay n =
+    Style.property "transition-delay" <| ms <| toFloat n
+
+
+transitionDuration : Int -> Style
+transitionDuration n =
+    Style.property "transition-duration" <| ms <| toFloat n
+
+
+transitionTimingFunction : String -> Style
+transitionTimingFunction =
+    Style.property "transition-timing-function"
+
+
+transitionProperty : String -> Style
+transitionProperty =
+    Style.property "transition-property"
+
+
+
+-- Helpers
+
+
+transitionOption : Style -> TransitionOption
+transitionOption =
+    TransitionOption
+
+
+toStyles : List TransitionOption -> List Style
+toStyles =
+    List.map (\(TransitionOption s) -> s)
+
+
+cubicBezier_ : Float -> Float -> Float -> Float -> String
+cubicBezier_ a b c d =
+    String.join ""
+        [ "cubic-bezier("
+        , String.fromFloat a
+        , ","
+        , String.fromFloat b
+        , ","
+        , String.fromFloat c
+        , ","
+        , String.fromFloat d
+        , ")"
+        ]

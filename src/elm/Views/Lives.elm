@@ -2,7 +2,6 @@ module Views.Lives exposing (life, renderLivesLeft)
 
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Css.Transform exposing (scale)
 import Data.Transit as Transit exposing (Transit)
 import Html exposing (..)

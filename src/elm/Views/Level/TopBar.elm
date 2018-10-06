@@ -14,9 +14,8 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (easeAll)
+import Css.Transition exposing (transitionAll)
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
 import Html exposing (..)
@@ -96,7 +95,7 @@ remainingMoves moves =
                 [ class "ma0 f3"
                 , style
                     [ color <| moveCounterColor moves
-                    , easeAll 1000
+                    , transitionAll 1000 []
                     ]
                 ]
                 [ text <| String.fromInt moves ]

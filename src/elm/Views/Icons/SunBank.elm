@@ -2,7 +2,7 @@ module Views.Icons.SunBank exposing (sunBank, sunBankFull, sunPath)
 
 import Css.Style as Style exposing (svgStyles)
 import Css.Transform exposing (translateY)
-import Css.Transition exposing (easeAll, transitionStyle)
+import Css.Transition exposing (transitionAll)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -18,7 +18,7 @@ sunBank percentFull =
 
         offsetLevelStyles =
             svgStyles
-                [ easeAll 1500
+                [ transitionAll 1500 []
                 , Style.transform [ translateY sunLevelOffset ]
                 ]
     in

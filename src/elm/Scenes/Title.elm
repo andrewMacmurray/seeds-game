@@ -16,7 +16,6 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Data.Level.Types exposing (Progress)
 import Data.Visibility exposing (..)
 import Data.Window as Window

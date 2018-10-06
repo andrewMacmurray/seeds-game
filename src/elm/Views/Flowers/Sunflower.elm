@@ -2,7 +2,6 @@ module Views.Flowers.Sunflower exposing (sunflower)
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
-import Css.Timing exposing (..)
 import Css.Transform as Transform
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)

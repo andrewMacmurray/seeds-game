@@ -40,9 +40,8 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Css.Timing exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (easeAll, transitionStyle)
+import Css.Transition exposing (delay, transition, transitionAll)
 import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
@@ -143,12 +142,7 @@ growingStyles ( coord, block ) =
     case getTileState block of
         Growing SeedPod _ ->
             [ transform [ scale 4 ]
-            , transitionStyle
-                { property = "all"
-                , duration = 400
-                , timing = Ease
-                , delay = Just <| toFloat <| modBy 5 (growingOrder block) * 70
-                }
+            , transitionAll 400 [ delay <| modBy 5 (growingOrder block) * 70 ]
             , opacity 0
             , property "pointer-events" "none"
             ]
@@ -173,12 +167,7 @@ fallingStyles ( _, block ) =
 leavingStyles : LevelModel -> Move -> List Style
 leavingStyles model (( _, tile ) as move) =
     if isLeaving tile then
-        [ transitionStyle
-            { property = "all"
-            , duration = 800
-            , timing = Ease
-            , delay = Just <| toFloat <| modBy 5 (leavingOrder tile) * 80
-            }
+        [ transitionAll 800 [ delay <| modBy 5 (leavingOrder tile) * 80 ]
         , opacity 0.2
         , handleExitDirection move model
         ]
@@ -271,16 +260,16 @@ moveTracerStyles (( coord, tile ) as move) =
 draggingStyles : Maybe MoveShape -> Move -> List Style
 draggingStyles moveShape ( _, tileState ) =
     if moveShape == Just Square then
-        [ easeAll 500
+        [ transitionAll 500 []
         ]
 
     else if isLeaving tileState then
-        [ easeAll 100
+        [ transitionAll 100 []
         ]
 
     else if isDragging tileState then
         [ transform [ scale 0.8 ]
-        , easeAll 300
+        , transitionAll 300 []
         ]
 
     else
