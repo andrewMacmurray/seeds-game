@@ -8,7 +8,7 @@
     "dev": "npm run elm-dev & npm run css-dev & npm run copy-pep & npm run js-dev",
     "build": "npm run elm-build && npm run js-build && npm run copy-pep && npm run css-build && npm run sw-generate",
     "elm-dev": "elm-live src/elm/App.elm --dir=public --open --pushstate -- --output=public/main.js --debug",
-    "elm-build": "elm-make src/elm/App.elm --output=public/main.js && npm run compress-main",
+    "elm-build": "elm make src/elm/App.elm --output=public/main.js --optimize && npm run compress-main",
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
     "js-dev": "watchify src/js/embed.js -o public/embed.js -v",

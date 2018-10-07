@@ -3,6 +3,7 @@ module Views.Icons.SeedBank exposing (seedBank)
 import Css.Style as Style exposing (svgStyles)
 import Css.Transform as Css exposing (translateY)
 import Css.Transition exposing (transitionAll)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Html exposing (Html)
 import Svg
@@ -20,7 +21,7 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> Debug.toString |> String.toLower
+            seedType |> Tile.hashSeedType |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType

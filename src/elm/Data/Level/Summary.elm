@@ -6,7 +6,7 @@ module Data.Level.Summary exposing
 
 import Config.Levels exposing (allLevels)
 import Data.Board.Score exposing (collectable)
-import Data.Board.Tile exposing (getSeedType)
+import Data.Board.Tile as Tile exposing (getSeedType)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
@@ -18,11 +18,11 @@ percentComplete allLevels tileType ( w, l ) currentLevel =
     let
         target =
             totalTargetScoresForWorld w
-                |> Maybe.andThen (Dict.get (Debug.toString tileType))
+                |> Maybe.andThen (Dict.get (Tile.hash tileType))
 
         current =
             currentTotalScoresForWorld allLevels ( w, l )
-                |> Maybe.andThen (Dict.get (Debug.toString tileType))
+                |> Maybe.andThen (Dict.get (Tile.hash tileType))
 
         percent a b =
             (toFloat b / toFloat a) * 100
@@ -146,7 +146,7 @@ accumSettings : TileSetting -> Dict String Int -> Dict String Int
 accumSettings val acc =
     case val.targetScore of
         Just (TargetScore n) ->
-            insertWith (+) (Debug.toString val.tileType) n acc
+            insertWith (+) (Tile.hash val.tileType) n acc
 
         Nothing ->
             acc

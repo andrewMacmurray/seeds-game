@@ -29,7 +29,7 @@ rainBank percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| Debug.toString fullHeight
+                [ height <| String.fromFloat fullHeight
                 , width "60"
                 , id "water-level"
                 ]

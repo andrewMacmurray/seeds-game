@@ -195,7 +195,7 @@ handleExitDirection ( coord, block ) model =
 getLeavingStyle : TileType -> LevelModel -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
-        |> Dict.get (Debug.toString tileType)
+        |> Dict.get (Tile.hash tileType)
         |> Maybe.withDefault empty
 
 
@@ -209,7 +209,7 @@ newLeavingStyles model =
 
 prepareLeavingStyle : LevelModel -> Int -> TileType -> ( String, Style )
 prepareLeavingStyle model i tileType =
-    ( Debug.toString tileType
+    ( Tile.hash tileType
     , transform
         [ translate (exitXDistance i model) -(exitYdistance model)
         , scale 0.5

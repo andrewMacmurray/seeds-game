@@ -9,6 +9,7 @@ module Data.Board.Score exposing
     )
 
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
@@ -34,7 +35,7 @@ levelComplete scores =
 targetReached : TileType -> Scores -> Bool
 targetReached tileType scores =
     scores
-        |> Dict.get (Debug.toString tileType)
+        |> Dict.get (Tile.hash tileType)
         |> Maybe.map (\s -> s.current == s.target)
         |> Maybe.withDefault False
 
@@ -42,20 +43,20 @@ targetReached tileType scores =
 scoreToString : TileType -> Scores -> String
 scoreToString tileType scores =
     getScoreFor tileType scores
-        |> Maybe.map Debug.toString
+        |> Maybe.map String.fromInt
         |> Maybe.withDefault ""
 
 
 getScoreFor : TileType -> Scores -> Maybe Int
 getScoreFor tileType scores =
     scores
-        |> Dict.get (Debug.toString tileType)
+        |> Dict.get (Tile.hash tileType)
         |> Maybe.map (\{ target, current } -> target - current)
 
 
 addToScore : Int -> TileType -> Scores -> Scores
 addToScore score tileType scores =
-    scores |> Dict.update (Debug.toString tileType) (Maybe.map (updateScore score))
+    scores |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
 
 
 updateScore : Int -> Score -> Score
@@ -93,4 +94,4 @@ initScore { tileType, targetScore } =
         (TargetScore t) =
             Maybe.withDefault (TargetScore 0) targetScore
     in
-    ( Debug.toString tileType, Score t 0 )
+    ( Tile.hash tileType, Score t 0 )
