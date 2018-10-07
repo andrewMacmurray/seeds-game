@@ -1,14 +1,13 @@
-module Data.Board.Shift
-    exposing
-        ( groupBoardByColumn
-        , shiftBoard
-        , yCoord
-        )
+module Data.Board.Shift exposing
+    ( groupBoardByColumn
+    , shiftBoard
+    , yCoord
+    )
 
 import Data.Board.Block as Block
 import Data.Board.Types exposing (..)
 import Dict
-import List.Extra
+import Helpers.List exposing (groupWhile, splitAt)
 
 
 shiftBoard : Board -> Board
@@ -24,7 +23,7 @@ groupBoardByColumn board =
     board
         |> Dict.toList
         |> List.sortBy xCoord
-        |> List.Extra.groupWhile sameColumn
+        |> groupWhile sameColumn
 
 
 shiftRow : List Move -> List Move
@@ -62,7 +61,7 @@ reAddWalls walls row =
 addWall : Move -> List Move -> List Move
 addWall (( ( y, x ), w ) as wall) row =
     row
-        |> List.Extra.splitAt y
+        |> splitAt y
         |> (\( a, b ) -> a ++ [ wall ] ++ b)
 
 

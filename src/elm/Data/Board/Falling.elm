@@ -1,7 +1,4 @@
-module Data.Board.Falling
-    exposing
-        ( setFallingTiles
-        )
+module Data.Board.Falling exposing (setFallingTiles)
 
 import Data.Board.Block as Block
 import Data.Board.Shift as Shift
@@ -58,6 +55,7 @@ temporaryMarkFalling : Board -> Coord -> Block -> Block
 temporaryMarkFalling board coord block =
     if shouldMarkFalling board coord then
         Block.setToFalling 0 block
+
     else
         block
 

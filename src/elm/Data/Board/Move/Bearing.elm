@@ -1,8 +1,7 @@
-module Data.Board.Move.Bearing
-    exposing
-        ( addBearings
-        , validDirection
-        )
+module Data.Board.Move.Bearing exposing
+    ( addBearings
+    , validDirection
+    )
 
 import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
 import Data.Board.Moves exposing (lastMove)
@@ -32,18 +31,22 @@ changeBearings (( c2, t2 ) as move2) (( c1, t1 ) as move1) =
         ( newCurrentMove
         , ( c1, addBearing Left t1 )
         )
+
     else if isRight c1 c2 then
         ( newCurrentMove
         , ( c1, addBearing Right t1 )
         )
+
     else if isAbove c1 c2 then
         ( newCurrentMove
         , ( c1, addBearing Up t1 )
         )
+
     else if isBelow c1 c2 then
         ( newCurrentMove
         , ( c1, addBearing Down t1 )
         )
+
     else
         ( newCurrentMove
         , ( c1, addBearing Head t1 )

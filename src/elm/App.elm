@@ -1,6 +1,6 @@
 module App exposing (main)
 
-import Html
+import Browser
 import State exposing (init, subscriptions, update)
 import Types exposing (Flags, Model, Msg)
 import View exposing (view)
@@ -8,7 +8,7 @@ import View exposing (view)
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , update = update
         , view = view

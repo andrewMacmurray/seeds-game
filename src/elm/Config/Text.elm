@@ -1,4 +1,4 @@
-module Config.Text exposing (..)
+module Config.Text exposing (failureMessage, getSuccessMessage, randomSuccessMessageIndex, successMessages)
 
 import Dict exposing (Dict)
 import Helpers.Dict exposing (indexedDictFrom)
@@ -14,7 +14,7 @@ getSuccessMessage : Int -> String
 getSuccessMessage i =
     let
         ii =
-            i % Dict.size successMessages
+            modBy (Dict.size successMessages) i
     in
     Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
 
@@ -25,7 +25,7 @@ successMessages =
         [ "Amazing!"
         , "Awesome!"
         , "Success!"
-        , "Much Win!"
+        , "Win!"
         ]
 
 

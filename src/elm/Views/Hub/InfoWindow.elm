@@ -1,16 +1,25 @@
-module Views.Hub.InfoWindow exposing (..)
+module Views.Hub.InfoWindow exposing
+    ( handleHideInfo
+    , info
+    , infoContent
+    , infoIcons
+    , infoIconsContainer
+    , renderIcon
+    , renderTargetScore
+    , renderWeather
+    )
 
-import Config.Color exposing (..)
 import Config.Levels exposing (allLevels)
+import Css.Color exposing (..)
+import Css.Style as Style exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
-import Helpers.Css.Style exposing (..)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
 import State exposing (getLevelConfig)
@@ -30,8 +39,10 @@ info { hubInfoWindow } =
     in
     if isHidden hubInfoWindow then
         span [] []
+
     else if isVisible hubInfoWindow then
         infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
+
     else
         infoContainer hubInfoWindow <| div [] content
 
@@ -42,14 +53,18 @@ infoContent ( world, level ) ( worldData, levelData ) =
         levelText =
             allLevels
                 |> getLevelNumber ( world, level )
-                |> toString
+                |> String.fromInt
                 |> (++) "Level "
     in
-    [ p [ class "f5 tracked", style [ marginTop 20 ] ] [ text levelText ]
+    [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
     , infoIcons levelData worldData.seedType
     , p
-        [ class "tracked-mega pv2 ph3 dib br4"
-        , style [ backgroundColor gold, marginBottom 20, marginTop 15 ]
+        [ style
+            [ backgroundColor gold
+            , marginBottom 20
+            , marginTop 15
+            ]
+        , class "tracked-mega pv2 ph3 dib br4"
         ]
         [ text "PLAY" ]
     ]
@@ -65,7 +80,13 @@ infoIcons levelData seedType =
 
 infoIconsContainer : List (Html msg) -> Html msg
 infoIconsContainer =
-    div [ class "flex justify-center items-end", style [ marginTop 25, marginBottom 15 ] ]
+    div
+        [ style
+            [ marginTop 25
+            , marginBottom 15
+            ]
+        , class "flex justify-center items-end"
+        ]
 
 
 renderIcon : TileSetting -> Html msg
@@ -80,7 +101,7 @@ renderIcon { targetScore, tileType } =
                     renderWeather orange
 
                 Seed seedType ->
-                    div [ style [ widthStyle 35, heightStyle 53 ] ] [ renderSeed seedType ]
+                    div [ style [ width 35, height 53 ] ] [ renderSeed seedType ]
 
                 _ ->
                     span [] []
@@ -97,7 +118,7 @@ renderTargetScore : Maybe TargetScore -> Html msg
 renderTargetScore ts =
     case ts of
         Just (TargetScore t) ->
-            p [ class "f6 mb0", style [ marginTop 10 ] ] [ text <| toString t ]
+            p [ style [ marginTop 10 ], class "f6 mb0" ] [ text <| String.fromInt t ]
 
         Nothing ->
             span [] []
@@ -107,8 +128,8 @@ renderWeather : String -> Html msg
 renderWeather color =
     div
         [ style
-            [ widthStyle 25
-            , heightStyle 25
+            [ width 25
+            , height 25
             , marginLeft 2.5
             , marginRight 2.5
             , marginBottom 5
@@ -123,5 +144,6 @@ handleHideInfo : HubModel model -> Attribute Msg
 handleHideInfo model =
     if isVisible model.hubInfoWindow then
         onClick <| HubMsg HideLevelInfo
+
     else
         emptyProperty

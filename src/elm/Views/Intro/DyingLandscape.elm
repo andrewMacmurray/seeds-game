@@ -1,10 +1,9 @@
-module Views.Intro.DyingLandscape exposing (..)
+module Views.Intro.DyingLandscape exposing (dyingLandscape)
 
+import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
+import Css.Transform exposing (translateY)
+import Css.Transition exposing (cubicBezier, delay, easeOut, linear, transition)
 import Data.Visibility exposing (..)
-import Helpers.Css.Style exposing (svgStyles)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (transformSvg, translateY)
-import Helpers.Css.Transition exposing (transitionSvg)
 import Scenes.Intro.Types exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
@@ -50,43 +49,28 @@ dyingLandscape env vis =
         ]
 
 
-layerOffsetStyle : Float -> Float -> Visibility -> Attribute msg
-layerOffsetStyle offset delay vis =
+layerOffsetStyle : Float -> Int -> Visibility -> Attribute msg
+layerOffsetStyle offset delayMs vis =
     case vis of
         Entering ->
             svgStyles
-                [ transitionSvg
-                    { duration = 3500
-                    , property = "transform"
-                    , timing = EaseOut
-                    , delay = Just delay
-                    }
-                , transformSvg [ translateY 0 ]
+                [ transition "transform" 3500 [ delay delayMs, easeOut ]
+                , Style.transform [ translateY 0 ]
                 ]
 
         Hidden ->
             svgStyles
-                [ transitionSvg
-                    { duration = 1500
-                    , property = "transform"
-                    , timing = CubicBezier 0.8 -0.2 0.7 1.3
-                    , delay = Just delay
-                    }
-                , transformSvg [ translateY offset ]
+                [ transition "transform" 1500 [ delay delayMs, cubicBezier 0.8 -0.2 0.7 1.3 ]
+                , Style.transform [ translateY offset ]
                 ]
 
         Visible ->
-            style "opacity: 1"
+            svgStyle <| Style.opacity 1
 
         Leaving ->
             svgStyles
-                [ transitionSvg
-                    { duration = 400
-                    , property = "opacity"
-                    , timing = Linear
-                    , delay = Just delay
-                    }
-                , "opacity: 0"
+                [ transition "opacity" 400 [ linear, delay delayMs ]
+                , Style.opacity 0
                 ]
 
 
@@ -120,11 +104,11 @@ hill6 =
     renderHill "M1023.6 273L285 703.2h738.6z" ( "#87AF7B", "#372c1f" ) 1500
 
 
-renderHill : String -> ( String, String ) -> Float -> Environment -> Svg msg
+renderHill : String -> ( String, String ) -> Int -> Environment -> Svg msg
 renderHill path ( aliveC, deadC ) delay env =
     let
         hill color =
-            Svg.path [ d path, fill color, style <| transitionFill delay ] []
+            Svg.path [ d path, fill color, svgStyle <| transitionFill delay ] []
     in
     case env of
         Alive ->
@@ -139,7 +123,7 @@ type TeardropTree
     | Multiple
 
 
-firrTree : Float -> Environment -> Svg msg
+firrTree : Int -> Environment -> Svg msg
 firrTree delay env =
     let
         treeTop delayOffset =
@@ -176,7 +160,7 @@ firrTree delay env =
         ]
 
 
-pine : Float -> Environment -> ( String, String, String ) -> Svg msg
+pine : Int -> Environment -> ( String, String, String ) -> Svg msg
 pine delay env ( trunk, p1, p2 ) =
     Svg.g []
         [ Svg.path [ d trunk, fill "#6D4D2D" ] []
@@ -184,34 +168,31 @@ pine delay env ( trunk, p1, p2 ) =
         ]
 
 
-transitionFill : Float -> String
-transitionFill delay =
-    transitionSvg
-        { property = "fill"
-        , duration = 500
-        , timing = Linear
-        , delay = Just delay
-        }
+transitionFill : Int -> Style
+transitionFill delayMs =
+    transition "fill" 500 [ delay delayMs, linear ]
 
 
-teardrop : Float -> TeardropTree -> Environment -> ( String, String ) -> Svg msg
+teardrop : Int -> TeardropTree -> Environment -> ( String, String ) -> Svg msg
 teardrop delay treeType environment ( path1, path2 ) =
     let
         ( l, r ) =
             if environment == Alive && treeType == Single then
                 singleTeardropTreeColors
+
             else if environment == Alive && treeType == Multiple then
                 multipleTeardropTreeColors
+
             else
                 deadTreeColors
     in
     Svg.g [ fillRule "nonzero" ]
-        [ Svg.path [ d path1, fill l, style <| transitionFill delay ] []
-        , Svg.path [ d path2, fill r, style <| transitionFill delay ] []
+        [ Svg.path [ d path1, fill l, svgStyle <| transitionFill delay ] []
+        , Svg.path [ d path2, fill r, svgStyle <| transitionFill delay ] []
         ]
 
 
-circleTree : Float -> Environment -> Svg msg
+circleTree : Int -> Environment -> Svg msg
 circleTree delay env =
     let
         ( l, r ) =
@@ -223,7 +204,7 @@ circleTree delay env =
                     deadTreeColors
 
         transitionStyle delayOffset =
-            style <| transitionFill (delay + delayOffset)
+            svgStyle <| transitionFill (delay + delayOffset)
     in
     Svg.g []
         [ Svg.path [ d "M266.3 337.4h6.2v35.5h-6.2z", fill "#6D4D2D" ] []

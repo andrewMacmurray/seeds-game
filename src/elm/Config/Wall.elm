@@ -1,11 +1,11 @@
-module Config.Wall exposing (..)
+module Config.Wall exposing (borders, centerColumns, corners, innerBorders, s, standardWalls, w, yellowWalls)
 
-import Config.Color exposing (blockYellow)
-import Data.Board.Types exposing (Coord, WallColor)
+import Css.Color exposing (Color, blockYellow)
+import Data.Board.Types exposing (Coord)
 import Data.Board.Wall exposing (toCoords, withColor)
 
 
-yellowWalls : List Coord -> List ( WallColor, Coord )
+yellowWalls : List Coord -> List ( Color, Coord )
 yellowWalls =
     withColor blockYellow
 

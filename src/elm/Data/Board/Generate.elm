@@ -1,12 +1,11 @@
-module Data.Board.Generate
-    exposing
-        ( generateEnteringTiles
-        , generateInitialTiles
-        , generateRandomSeedType
-        , insertNewEnteringTiles
-        , insertNewSeeds
-        , makeBoard
-        )
+module Data.Board.Generate exposing
+    ( generateEnteringTiles
+    , generateInitialTiles
+    , generateRandomSeedType
+    , insertNewEnteringTiles
+    , insertNewSeeds
+    , makeBoard
+    )
 
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
@@ -14,6 +13,7 @@ import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Dict
 import Random exposing (Generator)
+
 
 
 -- Growing Tiles
@@ -113,7 +113,7 @@ makeBoard : BoardDimensions -> List TileType -> Board
 makeBoard scale tiles =
     tiles
         |> List.map (Static >> Space)
-        |> List.map2 (,) (makeCoords scale)
+        |> List.map2 (\a b -> ( a, b )) (makeCoords scale)
         |> Dict.fromList
 
 
@@ -124,7 +124,7 @@ makeCoords { y, x } =
 
 rangeToCoord : Int -> Int -> List Coord
 rangeToCoord y x =
-    makeRange y |> List.map (\y -> ( x, y ))
+    makeRange y |> List.map (\y_ -> ( x, y_ ))
 
 
 makeRange : Int -> List Int
@@ -182,8 +182,9 @@ handleProb n { tileType, probability } ( val, accProb ) =
         Nothing ->
             if n <= p + accProb then
                 ( Just tileType, p )
+
             else
                 ( Nothing, p + accProb )
 
-        Just tileType ->
-            ( Just tileType, p )
+        Just tileType_ ->
+            ( Just tileType_, p )

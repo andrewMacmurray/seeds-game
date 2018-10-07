@@ -1,17 +1,29 @@
-module Views.Level.Tile exposing (..)
+module Views.Level.Tile exposing
+    ( baseTileStyles
+    , hanldeMoveEvents
+    , innerSeed
+    , innerSeed_
+    , innerTile
+    , makeInnerTile
+    , renderTile
+    , renderTile_
+    , tileElementMap
+    , tracer
+    , wall
+    )
 
 import Config.Scale exposing (tileScaleFactor)
+import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Helpers.Css.Style exposing (..)
-import Helpers.Html exposing (emptyProperty, onPointerDownPosition, preventDefault)
+import Data.Window as Window exposing (Size)
+import Helpers.Html exposing (emptyProperty, onPointerDownPosition)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (attribute, class)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
-import Window exposing (Size)
 
 
 renderTile : LevelModel -> Move -> Html LevelMsg
@@ -27,7 +39,7 @@ renderTile_ : List Style -> TileConfig model -> Move -> Html msg
 renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
     div
         [ styles
-            [ tileWidthHeightStyles config
+            [ tileWidthheights config
             , tileCoordsStyles config coord
             , extraStyles
             ]
@@ -44,6 +56,7 @@ hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
 hanldeMoveEvents model move =
     if not model.isDragging then
         onPointerDownPosition <| StartMove move
+
     else
         emptyProperty
 
@@ -55,7 +68,11 @@ tracer window move =
 
 wall : Window.Size -> Move -> Html msg
 wall window move =
-    div [ style <| wallStyles window move, class centerBlock ] []
+    div
+        [ style <| wallStyles window move
+        , class centerBlock
+        ]
+        []
 
 
 innerTile : Window.Size -> Maybe MoveShape -> Move -> Html msg
@@ -66,8 +83,11 @@ innerTile window moveShape move =
 makeInnerTile : List Style -> Window.Size -> Move -> Html msg
 makeInnerTile extraStyles window (( _, tile ) as move) =
     div
-        [ classes baseTileClasses
-        , styles [ extraStyles, baseTileStyles window move ]
+        [ styles
+            [ extraStyles
+            , baseTileStyles window move
+            ]
+        , classes baseTileClasses
         ]
         [ innerSeed tile ]
 
@@ -78,7 +98,7 @@ baseTileStyles window (( _, tile ) as move) =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , widthHeight <| round <| tileSizeMap tile * tileScaleFactor window
+        , widthHeight <| toFloat <| round <| tileSizeMap tile * tileScaleFactor window
         , tileBackgroundMap tile
         ]
 

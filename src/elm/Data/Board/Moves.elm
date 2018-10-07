@@ -1,13 +1,12 @@
-module Data.Board.Moves
-    exposing
-        ( currentMoveTileType
-        , currentMoves
-        , emptyMove
-        , isUniqueMove
-        , lastMove
-        , moveShape
-        , sameTileType
-        )
+module Data.Board.Moves exposing
+    ( currentMoveTileType
+    , currentMoves
+    , emptyMove
+    , isUniqueMove
+    , lastMove
+    , moveShape
+    , sameTileType
+    )
 
 import Data.Board.Block as Block
 import Data.Board.Types exposing (..)
@@ -33,8 +32,8 @@ currentMoveTileType board =
 moveShape : Move -> Maybe MoveShape
 moveShape ( _, block ) =
     case block of
-        Space (Dragging _ _ _ moveShape) ->
-            Just moveShape
+        Space (Dragging _ _ _ shape) ->
+            Just shape
 
         _ ->
             Nothing

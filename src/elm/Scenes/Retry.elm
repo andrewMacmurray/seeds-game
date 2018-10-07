@@ -1,13 +1,13 @@
-module Scenes.Retry exposing (..)
+module Scenes.Retry exposing (lifeState, retryView, tryAgain)
 
-import Config.Color exposing (..)
+import Css.Animation exposing (animation, delay, ease, linear)
+import Css.Color exposing (..)
+import Css.Style as Style exposing (..)
+import Css.Transform exposing (..)
+import Css.Unit exposing (pc)
 import Data.Transit exposing (Transit(..))
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Timing exposing (..)
-import Helpers.Css.Transform exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import State exposing (livesLeft)
 import Types exposing (..)
@@ -17,47 +17,30 @@ import Views.Lives exposing (renderLivesLeft)
 retryView : Model -> Html Msg
 retryView model =
     div
-        [ class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
-        , style
-            [ heightStyle model.window.height
+        [ style
+            [ height <| toFloat model.window.height
             , background washedYellow
-            , animationStyle
-                { name = "fade-in"
-                , duration = 1000
-                , timing = Linear
-                }
+            , animation "fade-in" 1000 [ linear ]
             ]
+        , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
-        [ div [ class "tc", style [ ( "margin-top", pc -8 ) ] ]
+        [ div
+            [ style [ Style.property "margin-top" <| pc -8 ]
+            , class "tc"
+            ]
             [ div [] <| renderLivesLeft <| lifeState model
             , div [ style [ color darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ style
-                        [ animationWithOptionsStyle
-                            { name = "fade-in"
-                            , duration = 1000
-                            , delay = Just 2500
-                            , timing = Ease
-                            , iteration = Nothing
-                            , fill = Forwards
-                            }
-                        ]
+                    [ style [ animation "fade-in" 1000 [ delay 2500, ease ] ]
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
                 [ style
-                    [ animationWithOptionsStyle
-                        { name = "bounce-up"
-                        , duration = 1500
-                        , delay = Just 3000
-                        , timing = Linear
-                        , fill = Forwards
-                        , iteration = Nothing
-                        }
-                    , transformStyle [ translate 0 (toFloat <| model.window.height + 100) ]
+                    [ animation "bounce-up" 1500 [ delay 3000, linear ]
+                    , transform [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
                 [ tryAgain model ]
@@ -83,14 +66,13 @@ tryAgain : Model -> Html Msg
 tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
-            [ styles
-                [ [ background lightGreen
-                  , color "white"
-                  , paddingLeft 25
-                  , paddingRight 20
-                  , paddingTop 15
-                  , paddingBottom 15
-                  ]
+            [ style
+                [ background lightGreen
+                , color "white"
+                , paddingLeft 25
+                , paddingRight 20
+                , paddingTop 15
+                , paddingBottom 15
                 , leftPill
                 ]
             , class "dib"
@@ -98,14 +80,13 @@ tryAgain model =
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
-            [ styles
-                [ [ background mediumGreen
-                  , color "white"
-                  , paddingLeft 20
-                  , paddingRight 25
-                  , paddingTop 15
-                  , paddingBottom 15
-                  ]
+            [ style
+                [ background mediumGreen
+                , color "white"
+                , paddingLeft 25
+                , paddingRight 20
+                , paddingTop 15
+                , paddingBottom 15
                 , rightPill
                 ]
             , class "dib"

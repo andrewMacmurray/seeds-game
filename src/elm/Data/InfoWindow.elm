@@ -1,15 +1,14 @@
-module Data.InfoWindow
-    exposing
-        ( InfoWindow
-        , hidden
-        , isHidden
-        , isLeaving
-        , isVisible
-        , leave
-        , map
-        , show
-        , val
-        )
+module Data.InfoWindow exposing
+    ( InfoWindow
+    , hidden
+    , isHidden
+    , isLeaving
+    , isVisible
+    , leave
+    , map
+    , show
+    , val
+    )
 
 import Data.Visibility exposing (..)
 
@@ -55,8 +54,8 @@ map f info =
         Full v a ->
             Full v <| f a
 
-        info ->
-            info
+        inf ->
+            inf
 
 
 isVisible : InfoWindow a -> Bool

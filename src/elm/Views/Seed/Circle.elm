@@ -1,6 +1,6 @@
-module Views.Seed.Circle exposing (..)
+module Views.Seed.Circle exposing (circle, foxglove)
 
-import Config.Color exposing (orange, purple)
+import Css.Color exposing (orange, purple)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 

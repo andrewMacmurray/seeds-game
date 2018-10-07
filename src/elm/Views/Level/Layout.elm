@@ -1,11 +1,11 @@
-module Views.Level.Layout exposing (..)
+module Views.Level.Layout exposing (board, boardLayout, handleCheck, handleStop, renderLineLayer, renderLines, renderTiles)
 
+import Css.Style as Style exposing (..)
 import Data.Board.Types exposing (Move, TileConfig)
 import Dict
-import Helpers.Css.Style exposing (..)
 import Helpers.Html exposing (emptyProperty, onPointerMovePosition, onPointerUp)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (..)
@@ -37,11 +37,11 @@ renderLines model =
 boardLayout : LevelModel -> List (Html LevelMsg) -> Html LevelMsg
 boardLayout model =
     div
-        [ class "relative z-3 center flex flex-wrap"
-        , style
-            [ widthStyle <| boardWidth model
+        [ style
+            [ width <| toFloat <| boardWidth model
             , boardMarginTop model
             ]
+        , class "relative z-3 center flex flex-wrap"
         ]
 
 
@@ -49,7 +49,7 @@ renderLineLayer : TileConfig model -> Move -> Html msg
 renderLineLayer model (( coord, _ ) as move) =
     div
         [ styles
-            [ tileWidthHeightStyles model
+            [ tileWidthheights model
             , tileCoordsStyles model coord
             ]
         , class "dib absolute touch-disabled"
@@ -62,6 +62,7 @@ handleStop : LevelModel -> Attribute LevelMsg
 handleStop model =
     if model.isDragging then
         onPointerUp StopMove
+
     else
         emptyProperty
 
@@ -70,5 +71,6 @@ handleCheck : LevelModel -> Attribute LevelMsg
 handleCheck model =
     if model.isDragging then
         onPointerMovePosition CheckMove
+
     else
         emptyProperty

@@ -1,13 +1,13 @@
-module Views.Loading exposing (..)
+module Views.Loading exposing (loadingScreen, loadingScreenBackground, loadingScreenColor, transitionClasses)
 
-import Config.Color exposing (gold, rainBlue)
 import Config.Levels exposing (allLevels)
+import Css.Color exposing (gold, rainBlue)
+import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
+import Css.Transition exposing (transitionAll)
 import Data.Background exposing (..)
 import Data.Level.Progress exposing (currentLevelSeedType)
-import Helpers.Css.Style exposing (Style, backgroundColor, classes, emptyStyle, widthStyle)
-import Helpers.Css.Transition exposing (easeAll)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
@@ -21,10 +21,10 @@ loadingScreen model =
             ]
         , style
             [ loadingScreenBackground model.loadingScreen
-            , easeAll 600
+            , transitionAll 600 []
             ]
         ]
-        [ div [ style [ widthStyle 50 ] ]
+        [ div [ style [ width 50 ] ]
             [ renderSeed <| currentLevelSeedType allLevels model.currentLevel model.progress
             ]
         ]
@@ -34,7 +34,7 @@ loadingScreenBackground : Maybe Background -> Style
 loadingScreenBackground sceneTransition =
     sceneTransition
         |> Maybe.map (loadingScreenColor >> backgroundColor)
-        |> Maybe.withDefault emptyStyle
+        |> Maybe.withDefault empty
 
 
 loadingScreenColor : Background -> String

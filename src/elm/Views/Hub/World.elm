@@ -1,17 +1,27 @@
-module Views.Hub.World exposing (..)
+module Views.Hub.World exposing
+    ( currentLevelPointer
+    , handleStartLevel
+    , offsetStyles
+    , renderIcon
+    , renderLevel
+    , renderNumber
+    , renderWorld
+    , renderWorlds
+    , showInfo
+    )
 
 import Config.Levels exposing (allLevels)
+import Css.Animation exposing (animation, ease, infinite)
+import Css.Style as Style exposing (..)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Progress exposing (completedLevel, getLevelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
-import Helpers.Css.Animation exposing (FillMode(..), IterationCount(..), animationWithOptionsStyle)
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Timing exposing (TimingFunction(Ease, Linear))
 import Helpers.Html exposing (emptyProperty)
+import Helpers.Wave exposing (wave)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (..)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
@@ -32,7 +42,7 @@ renderWorld : HubModel model -> ( WorldNumber, WorldData TutorialConfig ) -> Htm
 renderWorld model (( _, worldData ) as world) =
     div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
-            [ style [ widthStyle 300 ], class "center" ]
+            [ style [ width 300 ], class "center" ]
             (worldData.levels
                 |> Dict.toList
                 |> List.reverse
@@ -58,17 +68,17 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             ( world, level ) == model.progress
     in
     div
-        [ showInfo ( world, level ) model
-        , class "tc pointer relative"
-        , id <| "level-" ++ toString levelNumber
-        , styles
-            [ [ widthStyle 35
+        [ styles
+            [ [ width 35
               , marginTop 50
               , marginBottom 50
               , color worldData.textColor
               ]
             , offsetStyles level
             ]
+        , showInfo ( world, level ) model
+        , class "tc pointer relative"
+        , id <| "level-" ++ String.fromInt levelNumber
         ]
         [ currentLevelPointer isCurrentLevel
         , renderIcon ( world, level ) worldData.seedType model
@@ -80,74 +90,51 @@ currentLevelPointer : Bool -> Html msg
 currentLevelPointer isCurrentLevel =
     if isCurrentLevel then
         div
-            [ class "absolute left-0 right-0"
-            , style
-                [ topStyle -30
-                , animationWithOptionsStyle
-                    { name = "hover"
-                    , timing = Ease
-                    , fill = Forwards
-                    , duration = 1500
-                    , iteration = Just Infinite
-                    , delay = Nothing
-                    }
+            [ style
+                [ top -30
+                , animation "hover" 1500 [ ease, infinite ]
                 ]
+            , class "absolute left-0 right-0"
             ]
             [ triangle ]
+
     else
         span [] []
 
 
 offsetStyles : Int -> List Style
 offsetStyles levelNumber =
-    let
-        center =
-            [ ( "margin-left", "auto" )
-            , ( "margin-right", "auto" )
-            ]
-
-        right =
-            [ ( "margin-left", "auto" ) ]
-
-        left =
-            []
-
-        offsetSin =
-            toFloat (levelNumber - 1)
-                |> (*) 90
-                |> degrees
-                |> sin
-                |> round
-    in
-    if offsetSin == 0 then
-        center
-    else if offsetSin == 1 then
-        right
-    else
-        left
+    wave
+        { center = [ leftAuto, rightAuto ]
+        , right = [ leftAuto ]
+        , left = []
+        }
+        (levelNumber - 1)
 
 
 renderNumber : Int -> Bool -> WorldData TutorialConfig -> Html Msg
 renderNumber visibleLevelNumber hasReachedLevel worldData =
     if hasReachedLevel then
         div
-            [ class "br-100 center flex justify-center items-center"
-            , style
+            [ style
                 [ backgroundColor worldData.textBackgroundColor
                 , marginTop 10
-                , widthStyle 25
-                , heightStyle 25
+                , width 25
+                , height 25
                 ]
+            , class "br-100 center flex justify-center items-center"
             ]
-            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text <| toString visibleLevelNumber ] ]
+            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
+
     else
-        p [ style [ color worldData.textColor ] ] [ text <| toString visibleLevelNumber ]
+        p [ style [ color worldData.textColor ] ] [ text <| String.fromInt visibleLevelNumber ]
 
 
 showInfo : Progress -> HubModel model -> Attribute Msg
 showInfo currentLevel model =
     if reachedLevel allLevels currentLevel model.progress && InfoWindow.isHidden model.hubInfoWindow then
         onClick <| HubMsg <| ShowLevelInfo currentLevel
+
     else
         emptyProperty
 
@@ -156,6 +143,7 @@ handleStartLevel : Progress -> HubModel model -> Attribute Msg
 handleStartLevel currentLevel model =
     if reachedLevel allLevels currentLevel model.progress then
         onClick <| StartLevel currentLevel
+
     else
         emptyProperty
 
@@ -164,5 +152,6 @@ renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> HubModel model -> Html 
 renderIcon currentLevel seedType model =
     if completedLevel allLevels currentLevel model.progress then
         renderSeed seedType
+
     else
         renderSeed GreyedOut

@@ -1,8 +1,10 @@
-module Views.Icons.SeedBank exposing (..)
+module Views.Icons.SeedBank exposing (seedBank)
 
+import Css.Style as Style exposing (svgStyles)
+import Css.Transform as Css exposing (translateY)
+import Css.Transition exposing (transitionAll)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Helpers.Css.Style exposing (pc, svgStyles, svgTranslate)
-import Helpers.Css.Transform as Css exposing (translateY)
 import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)
@@ -19,7 +21,7 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> toString |> String.toLower
+            seedType |> Tile.hashSeedType |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType
@@ -29,8 +31,8 @@ seedBank seedType percentFull =
 
         offsetLevelStyles =
             svgStyles
-                [ "transition: transform 1.5s ease"
-                , "transform:" ++ Css.transform [ translateY seedLevelOffset ]
+                [ transitionAll 1500 []
+                , Style.transform [ translateY seedLevelOffset ]
                 ]
     in
     Svg.svg
@@ -40,7 +42,7 @@ seedBank seedType percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| toString fullHeight
+                [ height <| String.fromFloat fullHeight
                 , id <| seedLevelId
                 , width "100%"
                 ]

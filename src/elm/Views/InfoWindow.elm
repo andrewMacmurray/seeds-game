@@ -1,36 +1,33 @@
-module Views.InfoWindow exposing (..)
+module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoContainer_)
 
-import Config.Color exposing (..)
 import Config.Scale as ScaleConfig
+import Css.Animation exposing (animation, cubicBezier, ease, linear)
+import Css.Color exposing (..)
+import Css.Style as Style exposing (..)
 import Data.InfoWindow exposing (..)
-import Helpers.Css.Animation exposing (..)
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Timing exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class)
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg
 infoContainer infoWindow content =
     if isHidden infoWindow then
         span [] []
+
     else if isVisible infoWindow then
         infoContainer_ infoWindow
             [ div
                 [ class "pa3 br3 tc relative"
                 , style
-                    [ background seedPodGradient
+                    [ animation "elastic-bounce-in" 2000 [ linear ]
+                    , background seedPodGradient
                     , color white
-                    , animationStyle
-                        { name = "elastic-bounce-in"
-                        , duration = 2000
-                        , timing = Linear
-                        }
-                    , widthStyle 380
+                    , width 380
                     ]
                 ]
                 [ content ]
             ]
+
     else
         infoContainer_ infoWindow
             [ div
@@ -38,12 +35,8 @@ infoContainer infoWindow content =
                 , style
                     [ background seedPodGradient
                     , color white
-                    , widthStyle 380
-                    , animationStyle
-                        { name = "exit-down"
-                        , duration = 700
-                        , timing = CubicBezier 0.93 -0.36 0.57 0.96
-                        }
+                    , width 380
+                    , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]
                     ]
                 ]
                 [ content ]
@@ -54,20 +47,25 @@ infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
         containerStyles =
-            [ paddingLeft ScaleConfig.windowPadding
-            , paddingRight ScaleConfig.windowPadding
-            , animateEase "fade-in" 100
-            ]
+            style
+                [ paddingLeft ScaleConfig.windowPadding
+                , paddingRight ScaleConfig.windowPadding
+                , animation "fade-in" 100 [ ease ]
+                ]
     in
     if isLeaving infoWindow then
         div
-            [ classes [ "touch-disabled", infoContainerBaseClasses ]
-            , style containerStyles
+            [ classes
+                [ "touch-disabled"
+                , infoContainerBaseClasses
+                ]
+            , containerStyles
             ]
+
     else
         div
-            [ class infoContainerBaseClasses
-            , style containerStyles
+            [ classes [ infoContainerBaseClasses ]
+            , containerStyles
             ]
 
 

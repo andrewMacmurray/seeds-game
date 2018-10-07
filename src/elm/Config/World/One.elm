@@ -1,6 +1,6 @@
 module Config.World.One exposing (world)
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Tutorial.Rain as RainTutorial
 import Config.Tutorial.Seed as SeedTutorial
 import Config.Tutorial.SeedPod as SeedPodTutorial

@@ -1,10 +1,10 @@
-module View exposing (..)
+module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
 
-import Config.Animations exposing (internalAnimations)
-import Config.Color exposing (darkYellow)
-import Helpers.Css.Style exposing (color)
+import Config.Animations exposing (animations)
+import Css.Color exposing (darkYellow)
+import Css.Style exposing (color, style)
 import Html exposing (..)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Scenes.Hub.View exposing (hubView)
@@ -22,7 +22,7 @@ import Views.Loading exposing (loadingScreen)
 view : Model -> Html Msg
 view model =
     div []
-        [ internalAnimations
+        [ animations
         , reset
         , loadingScreen model
         , renderSceneState model

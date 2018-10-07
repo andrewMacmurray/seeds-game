@@ -1,4 +1,31 @@
-module Data.Board.Tile exposing (..)
+module Data.Board.Tile exposing
+    ( addBearing
+    , getSeedType
+    , getTileType
+    , growSeedPod
+    , growingOrder
+    , hasLine
+    , hash
+    , hashSeedType
+    , isCurrentMove
+    , isDragging
+    , isFalling
+    , isGrowing
+    , isLeaving
+    , isSeed
+    , leavingOrder
+    , map
+    , moveOrder
+    , setDraggingToGrowing
+    , setEnteringToSatic
+    , setFallingToStatic
+    , setGrowingToStatic
+    , setLeavingToEmpty
+    , setStaticToFirstMove
+    , setToDragging
+    , setToFalling
+    , setToLeaving
+    )
 
 import Data.Board.Types exposing (..)
 
@@ -93,8 +120,8 @@ hasLine tileState =
 moveOrder : TileState -> Int
 moveOrder tileState =
     case tileState of
-        Dragging _ moveOrder _ _ ->
-            moveOrder
+        Dragging _ moveOrder_ _ _ ->
+            moveOrder_
 
         _ ->
             0
@@ -111,13 +138,13 @@ isCurrentMove tileState =
 
 
 setToDragging : MoveOrder -> TileState -> TileState
-setToDragging moveOrder tileState =
+setToDragging moveOrder_ tileState =
     case tileState of
         Static tileType ->
-            Dragging tileType moveOrder Head Line
+            Dragging tileType moveOrder_ Head Line
 
         Dragging tileType _ bearing _ ->
-            Dragging tileType moveOrder bearing Square
+            Dragging tileType moveOrder_ bearing Square
 
         x ->
             x
@@ -136,8 +163,8 @@ setStaticToFirstMove tileState =
 addBearing : MoveBearing -> TileState -> TileState
 addBearing moveBearing tileState =
     case tileState of
-        Dragging tileType moveOrder _ moveShape ->
-            Dragging tileType moveOrder moveBearing moveShape
+        Dragging tileType moveOrder_ _ moveShape ->
+            Dragging tileType moveOrder_ moveBearing moveShape
 
         x ->
             x
@@ -275,3 +302,41 @@ getSeedType tileType =
 
         _ ->
             Nothing
+
+
+hash : TileType -> String
+hash tileType =
+    case tileType of
+        Rain ->
+            "rain"
+
+        Sun ->
+            "sun"
+
+        SeedPod ->
+            "seed-pod"
+
+        Seed seedType ->
+            hashSeedType seedType
+
+
+hashSeedType : SeedType -> String
+hashSeedType seedType =
+    case seedType of
+        Sunflower ->
+            "sunflower"
+
+        Foxglove ->
+            "foxglove"
+
+        Lupin ->
+            "lupin"
+
+        Marigold ->
+            "marigold"
+
+        Rose ->
+            "rose"
+
+        GreyedOut ->
+            "greyed-out"

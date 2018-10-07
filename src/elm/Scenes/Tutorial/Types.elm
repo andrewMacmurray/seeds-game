@@ -1,9 +1,9 @@
-module Scenes.Tutorial.Types exposing (..)
+module Scenes.Tutorial.Types exposing (Sequence, TutorialConfig, TutorialModel, TutorialMsg(..))
 
 import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
+import Data.Window as Window
 import Dict exposing (Dict)
 import Scenes.Level.Types exposing (LevelModel, LevelMsg)
-import Window
 
 
 type alias TutorialModel =
@@ -65,8 +65,4 @@ type TutorialMsg
     | SkipTutorial
     | DisableTutorial
     | ExitTutorial
-    | WindowSize Window.Size
-
-
-type TutorialOutMsg
-    = ExitToLevel
+    | WindowSize Int Int

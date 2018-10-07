@@ -1,36 +1,33 @@
-module Scenes.Intro.View exposing (..)
+module Scenes.Intro.View exposing (introView, renderScene, textOffset)
 
-import Helpers.Css.Style exposing (Style, background, color, marginTop, widthStyle)
-import Helpers.Css.Transition exposing (easeAll)
+import Css.Style as Style exposing (Style, background, color, marginTop, showIf, style, width)
+import Css.Transition exposing (transitionAll)
+import Data.Window as Window
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, classList)
 import Scenes.Intro.Types exposing (..)
 import Views.Intro.DyingLandscape exposing (dyingLandscape)
 import Views.Intro.GrowingSeeds exposing (growingSeeds)
 import Views.Intro.RollingHills exposing (rollingHills)
-import Window
 
 
 introView : IntroModel -> Html IntroMsg
 introView model =
     div
-        [ class "fixed top-0 left-0 w-100 h-100 z-1"
-        , style
+        [ style
             [ background model.backdrop
-            , easeAll 1500
+            , transitionAll 1500 []
             ]
+        , class "fixed top-0 left-0 w-100 h-100 z-1"
         ]
         [ p
-            [ class "tc f5 f3-ns relative z-2"
-            , style
+            [ style
                 [ textOffset model.window
                 , color model.textColor
-                , easeAll 1000
+                , transitionAll 1000 []
                 ]
-            , classList
-                [ ( "o-0", not model.textVisible )
-                , ( "o-100", model.textVisible )
-                ]
+            , showIf model.textVisible
+            , class "tc f5 f3-ns relative z-2"
             ]
             [ text model.text ]
         , renderScene model
@@ -52,4 +49,4 @@ renderScene model =
 
 textOffset : Window.Size -> Style
 textOffset window =
-    marginTop <| (window.height // 2) - 120
+    marginTop <| toFloat <| (window.height // 2) - 120

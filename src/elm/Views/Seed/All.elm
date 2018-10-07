@@ -1,4 +1,4 @@
-module Views.Seed.All exposing (..)
+module Views.Seed.All exposing (renderSeed)
 
 import Data.Board.Types exposing (..)
 import Svg exposing (Svg)

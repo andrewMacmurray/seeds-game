@@ -1,8 +1,7 @@
-module Data.Board.Map
-    exposing
-        ( mapBlocks
-        , mapBoard
-        )
+module Data.Board.Map exposing
+    ( mapBlocks
+    , mapBoard
+    )
 
 import Data.Board.Types exposing (..)
 import Helpers.Dict exposing (mapValues)

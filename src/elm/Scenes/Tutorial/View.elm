@@ -1,18 +1,28 @@
-module Scenes.Tutorial.View exposing (..)
+module Scenes.Tutorial.View exposing
+    ( fadeLine
+    , handleSkip
+    , leavingStyles
+    , renderLines_
+    , renderResourceBank
+    , renderTiles
+    , resourceBankOffsetX
+    , tutorialBoard
+    , tutorialView
+    )
 
-import Config.Color exposing (darkYellow, greyYellow)
 import Config.Scale as ScaleConfig
+import Css.Color exposing (darkYellow, greyYellow)
+import Css.Style as Style exposing (..)
+import Css.Transform exposing (..)
+import Css.Transition exposing (delay, linear, transitionAll)
+import Css.Unit exposing (pc)
 import Data.Board.Block exposing (getTileState, hasLine)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict
-import Helpers.Css.Style exposing (..)
-import Helpers.Css.Timing exposing (TimingFunction(..))
-import Helpers.Css.Transform exposing (..)
-import Helpers.Css.Transition exposing (easeAll, transitionStyle)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial.Types exposing (..)
 import Views.Level.Layout exposing (renderLineLayer, renderLines)
@@ -27,35 +37,25 @@ tutorialView model =
         [ class "w-100 h-100 fixed top-0 flex items-center justify-center z-5"
         , style
             [ backgroundColor "rgba(255, 252, 227, 0.98)"
-            , transitionStyle
-                { property = "all"
-                , duration = 1200
-                , timing = Linear
-                , delay = Nothing
-                }
+            , transitionAll 1200 [ linear ]
             ]
-        , classList <| showIf model.canvasVisible
+        , showIf model.canvasVisible
         ]
         [ div
             [ style
-                [ ( "margin-top", pc -3 )
-                , transitionStyle
-                    { property = "all"
-                    , duration = 800
-                    , timing = Linear
-                    , delay = Nothing
-                    }
+                [ Style.property "margin-top" (pc -3)
+                , transitionAll 800 [ linear ]
                 ]
-            , classList <| showIf model.containerVisible
+            , showIf model.containerVisible
             , class "tc"
             ]
             [ tutorialBoard model
             , p
                 [ style
                     [ color darkYellow
-                    , easeAll 500
+                    , transitionAll 500 []
                     ]
-                , classList <| showIf model.textVisible
+                , showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
             ]
@@ -63,15 +63,10 @@ tutorialView model =
             [ handleSkip model
             , style
                 [ color greyYellow
-                , bottomStyle 30
-                , transitionStyle
-                    { property = "all"
-                    , duration = 800
-                    , timing = Linear
-                    , delay = Just 800
-                    }
+                , bottom 30
+                , transitionAll 800 [ linear, delay 800 ]
                 ]
-            , classList <| showIf model.containerVisible
+            , showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
             ]
             [ text "skip" ]
@@ -82,6 +77,7 @@ handleSkip : TutorialModel -> Attribute TutorialMsg
 handleSkip model =
     if not model.skipped then
         onClick SkipTutorial
+
     else
         emptyProperty
 
@@ -90,11 +86,11 @@ tutorialBoard : TutorialModel -> Html msg
 tutorialBoard model =
     div
         [ class "center relative"
-        , classList <| showIf model.boardVisible
+        , showIf model.boardVisible
         , style
-            [ widthStyle <| boardWidth model
-            , heightStyle <| boardHeight model
-            , easeAll 500
+            [ width <| toFloat <| boardWidth model
+            , height <| toFloat <| boardHeight model
+            , transitionAll 500 []
             ]
         ]
         [ div [ class "absolute z-5" ] [ renderResourceBank model ]
@@ -117,10 +113,10 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
     in
     div
         [ style
-            [ easeAll 800
-            , transformStyle [ translate offsetX offsetY ]
+            [ transitionAll 800 []
+            , transform [ translate offsetX offsetY ]
             ]
-        , classList <| showIf resourceBankVisible
+        , showIf resourceBankVisible
         ]
         [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
 
@@ -147,8 +143,8 @@ fadeLine model (( _, tile ) as move) =
             hasLine tile
     in
     div
-        [ style [ easeAll 500 ]
-        , classList <| showIf visible
+        [ style [ transitionAll 500 [] ]
+        , showIf visible
         ]
         [ renderLineLayer model move ]
 
@@ -168,21 +164,9 @@ leavingStyles model (( _, block ) as move) =
     in
     case tileState of
         Leaving _ order ->
-            [ transformStyle [ translate (resourceBankOffsetX model) -100 ]
-            , transitionStyle
-                { property = "all"
-                , duration = 500
-                , timing = Ease
-                , delay = Just <| toFloat <| (order % 5) * 80
-                }
+            [ transform [ translate (resourceBankOffsetX model) -100 ]
+            , transitionAll 500 [ delay <| modBy 5 order * 80 ]
             ]
 
         _ ->
             []
-
-
-showIf : Bool -> List ( String, Bool )
-showIf visible =
-    [ ( "o-100", visible )
-    , ( "o-0", not visible )
-    ]

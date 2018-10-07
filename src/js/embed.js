@@ -1,74 +1,69 @@
-const { Elm } = window
-const animations = require('./bounce.js')
-const cache = require('./cache.js')
-const util = require('./util')
-const { Howl } = require('howler')
+const { Elm } = window;
+const animations = require("./bounce.js");
+const cache = require("./cache.js");
+const util = require("./util");
+const { loadAudio, playTrack, longFade } = require("./audio.js");
 
 // registerServiceWorker()
-init()
+init();
 
-util.bumpDebuggerPanel()
+util.bumpDebuggerPanel();
+
+window.skipToLevel = util.skipToLevel;
 
 function init() {
-  const app = Elm.App.fullscreen({
-    now: Date.now(),
-    times: cache.getTimes(),
-    rawProgress: cache.getProgress()
-  })
-
-  const introMusic = new Howl({
-    src: ['audio/intro.mp3']
-  })
-
-  function introMusicstarted() {
-    app.ports.introMusicPlaying.send(true)
-  }
-
-  app.ports.playIntroMusic.subscribe(() => {
-    introMusic.once('play', introMusicstarted)
-    introMusic.play()
-  })
-
-  app.ports.fadeMusic.subscribe(() => introMusic.fade(1, 0, 4000))
-
-  app.ports.scrollToHubLevel.subscribe(level => {
-    const levelEl = document.getElementById('level-' + level)
-    if (levelEl) {
-      app.ports.receiveHubLevelOffset.send(levelEl.offsetTop)
+  // Init Elm App
+  const { ports } = Elm.App.init({
+    node: document.getElementById("app"),
+    flags: {
+      now: Date.now(),
+      times: cache.getTimes(),
+      rawProgress: cache.getProgress(),
+      window: { height: window.innerHeight, width: window.innerWidth }
     }
-  })
+  });
 
-  app.ports.generateBounceKeyframes.subscribe(tileSize => {
+  // Audio
+  const { introMusic } = loadAudio();
+
+  ports.playIntroMusic.subscribe(() => {
+    const musicPlaying = () => ports.introMusicPlaying.send(true);
+    playTrack(introMusic, musicPlaying);
+  });
+
+  ports.fadeMusic.subscribe(() => longFade(introMusic));
+
+  ports.generateBounceKeyframes.subscribe(tileSize => {
     const anims = [
       animations.elasticBounceIn(),
       animations.bounceDown(),
       animations.bounceUp(),
       animations.bounceDowns(tileSize)
-    ]
-    .join(' ')
+    ].join(" ");
 
-    const styleNode = document.getElementById('generated-styles')
-    styleNode.textContent = anims
-  })
+    const styleNode = document.getElementById("generated-styles");
+    styleNode.textContent = anims;
+  });
 
-  app.ports.cacheProgress.subscribe(progress => {
-    cache.setProgress(progress)
-  })
+  // LocalStorgage Cache
+  ports.cacheProgress.subscribe(progress => {
+    cache.setProgress(progress);
+  });
 
-  app.ports.clearCache_.subscribe(() => {
-    cache.clear()
-    window.location.reload()
-  })
+  ports.clearCache_.subscribe(() => {
+    cache.clear();
+    window.location.reload();
+  });
 
-  app.ports.cacheTimes.subscribe(times => {
-    cache.setTimes(times)
-  })
+  ports.cacheTimes.subscribe(times => {
+    cache.setTimes(times);
+  });
 }
 
 function registerServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-    })
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js");
+    });
   }
 }

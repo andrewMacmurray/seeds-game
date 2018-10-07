@@ -1,6 +1,6 @@
 module Config.World.Three exposing (world)
 
-import Config.Color exposing (..)
+import Css.Color exposing (..)
 import Config.Wall exposing (..)
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (toCoords)

@@ -1,8 +1,7 @@
-module Data.Background
-    exposing
-        ( Background(..)
-        , genRandomBackground
-        )
+module Data.Background exposing
+    ( Background(..)
+    , genRandomBackground
+    )
 
 import Random
 
@@ -23,5 +22,6 @@ backgroundEnum : Int -> Background
 backgroundEnum n =
     if n > 5 then
         Orange
+
     else
         Blue

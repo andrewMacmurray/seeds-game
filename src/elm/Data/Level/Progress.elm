@@ -1,14 +1,13 @@
-module Data.Level.Progress
-    exposing
-        ( completedLevel
-        , currentLevelSeedType
-        , getLevelNumber
-        , incrementProgress
-        , levelConfig
-        , levelData
-        , reachedLevel
-        , shouldIncrement
-        )
+module Data.Level.Progress exposing
+    ( completedLevel
+    , currentLevelSeedType
+    , getLevelNumber
+    , incrementProgress
+    , levelConfig
+    , levelData
+    , reachedLevel
+    , shouldIncrement
+    )
 
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
@@ -26,10 +25,10 @@ levelConfig allLevels ( w, l ) =
         worldData =
             allLevels |> Dict.get w
 
-        levelData =
-            worldData |> Maybe.andThen (\w -> Dict.get l w.levels)
+        ld =
+            worldData |> Maybe.andThen (\world -> Dict.get l world.levels)
     in
-    Maybe.map2 (,) worldData levelData
+    Maybe.map2 (\a b -> ( a, b )) worldData ld
 
 
 currentLevelSeedType : AllLevels tutorial -> Maybe Progress -> Progress -> SeedType
@@ -86,6 +85,7 @@ incrementProgress_ : AllLevels tutorial -> Maybe Progress -> Progress -> WorldDa
 incrementProgress_ allLevels currentLevel progress worldData =
     if shouldIncrement allLevels currentLevel progress then
         handleIncrement progress worldData
+
     else
         progress
 
@@ -106,6 +106,7 @@ handleIncrement : Progress -> WorldData tutorial -> Progress
 handleIncrement (( _, level ) as currentProgress) worldData =
     if lastLevel worldData == level then
         incrementWorld currentProgress
+
     else
         incrementLevel currentProgress
 

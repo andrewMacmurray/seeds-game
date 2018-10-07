@@ -1,9 +1,10 @@
-module Scenes.Level.Types exposing (..)
+module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..), Position)
 
+import Css.Color exposing (Color)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
-import Window
+import Data.Window as Window
 
 
 type alias LevelModel =
@@ -23,7 +24,7 @@ type alias LevelModel =
 
 
 type LevelMsg
-    = InitTiles (List ( WallColor, Coord )) (List TileType)
+    = InitTiles (List ( Color, Coord )) (List TileType)
     | SquareMove
     | StopMove
     | StartMove Move Position
@@ -45,18 +46,13 @@ type LevelMsg
     | InfoHidden
     | LevelWon
     | LevelLost
-    | WindowSize Window.Size
+    | WindowSize Int Int
 
 
 type alias Position =
     { x : Int
     , y : Int
     }
-
-
-type LevelOutMsg
-    = ExitWin
-    | ExitLose
 
 
 type LevelStatus

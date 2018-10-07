@@ -1,13 +1,12 @@
-module Data.Level.Summary
-    exposing
-        ( percentComplete
-        , primarySeedType
-        , secondaryResourceTypes
-        )
+module Data.Level.Summary exposing
+    ( percentComplete
+    , primarySeedType
+    , secondaryResourceTypes
+    )
 
 import Config.Levels exposing (allLevels)
 import Data.Board.Score exposing (collectable)
-import Data.Board.Tile exposing (getSeedType)
+import Data.Board.Tile as Tile exposing (getSeedType)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
@@ -19,17 +18,18 @@ percentComplete allLevels tileType ( w, l ) currentLevel =
     let
         target =
             totalTargetScoresForWorld w
-                |> Maybe.andThen (Dict.get (toString tileType))
+                |> Maybe.andThen (Dict.get (Tile.hash tileType))
 
         current =
             currentTotalScoresForWorld allLevels ( w, l )
-                |> Maybe.andThen (Dict.get (toString tileType))
+                |> Maybe.andThen (Dict.get (Tile.hash tileType))
 
         percent a b =
             (toFloat b / toFloat a) * 100
     in
     if worldComplete ( w, l ) currentLevel then
         100
+
     else
         Maybe.map2 percent target current
             |> Maybe.withDefault 0
@@ -39,6 +39,7 @@ primarySeedType : AllLevels tutorial -> Progress -> Maybe Progress -> Maybe Seed
 primarySeedType allLevels progress currentLevel =
     if worldComplete progress currentLevel then
         currentLevel |> Maybe.andThen (worldSeedType allLevels)
+
     else
         worldSeedType allLevels progress
 
@@ -78,6 +79,7 @@ uniqueMembers =
         accum a b =
             if List.member a b then
                 b
+
             else
                 a :: b
     in
@@ -144,7 +146,7 @@ accumSettings : TileSetting -> Dict String Int -> Dict String Int
 accumSettings val acc =
     case val.targetScore of
         Just (TargetScore n) ->
-            insertWith (+) (toString val.tileType) n acc
+            insertWith (+) (Tile.hash val.tileType) n acc
 
         Nothing ->
             acc

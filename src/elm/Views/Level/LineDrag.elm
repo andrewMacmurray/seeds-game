@@ -1,9 +1,10 @@
-module Views.Level.LineDrag exposing (..)
+module Views.Level.LineDrag exposing (handleLineDrag)
 
 import Config.Scale as ScaleConfig
 import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
-import Helpers.Css.Style exposing (..)
+import Css.Style as Style exposing (svgStyle)
+import Css.Unit exposing (px)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
@@ -15,6 +16,7 @@ handleLineDrag : LevelModel -> Html msg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
+
     else
         span [] []
 
@@ -23,7 +25,7 @@ lineDrag : LevelModel -> Html msg
 lineDrag ({ window } as model) =
     let
         vb =
-            "0 0 " ++ toString window.width ++ " " ++ toString window.height
+            "0 0 " ++ String.fromInt window.width ++ " " ++ String.fromInt window.height
 
         ( oY, oX ) =
             lastMoveOrigin model
@@ -37,19 +39,19 @@ lineDrag ({ window } as model) =
             ScaleConfig.tileScaleFactor window
     in
     svg
-        [ width <| px window.width
-        , height <| px window.height
+        [ width <| px <| toFloat window.width
+        , height <| px <| toFloat window.height
         , viewBox vb
         , class "fixed top-0 right-0 z-2 touch-disabled"
         ]
         [ line
-            [ svgStyle "stroke" strokeColor
-            , strokeWidth <| toString <| 6 * tileScale
+            [ svgStyle <| Style.stroke strokeColor
+            , strokeWidth <| String.fromFloat <| 6 * tileScale
             , strokeLinecap "round"
-            , x1 <| toString oX
-            , y1 <| toString oY
-            , x2 <| toString model.pointerPosition.x
-            , y2 <| toString model.pointerPosition.y
+            , x1 <| String.fromFloat oX
+            , y1 <| String.fromFloat oY
+            , x2 <| String.fromInt model.pointerPosition.x
+            , y2 <| String.fromInt model.pointerPosition.y
             ]
             []
         ]

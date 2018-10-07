@@ -1,4 +1,30 @@
-module Data.Board.Block exposing (..)
+module Data.Board.Block exposing
+    ( addBearing
+    , fold
+    , getTileState
+    , getTileType
+    , growSeedPod
+    , growingOrder
+    , hasLine
+    , isCurrentMove
+    , isDragging
+    , isFalling
+    , isGrowing
+    , isLeaving
+    , isWall
+    , leavingOrder
+    , map
+    , moveOrder
+    , setDraggingToGrowing
+    , setEnteringToStatic
+    , setFallingToStatic
+    , setGrowingToStatic
+    , setLeavingToEmpty
+    , setStaticToFirstMove
+    , setToDragging
+    , setToFalling
+    , setToLeaving
+    )
 
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
@@ -50,8 +76,8 @@ isCurrentMove =
 
 
 setToDragging : MoveOrder -> Block -> Block
-setToDragging moveOrder =
-    map <| Tile.setToDragging moveOrder
+setToDragging moveOrder_ =
+    map <| Tile.setToDragging moveOrder_
 
 
 setStaticToFirstMove : Block -> Block
