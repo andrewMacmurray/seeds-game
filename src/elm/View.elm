@@ -1,6 +1,6 @@
 module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
 
-import Config.Animations exposing (internalAnimations)
+import Config.Animations exposing (animations)
 import Css.Color exposing (darkYellow)
 import Css.Style exposing (color, style)
 import Html exposing (..)
@@ -22,7 +22,7 @@ import Views.Loading exposing (loadingScreen)
 view : Model -> Html Msg
 view model =
     div []
-        [ internalAnimations
+        [ animations
         , reset
         , loadingScreen model
         , renderSceneState model

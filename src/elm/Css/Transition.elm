@@ -8,7 +8,7 @@ module Css.Transition exposing
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Unit exposing (ms)
+import Css.Unit exposing (cubicBezier_, ms)
 
 
 type TransitionOption
@@ -88,18 +88,3 @@ transitionOption =
 toStyles : List TransitionOption -> List Style
 toStyles =
     List.map (\(TransitionOption s) -> s)
-
-
-cubicBezier_ : Float -> Float -> Float -> Float -> String
-cubicBezier_ a b c d =
-    String.join ""
-        [ "cubic-bezier("
-        , String.fromFloat a
-        , ","
-        , String.fromFloat b
-        , ","
-        , String.fromFloat c
-        , ","
-        , String.fromFloat d
-        , ")"
-        ]

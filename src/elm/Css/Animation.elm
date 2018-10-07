@@ -1,19 +1,32 @@
 module Css.Animation exposing
     ( AnimationOption
+    , Frame
+    , KeyframeProperty
+    , KeyframesAnimation
     , animation
     , cubicBezier
     , delay
     , ease
     , easeOut
+    , embed
+    , frame
     , infinite
+    , keyframes
     , linear
+    , opacity
+    , transform
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Unit exposing (ms)
+import Css.Transform exposing (Transform)
+import Css.Unit exposing (cubicBezier_, ms, pc)
+import Html exposing (Html)
+import Html.Attributes
+import Json.Encode
 
 
 
+-- Animation Style
 -- animatedDiv =
 --     div
 --         [ style [ animation "fade-in" 500 [ delay 500, infinite ] ] ]
@@ -100,10 +113,6 @@ fillForwards =
     Style.property "animation-fill-mode" "forwards"
 
 
-
--- Helpers
-
-
 animationOption : Style -> AnimationOption
 animationOption =
     AnimationOption
@@ -114,16 +123,94 @@ toStyles =
     List.map (\(AnimationOption s) -> s)
 
 
-cubicBezier_ : Float -> Float -> Float -> Float -> String
-cubicBezier_ a b c d =
-    String.join ""
-        [ "cubic-bezier("
-        , String.fromFloat a
-        , ","
-        , String.fromFloat b
-        , ","
-        , String.fromFloat c
-        , ","
-        , String.fromFloat d
-        , ")"
-        ]
+
+-- Keyframes
+-- myAnimation =
+--     keyframes "fade-out-slide-down"
+--         [ frame 0
+--             [ opacity 1, transform [ Transform.translateY 0 ] ]
+--         , frame 100
+--             [ opacity 0, transform [ Transform.translateY 300 ] ]
+--         ]
+
+
+type KeyframesAnimation
+    = KeyframesAnimation String (List Frame)
+
+
+type Frame
+    = Frame Float (List KeyframeProperty)
+
+
+type KeyframeProperty
+    = KeyframeProperty Style
+
+
+
+-- Construct Keyframes
+
+
+keyframes : String -> List Frame -> KeyframesAnimation
+keyframes =
+    KeyframesAnimation
+
+
+frame : Float -> List KeyframeProperty -> Frame
+frame =
+    Frame
+
+
+transform : List Transform -> KeyframeProperty
+transform =
+    KeyframeProperty << Style.transform
+
+
+opacity : Float -> KeyframeProperty
+opacity =
+    KeyframeProperty << Style.opacity
+
+
+
+-- Embed Keyframes
+
+
+embed : List KeyframesAnimation -> Html msg
+embed frames =
+    let
+        renderedKeyframes =
+            frames
+                |> List.map render
+                |> join
+                |> Json.Encode.string
+    in
+    Html.node "style" [ Html.Attributes.property "textContent" renderedKeyframes ] []
+
+
+render : KeyframesAnimation -> String
+render (KeyframesAnimation name frames) =
+    join [ "@keyframes", name, "{", renderFrames frames, "}" ]
+
+
+renderFrames : List Frame -> String
+renderFrames =
+    List.map renderFrame >> join
+
+
+renderFrame : Frame -> String
+renderFrame (Frame n props) =
+    join [ pc n, "{", renderProps props, "}" ]
+
+
+renderProps : List KeyframeProperty -> String
+renderProps =
+    List.map getStyle >> Style.renderStyles_
+
+
+getStyle : KeyframeProperty -> Style
+getStyle (KeyframeProperty s) =
+    s
+
+
+join : List String -> String
+join =
+    String.join " "

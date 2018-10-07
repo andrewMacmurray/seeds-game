@@ -1,4 +1,4 @@
-module Css.Unit exposing (deg, ms, pc, px)
+module Css.Unit exposing (cubicBezier_, deg, ms, pc, px)
 
 
 deg : Float -> String
@@ -19,3 +19,18 @@ pc n =
 ms : Float -> String
 ms n =
     String.fromFloat n ++ "ms"
+
+
+cubicBezier_ : Float -> Float -> Float -> Float -> String
+cubicBezier_ a b c d =
+    String.join ""
+        [ "cubic-bezier("
+        , String.fromFloat a
+        , ","
+        , String.fromFloat b
+        , ","
+        , String.fromFloat c
+        , ","
+        , String.fromFloat d
+        , ")"
+        ]

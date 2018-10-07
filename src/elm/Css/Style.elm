@@ -29,6 +29,7 @@ module Css.Style exposing
     , paddingTop
     , paddingVertical
     , property
+    , renderStyles_
     , rightAuto
     , rightPill
     , stroke
@@ -100,7 +101,7 @@ svgStyle =
 
 
 
--- Render Styles to String
+-- Render Styles to Raw String
 
 
 renderStyles_ : List Style -> String
