@@ -186,5 +186,5 @@ handleProb n { tileType, probability } ( val, accProb ) =
             else
                 ( Nothing, p + accProb )
 
-        Just tt ->
-            ( Just tt, p )
+        Just tileType_ ->
+            ( Just tileType_, p )

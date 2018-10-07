@@ -76,8 +76,8 @@ isCurrentMove =
 
 
 setToDragging : MoveOrder -> Block -> Block
-setToDragging mo =
-    map <| Tile.setToDragging mo
+setToDragging moveOrder_ =
+    map <| Tile.setToDragging moveOrder_
 
 
 setStaticToFirstMove : Block -> Block

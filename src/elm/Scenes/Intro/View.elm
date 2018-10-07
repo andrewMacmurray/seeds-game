@@ -1,6 +1,6 @@
 module Scenes.Intro.View exposing (introView, renderScene, textOffset)
 
-import Css.Style as Style exposing (Style, background, color, marginTop, style, width)
+import Css.Style as Style exposing (Style, background, color, marginTop, showIf, style, width)
 import Css.Transition exposing (transitionAll)
 import Data.Window as Window
 import Html exposing (..)
@@ -26,10 +26,7 @@ introView model =
                 , color model.textColor
                 , transitionAll 1000 []
                 ]
-            , classList
-                [ ( "o-0", not model.textVisible )
-                , ( "o-100", model.textVisible )
-                ]
+            , showIf model.textVisible
             , class "tc f5 f3-ns relative z-2"
             ]
             [ text model.text ]

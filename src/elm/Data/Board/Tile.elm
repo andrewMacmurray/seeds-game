@@ -120,8 +120,8 @@ hasLine tileState =
 moveOrder : TileState -> Int
 moveOrder tileState =
     case tileState of
-        Dragging _ mo _ _ ->
-            mo
+        Dragging _ moveOrder_ _ _ ->
+            moveOrder_
 
         _ ->
             0
@@ -138,13 +138,13 @@ isCurrentMove tileState =
 
 
 setToDragging : MoveOrder -> TileState -> TileState
-setToDragging mo tileState =
+setToDragging moveOrder_ tileState =
     case tileState of
         Static tileType ->
-            Dragging tileType mo Head Line
+            Dragging tileType moveOrder_ Head Line
 
         Dragging tileType _ bearing _ ->
-            Dragging tileType mo bearing Square
+            Dragging tileType moveOrder_ bearing Square
 
         x ->
             x

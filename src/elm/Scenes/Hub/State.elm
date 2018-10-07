@@ -3,8 +3,7 @@ module Scenes.Hub.State exposing (init, scrollHubToLevel, update)
 import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow
 import Data.Window as Window
-import Delay exposing (after)
-import Helpers.Delay exposing (sequence)
+import Helpers.Delay exposing (delay, sequence)
 import Scenes.Hub.Types as Hub exposing (..)
 import Task exposing (Task)
 
@@ -12,7 +11,7 @@ import Task exposing (Task)
 init : Int -> HubModel model -> ( HubModel model, Cmd HubMsg )
 init levelNumber model =
     ( model
-    , after 1000 Delay.Millisecond <| ScrollHubToLevel levelNumber
+    , delay 1000 <| ScrollHubToLevel levelNumber
     )
 
 

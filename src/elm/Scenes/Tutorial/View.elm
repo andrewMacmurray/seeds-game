@@ -6,7 +6,6 @@ module Scenes.Tutorial.View exposing
     , renderResourceBank
     , renderTiles
     , resourceBankOffsetX
-    , showIf
     , tutorialBoard
     , tutorialView
     )
@@ -40,14 +39,14 @@ tutorialView model =
             [ backgroundColor "rgba(255, 252, 227, 0.98)"
             , transitionAll 1200 [ linear ]
             ]
-        , classList <| showIf model.canvasVisible
+        , showIf model.canvasVisible
         ]
         [ div
             [ style
                 [ Style.property "margin-top" (pc -3)
                 , transitionAll 800 [ linear ]
                 ]
-            , classList <| showIf model.containerVisible
+            , showIf model.containerVisible
             , class "tc"
             ]
             [ tutorialBoard model
@@ -56,7 +55,7 @@ tutorialView model =
                     [ color darkYellow
                     , transitionAll 500 []
                     ]
-                , classList <| showIf model.textVisible
+                , showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
             ]
@@ -67,7 +66,7 @@ tutorialView model =
                 , bottom 30
                 , transitionAll 800 [ linear, delay 800 ]
                 ]
-            , classList <| showIf model.containerVisible
+            , showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
             ]
             [ text "skip" ]
@@ -87,7 +86,7 @@ tutorialBoard : TutorialModel -> Html msg
 tutorialBoard model =
     div
         [ class "center relative"
-        , classList <| showIf model.boardVisible
+        , showIf model.boardVisible
         , style
             [ width <| toFloat <| boardWidth model
             , height <| toFloat <| boardHeight model
@@ -117,7 +116,7 @@ renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
             [ transitionAll 800 []
             , transform [ translate offsetX offsetY ]
             ]
-        , classList <| showIf resourceBankVisible
+        , showIf resourceBankVisible
         ]
         [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
 
@@ -145,7 +144,7 @@ fadeLine model (( _, tile ) as move) =
     in
     div
         [ style [ transitionAll 500 [] ]
-        , classList <| showIf visible
+        , showIf visible
         ]
         [ renderLineLayer model move ]
 
@@ -171,10 +170,3 @@ leavingStyles model (( _, block ) as move) =
 
         _ ->
             []
-
-
-showIf : Bool -> List ( String, Bool )
-showIf visible =
-    [ ( "o-100", visible )
-    , ( "o-0", not visible )
-    ]

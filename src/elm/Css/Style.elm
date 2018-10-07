@@ -32,6 +32,7 @@ module Css.Style exposing
     , renderStyles_
     , rightAuto
     , rightPill
+    , showIf
     , stroke
     , style
     , styles
@@ -65,11 +66,6 @@ property =
 compose : List Style -> Style
 compose =
     Raw << renderStyles_
-
-
-classes : List String -> Html.Attribute msg
-classes =
-    Html.Attributes.class << String.join " "
 
 
 
@@ -305,3 +301,20 @@ opacity o =
 stroke : String -> Style
 stroke =
     property "stroke"
+
+
+
+-- Class Helpers
+
+
+classes : List String -> Html.Attribute msg
+classes =
+    Html.Attributes.class << String.join " "
+
+
+showIf : Bool -> Html.Attribute msg
+showIf predicate =
+    Html.Attributes.classList
+        [ ( "o-0", not predicate )
+        , ( "o-100", predicate )
+        ]
