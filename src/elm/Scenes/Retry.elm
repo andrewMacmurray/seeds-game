@@ -54,12 +54,8 @@ lifeState model =
         lives =
             model.timeTillNextLife |> livesLeft |> floor
     in
-    case model.scene of
-        Transition _ ->
-            Static lives
-
-        _ ->
-            Transitioning lives
+    -- FIXME
+    Transitioning lives
 
 
 tryAgain : Model -> Html Msg

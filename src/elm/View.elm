@@ -1,4 +1,4 @@
-module View exposing (keyedDiv, renderScene, renderSceneState, reset, view)
+module View exposing (view)
 
 import Config.Animations exposing (animations)
 import Css.Color exposing (darkYellow)
@@ -14,7 +14,7 @@ import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
 import Scenes.Title exposing (titleView)
 import Scenes.Tutorial.View exposing (tutorialView)
-import Types exposing (Model, Msg(..), Scene(..), SceneState(..))
+import Types exposing (Model, Msg(..), Scene(..))
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
@@ -25,23 +25,9 @@ view model =
         [ animations
         , reset
         , loadingScreen model
-        , renderSceneState model
+        , keyedDiv <| renderScene model
         , backdrop
         ]
-
-
-renderSceneState : Model -> Html Msg
-renderSceneState model =
-    case model.scene of
-        Loaded scene ->
-            keyedDiv <| renderScene model scene
-
-        Transition { from, to } ->
-            keyedDiv <|
-                List.concat
-                    [ renderScene model to
-                    , renderScene model from
-                    ]
 
 
 keyedDiv : List ( String, Html msg ) -> Html msg
@@ -49,9 +35,9 @@ keyedDiv =
     K.node "div" []
 
 
-renderScene : Model -> Scene -> List ( String, Html Msg )
-renderScene model scene =
-    case scene of
+renderScene : Model -> List ( String, Html Msg )
+renderScene model =
+    case model.scene of
         Hub ->
             [ ( "hub", hubView model ) ]
 

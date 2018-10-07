@@ -1,12 +1,9 @@
 module Types exposing
     ( Flags
-    , HasScene
     , Model
     , Msg(..)
     , RawProgress
     , Scene(..)
-    , SceneState(..)
-    , SceneTransition
     , Times
     )
 
@@ -43,7 +40,7 @@ type alias RawProgress =
 
 
 type alias Model =
-    { scene : SceneState
+    { scene : Scene
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
@@ -54,21 +51,6 @@ type alias Model =
     , successMessageIndex : Int
     , window : Window.Size
     }
-
-
-type SceneState
-    = Transition SceneTransition
-    | Loaded Scene
-
-
-type alias SceneTransition =
-    { from : Scene
-    , to : Scene
-    }
-
-
-type alias HasScene a =
-    { a | scene : SceneState }
 
 
 type Scene
@@ -99,7 +81,6 @@ type Msg
     | LoadSummary
     | LoadRetry
     | FadeTitle
-    | CompleteSceneTransition
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background

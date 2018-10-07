@@ -1,8 +1,9 @@
-module Scenes.Tutorial.State exposing (handleDragTile, handleSquareMove, init, initialState, loadTutorialData, resetVisibilities, skipSequence, subscriptions, update)
+module Scenes.Tutorial.State exposing (init, subscriptions, update)
 
 import Browser.Events
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
+import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Map exposing (..)
 import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
@@ -11,9 +12,9 @@ import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (LevelData)
 import Data.Window as Window
 import Dict
+import Exit exposing (continue, exit)
 import Helpers.Delay exposing (pause, sequence, trigger)
-import Helpers.Exit exposing (ExitMsg, continue, exit)
-import Scenes.Level.State as Level exposing (handleInsertEnteringTiles)
+import Scenes.Level.State as Level
 import Scenes.Level.Types exposing (LevelModel)
 import Scenes.Tutorial.Types exposing (..)
 import Task
@@ -74,15 +75,17 @@ loadTutorialData config model =
 -- Update
 
 
-update : TutorialMsg -> TutorialModel -> ( TutorialModel, Cmd TutorialMsg, ExitMsg () )
+update : TutorialMsg -> TutorialModel -> Exit.Status ( TutorialModel, Cmd TutorialMsg )
 update msg model =
     case msg of
         LevelMsg levelMsg ->
-            let
-                ( levelModel, levelCmd, _ ) =
-                    Level.update levelMsg model.levelModel
-            in
-            continue { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
+            -- FIXME
+            -- let
+            --     ( levelModel, levelCmd, _ ) =
+            --         Level.update levelMsg model.levelModel
+            -- in
+            -- continue { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
+            continue model []
 
         DragTile coord ->
             continue (handleDragTile coord model) []
@@ -211,6 +214,11 @@ handleDragTile coord model =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
     { model | board = addBearings ( coord, tile ) model.board }
+
+
+handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
+handleInsertEnteringTiles tileList =
+    mapBoard <| insertNewEnteringTiles tileList
 
 
 subscriptions : TutorialModel -> Sub TutorialMsg

@@ -1,11 +1,11 @@
-module Scenes.Intro.State exposing (init, initialState, subscriptions, update)
+module Scenes.Intro.State exposing (init, subscriptions, update)
 
 import Browser.Events
 import Css.Color as Color
 import Data.Visibility exposing (..)
 import Data.Window as Window
+import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Exit exposing (ExitMsg, continue, exit)
 import Scenes.Intro.Types exposing (..)
 import Task
 
@@ -47,7 +47,7 @@ introSequence =
         , ( 500, ShowGrowingSeeds )
         , ( 1500, HideText )
         , ( 500, HideGrowingSeeds )
-        , ( 0, SetTextColor "#FFF" )
+        , ( 0, SetTextColor Color.white )
         , ( 500, SetText "So they may bloom again on a new world" )
         , ( 1500, InitRollingHills )
         , ( 100, ShowRollingHills )
@@ -58,7 +58,7 @@ introSequence =
         ]
 
 
-update : IntroMsg -> IntroModel -> ( IntroModel, Cmd IntroMsg, ExitMsg () )
+update : IntroMsg -> IntroModel -> Exit.Status ( IntroModel, Cmd IntroMsg )
 update msg model =
     case msg of
         ShowDyingLandscape ->

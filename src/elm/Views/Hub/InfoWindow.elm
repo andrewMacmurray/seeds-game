@@ -9,7 +9,7 @@ module Views.Hub.InfoWindow exposing
     , renderWeather
     )
 
-import Config.Levels exposing (allLevels)
+import Config.Levels exposing (allLevels, getLevelConfig)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
@@ -22,7 +22,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
-import State exposing (getLevelConfig)
 import Types exposing (Msg(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)

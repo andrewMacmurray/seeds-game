@@ -1,4 +1,4 @@
-module Scenes.Hub.State exposing (init, scrollHubToLevel, update)
+module Scenes.Hub.State exposing (init, update)
 
 import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow

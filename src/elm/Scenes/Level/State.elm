@@ -1,34 +1,4 @@
-module Scenes.Level.State exposing
-    ( addLevelData
-    , checkMoveFromPosition
-    , checkMoveWithSquareTrigger
-    , coordsFromPosition
-    , fallDelay
-    , growSeedPodsSequence
-    , handleAddScore
-    , handleCheckLevelComplete
-    , handleCheckMove
-    , handleDecrementRemainingMoves
-    , handleGenerateTiles
-    , handleInsertEnteringTiles
-    , handleInsertNewSeeds
-    , handleMakeBoard
-    , handleResetMove
-    , handleSquareMove
-    , handleStartMove
-    , hasLost
-    , hasWon
-    , init
-    , initialDelay
-    , initialState
-    , loseSequence
-    , moveFromCoord
-    , moveFromPosition
-    , removeTilesSequence
-    , subscriptions
-    , update
-    , winSequence
-    )
+module Scenes.Level.State exposing (init, subscriptions, update)
 
 import Browser.Events
 import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
@@ -48,8 +18,8 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
 import Data.Window as Window
 import Dict
+import Exit exposing (continue, exitWithPayload)
 import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Exit exposing (ExitMsg, continue, exitWith)
 import Scenes.Level.Types exposing (..)
 import Task
 import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
@@ -108,7 +78,7 @@ initialState successMessageIndex =
 -- Update
 
 
-update : LevelMsg -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
+update : LevelMsg -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -198,10 +168,10 @@ update msg model =
             continue { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
-            exitWith Win model []
+            exitWithPayload Win model []
 
         LevelLost ->
-            exitWith Lose model []
+            exitWithPayload Lose model []
 
         WindowSize width height ->
             continue { model | window = Window.Size width height } []
@@ -329,7 +299,7 @@ handleStartMove move pointerPosition model =
     }
 
 
-checkMoveFromPosition : Position -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
+checkMoveFromPosition : Position -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
 checkMoveFromPosition position levelModel =
     let
         modelWithPosition =
@@ -343,7 +313,7 @@ checkMoveFromPosition position levelModel =
             continue modelWithPosition []
 
 
-checkMoveWithSquareTrigger : Move -> LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
+checkMoveWithSquareTrigger : Move -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
 checkMoveWithSquareTrigger move model =
     let
         newModel =
@@ -399,7 +369,7 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : LevelModel -> ( LevelModel, Cmd LevelMsg, ExitMsg LevelStatus )
+handleCheckLevelComplete : LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
 handleCheckLevelComplete model =
     if hasWon model then
         continue { model | levelStatus = Win } [ winSequence model ]
