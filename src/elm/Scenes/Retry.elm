@@ -9,12 +9,13 @@ import Data.Transit exposing (Transit(..))
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Shared
 import State exposing (livesLeft)
 import Types exposing (..)
 import Views.Lives exposing (renderLivesLeft)
 
 
-retryView : Model -> Html Msg
+retryView : Shared.Data -> Html Msg
 retryView model =
     div
         [ style
@@ -48,17 +49,17 @@ retryView model =
         ]
 
 
-lifeState : Model -> Transit Int
+lifeState : Shared.Data -> Transit Int
 lifeState model =
-    let
-        lives =
-            model.timeTillNextLife |> livesLeft |> floor
-    in
+    -- let
+    --     lives =
+    --         model.timeTillNextLife |> livesLeft |> floor
+    -- in
     -- FIXME
-    Transitioning lives
+    Transitioning 4
 
 
-tryAgain : Model -> Html Msg
+tryAgain : Shared.Data -> Html Msg
 tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div

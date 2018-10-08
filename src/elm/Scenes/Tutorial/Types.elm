@@ -4,10 +4,12 @@ import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, Seed
 import Data.Window as Window
 import Dict exposing (Dict)
 import Scenes.Level.Types exposing (LevelModel, LevelMsg)
+import Shared
 
 
 type alias TutorialModel =
-    { board : Board
+    { shared : Shared.Data
+    , board : Board
     , boardVisible : Bool
     , textVisible : Bool
     , resourceBankVisible : Bool
@@ -19,8 +21,6 @@ type alias TutorialModel =
     , boardDimensions : BoardDimensions
     , currentText : Int
     , text : Dict Int String
-    , window : Window.Size
-    , levelModel : LevelModel
     }
 
 
@@ -38,8 +38,7 @@ type alias Sequence =
 
 
 type TutorialMsg
-    = LevelMsg LevelMsg
-    | DragTile Coord
+    = DragTile Coord
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving
@@ -65,4 +64,3 @@ type TutorialMsg
     | SkipTutorial
     | DisableTutorial
     | ExitTutorial
-    | WindowSize Int Int

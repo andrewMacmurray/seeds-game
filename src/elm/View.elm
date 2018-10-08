@@ -7,14 +7,15 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
+import Scene exposing (Scene(..))
 import Scenes.Hub.View exposing (hubView)
 import Scenes.Intro.View exposing (introView)
 import Scenes.Level.View exposing (levelView)
 import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
-import Scenes.Title exposing (titleView)
+import Scenes.Title as Title
 import Scenes.Tutorial.View exposing (tutorialView)
-import Types exposing (Model, Msg(..), Scene(..))
+import Types exposing (Model, Msg(..))
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 
@@ -24,7 +25,7 @@ view model =
     div []
         [ animations
         , reset
-        , loadingScreen model
+        , loadingScreen <| Scene.getShared model.scene
         , keyedDiv <| renderScene model
         , backdrop
         ]
@@ -38,27 +39,26 @@ keyedDiv =
 renderScene : Model -> List ( String, Html Msg )
 renderScene model =
     case model.scene of
-        Hub ->
-            [ ( "hub", hubView model ) ]
+        Hub hubModel ->
+            [ ( "hub", hubView hubModel |> Html.map HubMsg ) ]
 
         Intro introModel ->
             [ ( "intro", introView introModel |> Html.map IntroMsg ) ]
 
-        Title ->
-            [ ( "title", titleView model ) ]
+        Title titleModel ->
+            [ ( "title", Title.view titleModel |> Html.map TitleMsg ) ]
 
         Level levelModel ->
             [ ( "level", levelView levelModel |> Html.map LevelMsg ) ]
 
-        Summary ->
-            [ ( "summary", summaryView model ) ]
+        Summary summaryModel ->
+            [ ( "summary", summaryView summaryModel ) ]
 
-        Retry ->
-            [ ( "retry", retryView model ) ]
+        Retry retryModel ->
+            [ ( "retry", retryView retryModel ) ]
 
         Tutorial tutorialModel ->
             [ ( "tutorial", tutorialView tutorialModel |> Html.map TutorialMsg )
-            , ( "level", levelView tutorialModel.levelModel |> Html.map LevelMsg )
             ]
 
 

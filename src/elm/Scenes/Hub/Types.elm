@@ -4,14 +4,12 @@ import Browser.Dom as Dom
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (Progress)
 import Data.Window as Window
+import Shared
 
 
-type alias HubModel mainModel =
-    { mainModel
-        | hubInfoWindow : InfoWindow Progress
-        , window : Window.Size
-        , timeTillNextLife : Float
-        , progress : Progress
+type alias HubModel =
+    { shared : Shared.Data
+    , infoWindow : InfoWindow Progress
     }
 
 
@@ -20,4 +18,5 @@ type HubMsg
     | HideLevelInfo
     | SetInfoState (InfoWindow Progress)
     | ScrollHubToLevel Int
+    | StartLevel Progress
     | DomNoOp (Result Dom.Error ())

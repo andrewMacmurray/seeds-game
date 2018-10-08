@@ -51,46 +51,46 @@ import Dict exposing (Dict)
 import Scenes.Level.Types as Level exposing (..)
 
 
-boardMarginTop : LevelModel -> Style
-boardMarginTop model =
-    marginTop <| toFloat <| boardOffsetTop model
+boardMarginTop : Window.Size -> BoardDimensions -> Style
+boardMarginTop window boardDimensions =
+    marginTop <| toFloat <| boardOffsetTop window boardDimensions
 
 
-boardOffsetTop : TileConfig model -> Int
-boardOffsetTop model =
-    (model.window.height - boardHeight model) // 2 + (ScaleConfig.topBarHeight // 2) - 10
+boardOffsetTop : Window.Size -> BoardDimensions -> Int
+boardOffsetTop window boardDimensions =
+    (window.height - boardHeight window boardDimensions) // 2 + (ScaleConfig.topBarHeight // 2) - 10
 
 
-boardOffsetLeft : TileConfig model -> Int
-boardOffsetLeft model =
-    (model.window.width - boardWidth model) // 2
+boardOffsetLeft : Window.Size -> BoardDimensions -> Int
+boardOffsetLeft window boardDimensions =
+    (window.width - boardWidth window boardDimensions) // 2
 
 
-boardHeight : TileConfig model -> Int
-boardHeight model =
-    round (ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor model.window) * model.boardDimensions.y
+boardHeight : Window.Size -> BoardDimensions -> Int
+boardHeight window boardDimensions =
+    round (ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window) * boardDimensions.y
 
 
-boardWidth : TileConfig model -> Int
-boardWidth model =
-    tileWidth model * model.boardDimensions.x
+boardWidth : Window.Size -> BoardDimensions -> Int
+boardWidth window boardDimensions =
+    tileWidth window * boardDimensions.x
 
 
-boardFullWidth : TileConfig model -> Int
-boardFullWidth model =
-    tileWidth model * 8
+boardFullWidth : Window.Size -> Int
+boardFullWidth window =
+    tileWidth window * 8
 
 
-tileWidth : TileConfig model -> Int
-tileWidth model =
-    round <| ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor model.window
+tileWidth : Window.Size -> Int
+tileWidth window =
+    round <| ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor window
 
 
-tileCoordsStyles : TileConfig model -> Coord -> List Style
-tileCoordsStyles model coord =
+tileCoordsStyles : Window.Size -> Move -> List Style
+tileCoordsStyles window ( coord, _ ) =
     let
         ( y, x ) =
-            tilePosition model coord
+            tilePosition window coord
     in
     [ transform
         [ translate x y
@@ -99,8 +99,8 @@ tileCoordsStyles model coord =
     ]
 
 
-tilePosition : TileConfig model -> Coord -> ( Float, Float )
-tilePosition { window } ( y, x ) =
+tilePosition : Window.Size -> Coord -> ( Float, Float )
+tilePosition window ( y, x ) =
     let
         tileScale =
             ScaleConfig.tileScaleFactor window
@@ -230,10 +230,10 @@ exitXDistance n model =
                 |> (*) scoreWidth
 
         baseOffset =
-            (boardWidth model - scoreBarWidth) // 2
+            (boardWidth model.shared.window model.boardDimensions - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| ScaleConfig.tileScaleFactor model.window
+            exitOffsetFunction <| ScaleConfig.tileScaleFactor model.shared.window
     in
     toFloat (baseOffset + n * scoreWidth) + offset
 
@@ -244,8 +244,8 @@ exitOffsetFunction x =
 
 
 exitYdistance : LevelModel -> Float
-exitYdistance model =
-    toFloat (boardOffsetTop model) - 9
+exitYdistance { shared, boardDimensions } =
+    toFloat (boardOffsetTop shared.window boardDimensions) - 9
 
 
 moveTracerStyles : Move -> List Style
@@ -276,8 +276,8 @@ draggingStyles moveShape ( _, tileState ) =
         []
 
 
-tileWidthheights : TileConfig model -> List Style
-tileWidthheights { window } =
+tileWidthheights : Window.Size -> List Style
+tileWidthheights window =
     let
         tileScale =
             ScaleConfig.tileScaleFactor window

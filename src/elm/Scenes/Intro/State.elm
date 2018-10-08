@@ -1,34 +1,30 @@
-module Scenes.Intro.State exposing (init, subscriptions, update)
+module Scenes.Intro.State exposing (init, update)
 
-import Browser.Events
 import Css.Color as Color
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Scenes.Intro.Types exposing (..)
+import Shared
 import Task
 
 
-init : ( IntroModel, Cmd IntroMsg )
-init =
-    ( initialState
-    , Cmd.batch
-        [ -- FIXME
-          -- Task.perform WindowSize size
-          introSequence
-        ]
+init : Shared.Data -> ( IntroModel, Cmd IntroMsg )
+init shared =
+    ( initialState shared
+    , introSequence
     )
 
 
-initialState : IntroModel
-initialState =
-    { scene = DyingLandscape Alive Hidden
+initialState : Shared.Data -> IntroModel
+initialState shared =
+    { shared = shared
+    , scene = DyingLandscape Alive Hidden
     , backdrop = Color.transparent
     , text = "Our world is dying"
     , textColor = Color.brownYellow
     , textVisible = False
-    , window = { width = 0, height = 0 }
     }
 
 
@@ -100,13 +96,5 @@ update msg model =
         KillEnvironment ->
             continue { model | scene = DyingLandscape Dead Visible } []
 
-        WindowSize width height ->
-            continue { model | window = Window.Size width height } []
-
         IntroComplete ->
             exit model []
-
-
-subscriptions : IntroModel -> Sub IntroMsg
-subscriptions _ =
-    Browser.Events.onResize WindowSize

@@ -28,7 +28,6 @@ module State exposing
     , loadSummary
     , loadTutorial
     , progressLevelNumber
-    , sceneSubscriptions
     , subscribeDecrement
     , subscriptions
     , tutorialData
@@ -39,10 +38,8 @@ module State exposing
 import Browser.Events
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
-import Config.Text exposing (randomSuccessMessageIndex)
 import Data.Background exposing (..)
 import Data.InfoWindow as InfoWindow
-import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit as Transit exposing (Transit(..))
 import Data.Visibility exposing (Visibility(..))
@@ -50,14 +47,17 @@ import Data.Window as Window
 import Exit
 import Helpers.Delay exposing (..)
 import Ports exposing (..)
+import Scene exposing (Scene(..))
 import Scenes.Hub.State as Hub
-import Scenes.Hub.Types exposing (HubModel, HubMsg(..))
+import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Scenes.Intro.State as Intro
 import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
 import Scenes.Level.State as Level
 import Scenes.Level.Types exposing (LevelModel, LevelMsg, LevelStatus(..))
+import Scenes.Title as Title
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
+import Shared exposing (..)
 import Task
 import Time exposing (posixToMillis)
 import Types exposing (..)
@@ -70,25 +70,23 @@ import Types exposing (..)
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
-    , Cmd.batch
-        [ generateBounceKeyframes ScaleConfig.baseTileSizeY
-        , randomSuccessMessageIndex GenerateSuccessMessageIndex
-        ]
+    , generateBounceKeyframes ScaleConfig.baseTileSizeY
     )
 
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Title
+    { scene = Title <| Title.init <| initShared flags
+    }
+
+
+initShared : Flags -> Shared.Data
+initShared flags =
+    { window = flags.window
     , loadingScreen = Nothing
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
-    , window = flags.window
-    , lastPlayed = initLastPlayed flags
-    , timeTillNextLife = initTimeTillNextLife flags
-    , titleAnimation = Entering
-    , hubInfoWindow = InfoWindow.hidden
-    , successMessageIndex = 0
+    , successMessageIndex = flags.randomMessageIndex
     }
 
 
@@ -99,6 +97,9 @@ initialState flags =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        TitleMsg titleMsg ->
+            handleTitleMsg titleMsg model
+
         LevelMsg levelMsg ->
             handleLevelMsg levelMsg model
 
@@ -111,15 +112,8 @@ update msg model =
         IntroMsg introMsg ->
             handleIntroMsg introMsg model
 
-        GenerateSuccessMessageIndex i ->
-            ( { model | successMessageIndex = i }
-            , Cmd.none
-            )
-
         IncrementSuccessMessageIndex ->
-            ( { model | successMessageIndex = model.successMessageIndex + 1 }
-            , Cmd.none
-            )
+            ( { model | scene = Scene.map incrementMessageIndex model.scene }, Cmd.none )
 
         StartLevel level ->
             case tutorialData level of
@@ -128,7 +122,7 @@ update msg model =
                     , sequence
                         [ ( 600, SetCurrentLevel <| Just level )
                         , ( 10, ShowLoadingScreen )
-                        , ( 2500, LoadTutorial level tutorialConfig )
+                        , ( 2500, LoadTutorial tutorialConfig )
                         , ( 500, HideLoadingScreen )
                         ]
                     )
@@ -144,16 +138,10 @@ update msg model =
                     )
 
         RestartLevel ->
-            ( model
-            , sequence
-                [ ( 10, ShowLoadingScreen )
-                , ( 600, LoadLevel <| currentLevel model )
-                , ( 2500, HideLoadingScreen )
-                ]
-            )
+            ( model, withLoadingScreen <| LoadLevel <| currentLevel model )
 
-        LoadTutorial level config ->
-            loadTutorial model (getLevelData level) config
+        LoadTutorial config ->
+            loadTutorial model config
 
         LoadLevel level ->
             loadLevel model level
@@ -165,79 +153,37 @@ update msg model =
             loadHub levelNumber model
 
         LoadSummary ->
-            ( loadSummary model
-            , Cmd.none
-            )
+            ( loadSummary model, Cmd.none )
 
         LoadRetry ->
-            ( loadRetry model
-            , Cmd.none
-            )
-
-        FadeTitle ->
-            ( { model | titleAnimation = Leaving }
-            , Cmd.none
-            )
+            ( loadRetry model, Cmd.none )
 
         LevelWin ->
-            ( model
-            , sequence <| levelWinSequence model
-            )
+            ( model, sequence <| levelWinSequence model )
 
         LevelLose ->
-            ( model
-            , sequence <| levelLoseSequence model
-            )
+            ( model, sequence <| levelLoseSequence model )
 
         ShowLoadingScreen ->
-            ( model
-            , genRandomBackground RandomBackground
-            )
+            ( model, genRandomBackground RandomBackground )
 
         RandomBackground background ->
-            ( { model | loadingScreen = Just background }
-            , Cmd.none
-            )
+            ( { model | scene = Scene.map (showLoadingScreen background) model.scene }, Cmd.none )
 
         HideLoadingScreen ->
-            ( { model | loadingScreen = Nothing }
-            , Cmd.none
-            )
+            ( { model | scene = Scene.map hideLoadingScreen model.scene }, Cmd.none )
 
         SetCurrentLevel progress ->
-            ( { model | currentLevel = progress }
-            , Cmd.none
-            )
+            ( { model | scene = Scene.map (setCurrentLevel progress) model.scene }, Cmd.none )
 
         GoToHub ->
-            ( model
-            , sequence
-                [ ( 0, ShowLoadingScreen )
-                , ( 1000, LoadHub <| progressLevelNumber model )
-                , ( 2000, HideLoadingScreen )
-                ]
-            )
-
-        GoToIntro ->
-            ( model
-            , playIntroMusic ()
-            )
-
-        IntroMusicPlaying playing ->
-            ( model
-            , sequence
-                [ ( 0, FadeTitle )
-                , ( 2000, LoadIntro )
-                ]
-            )
+            ( model, withLoadingScreen <| LoadHub <| progressLevelNumber model )
 
         ClearCache ->
-            ( model
-            , clearCache
-            )
+            ( model, clearCache )
 
         WindowSize width height ->
-            ( { model | window = Window.Size width height }
+            ( { model | scene = Scene.map (setWindow width height) model.scene }
             , generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor (Window.Size width height)
             )
 
@@ -249,9 +195,20 @@ update msg model =
             handleIncrementProgress model
 
         DecrementLives ->
-            ( addTimeTillNextLife model
-            , Cmd.none
-            )
+            ( addTimeTillNextLife model, Cmd.none )
+
+
+withLoadingScreen : Msg -> Cmd Msg
+withLoadingScreen =
+    sequence << loadingSequence
+
+
+loadingSequence : Msg -> List ( Float, Msg )
+loadingSequence msg =
+    [ ( 0, ShowLoadingScreen )
+    , ( 1000, msg )
+    , ( 2000, HideLoadingScreen )
+    ]
 
 
 
@@ -260,78 +217,75 @@ update msg model =
 
 loadLevel : Model -> Progress -> ( Model, Cmd Msg )
 loadLevel model level =
-    Level.init model.successMessageIndex (getLevelData level)
-        |> stepLevel model
+    Scene.getShared model.scene
+        |> Level.init (getLevelData level)
+        |> updateWith Level LevelMsg model
 
 
-stepLevel : Model -> ( LevelModel, Cmd LevelMsg ) -> ( Model, Cmd Msg )
-stepLevel model ( levelModel, levelCmd ) =
-    ( { model | scene = Level levelModel }
-    , Cmd.map LevelMsg levelCmd
-    )
-
-
-loadTutorial : Model -> LevelData TutorialConfig -> TutorialConfig -> ( Model, Cmd Msg )
-loadTutorial model levelData config =
-    Tutorial.init model.successMessageIndex levelData config
-        |> stepTutorial model
-
-
-stepTutorial : Model -> ( TutorialModel, Cmd TutorialMsg ) -> ( Model, Cmd Msg )
-stepTutorial model ( tutorialModel, tutorialCmd ) =
-    ( { model | scene = Tutorial tutorialModel }
-    , Cmd.map TutorialMsg tutorialCmd
-    )
+loadTutorial : Model -> TutorialConfig -> ( Model, Cmd Msg )
+loadTutorial model config =
+    Scene.getShared model.scene
+        |> Tutorial.init config
+        |> updateWith Tutorial TutorialMsg model
 
 
 loadIntro : Model -> ( Model, Cmd Msg )
 loadIntro model =
-    Intro.init |> stepIntro model
-
-
-stepIntro : Model -> ( IntroModel, Cmd IntroMsg ) -> ( Model, Cmd Msg )
-stepIntro model ( introModel, introCmd ) =
-    ( { model | scene = Intro introModel }
-    , Cmd.map IntroMsg introCmd
-    )
+    Scene.getShared model.scene
+        |> Intro.init
+        |> updateWith Intro IntroMsg model
 
 
 loadHub : Int -> Model -> ( Model, Cmd Msg )
 loadHub levelNumber model =
-    Hub.init levelNumber model |> stepHub model
-
-
-stepHub : Model -> ( HubModel model, Cmd HubMsg ) -> ( Model, Cmd Msg )
-stepHub model ( hubModel, hubCmd ) =
-    ( { model | scene = Hub }
-    , Cmd.map HubMsg hubCmd
-    )
+    Scene.getShared model.scene
+        |> Hub.init levelNumber
+        |> updateWith Hub HubMsg model
 
 
 loadSummary : Model -> Model
 loadSummary model =
-    case model.scene of
-        Level levelModel ->
-            -- FIXME need to load backdrop
-            { model | scene = Summary }
-
-        _ ->
-            model
+    { model | scene = Summary <| Scene.getShared model.scene }
 
 
 loadRetry : Model -> Model
 loadRetry model =
-    case model.scene of
-        Level levelModel ->
-            -- FIXME need to load backdrop
-            { model | scene = Retry }
+    { model | scene = Retry <| Scene.getShared model.scene }
 
-        _ ->
-            model
+
+updateWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
+updateWith toScene toMsg model ( subModel, subCmd ) =
+    ( { model | scene = toScene subModel }
+    , Cmd.map toMsg subCmd
+    )
 
 
 
 -- Scene updaters
+
+
+handleTitleMsg : Title.Msg -> Model -> ( Model, Cmd Msg )
+handleTitleMsg titleMsg model =
+    case model.scene of
+        Title titleModel ->
+            Exit.handle
+                { state = Title.update titleMsg titleModel
+                , onContinue = updateWith Title TitleMsg model
+                , onExit = exitTitle model
+                }
+
+        _ ->
+            ( model, Cmd.none )
+
+
+exitTitle : Model -> Title.Destination -> ( Model, Cmd Msg )
+exitTitle model destination =
+    case destination of
+        Title.Hub ->
+            ( model, trigger GoToHub )
+
+        Title.Intro ->
+            ( model, trigger LoadIntro )
 
 
 handleLevelMsg : LevelMsg -> Model -> ( Model, Cmd Msg )
@@ -340,31 +294,25 @@ handleLevelMsg levelMsg model =
         Level levelModel ->
             Exit.handle
                 { state = Level.update levelMsg levelModel
-                , onContinue = stepLevel model
+                , onContinue = updateWith Level LevelMsg model
                 , onExit = exitLevel model
                 }
 
         _ ->
-            ( model
-            , Cmd.none
-            )
+            ( model, Cmd.none )
 
 
 exitLevel : Model -> LevelStatus -> ( Model, Cmd Msg )
 exitLevel model levelStatus =
-    let
-        exitLevelCmd =
-            case levelStatus of
-                Win ->
-                    trigger LevelWin
+    case levelStatus of
+        Win ->
+            ( model, trigger LevelWin )
 
-                Lose ->
-                    trigger LevelLose
+        Lose ->
+            ( model, trigger LevelLose )
 
-                _ ->
-                    Cmd.none
-    in
-    ( model, exitLevelCmd )
+        InProgress ->
+            ( model, Cmd.none )
 
 
 handleTutorialMsg : TutorialMsg -> Model -> ( Model, Cmd Msg )
@@ -373,27 +321,33 @@ handleTutorialMsg tutorialMsg model =
         Tutorial tutorialModel ->
             Exit.handle
                 { state = Tutorial.update tutorialMsg tutorialModel
-                , onContinue = stepTutorial model
+                , onContinue = updateWith Tutorial TutorialMsg model
 
                 -- FIXME need to load level
                 , onExit = always ( model, Cmd.none )
                 }
 
         _ ->
-            ( model
-            , Cmd.none
-            )
+            ( model, Cmd.none )
 
 
 handleHubMsg : HubMsg -> Model -> ( Model, Cmd Msg )
 handleHubMsg hubMsg model =
-    let
-        ( newModel, cmd ) =
-            Hub.update hubMsg model
-    in
-    ( newModel
-    , Cmd.map HubMsg cmd
-    )
+    case model.scene of
+        Hub hubModel ->
+            Exit.handle
+                { state = Hub.update hubMsg hubModel
+                , onContinue = updateWith Hub HubMsg model
+                , onExit = exitHub model
+                }
+
+        _ ->
+            ( model, Cmd.none )
+
+
+exitHub : Model -> Progress -> ( Model, Cmd Msg )
+exitHub model level =
+    ( model, trigger <| StartLevel level )
 
 
 handleIntroMsg : IntroMsg -> Model -> ( Model, Cmd Msg )
@@ -402,14 +356,12 @@ handleIntroMsg introMsg model =
         Intro introModel ->
             Exit.handle
                 { state = Intro.update introMsg introModel
-                , onContinue = stepIntro model
+                , onContinue = updateWith Intro IntroMsg model
                 , onExit = always ( model, Cmd.batch [ trigger GoToHub, fadeMusic () ] )
                 }
 
         _ ->
-            ( model
-            , Cmd.none
-            )
+            ( model, Cmd.none )
 
 
 
@@ -439,18 +391,25 @@ tutorialData level =
 
 handleIncrementProgress : Model -> ( Model, Cmd Msg )
 handleIncrementProgress model =
-    let
-        progress =
-            incrementProgress allLevels model.currentLevel model.progress
-    in
-    ( { model | progress = progress }
-    , cacheProgress <| fromProgress progress
-    )
+    -- FIXME put me in Success scene
+    -- let
+    --     shared =
+    --         Scene.getShared model.scene
+    --
+    --     progress =
+    --         incrementProgress allLevels shared.currentLevel shared.progress
+    -- in
+    -- ( { model | scene = Scene.map (incrementProgress allLevels) model.scene }
+    -- , cacheProgress <| fromProgress progress
+    -- )
+    ( model, Cmd.none )
 
 
 progressLevelNumber : Model -> Int
 progressLevelNumber model =
-    getLevelNumber model.progress allLevels
+    Scene.getShared model.scene
+        |> .progress
+        |> getLevelNumber
 
 
 levelWinSequence : Model -> List ( Float, Msg )
@@ -458,8 +417,11 @@ levelWinSequence model =
     let
         backToHub =
             backToHubSequence <| levelCompleteScrollNumber model
+
+        shared =
+            Scene.getShared model.scene
     in
-    if shouldIncrement allLevels model.currentLevel model.progress then
+    if shouldIncrement shared.currentLevel shared.progress then
         [ ( 0, LoadSummary )
         , ( 2000, IncrementProgress )
         , ( 2500, ShowLoadingScreen )
@@ -488,11 +450,15 @@ backToHubSequence levelNumber =
 
 levelCompleteScrollNumber : Model -> Int
 levelCompleteScrollNumber model =
-    if shouldIncrement allLevels model.currentLevel model.progress then
+    let
+        shared =
+            Scene.getShared model.scene
+    in
+    if shouldIncrement shared.currentLevel shared.progress then
         progressLevelNumber model + 1
 
     else
-        getLevelNumber (Maybe.withDefault ( 1, 1 ) model.currentLevel) allLevels
+        getLevelNumber <| Maybe.withDefault ( 1, 1 ) shared.currentLevel
 
 
 
@@ -526,34 +492,40 @@ updateTimes now model =
 
 handleCacheTimes : Model -> Cmd msg
 handleCacheTimes model =
-    cacheTimes
-        { timeTillNextLife = model.timeTillNextLife
-        , lastPlayed = model.lastPlayed
-        }
+    -- FIXME
+    -- cacheTimes
+    --     { timeTillNextLife = model.timeTillNextLife
+    --     , lastPlayed = model.lastPlayed
+    --     }
+    Cmd.none
 
 
 countDownToNextLife : Float -> Model -> Model
 countDownToNextLife now model =
-    if model.timeTillNextLife <= 0 then
-        { model | lastPlayed = now }
-
-    else
-        let
-            newTimeTillNextLife =
-                decrementAboveZero (now - model.lastPlayed) model.timeTillNextLife
-
-            lifeVal =
-                floor <| livesLeft newTimeTillNextLife
-        in
-        { model
-            | timeTillNextLife = newTimeTillNextLife
-            , lastPlayed = now
-        }
+    -- FIXME
+    -- if model.timeTillNextLife <= 0 then
+    --     { model | lastPlayed = now }
+    --
+    -- else
+    --     let
+    --         newTimeTillNextLife =
+    --             decrementAboveZero (now - model.lastPlayed) model.timeTillNextLife
+    --
+    --         lifeVal =
+    --             floor <| livesLeft newTimeTillNextLife
+    --     in
+    --     { model
+    --         | timeTillNextLife = newTimeTillNextLife
+    --         , lastPlayed = now
+    --     }
+    model
 
 
 currentLevel : Model -> Progress
 currentLevel model =
-    model.currentLevel |> Maybe.withDefault ( 1, 1 )
+    -- FIXME
+    -- model.currentLevel |> Maybe.withDefault ( 1, 1 )
+    ( 1, 1 )
 
 
 livesLeft : Float -> Float
@@ -563,7 +535,9 @@ livesLeft timeTill =
 
 addTimeTillNextLife : Model -> Model
 addTimeTillNextLife model =
-    { model | timeTillNextLife = model.timeTillNextLife + lifeRecoveryInterval }
+    -- FIXME
+    -- { model | timeTillNextLife = model.timeTillNextLife + lifeRecoveryInterval }
+    model
 
 
 decrementLives : Transit Int -> Transit Int
@@ -586,7 +560,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Browser.Events.onResize WindowSize
-        , introMusicPlaying IntroMusicPlaying
         , subscribeDecrement model
         , sceneSubscriptions model
         ]
@@ -594,24 +567,20 @@ subscriptions model =
 
 subscribeDecrement : Model -> Sub Msg
 subscribeDecrement model =
-    if model.scene == Hub && model.timeTillNextLife > 0 then
-        Time.every 100 UpdateTimes
-
-    else
-        Time.every (10 * 1000) UpdateTimes
+    -- FIXME
+    -- if model.scene == Hub && model.timeTillNextLife > 0 then
+    --     Time.every 100 UpdateTimes
+    --
+    -- else
+    --     Time.every (10 * 1000) UpdateTimes
+    Sub.none
 
 
 sceneSubscriptions : Model -> Sub Msg
 sceneSubscriptions model =
     case model.scene of
-        Level levelModel ->
-            Sub.map LevelMsg <| Level.subscriptions levelModel
-
-        Tutorial tutorialModel ->
-            Sub.map TutorialMsg <| Tutorial.subscriptions tutorialModel
-
-        Intro introModel ->
-            Sub.map IntroMsg <| Intro.subscriptions introModel
+        Title titleModel ->
+            Sub.map TitleMsg <| Title.subscriptions titleModel
 
         _ ->
             Sub.none

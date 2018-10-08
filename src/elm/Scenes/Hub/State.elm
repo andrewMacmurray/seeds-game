@@ -2,53 +2,58 @@ module Scenes.Hub.State exposing (init, update)
 
 import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow
+import Data.Level.Types exposing (Progress)
 import Data.Window as Window
+import Exit exposing (continue, exitWithPayload)
 import Helpers.Delay exposing (delay, sequence)
 import Scenes.Hub.Types as Hub exposing (..)
+import Shared
 import Task exposing (Task)
 
 
-init : Int -> HubModel model -> ( HubModel model, Cmd HubMsg )
-init levelNumber model =
-    ( model
+init : Int -> Shared.Data -> ( HubModel, Cmd HubMsg )
+init levelNumber shared =
+    ( initialState shared
     , delay 1000 <| ScrollHubToLevel levelNumber
     )
+
+
+initialState : Shared.Data -> HubModel
+initialState shared =
+    { shared = shared
+    , infoWindow = InfoWindow.hidden
+    }
 
 
 
 -- Update
 
 
-update : HubMsg -> HubModel model -> ( HubModel model, Cmd HubMsg )
+update : HubMsg -> HubModel -> Exit.WithPayload Progress ( HubModel, Cmd HubMsg )
 update msg model =
     case msg of
         SetInfoState infoWindow ->
-            ( { model | hubInfoWindow = infoWindow }
-            , Cmd.none
-            )
+            continue { model | infoWindow = infoWindow } []
 
         ShowLevelInfo levelProgress ->
-            ( { model | hubInfoWindow = InfoWindow.show levelProgress }
-            , Cmd.none
-            )
+            continue { model | infoWindow = InfoWindow.show levelProgress } []
 
         HideLevelInfo ->
-            ( model
-            , sequence
-                [ ( 0, SetInfoState <| InfoWindow.leave model.hubInfoWindow )
-                , ( 1000, SetInfoState InfoWindow.hidden )
+            continue model
+                [ sequence
+                    [ ( 0, SetInfoState <| InfoWindow.leave model.infoWindow )
+                    , ( 1000, SetInfoState InfoWindow.hidden )
+                    ]
                 ]
-            )
 
         ScrollHubToLevel level ->
-            ( model
-            , scrollHubToLevel level
-            )
+            continue model [ scrollHubToLevel level ]
 
         DomNoOp _ ->
-            ( model
-            , Cmd.none
-            )
+            continue model []
+
+        StartLevel level ->
+            exitWithPayload level model []
 
 
 

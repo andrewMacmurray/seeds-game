@@ -22,7 +22,7 @@ introView model =
         ]
         [ p
             [ style
-                [ textOffset model.window
+                [ textOffset model.shared.window
                 , color model.textColor
                 , transitionAll 1000 []
                 ]
@@ -41,7 +41,7 @@ renderScene model =
             dyingLandscape environment vis
 
         GrowingSeeds vis ->
-            growingSeeds model.window vis
+            growingSeeds model.shared.window vis
 
         RollingHills vis ->
             rollingHills vis

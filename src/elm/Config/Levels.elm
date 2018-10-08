@@ -2,29 +2,41 @@ module Config.Levels exposing
     ( allLevels
     , getLevelConfig
     , getLevelData
+    , getLevelNumber
     , lifeRecoveryInterval
     , maxLives
+    , shouldIncrement
     )
 
 import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
 import Data.Board.Types exposing (..)
-import Data.Level.Progress exposing (levelConfig, levelData)
+import Data.Level.Progress as Progress
 import Data.Level.Settings exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
 import Scenes.Tutorial.Types exposing (TutorialConfig)
 
 
+getLevelNumber : Progress -> Int
+getLevelNumber =
+    Progress.levelNumber allLevels
+
+
 getLevelData : Progress -> LevelData TutorialConfig
 getLevelData =
-    levelData allLevels >> Maybe.withDefault defaultLevel
+    Progress.levelData allLevels >> Maybe.withDefault defaultLevel
 
 
 getLevelConfig : Progress -> CurrentLevelConfig TutorialConfig
 getLevelConfig =
-    levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
+    Progress.levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
+
+
+shouldIncrement : Maybe Progress -> Progress -> Bool
+shouldIncrement =
+    Progress.shouldIncrement allLevels
 
 
 allLevels : AllLevels TutorialConfig

@@ -9,7 +9,7 @@ init();
 
 util.bumpDebuggerPanel();
 
-window.skipToLevel = util.skipToLevel;
+Window.skipToLevel = util.skipToLevel;
 
 function init() {
   // Init Elm App
@@ -19,6 +19,7 @@ function init() {
       now: Date.now(),
       times: cache.getTimes(),
       rawProgress: cache.getProgress(),
+      randomMessageIndex: Math.round(Math.random() * 10),
       window: { height: window.innerHeight, width: window.innerWidth }
     }
   });
@@ -46,18 +47,18 @@ function init() {
   });
 
   // LocalStorgage Cache
-  ports.cacheProgress.subscribe(progress => {
-    cache.setProgress(progress);
-  });
+  // ports.cacheProgress.subscribe(progress => {
+  //   cache.setProgress(progress);
+  // });
 
   ports.clearCache_.subscribe(() => {
     cache.clear();
     window.location.reload();
   });
 
-  ports.cacheTimes.subscribe(times => {
-    cache.setTimes(times);
-  });
+  // ports.cacheTimes.subscribe(times => {
+  //   cache.setTimes(times);
+  // });
 }
 
 function registerServiceWorker() {

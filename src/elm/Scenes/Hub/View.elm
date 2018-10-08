@@ -8,11 +8,12 @@ module Scenes.Hub.View exposing
     )
 
 import Css.Color exposing (darkYellow, pinkRed, washedYellow)
-import Data.Transit exposing (Transit(..))
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
+import Data.Transit exposing (Transit(..))
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
+import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import State exposing (livesLeft)
 import Types exposing (..)
 import Views.Hub.InfoWindow exposing (handleHideInfo, info)
@@ -20,35 +21,38 @@ import Views.Hub.World exposing (renderWorlds)
 import Views.Lives exposing (renderLivesLeft)
 
 
-hubView : Model -> Html Msg
+hubView : HubModel -> Html HubMsg
 hubView model =
     div [ handleHideInfo model ]
         [ hubTopBar model
         , info model
         , div
             [ id "hub"
-            , style [ height <| toFloat model.window.height ]
+            , style [ height <| toFloat model.shared.window.height ]
             , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             ]
             (renderWorlds model)
         ]
 
 
-hubTopBar : Model -> Html msg
+hubTopBar : HubModel -> Html msg
 hubTopBar model =
-    let
-        lives =
-            model.timeTillNextLife
-                |> livesLeft
-                |> floor
-                |> Transitioning
-    in
+    -- FIXME
+    -- let
+    --     lives =
+    --         model.timeTillNextLife
+    --             |> livesLeft
+    --             |> floor
+    --             |> Transitioning
+    -- in
     div
         [ style [ background washedYellow ]
         , class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         ]
-        [ div [ style [ transform [ scale 0.5 ] ] ] <| renderLivesLeft lives
-        , div [ style [ color darkYellow ], class "f7" ] [ renderCountDown model.timeTillNextLife ]
+        [ div [ style [ transform [ scale 0.5 ] ] ] <| renderLivesLeft <| Transitioning 5
+        , div [ style [ color darkYellow ], class "f7" ]
+            -- FIXME add time from model
+            [ renderCountDown 0 ]
         ]
 
 

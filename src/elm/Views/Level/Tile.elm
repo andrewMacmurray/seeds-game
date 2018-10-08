@@ -1,11 +1,10 @@
 module Views.Level.Tile exposing
-    ( baseTileStyles
-    , hanldeMoveEvents
+    ( TileViewModel
+    , baseTileStyles
     , innerSeed
     , innerSeed_
     , innerTile
     , makeInnerTile
-    , renderTile
     , renderTile_
     , tileElementMap
     , tracer
@@ -26,39 +25,29 @@ import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
-renderTile : LevelModel -> Move -> Html LevelMsg
-renderTile model (( ( y, x ) as coord, tile ) as move) =
-    div
-        [ hanldeMoveEvents model move
-        , class "pointer"
-        ]
-        [ renderTile_ (leavingStyles model move) model move ]
+type alias TileViewModel =
+    { move : Move
+    , window : Window.Size
+    , boardDimensions : BoardDimensions
+    , moveShape : Maybe MoveShape
+    }
 
 
-renderTile_ : List Style -> TileConfig model -> Move -> Html msg
-renderTile_ extraStyles config (( ( y, x ) as coord, tile ) as move) =
+renderTile_ : List Style -> TileViewModel -> Html msg
+renderTile_ extraStyles { window, moveShape, move } =
     div
         [ styles
-            [ tileWidthheights config
-            , tileCoordsStyles config coord
+            [ tileWidthheights window
+            , tileCoordsStyles window move
             , extraStyles
             ]
         , attribute "touch-action" "none"
         , class "dib absolute"
         ]
-        [ innerTile config.window config.moveShape move
-        , tracer config.window move
-        , wall config.window move
+        [ innerTile window moveShape move
+        , tracer window move
+        , wall window move
         ]
-
-
-hanldeMoveEvents : LevelModel -> Move -> Attribute LevelMsg
-hanldeMoveEvents model move =
-    if not model.isDragging then
-        onPointerDownPosition <| StartMove move
-
-    else
-        emptyProperty
 
 
 tracer : Window.Size -> Move -> Html msg

@@ -1,10 +1,10 @@
 module Views.Level.LineDrag exposing (handleLineDrag)
 
 import Config.Scale as ScaleConfig
-import Data.Board.Move.Square exposing (hasSquareTile)
-import Data.Board.Moves exposing (currentMoveTileType, lastMove)
 import Css.Style as Style exposing (svgStyle)
 import Css.Unit exposing (px)
+import Data.Board.Move.Square exposing (hasSquareTile)
+import Data.Board.Moves exposing (currentMoveTileType, lastMove)
 import Html exposing (Html, span)
 import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
@@ -22,8 +22,11 @@ handleLineDrag model =
 
 
 lineDrag : LevelModel -> Html msg
-lineDrag ({ window } as model) =
+lineDrag ({ shared } as model) =
     let
+        window =
+            shared.window
+
         vb =
             "0 0 " ++ String.fromInt window.width ++ " " ++ String.fromInt window.height
 
@@ -58,13 +61,16 @@ lineDrag ({ window } as model) =
 
 
 lastMoveOrigin : LevelModel -> ( Float, Float )
-lastMoveOrigin ({ window } as model) =
+lastMoveOrigin { shared, boardDimensions, board } =
     let
+        window =
+            shared.window
+
         tileScale =
             ScaleConfig.tileScaleFactor window
 
         ( ( y, x ), _ ) =
-            lastMove model.board
+            lastMove board
 
         y1 =
             toFloat y
@@ -79,10 +85,10 @@ lastMoveOrigin ({ window } as model) =
             ScaleConfig.baseTileSizeX * tileScale
 
         offsetY =
-            boardOffsetTop model |> toFloat
+            boardOffsetTop window boardDimensions |> toFloat
 
         offsetX =
-            (window.width - boardWidth model) // 2 |> toFloat
+            (window.width - boardWidth window boardDimensions) // 2 |> toFloat
     in
     ( ((y1 + 1) * sY) + offsetY - (sY / 2)
     , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

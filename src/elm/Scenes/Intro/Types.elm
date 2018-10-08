@@ -2,15 +2,16 @@ module Scenes.Intro.Types exposing (Environment(..), IntroModel, IntroMsg(..), S
 
 import Data.Visibility exposing (Visibility)
 import Data.Window as Window
+import Shared
 
 
 type alias IntroModel =
-    { scene : Scene
+    { shared : Shared.Data
+    , scene : Scene
     , backdrop : String
     , text : String
     , textColor : String
     , textVisible : Bool
-    , window : Window.Size
     }
 
 
@@ -40,4 +41,3 @@ type IntroMsg
     | HideText
     | KillEnvironment
     | IntroComplete
-    | WindowSize Int Int

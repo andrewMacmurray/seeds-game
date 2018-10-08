@@ -1,5 +1,7 @@
 port module Ports exposing
-    ( cacheProgress
+    ( RawProgress
+    , Times
+    , cacheProgress
     , cacheTimes
     , clearCache
     , clearCache_
@@ -9,7 +11,17 @@ port module Ports exposing
     , playIntroMusic
     )
 
-import Types exposing (RawProgress, Times)
+
+type alias Times =
+    { timeTillNextLife : Float
+    , lastPlayed : Float
+    }
+
+
+type alias RawProgress =
+    { world : Int
+    , level : Int
+    }
 
 
 port generateBounceKeyframes : Float -> Cmd msg

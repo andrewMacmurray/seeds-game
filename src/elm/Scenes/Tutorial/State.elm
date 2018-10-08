@@ -1,4 +1,4 @@
-module Scenes.Tutorial.State exposing (init, subscriptions, update)
+module Scenes.Tutorial.State exposing (init, update)
 
 import Browser.Events
 import Data.Board.Block exposing (..)
@@ -14,9 +14,8 @@ import Data.Window as Window
 import Dict
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (pause, sequence, trigger)
-import Scenes.Level.State as Level
-import Scenes.Level.Types exposing (LevelModel)
 import Scenes.Tutorial.Types exposing (..)
+import Shared
 import Task
 
 
@@ -24,25 +23,17 @@ import Task
 -- Init
 
 
-init : Int -> LevelData TutorialConfig -> TutorialConfig -> ( TutorialModel, Cmd TutorialMsg )
-init successMessageIndex levelData config =
-    let
-        ( levelModel, levelCmd ) =
-            Level.init successMessageIndex levelData
-    in
-    ( loadTutorialData config (initialState levelModel)
-    , Cmd.batch
-        [ -- Task.perform WindowSize size
-          -- FIXME
-          Cmd.map LevelMsg levelCmd
-        , sequence <| pause 500 config.sequence
-        ]
+init : TutorialConfig -> Shared.Data -> ( TutorialModel, Cmd TutorialMsg )
+init config shared =
+    ( loadTutorialData config <| initialState shared
+    , sequence <| pause 500 config.sequence
     )
 
 
-initialState : LevelModel -> TutorialModel
-initialState levelModel =
-    { board = Dict.empty
+initialState : Shared.Data -> TutorialModel
+initialState shared =
+    { shared = shared
+    , board = Dict.empty
     , boardVisible = True
     , textVisible = True
     , resourceBankVisible = False
@@ -54,8 +45,6 @@ initialState levelModel =
     , boardDimensions = { y = 2, x = 2 }
     , currentText = 1
     , text = Dict.empty
-    , window = { height = 0, width = 0 }
-    , levelModel = levelModel
     }
 
 
@@ -78,15 +67,6 @@ loadTutorialData config model =
 update : TutorialMsg -> TutorialModel -> Exit.Status ( TutorialModel, Cmd TutorialMsg )
 update msg model =
     case msg of
-        LevelMsg levelMsg ->
-            -- FIXME
-            -- let
-            --     ( levelModel, levelCmd, _ ) =
-            --         Level.update levelMsg model.levelModel
-            -- in
-            -- continue { model | levelModel = levelModel } [ Cmd.map LevelMsg levelCmd ]
-            continue model []
-
         DragTile coord ->
             continue (handleDragTile coord model) []
 
@@ -171,9 +151,6 @@ update msg model =
         ExitTutorial ->
             exit model [ trigger ResetVisibilities ]
 
-        WindowSize width height ->
-            continue { model | window = Window.Size width height } []
-
 
 
 -- Update Helpers
@@ -219,11 +196,3 @@ handleDragTile coord model =
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
 handleInsertEnteringTiles tileList =
     mapBoard <| insertNewEnteringTiles tileList
-
-
-subscriptions : TutorialModel -> Sub TutorialMsg
-subscriptions model =
-    Sub.batch
-        [ Browser.Events.onResize WindowSize
-        , Level.subscriptions model.levelModel |> Sub.map LevelMsg
-        ]

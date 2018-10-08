@@ -9,7 +9,7 @@ module Views.Hub.InfoWindow exposing
     , renderWeather
     )
 
-import Config.Levels exposing (allLevels, getLevelConfig)
+import Config.Levels exposing (allLevels, getLevelConfig, getLevelNumber)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
@@ -22,36 +22,34 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Hub.Types as Hub exposing (HubModel, HubMsg(..))
-import Types exposing (Msg(..))
 import Views.InfoWindow exposing (infoContainer)
 import Views.Seed.All exposing (renderSeed)
 
 
-info : HubModel model -> Html Msg
-info { hubInfoWindow } =
+info : HubModel -> Html HubMsg
+info { infoWindow } =
     let
         progress =
-            val hubInfoWindow |> Maybe.withDefault ( 1, 1 )
+            val infoWindow |> Maybe.withDefault ( 1, 1 )
 
         content =
             getLevelConfig progress |> infoContent progress
     in
-    if isHidden hubInfoWindow then
+    if isHidden infoWindow then
         span [] []
 
-    else if isVisible hubInfoWindow then
-        infoContainer hubInfoWindow <| div [ onClick <| StartLevel progress ] content
+    else if isVisible infoWindow then
+        infoContainer infoWindow <| div [ onClick <| StartLevel progress ] content
 
     else
-        infoContainer hubInfoWindow <| div [] content
+        infoContainer infoWindow <| div [] content
 
 
 infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =
-            allLevels
-                |> getLevelNumber ( world, level )
+            getLevelNumber ( world, level )
                 |> String.fromInt
                 |> (++) "Level "
     in
@@ -139,10 +137,10 @@ renderWeather color =
         []
 
 
-handleHideInfo : HubModel model -> Attribute Msg
+handleHideInfo : HubModel -> Attribute HubMsg
 handleHideInfo model =
-    if isVisible model.hubInfoWindow then
-        onClick <| HubMsg HideLevelInfo
+    if isVisible model.infoWindow then
+        onClick HideLevelInfo
 
     else
         emptyProperty

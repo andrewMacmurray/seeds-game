@@ -25,9 +25,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial.Types exposing (..)
-import Views.Level.Layout exposing (renderLineLayer, renderLines)
+import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
-import Views.Level.Tile exposing (renderTile_)
+import Views.Level.Tile exposing (TileViewModel, renderTile_)
 import Views.Level.TopBar exposing (scoreIcon)
 
 
@@ -88,8 +88,8 @@ tutorialBoard model =
         [ class "center relative"
         , showIf model.boardVisible
         , style
-            [ width <| toFloat <| boardWidth model
-            , height <| toFloat <| boardHeight model
+            [ width <| toFloat <| boardWidth model.shared.window model.boardDimensions
+            , height <| toFloat <| boardHeight model.shared.window model.boardDimensions
             , transitionAll 500 []
             ]
         ]
@@ -100,8 +100,11 @@ tutorialBoard model =
 
 
 renderResourceBank : TutorialModel -> Html msg
-renderResourceBank ({ window, resourceBankVisible, resourceBank } as model) =
+renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
     let
+        window =
+            shared.window
+
         tileScale =
             ScaleConfig.tileScaleFactor window
 
@@ -125,7 +128,7 @@ resourceBankOffsetX : TutorialModel -> Float
 resourceBankOffsetX model =
     ScaleConfig.baseTileSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * ScaleConfig.tileScaleFactor model.window
+        * ScaleConfig.tileScaleFactor model.shared.window
         / 2
 
 
@@ -133,12 +136,15 @@ renderLines_ : TutorialModel -> List (Html msg)
 renderLines_ model =
     model.board
         |> Dict.toList
-        |> List.map (fadeLine model)
+        |> List.map (tileModelSelector model >> fadeLine)
 
 
-fadeLine : TileConfig model -> Move -> Html msg
-fadeLine model (( _, tile ) as move) =
+fadeLine : TileViewModel -> Html msg
+fadeLine model =
     let
+        ( _, tile ) =
+            model.move
+
         visible =
             hasLine tile
     in
@@ -146,14 +152,14 @@ fadeLine model (( _, tile ) as move) =
         [ style [ transitionAll 500 [] ]
         , showIf visible
         ]
-        [ renderLineLayer model move ]
+        [ renderLine model.window model.move ]
 
 
 renderTiles : TutorialModel -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model mv)
+        |> List.map (\mv -> renderTile_ (leavingStyles model mv) (tileModelSelector model mv))
 
 
 leavingStyles : TutorialModel -> Move -> List Style
@@ -170,3 +176,12 @@ leavingStyles model (( _, block ) as move) =
 
         _ ->
             []
+
+
+tileModelSelector : TutorialModel -> Move -> TileViewModel
+tileModelSelector tutorialModel move =
+    { move = move
+    , window = tutorialModel.shared.window
+    , boardDimensions = tutorialModel.boardDimensions
+    , moveShape = tutorialModel.moveShape
+    }

@@ -1,4 +1,9 @@
-module Config.Tutorial.Seed exposing (config, initialBoardDimensions, sequence, text)
+module Config.Tutorial.Seed exposing
+    ( config
+    , initialBoardDimensions
+    , sequence
+    , text
+    )
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (seedBoard)

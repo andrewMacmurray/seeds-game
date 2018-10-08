@@ -11,6 +11,7 @@ import Data.Level.Types exposing (Progress)
 import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Shared
 import Types exposing (..)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
@@ -18,7 +19,7 @@ import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
 
 
-summaryView : Model -> Html Msg
+summaryView : Shared.Data -> Html Msg
 summaryView ({ progress, currentLevel } as model) =
     let
         primarySeed =

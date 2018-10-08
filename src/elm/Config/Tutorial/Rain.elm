@@ -1,4 +1,10 @@
-module Config.Tutorial.Rain exposing (boardDimensions, config, initialBoard, sequence, text)
+module Config.Tutorial.Rain exposing
+    ( boardDimensions
+    , config
+    , initialBoard
+    , sequence
+    , text
+    )
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, rainBoard)

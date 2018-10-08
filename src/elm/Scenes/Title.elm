@@ -1,15 +1,11 @@
 module Scenes.Title exposing
-    ( TitleModel
-    , fade
-    , fadeInStyles
-    , fadeOutStyles
-    , fadeSeeds
-    , handleStart
-    , percentWindowHeight
-    , seedEntranceDelays
-    , seedExitDelays
-    , seeds
-    , titleView
+    ( Destination(..)
+    , Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
     )
 
 import Config.Scale as ScaleConfig
@@ -17,12 +13,15 @@ import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Level.Types exposing (Progress)
-import Data.Visibility exposing (..)
+import Data.Visibility as Visibility exposing (..)
 import Data.Window as Window
+import Exit exposing (continue, exitWithPayload)
+import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Types exposing (Msg(..))
+import Ports exposing (introMusicPlaying, playIntroMusic)
+import Shared
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
@@ -32,30 +31,74 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 -- Model
 
 
-type alias TitleModel model =
-    { model
-        | window : Window.Size
-        , titleAnimation : Visibility
-        , progress : Progress
+type alias Model =
+    { shared : Shared.Data
+    , titleVisibility : Visibility
     }
+
+
+type Msg
+    = FadeSeeds
+    | PlayIntro
+    | IntroMusicPlaying Bool
+    | GoToIntro
+    | GoToHub
+
+
+type Destination
+    = Hub
+    | Intro
+
+
+init : Shared.Data -> Model
+init shared =
+    { shared = shared
+    , titleVisibility = Entering
+    }
+
+
+update : Msg -> Model -> Exit.WithPayload Destination ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        FadeSeeds ->
+            continue { model | titleVisibility = Leaving } []
+
+        PlayIntro ->
+            continue model [ playIntroMusic () ]
+
+        IntroMusicPlaying _ ->
+            continue model
+                [ sequence [ ( 0, FadeSeeds ), ( 2000, GoToIntro ) ]
+                ]
+
+        GoToIntro ->
+            exitWithPayload Intro model []
+
+        GoToHub ->
+            exitWithPayload Hub model []
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    introMusicPlaying IntroMusicPlaying
 
 
 
 -- View
 
 
-titleView : TitleModel model -> Html Msg
-titleView { window, titleAnimation, progress } =
+view : Model -> Html Msg
+view { shared, titleVisibility } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , style [ bottom <| toFloat window.height / 2.4 ]
+        , style [ bottom <| toFloat shared.window.height / 2.4 ]
         ]
-        [ div [] [ seeds titleAnimation ]
+        [ div [] [ seeds titleVisibility ]
         , p
             [ styles
                 [ [ color darkYellow, marginTop 45 ]
-                , fadeInStyles titleAnimation 1500 500
-                , fadeOutStyles titleAnimation 1000 500
+                , fadeInStyles titleVisibility 1500 500
+                , fadeOutStyles titleVisibility 1000 500
                 ]
             , class "f3 tracked-mega"
             ]
@@ -67,11 +110,11 @@ titleView { window, titleAnimation, progress } =
                   , color white
                   , backgroundColor lightOrange
                   ]
-                , fadeInStyles titleAnimation 800 2500
-                , fadeOutStyles titleAnimation 1000 0
+                , fadeInStyles titleVisibility 800 2500
+                , fadeOutStyles titleVisibility 1000 0
                 ]
             , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart progress
+            , handleStart shared.progress
             ]
             [ text "PLAY" ]
         ]
@@ -80,7 +123,7 @@ titleView { window, titleAnimation, progress } =
 handleStart : Progress -> Attribute Msg
 handleStart progress =
     if progress == ( 1, 1 ) then
-        onClick GoToIntro
+        onClick PlayIntro
 
     else
         onClick GoToHub

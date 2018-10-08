@@ -37,7 +37,7 @@ topBar model =
         ]
         [ div
             [ style
-                [ width <| toFloat <| boardFullWidth model
+                [ width <| toFloat <| boardFullWidth model.shared.window
                 , height ScaleConfig.topBarHeight
                 ]
             , class "flex items-center justify-center relative"

@@ -8,11 +8,12 @@ import Data.Background exposing (..)
 import Data.Level.Progress exposing (currentLevelSeedType)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Shared
 import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
-loadingScreen : Model -> Html msg
+loadingScreen : Shared.Data -> Html msg
 loadingScreen model =
     div
         [ classes
@@ -47,7 +48,7 @@ loadingScreenColor bg =
             gold
 
 
-transitionClasses : Model -> String
+transitionClasses : Shared.Data -> String
 transitionClasses model =
     case model.loadingScreen of
         Just _ ->

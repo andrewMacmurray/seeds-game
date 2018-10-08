@@ -1,10 +1,10 @@
 module Data.Level.Progress exposing
     ( completedLevel
     , currentLevelSeedType
-    , getLevelNumber
     , incrementProgress
     , levelConfig
     , levelData
+    , levelNumber
     , reachedLevel
     , shouldIncrement
     )
@@ -50,16 +50,16 @@ currentProgressSeedType allLevels progress =
 
 completedLevel : AllLevels tutorial -> ( WorldNumber, LevelNumber ) -> Progress -> Bool
 completedLevel allLevels ( world, level ) progress =
-    getLevelNumber progress allLevels > getLevelNumber ( world, level ) allLevels
+    levelNumber allLevels progress > levelNumber allLevels ( world, level )
 
 
 reachedLevel : AllLevels tutorial -> ( WorldNumber, LevelNumber ) -> Progress -> Bool
 reachedLevel allLevels ( world, level ) progress =
-    getLevelNumber progress allLevels >= getLevelNumber ( world, level ) allLevels
+    levelNumber allLevels progress >= levelNumber allLevels ( world, level )
 
 
-getLevelNumber : Progress -> AllLevels tutorial -> Int
-getLevelNumber ( world, level ) allLevels =
+levelNumber : AllLevels tutorial -> Progress -> Int
+levelNumber allLevels ( world, level ) =
     List.range 1 (world - 1)
         |> List.foldl (\w acc -> acc + worldSize w allLevels) 0
         |> (+) level
@@ -94,10 +94,10 @@ shouldIncrement : AllLevels tutorial -> Maybe Progress -> Progress -> Bool
 shouldIncrement allLevels currentLevel progress =
     let
         curr =
-            getLevelNumber (Maybe.withDefault ( 1, 1 ) currentLevel) allLevels
+            levelNumber allLevels <| Maybe.withDefault ( 1, 1 ) currentLevel
 
         prog =
-            getLevelNumber progress allLevels
+            levelNumber allLevels progress
     in
     curr >= prog
 

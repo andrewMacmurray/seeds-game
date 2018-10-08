@@ -1,8 +1,8 @@
-module Scenes.Level.State exposing (init, subscriptions, update)
+module Scenes.Level.State exposing (init, update)
 
 import Browser.Events
 import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
-import Config.Text exposing (failureMessage, getSuccessMessage, randomSuccessMessageIndex)
+import Config.Text exposing (failureMessage, getSuccessMessage)
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
@@ -21,6 +21,7 @@ import Dict
 import Exit exposing (continue, exitWithPayload)
 import Helpers.Delay exposing (sequence, trigger)
 import Scenes.Level.Types exposing (..)
+import Shared
 import Task
 import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop)
 
@@ -29,19 +30,14 @@ import Views.Level.Styles exposing (boardHeight, boardOffsetLeft, boardOffsetTop
 -- Init
 
 
-init : Int -> LevelData tutorialConfig -> ( LevelModel, Cmd LevelMsg )
-init successMessageIndex levelData =
+init : LevelData tutorialConfig -> Shared.Data -> ( LevelModel, Cmd LevelMsg )
+init levelData shared =
     let
         model =
-            addLevelData levelData <| initialState successMessageIndex
+            addLevelData levelData <| initialState shared
     in
     ( model
-    , Cmd.batch
-        [ handleGenerateTiles levelData model
-
-        -- FIXME
-        -- , Task.perform WindowSize size
-        ]
+    , handleGenerateTiles levelData model
     )
 
 
@@ -57,9 +53,10 @@ addLevelData { tileSettings, walls, boardDimensions, moves } model =
     }
 
 
-initialState : Int -> LevelModel
-initialState successMessageIndex =
-    { board = Dict.empty
+initialState : Shared.Data -> LevelModel
+initialState shared =
+    { shared = shared
+    , board = Dict.empty
     , scores = Dict.empty
     , isDragging = False
     , remainingMoves = 10
@@ -67,10 +64,8 @@ initialState successMessageIndex =
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
-    , successMessageIndex = successMessageIndex
     , infoWindow = InfoWindow.hidden
     , pointerPosition = { y = 0, x = 0 }
-    , window = { height = 0, width = 0 }
     }
 
 
@@ -173,9 +168,6 @@ update msg model =
         LevelLost ->
             exitWithPayload Lose model []
 
-        WindowSize width height ->
-            continue { model | window = Window.Size width height } []
-
 
 
 -- SEQUENCES
@@ -208,7 +200,7 @@ removeTilesSequence moveShape =
 winSequence : LevelModel -> Cmd LevelMsg
 winSequence model =
     sequence
-        [ ( 500, ShowInfo <| getSuccessMessage model.successMessageIndex )
+        [ ( 500, ShowInfo <| getSuccessMessage model.shared.successMessageIndex )
         , ( 2000, RemoveInfo )
         , ( 1000, InfoHidden )
         , ( 0, LevelWon )
@@ -342,19 +334,19 @@ moveFromCoord board coord =
 
 
 coordsFromPosition : Position -> LevelModel -> Coord
-coordsFromPosition position levelModel =
+coordsFromPosition position { shared, boardDimensions } =
     let
         positionY =
-            toFloat <| position.y - boardOffsetTop levelModel
+            toFloat <| position.y - boardOffsetTop shared.window boardDimensions
 
         positionX =
-            toFloat <| position.x - boardOffsetLeft levelModel
+            toFloat <| position.x - boardOffsetLeft shared.window boardDimensions
 
         scaleFactorY =
-            tileScaleFactor levelModel.window * baseTileSizeY
+            tileScaleFactor shared.window * baseTileSizeY
 
         scaleFactorX =
-            tileScaleFactor levelModel.window * baseTileSizeX
+            tileScaleFactor shared.window * baseTileSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -389,12 +381,3 @@ hasLost { remainingMoves, levelStatus } =
 hasWon : LevelModel -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
-
-
-
--- subscriptions
-
-
-subscriptions : LevelModel -> Sub LevelMsg
-subscriptions _ =
-    Browser.Events.onResize WindowSize
