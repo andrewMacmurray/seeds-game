@@ -15,7 +15,7 @@ import Css.Style as Style exposing (..)
 import Data.Level.Types exposing (Progress)
 import Data.Visibility as Visibility exposing (..)
 import Data.Window as Window
-import Exit exposing (continue, exitWithPayload)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -57,7 +57,7 @@ init shared =
     }
 
 
-update : Msg -> Model -> Exit.WithPayload Destination ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         FadeSeeds ->
@@ -72,10 +72,10 @@ update msg model =
                 ]
 
         GoToIntro ->
-            exitWithPayload Intro model []
+            exitWith Intro model []
 
         GoToHub ->
-            exitWithPayload Hub model []
+            exitWith Hub model []
 
 
 subscriptions : Model -> Sub Msg

@@ -1,31 +1,31 @@
 module Exit exposing
     ( Handler
     , Status
-    , WithPayload
+    , With
     , continue
     , exit
-    , exitWithPayload
+    , exitWith
     , handle
     )
 
 
 type alias Status state =
-    WithPayload () state
+    With () state
 
 
-type WithPayload payload state
+type With payload state
     = Continue state
     | Exit payload state
 
 
 type alias Handler payload model msg subModel subMsg =
-    { state : WithPayload payload ( subModel, Cmd subMsg )
+    { state : With payload ( subModel, Cmd subMsg )
     , onContinue : ( subModel, Cmd subMsg ) -> ( model, Cmd msg )
     , onExit : payload -> ( model, Cmd msg )
     }
 
 
-continue : model -> List (Cmd msg) -> WithPayload payload ( model, Cmd msg )
+continue : model -> List (Cmd msg) -> With payload ( model, Cmd msg )
 continue model cmds =
     Continue
         ( model
@@ -33,7 +33,7 @@ continue model cmds =
         )
 
 
-exit : model -> List (Cmd msg) -> WithPayload () ( model, Cmd msg )
+exit : model -> List (Cmd msg) -> With () ( model, Cmd msg )
 exit model cmds =
     Exit ()
         ( model
@@ -41,8 +41,8 @@ exit model cmds =
         )
 
 
-exitWithPayload : payload -> model -> List (Cmd msg) -> WithPayload payload ( model, Cmd msg )
-exitWithPayload payload model cmds =
+exitWith : payload -> model -> List (Cmd msg) -> With payload ( model, Cmd msg )
+exitWith payload model cmds =
     Exit payload
         ( model
         , Cmd.batch cmds

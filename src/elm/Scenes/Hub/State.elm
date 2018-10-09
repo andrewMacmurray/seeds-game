@@ -4,7 +4,7 @@ import Browser.Dom as Dom
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (Progress)
 import Data.Window as Window
-import Exit exposing (continue, exitWithPayload)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (delay, sequence)
 import Scenes.Hub.Types as Hub exposing (..)
 import Shared
@@ -29,7 +29,7 @@ initialState shared =
 -- Update
 
 
-update : HubMsg -> HubModel -> Exit.WithPayload Progress ( HubModel, Cmd HubMsg )
+update : HubMsg -> HubModel -> Exit.With Progress ( HubModel, Cmd HubMsg )
 update msg model =
     case msg of
         SetInfoState infoWindow ->
@@ -53,7 +53,7 @@ update msg model =
             continue model []
 
         StartLevel level ->
-            exitWithPayload level model []
+            exitWith level model []
 
 
 

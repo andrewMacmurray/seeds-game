@@ -18,7 +18,7 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
 import Data.Window as Window
 import Dict
-import Exit exposing (continue, exitWithPayload)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence, trigger)
 import Scenes.Level.Types exposing (..)
 import Shared
@@ -73,7 +73,7 @@ initialState shared =
 -- Update
 
 
-update : LevelMsg -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
+update : LevelMsg -> LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
 update msg model =
     case msg of
         InitTiles walls tiles ->
@@ -163,10 +163,10 @@ update msg model =
             continue { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
-            exitWithPayload Win model []
+            exitWith Win model []
 
         LevelLost ->
-            exitWithPayload Lose model []
+            exitWith Lose model []
 
 
 
@@ -291,7 +291,7 @@ handleStartMove move pointerPosition model =
     }
 
 
-checkMoveFromPosition : Position -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
+checkMoveFromPosition : Position -> LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
 checkMoveFromPosition position levelModel =
     let
         modelWithPosition =
@@ -305,7 +305,7 @@ checkMoveFromPosition position levelModel =
             continue modelWithPosition []
 
 
-checkMoveWithSquareTrigger : Move -> LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
+checkMoveWithSquareTrigger : Move -> LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
 checkMoveWithSquareTrigger move model =
     let
         newModel =
@@ -361,7 +361,7 @@ handleSquareMove model =
     }
 
 
-handleCheckLevelComplete : LevelModel -> Exit.WithPayload LevelStatus ( LevelModel, Cmd LevelMsg )
+handleCheckLevelComplete : LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
 handleCheckLevelComplete model =
     if hasWon model then
         continue { model | levelStatus = Win } [ winSequence model ]

@@ -70,7 +70,7 @@ import Types exposing (..)
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
-    , generateBounceKeyframes ScaleConfig.baseTileSizeY
+    , bounceKeyframes flags.window
     )
 
 
@@ -141,10 +141,10 @@ update msg model =
             ( model, withLoadingScreen <| LoadLevel <| currentLevel model )
 
         LoadTutorial config ->
-            loadTutorial model config
+            loadTutorial config model
 
         LoadLevel level ->
-            loadLevel model level
+            loadLevel level model
 
         LoadIntro ->
             loadIntro model
@@ -184,7 +184,7 @@ update msg model =
 
         WindowSize width height ->
             ( { model | scene = Scene.map (setWindow width height) model.scene }
-            , generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor (Window.Size width height)
+            , bounceKeyframes <| Window.Size width height
             )
 
         UpdateTimes now ->
@@ -215,32 +215,24 @@ loadingSequence msg =
 -- Scene Loaders
 
 
-loadLevel : Model -> Progress -> ( Model, Cmd Msg )
-loadLevel model level =
-    Scene.getShared model.scene
-        |> Level.init (getLevelData level)
-        |> updateWith Level LevelMsg model
+loadLevel : Progress -> Model -> ( Model, Cmd Msg )
+loadLevel level =
+    loadScene Level LevelMsg <| Level.init (getLevelData level)
 
 
-loadTutorial : Model -> TutorialConfig -> ( Model, Cmd Msg )
-loadTutorial model config =
-    Scene.getShared model.scene
-        |> Tutorial.init config
-        |> updateWith Tutorial TutorialMsg model
+loadTutorial : TutorialConfig -> Model -> ( Model, Cmd Msg )
+loadTutorial config =
+    loadScene Tutorial TutorialMsg <| Tutorial.init config
 
 
 loadIntro : Model -> ( Model, Cmd Msg )
-loadIntro model =
-    Scene.getShared model.scene
-        |> Intro.init
-        |> updateWith Intro IntroMsg model
+loadIntro =
+    loadScene Intro IntroMsg Intro.init
 
 
 loadHub : Int -> Model -> ( Model, Cmd Msg )
-loadHub levelNumber model =
-    Scene.getShared model.scene
-        |> Hub.init levelNumber
-        |> updateWith Hub HubMsg model
+loadHub levelNumber =
+    loadScene Hub HubMsg <| Hub.init levelNumber
 
 
 loadSummary : Model -> Model
@@ -251,6 +243,18 @@ loadSummary model =
 loadRetry : Model -> Model
 loadRetry model =
     { model | scene = Retry <| Scene.getShared model.scene }
+
+
+loadScene :
+    (subModel -> Scene)
+    -> (subMsg -> Msg)
+    -> (Shared.Data -> ( subModel, Cmd subMsg ))
+    -> Model
+    -> ( Model, Cmd Msg )
+loadScene modelF msg initF model =
+    Scene.getShared model.scene
+        |> initF
+        |> updateWith modelF msg model
 
 
 updateWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
@@ -366,6 +370,11 @@ handleIntroMsg introMsg model =
 
 
 -- Misc
+
+
+bounceKeyframes : Window.Size -> Cmd msg
+bounceKeyframes window =
+    generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window
 
 
 initProgressFromCache : Maybe RawProgress -> Progress
