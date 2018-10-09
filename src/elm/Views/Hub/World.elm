@@ -10,12 +10,12 @@ module Views.Hub.World exposing
     , showInfo
     )
 
-import Config.Levels exposing (allLevels, getLevelNumber)
+import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow
-import Data.Level.Progress exposing (completedLevel, reachedLevel)
+import Data.Level.Progress exposing (completedLevel, levelNumber, reachedLevel)
 import Data.Level.Types exposing (..)
 import Dict
 import Helpers.Html exposing (emptyProperty)
@@ -57,8 +57,8 @@ renderLevel :
     -> Html HubMsg
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
-        levelNumber =
-            getLevelNumber ( world, level )
+        ln =
+            levelNumber allLevels ( world, level )
 
         hasReachedLevel =
             reachedLevel allLevels ( world, level ) model.shared.progress
@@ -77,11 +77,11 @@ renderLevel model ( world, worldData ) ( level, levelData ) =
             ]
         , showInfo ( world, level ) model
         , class "tc pointer relative"
-        , id <| "level-" ++ String.fromInt levelNumber
+        , id <| "level-" ++ String.fromInt ln
         ]
         [ currentLevelPointer isCurrentLevel
         , renderIcon ( world, level ) worldData.seedType model
-        , renderNumber levelNumber hasReachedLevel worldData
+        , renderNumber ln hasReachedLevel worldData
         ]
 
 
@@ -147,7 +147,7 @@ handleStartLevel currentLevel model =
         emptyProperty
 
 
-renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> HubModel -> Html HubMsg
+renderIcon : ( WorldNumber, LevelNumber ) -> SeedType -> HubModel -> Html msg
 renderIcon currentLevel seedType model =
     if completedLevel allLevels currentLevel model.shared.progress then
         renderSeed seedType

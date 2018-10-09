@@ -61,7 +61,7 @@ lineDrag ({ shared } as model) =
 
 
 lastMoveOrigin : LevelModel -> ( Float, Float )
-lastMoveOrigin { shared, boardDimensions, board } =
+lastMoveOrigin ({ shared } as model) =
     let
         window =
             shared.window
@@ -70,7 +70,7 @@ lastMoveOrigin { shared, boardDimensions, board } =
             ScaleConfig.tileScaleFactor window
 
         ( ( y, x ), _ ) =
-            lastMove board
+            lastMove model.board
 
         y1 =
             toFloat y
@@ -85,10 +85,10 @@ lastMoveOrigin { shared, boardDimensions, board } =
             ScaleConfig.baseTileSizeX * tileScale
 
         offsetY =
-            boardOffsetTop window boardDimensions |> toFloat
+            boardOffsetTop model |> toFloat
 
         offsetX =
-            (window.width - boardWidth window boardDimensions) // 2 |> toFloat
+            (window.width - boardWidth model) // 2 |> toFloat
     in
     ( ((y1 + 1) * sY) + offsetY - (sY / 2)
     , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

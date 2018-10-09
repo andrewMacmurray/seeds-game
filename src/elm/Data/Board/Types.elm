@@ -15,6 +15,7 @@ module Data.Board.Types exposing
     , Score
     , Scores
     , SeedType(..)
+    , TileConfig
     , TileState(..)
     , TileType(..)
     , X
@@ -39,6 +40,18 @@ type alias BoardConfig a =
         | board : Board
         , boardDimensions : BoardDimensions
     }
+
+
+type alias TileConfig a b =
+    { a
+        | moveShape : Maybe MoveShape
+        , shared : HasWindow b
+        , boardDimensions : BoardDimensions
+    }
+
+
+type alias HasWindow a =
+    { a | window : Window.Size }
 
 
 type alias BoardDimensions =

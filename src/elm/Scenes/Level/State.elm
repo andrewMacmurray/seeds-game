@@ -334,19 +334,19 @@ moveFromCoord board coord =
 
 
 coordsFromPosition : Position -> LevelModel -> Coord
-coordsFromPosition position { shared, boardDimensions } =
+coordsFromPosition position model =
     let
         positionY =
-            toFloat <| position.y - boardOffsetTop shared.window boardDimensions
+            toFloat <| position.y - boardOffsetTop model
 
         positionX =
-            toFloat <| position.x - boardOffsetLeft shared.window boardDimensions
+            toFloat <| position.x - boardOffsetLeft model
 
         scaleFactorY =
-            tileScaleFactor shared.window * baseTileSizeY
+            tileScaleFactor model.shared.window * baseTileSizeY
 
         scaleFactorX =
-            tileScaleFactor shared.window * baseTileSizeX
+            tileScaleFactor model.shared.window * baseTileSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX

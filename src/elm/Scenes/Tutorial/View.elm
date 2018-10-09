@@ -27,7 +27,7 @@ import Html.Events exposing (onClick)
 import Scenes.Tutorial.Types exposing (..)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
-import Views.Level.Tile exposing (TileViewModel, renderTile_)
+import Views.Level.Tile exposing (renderTile_)
 import Views.Level.TopBar exposing (scoreIcon)
 
 
@@ -88,8 +88,8 @@ tutorialBoard model =
         [ class "center relative"
         , showIf model.boardVisible
         , style
-            [ width <| toFloat <| boardWidth model.shared.window model.boardDimensions
-            , height <| toFloat <| boardHeight model.shared.window model.boardDimensions
+            [ width <| toFloat <| boardWidth model
+            , height <| toFloat <| boardHeight model
             , transitionAll 500 []
             ]
         ]
@@ -136,15 +136,12 @@ renderLines_ : TutorialModel -> List (Html msg)
 renderLines_ model =
     model.board
         |> Dict.toList
-        |> List.map (tileModelSelector model >> fadeLine)
+        |> List.map (fadeLine model)
 
 
-fadeLine : TileViewModel -> Html msg
-fadeLine model =
+fadeLine : TutorialModel -> Move -> Html msg
+fadeLine model (( _, tile ) as move) =
     let
-        ( _, tile ) =
-            model.move
-
         visible =
             hasLine tile
     in
@@ -152,14 +149,14 @@ fadeLine model =
         [ style [ transitionAll 500 [] ]
         , showIf visible
         ]
-        [ renderLine model.window model.move ]
+        [ renderLine model.shared.window move ]
 
 
 renderTiles : TutorialModel -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model mv) (tileModelSelector model mv))
+        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model mv)
 
 
 leavingStyles : TutorialModel -> Move -> List Style
@@ -176,12 +173,3 @@ leavingStyles model (( _, block ) as move) =
 
         _ ->
             []
-
-
-tileModelSelector : TutorialModel -> Move -> TileViewModel
-tileModelSelector tutorialModel move =
-    { move = move
-    , window = tutorialModel.shared.window
-    , boardDimensions = tutorialModel.boardDimensions
-    , moveShape = tutorialModel.moveShape
-    }

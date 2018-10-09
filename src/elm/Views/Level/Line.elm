@@ -1,32 +1,19 @@
 module Views.Level.Line exposing (renderLine)
 
 import Config.Scale exposing (tileScaleFactor)
-import Css.Style as Style exposing (Style, marginAuto, styles, svgStyle, svgStyles)
-import Css.Transform as Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
 import Data.Window as Window
-import Html exposing (Html, div, span)
+import Css.Style as Style exposing (Style, marginAuto, svgStyle, svgStyles)
+import Css.Transform as Transform exposing (..)
+import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Level.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Views.Level.Styles exposing (strokeColors)
 
 
 renderLine : Window.Size -> Move -> Html msg
-renderLine window move =
-    div
-        [ styles
-            [ tileWidthheights window
-            , tileCoordsStyles window move
-            ]
-        , class "dib absolute touch-disabled"
-        ]
-        [ renderLine window move
-        ]
-
-
-renderLine_ : Window.Size -> Move -> Html msg
-renderLine_ window ( coord, block ) =
+renderLine window ( coord, block ) =
     let
         tileState =
             getTileState block

@@ -9,7 +9,7 @@ module Views.Hub.InfoWindow exposing
     , renderWeather
     )
 
-import Config.Levels exposing (allLevels, getLevelConfig, getLevelNumber)
+import Config.Levels exposing (allLevels, getLevelConfig)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
@@ -49,7 +49,7 @@ infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
 infoContent ( world, level ) ( worldData, levelData ) =
     let
         levelText =
-            getLevelNumber ( world, level )
+            levelNumber allLevels ( world, level )
                 |> String.fromInt
                 |> (++) "Level "
     in
