@@ -16,6 +16,7 @@ import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (LevelData)
+import Data.Pointer exposing (Pointer)
 import Data.Window as Window
 import Dict
 import Exit exposing (continue, exitWith)
@@ -65,7 +66,7 @@ initialState shared =
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = InProgress
     , infoWindow = InfoWindow.hidden
-    , pointerPosition = { y = 0, x = 0 }
+    , pointer = { y = 0, x = 0 }
     }
 
 
@@ -141,11 +142,11 @@ update msg model =
                 )
                 []
 
-        StartMove move pointerPosition ->
-            continue (handleStartMove move pointerPosition model) []
+        StartMove move pointer ->
+            continue (handleStartMove move pointer model) []
 
-        CheckMove position ->
-            checkMoveFromPosition position model
+        CheckMove pointer ->
+            checkMoveFromPosition pointer model
 
         SquareMove ->
             continue (handleSquareMove model) []
@@ -281,23 +282,23 @@ handleDecrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Position -> LevelModel -> LevelModel
-handleStartMove move pointerPosition model =
+handleStartMove : Move -> Pointer -> LevelModel -> LevelModel
+handleStartMove move pointer model =
     { model
         | isDragging = True
         , board = startMove move model.board
         , moveShape = Just Line
-        , pointerPosition = pointerPosition
+        , pointer = pointer
     }
 
 
-checkMoveFromPosition : Position -> LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
-checkMoveFromPosition position levelModel =
+checkMoveFromPosition : Pointer -> LevelModel -> Exit.With LevelStatus ( LevelModel, Cmd LevelMsg )
+checkMoveFromPosition pointer levelModel =
     let
         modelWithPosition =
-            { levelModel | pointerPosition = position }
+            { levelModel | pointer = pointer }
     in
-    case moveFromPosition position levelModel of
+    case moveFromPosition pointer levelModel of
         Just move ->
             checkMoveWithSquareTrigger move modelWithPosition
 
@@ -323,9 +324,9 @@ handleCheckMove move model =
         model
 
 
-moveFromPosition : Position -> LevelModel -> Maybe Move
-moveFromPosition position levelModel =
-    moveFromCoord levelModel.board <| coordsFromPosition position levelModel
+moveFromPosition : Pointer -> LevelModel -> Maybe Move
+moveFromPosition pointer levelModel =
+    moveFromCoord levelModel.board <| coordsFromPosition pointer levelModel
 
 
 moveFromCoord : Board -> Coord -> Maybe Move
@@ -333,14 +334,17 @@ moveFromCoord board coord =
     board |> Dict.get coord |> Maybe.map (\b -> ( coord, b ))
 
 
-coordsFromPosition : Position -> LevelModel -> Coord
-coordsFromPosition position model =
+coordsFromPosition : Pointer -> LevelModel -> Coord
+coordsFromPosition pointer model =
     let
+        vm =
+            ( model.shared.window, model.boardDimensions )
+
         positionY =
-            toFloat <| position.y - boardOffsetTop model
+            toFloat <| pointer.y - boardOffsetTop vm
 
         positionX =
-            toFloat <| position.x - boardOffsetLeft model
+            toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
             tileScaleFactor model.shared.window * baseTileSizeY

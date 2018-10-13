@@ -1,18 +1,29 @@
-module Views.Level.LineDrag exposing (handleLineDrag)
+module Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
 import Config.Scale as ScaleConfig
 import Css.Style as Style exposing (svgStyle)
 import Css.Unit exposing (px)
 import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
+import Data.Board.Types exposing (Board, BoardDimensions)
+import Data.Pointer exposing (Pointer)
+import Data.Window as Window
 import Html exposing (Html, span)
-import Scenes.Level.Types as Level exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (..)
 
 
-handleLineDrag : LevelModel -> Html msg
+type alias LineViewModel =
+    { window : Window.Size
+    , boardDimensions : BoardDimensions
+    , board : Board
+    , isDragging : Bool
+    , pointer : Pointer
+    }
+
+
+handleLineDrag : LineViewModel -> Html msg
 handleLineDrag model =
     if model.isDragging && hasSquareTile model.board |> not then
         lineDrag model
@@ -21,11 +32,11 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : LevelModel -> Html msg
-lineDrag ({ shared } as model) =
+lineDrag : LineViewModel -> Html msg
+lineDrag model =
     let
         window =
-            shared.window
+            model.window
 
         vb =
             "0 0 " ++ String.fromInt window.width ++ " " ++ String.fromInt window.height
@@ -53,18 +64,18 @@ lineDrag ({ shared } as model) =
             , strokeLinecap "round"
             , x1 <| String.fromFloat oX
             , y1 <| String.fromFloat oY
-            , x2 <| String.fromInt model.pointerPosition.x
-            , y2 <| String.fromInt model.pointerPosition.y
+            , x2 <| String.fromInt model.pointer.x
+            , y2 <| String.fromInt model.pointer.y
             ]
             []
         ]
 
 
-lastMoveOrigin : LevelModel -> ( Float, Float )
-lastMoveOrigin ({ shared } as model) =
+lastMoveOrigin : LineViewModel -> ( Float, Float )
+lastMoveOrigin model =
     let
         window =
-            shared.window
+            model.window
 
         tileScale =
             ScaleConfig.tileScaleFactor window
@@ -84,11 +95,14 @@ lastMoveOrigin ({ shared } as model) =
         sX =
             ScaleConfig.baseTileSizeX * tileScale
 
+        vm =
+            ( model.window, model.boardDimensions )
+
         offsetY =
-            boardOffsetTop model |> toFloat
+            boardOffsetTop vm |> toFloat
 
         offsetX =
-            (window.width - boardWidth model) // 2 |> toFloat
+            (window.width - boardWidth vm) // 2 |> toFloat
     in
     ( ((y1 + 1) * sY) + offsetY - (sY / 2)
     , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

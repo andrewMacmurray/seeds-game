@@ -33,7 +33,7 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 
 type alias Model =
     { shared : Shared.Data
-    , titleVisibility : Visibility
+    , fadeDirection : FadeDirection
     }
 
 
@@ -45,6 +45,11 @@ type Msg
     | GoToHub
 
 
+type FadeDirection
+    = Appearing
+    | Disappearing
+
+
 type Destination
     = Hub
     | Intro
@@ -53,7 +58,7 @@ type Destination
 init : Shared.Data -> Model
 init shared =
     { shared = shared
-    , titleVisibility = Entering
+    , fadeDirection = Appearing
     }
 
 
@@ -61,7 +66,7 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         FadeSeeds ->
-            continue { model | titleVisibility = Leaving } []
+            continue { model | fadeDirection = Disappearing } []
 
         PlayIntro ->
             continue model [ playIntroMusic () ]
@@ -88,17 +93,17 @@ subscriptions _ =
 
 
 view : Model -> Html Msg
-view { shared, titleVisibility } =
+view { shared, fadeDirection } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
         , style [ bottom <| toFloat shared.window.height / 2.4 ]
         ]
-        [ div [] [ seeds titleVisibility ]
+        [ div [] [ seeds fadeDirection ]
         , p
             [ styles
                 [ [ color darkYellow, marginTop 45 ]
-                , fadeInStyles titleVisibility 1500 500
-                , fadeOutStyles titleVisibility 1000 500
+                , fadeInStyles fadeDirection 1500 500
+                , fadeOutStyles fadeDirection 1000 500
                 ]
             , class "f3 tracked-mega"
             ]
@@ -110,8 +115,8 @@ view { shared, titleVisibility } =
                   , color white
                   , backgroundColor lightOrange
                   ]
-                , fadeInStyles titleVisibility 800 2500
-                , fadeOutStyles titleVisibility 1000 0
+                , fadeInStyles fadeDirection 800 2500
+                , fadeOutStyles fadeDirection 1000 0
                 ]
             , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
             , handleStart shared.progress
@@ -134,8 +139,8 @@ percentWindowHeight percent window =
     toFloat window.height / 100 * percent
 
 
-seeds : Visibility -> Html msg
-seeds vis =
+seeds : FadeDirection -> Html msg
+seeds fadeDirection =
     div
         [ style
             [ maxWidth 450
@@ -144,7 +149,7 @@ seeds vis =
             ]
         , class "flex center"
         ]
-        (List.map3 (fadeSeeds vis)
+        (List.map3 (fadeSeeds fadeDirection)
             (seedEntranceDelays 500)
             (seedExitDelays 500)
             [ foxglove
@@ -166,54 +171,51 @@ seedExitDelays interval =
     [ 0, 1, 2, 1, 0 ] |> List.map ((*) interval)
 
 
-fadeSeeds : Visibility -> Int -> Int -> Html msg -> Html msg
-fadeSeeds vis entranceDelay exitDelay seed =
+fadeSeeds : FadeDirection -> Int -> Int -> Html msg -> Html msg
+fadeSeeds direction entranceDelay exitDelay seed =
     div
         [ styles
-            [ fadeInStyles vis 1000 entranceDelay
-            , fadeOutStyles vis 1000 exitDelay
+            [ fadeInStyles direction 1000 entranceDelay
+            , fadeOutStyles direction 1000 exitDelay
             ]
         , class "mh2"
         ]
         [ seed ]
 
 
-fadeOutStyles : Visibility -> Int -> Int -> List Style
-fadeOutStyles vis duration delay =
-    case vis of
-        Leaving ->
-            [ fade vis duration delay
+fadeOutStyles : FadeDirection -> Int -> Int -> List Style
+fadeOutStyles direction duration delay =
+    case direction of
+        Disappearing ->
+            [ fade direction duration delay
             , opacity 1
             ]
 
-        _ ->
+        Appearing ->
             []
 
 
-fadeInStyles : Visibility -> Int -> Int -> List Style
-fadeInStyles vis duration delay =
-    case vis of
-        Entering ->
-            [ fade vis duration delay
+fadeInStyles : FadeDirection -> Int -> Int -> List Style
+fadeInStyles direction duration delay =
+    case direction of
+        Appearing ->
+            [ fade direction duration delay
             , opacity 0
             ]
 
-        _ ->
+        Disappearing ->
             []
 
 
-fade : Visibility -> Int -> Int -> Style
-fade vis duration delayMs =
+fade : FadeDirection -> Int -> Int -> Style
+fade direction duration delayMs =
     let
-        fadeDirection name =
+        fadeAnimation name =
             animation name duration [ delay delayMs, linear ]
     in
-    case vis of
-        Entering ->
-            fadeDirection "fade-in"
+    case direction of
+        Appearing ->
+            fadeAnimation "fade-in"
 
-        Leaving ->
-            fadeDirection "fade-out"
-
-        _ ->
-            Style.empty
+        Disappearing ->
+            fadeAnimation "fade-out"

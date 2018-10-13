@@ -1,9 +1,10 @@
-module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..), Position)
+module Scenes.Level.Types exposing (LevelModel, LevelMsg(..), LevelStatus(..))
 
 import Css.Color exposing (Color)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
+import Data.Pointer exposing (Pointer)
 import Data.Window as Window
 import Shared
 
@@ -19,7 +20,7 @@ type alias LevelModel =
     , boardDimensions : BoardDimensions
     , levelStatus : LevelStatus
     , infoWindow : InfoWindow String
-    , pointerPosition : Position
+    , pointer : Pointer
     }
 
 
@@ -27,8 +28,8 @@ type LevelMsg
     = InitTiles (List ( Color, Coord )) (List TileType)
     | SquareMove
     | StopMove
-    | StartMove Move Position
-    | CheckMove Position
+    | StartMove Move Pointer
+    | CheckMove Pointer
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -46,12 +47,6 @@ type LevelMsg
     | InfoHidden
     | LevelWon
     | LevelLost
-
-
-type alias Position =
-    { x : Int
-    , y : Int
-    }
 
 
 type LevelStatus

@@ -36,26 +36,26 @@ smallestWindowDimension { height, width } =
         height
 
 
-scoreIconSize : Float
+scoreIconSize : number
 scoreIconSize =
     32
 
 
-baseTileSizeX : Float
+baseTileSizeX : number
 baseTileSizeX =
     55
 
 
-baseTileSizeY : Float
+baseTileSizeY : number
 baseTileSizeY =
     51
 
 
-topBarHeight : Float
+topBarHeight : number
 topBarHeight =
     80
 
 
-windowPadding : Float
+windowPadding : number
 windowPadding =
     35

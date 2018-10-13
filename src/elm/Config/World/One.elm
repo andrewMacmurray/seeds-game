@@ -1,12 +1,12 @@
 module Config.World.One exposing (world)
 
-import Css.Color exposing (..)
 import Config.Tutorial.Rain as RainTutorial
 import Config.Tutorial.Seed as SeedTutorial
 import Config.Tutorial.SeedPod as SeedPodTutorial
 import Config.Tutorial.Square as SquareTutorial
 import Config.Tutorial.Sun as SunTutorial
 import Config.Wall exposing (..)
+import Css.Color exposing (..)
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (toCoords)
 import Data.Level.Settings exposing (..)

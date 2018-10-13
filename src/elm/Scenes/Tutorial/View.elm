@@ -84,12 +84,16 @@ handleSkip model =
 
 tutorialBoard : TutorialModel -> Html msg
 tutorialBoard model =
+    let
+        vm =
+            ( model.shared.window, model.boardDimensions )
+    in
     div
         [ class "center relative"
         , showIf model.boardVisible
         , style
-            [ width <| toFloat <| boardWidth model
-            , height <| toFloat <| boardHeight model
+            [ width <| toFloat <| boardWidth vm
+            , height <| toFloat <| boardHeight vm
             , transitionAll 500 []
             ]
         ]
@@ -156,16 +160,12 @@ renderTiles : TutorialModel -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model mv)
+        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model.shared.window model.moveShape mv)
 
 
 leavingStyles : TutorialModel -> Move -> List Style
 leavingStyles model (( _, block ) as move) =
-    let
-        tileState =
-            getTileState block
-    in
-    case tileState of
+    case getTileState block of
         Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionAll 500 [ delay <| modBy 5 order * 80 ]
