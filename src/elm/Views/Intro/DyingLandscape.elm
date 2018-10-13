@@ -1,12 +1,16 @@
-module Views.Intro.DyingLandscape exposing (dyingLandscape)
+module Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
 
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
 import Css.Transform exposing (translateY)
 import Css.Transition exposing (cubicBezier, delay, easeOut, linear, transition)
 import Data.Visibility exposing (..)
-import Scenes.Intro.Types exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+
+
+type Environment
+    = Alive
+    | Dead
 
 
 dyingLandscape : Environment -> Visibility -> Svg msg

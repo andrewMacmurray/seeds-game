@@ -50,8 +50,7 @@ import Ports exposing (..)
 import Scene exposing (Scene(..))
 import Scenes.Hub.State as Hub
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
-import Scenes.Intro.State as Intro
-import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
+import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial.State as Tutorial
@@ -353,7 +352,7 @@ exitHub model level =
     ( model, trigger <| StartLevel level )
 
 
-handleIntroMsg : IntroMsg -> Model -> ( Model, Cmd Msg )
+handleIntroMsg : Intro.Msg -> Model -> ( Model, Cmd Msg )
 handleIntroMsg introMsg model =
     case model.scene of
         Intro introModel ->

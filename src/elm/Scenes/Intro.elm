@@ -1,23 +1,76 @@
-module Scenes.Intro.State exposing (init, update)
+module Scenes.Intro exposing
+    ( Model
+    , Msg
+    , init
+    , update
+    , view
+    )
 
 import Css.Color as Color
+import Css.Style as Style exposing (..)
+import Css.Transition exposing (transitionAll)
 import Data.Visibility exposing (..)
 import Data.Window as Window
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
-import Scenes.Intro.Types exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (class, classList)
 import Shared
 import Task
+import Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
+import Views.Intro.GrowingSeeds exposing (growingSeeds)
+import Views.Intro.RollingHills exposing (rollingHills)
 
 
-init : Shared.Data -> ( IntroModel, Cmd IntroMsg )
+
+-- MODEL
+
+
+type alias Model =
+    { shared : Shared.Data
+    , scene : Scene
+    , backdrop : String
+    , text : String
+    , textColor : String
+    , textVisible : Bool
+    }
+
+
+type Scene
+    = DyingLandscape Environment Visibility
+    | GrowingSeeds Visibility
+    | RollingHills Visibility
+
+
+type Msg
+    = ShowDyingLandscape
+    | HideDyingLandscape
+    | ShowGrowingSeeds
+    | HideGrowingSeeds
+    | InitRollingHills
+    | ShowRollingHills
+    | BloomFlowers
+    | SetBackdrop String
+    | SetText String
+    | SetTextColor String
+    | ShowText
+    | HideText
+    | KillEnvironment
+    | IntroComplete
+
+
+
+-- INIT
+
+
+init : Shared.Data -> ( Model, Cmd Msg )
 init shared =
     ( initialState shared
     , introSequence
     )
 
 
-initialState : Shared.Data -> IntroModel
+initialState : Shared.Data -> Model
 initialState shared =
     { shared = shared
     , scene = DyingLandscape Alive Hidden
@@ -28,7 +81,7 @@ initialState shared =
     }
 
 
-introSequence : Cmd IntroMsg
+introSequence : Cmd Msg
 introSequence =
     sequence
         [ ( 100, SetBackdrop Color.skyGreen )
@@ -54,7 +107,11 @@ introSequence =
         ]
 
 
-update : IntroMsg -> IntroModel -> Exit.Status ( IntroModel, Cmd IntroMsg )
+
+-- UPDATE
+
+
+update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
 update msg model =
     case msg of
         ShowDyingLandscape ->
@@ -98,3 +155,48 @@ update msg model =
 
         IntroComplete ->
             exit model []
+
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    div
+        [ style
+            [ background model.backdrop
+            , transitionAll 1500 []
+            ]
+        , class "fixed top-0 left-0 w-100 h-100 z-1"
+        ]
+        [ p
+            [ style
+                [ textOffset model.shared.window
+                , color model.textColor
+                , transitionAll 1000 []
+                ]
+            , showIf model.textVisible
+            , class "tc f5 f3-ns relative z-2"
+            ]
+            [ text model.text ]
+        , renderScene model
+        ]
+
+
+renderScene : Model -> Html Msg
+renderScene model =
+    case model.scene of
+        DyingLandscape environment vis ->
+            dyingLandscape environment vis
+
+        GrowingSeeds vis ->
+            growingSeeds model.shared.window vis
+
+        RollingHills vis ->
+            rollingHills vis
+
+
+textOffset : Window.Size -> Style
+textOffset window =
+    marginTop <| toFloat <| (window.height // 2) - 120

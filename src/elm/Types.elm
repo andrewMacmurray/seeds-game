@@ -12,7 +12,7 @@ import Data.Window as Window
 import Ports exposing (RawProgress, Times)
 import Scene exposing (Scene)
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
-import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
+import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
@@ -38,7 +38,7 @@ type Msg
     = TitleMsg Title.Msg
     | LevelMsg Level.Msg
     | TutorialMsg TutorialMsg
-    | IntroMsg IntroMsg
+    | IntroMsg Intro.Msg
     | HubMsg HubMsg
     | IncrementSuccessMessageIndex
     | StartLevel Progress

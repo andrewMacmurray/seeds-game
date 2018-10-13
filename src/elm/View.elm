@@ -9,7 +9,7 @@ import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Scene exposing (Scene(..))
 import Scenes.Hub.View exposing (hubView)
-import Scenes.Intro.View exposing (introView)
+import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
@@ -43,7 +43,7 @@ renderScene model =
             [ ( "hub", hubView hubModel |> Html.map HubMsg ) ]
 
         Intro introModel ->
-            [ ( "intro", introView introModel |> Html.map IntroMsg ) ]
+            [ ( "intro", Intro.view introModel |> Html.map IntroMsg ) ]
 
         Title titleModel ->
             [ ( "title", Title.view titleModel |> Html.map TitleMsg ) ]
