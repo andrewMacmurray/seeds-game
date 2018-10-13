@@ -1,6 +1,6 @@
 module Scene exposing (Scene(..), getShared, map)
 
-import Scenes.Hub.Types exposing (HubModel)
+import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
@@ -13,7 +13,7 @@ type Scene
     | Level Level.Model
     | Tutorial TutorialModel
     | Intro Intro.Model
-    | Hub HubModel
+    | Hub Hub.Model
     | Summary Shared.Data
     | Retry Shared.Data
 

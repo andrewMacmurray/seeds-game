@@ -1,38 +1,7 @@
 module State exposing
-    ( addTimeTillNextLife
-    , backToHubSequence
-    , countDownToNextLife
-    , currentLevel
-    , decrementAboveZero
-    , decrementLives
-    , fromProgress
-    , handleCacheTimes
-    , handleHubMsg
-    , handleIncrementProgress
-    , handleIntroMsg
-    , handleLevelMsg
-    , handleTutorialMsg
-    , init
-    , initLastPlayed
-    , initProgressFromCache
-    , initTimeTillNextLife
-    , initialState
-    , levelCompleteScrollNumber
-    , levelLoseSequence
-    , levelWinSequence
-    , livesLeft
-    , loadHub
-    , loadIntro
-    , loadLevel
-    , loadRetry
-    , loadSummary
-    , loadTutorial
-    , progressLevelNumber
-    , subscribeDecrement
+    ( init
     , subscriptions
-    , tutorialData
     , update
-    , updateTimes
     )
 
 import Browser.Events
@@ -48,8 +17,7 @@ import Exit
 import Helpers.Delay exposing (..)
 import Ports exposing (..)
 import Scene exposing (Scene(..))
-import Scenes.Hub.State as Hub
-import Scenes.Hub.Types exposing (HubModel, HubMsg)
+import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
@@ -333,7 +301,7 @@ handleTutorialMsg tutorialMsg model =
             ( model, Cmd.none )
 
 
-handleHubMsg : HubMsg -> Model -> ( Model, Cmd Msg )
+handleHubMsg : Hub.Msg -> Model -> ( Model, Cmd Msg )
 handleHubMsg hubMsg model =
     case model.scene of
         Hub hubModel ->

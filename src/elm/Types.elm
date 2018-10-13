@@ -11,7 +11,7 @@ import Data.Visibility exposing (Visibility)
 import Data.Window as Window
 import Ports exposing (RawProgress, Times)
 import Scene exposing (Scene)
-import Scenes.Hub.Types exposing (HubModel, HubMsg)
+import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
@@ -39,7 +39,7 @@ type Msg
     | LevelMsg Level.Msg
     | TutorialMsg TutorialMsg
     | IntroMsg Intro.Msg
-    | HubMsg HubMsg
+    | HubMsg Hub.Msg
     | IncrementSuccessMessageIndex
     | StartLevel Progress
     | RestartLevel

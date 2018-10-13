@@ -8,7 +8,7 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Scene exposing (Scene(..))
-import Scenes.Hub.View exposing (hubView)
+import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Retry exposing (retryView)
@@ -40,7 +40,7 @@ renderScene : Model -> List ( String, Html Msg )
 renderScene model =
     case model.scene of
         Hub hubModel ->
-            [ ( "hub", hubView hubModel |> Html.map HubMsg ) ]
+            [ ( "hub", Hub.view hubModel |> Html.map HubMsg ) ]
 
         Intro introModel ->
             [ ( "intro", Intro.view introModel |> Html.map IntroMsg ) ]
