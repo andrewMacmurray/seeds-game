@@ -15,7 +15,7 @@ import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
-import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
+import Scenes.Tutorial as Tutorial
 import Shared
 import Time exposing (Posix)
 
@@ -37,7 +37,7 @@ type alias Model =
 type Msg
     = TitleMsg Title.Msg
     | LevelMsg Level.Msg
-    | TutorialMsg TutorialMsg
+    | TutorialMsg Tutorial.Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
     | IncrementSuccessMessageIndex
@@ -45,7 +45,7 @@ type Msg
     | RestartLevel
     | LevelWin
     | LevelLose
-    | LoadTutorial TutorialConfig
+    | LoadTutorial Tutorial.Config
     | LoadLevel Progress
     | LoadIntro
     | LoadHub Int

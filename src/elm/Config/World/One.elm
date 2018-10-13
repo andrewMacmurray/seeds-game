@@ -11,10 +11,10 @@ import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (toCoords)
 import Data.Level.Settings exposing (..)
 import Data.Level.Types exposing (..)
-import Scenes.Tutorial.Types exposing (TutorialConfig)
+import Scenes.Tutorial as Tutorial
 
 
-world : WorldData TutorialConfig
+world : WorldData Tutorial.Config
 world =
     { seedType = Sunflower
     , levels = levels
@@ -25,7 +25,7 @@ world =
     }
 
 
-levels : WorldLevels TutorialConfig
+levels : WorldLevels Tutorial.Config
 levels =
     makeWorldLevels
         [ { walls = yellowWalls firstLevelWalls

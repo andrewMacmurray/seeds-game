@@ -4,14 +4,14 @@ import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
-import Scenes.Tutorial.Types exposing (TutorialModel)
+import Scenes.Tutorial as Tutorial
 import Shared
 
 
 type Scene
     = Title Title.Model
     | Level Level.Model
-    | Tutorial TutorialModel
+    | Tutorial Tutorial.Model
     | Intro Intro.Model
     | Hub Hub.Model
     | Summary Shared.Data

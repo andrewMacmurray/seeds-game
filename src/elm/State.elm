@@ -21,8 +21,7 @@ import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
-import Scenes.Tutorial.State as Tutorial
-import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
+import Scenes.Tutorial as Tutorial
 import Shared exposing (..)
 import Task
 import Time exposing (posixToMillis)
@@ -186,7 +185,7 @@ loadLevel level =
     loadScene Level LevelMsg <| Level.init (getLevelData level)
 
 
-loadTutorial : TutorialConfig -> Model -> ( Model, Cmd Msg )
+loadTutorial : Tutorial.Config -> Model -> ( Model, Cmd Msg )
 loadTutorial config =
     loadScene Tutorial TutorialMsg <| Tutorial.init config
 
@@ -285,7 +284,7 @@ exitLevel model levelStatus =
             ( model, Cmd.none )
 
 
-handleTutorialMsg : TutorialMsg -> Model -> ( Model, Cmd Msg )
+handleTutorialMsg : Tutorial.Msg -> Model -> ( Model, Cmd Msg )
 handleTutorialMsg tutorialMsg model =
     case model.scene of
         Tutorial tutorialModel ->
@@ -355,7 +354,7 @@ fromProgress ( world, level ) =
     RawProgress world level
 
 
-tutorialData : Progress -> Maybe TutorialConfig
+tutorialData : Progress -> Maybe Tutorial.Config
 tutorialData level =
     let
         ( _, levelData ) =

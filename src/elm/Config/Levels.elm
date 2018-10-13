@@ -16,7 +16,7 @@ import Data.Level.Progress as Progress
 import Data.Level.Settings exposing (..)
 import Data.Level.Types exposing (..)
 import Dict exposing (Dict)
-import Scenes.Tutorial.Types exposing (TutorialConfig)
+import Scenes.Tutorial as Tutorial
 
 
 getLevelNumber : Progress -> Int
@@ -24,12 +24,12 @@ getLevelNumber =
     Progress.levelNumber allLevels
 
 
-getLevelData : Progress -> LevelData TutorialConfig
+getLevelData : Progress -> LevelData Tutorial.Config
 getLevelData =
     Progress.levelData allLevels >> Maybe.withDefault defaultLevel
 
 
-getLevelConfig : Progress -> CurrentLevelConfig TutorialConfig
+getLevelConfig : Progress -> CurrentLevelConfig Tutorial.Config
 getLevelConfig =
     Progress.levelConfig allLevels >> Maybe.withDefault ( defaultWorld, defaultLevel )
 
@@ -39,7 +39,7 @@ shouldIncrement =
     Progress.shouldIncrement allLevels
 
 
-allLevels : AllLevels TutorialConfig
+allLevels : AllLevels Tutorial.Config
 allLevels =
     Dict.fromList
         [ ( 1, One.world )
@@ -48,12 +48,12 @@ allLevels =
         ]
 
 
-defaultWorld : WorldData TutorialConfig
+defaultWorld : WorldData Tutorial.Config
 defaultWorld =
     One.world
 
 
-defaultLevel : LevelData TutorialConfig
+defaultLevel : LevelData Tutorial.Config
 defaultLevel =
     { walls = []
     , boardDimensions = { x = 8, y = 8 }

@@ -27,7 +27,7 @@ import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
-import Scenes.Tutorial.Types exposing (TutorialConfig)
+import Scenes.Tutorial as Tutorial
 import Shared
 import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
@@ -343,7 +343,7 @@ renderWorlds model =
         |> List.map (renderWorld model)
 
 
-renderWorld : Model -> ( WorldNumber, WorldData TutorialConfig ) -> Html Msg
+renderWorld : Model -> ( WorldNumber, WorldData Tutorial.Config ) -> Html Msg
 renderWorld model (( _, worldData ) as world) =
     div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
         [ div
@@ -358,8 +358,8 @@ renderWorld model (( _, worldData ) as world) =
 
 renderLevel :
     Model
-    -> ( WorldNumber, WorldData TutorialConfig )
-    -> ( LevelNumber, LevelData TutorialConfig )
+    -> ( WorldNumber, WorldData Tutorial.Config )
+    -> ( LevelNumber, LevelData Tutorial.Config )
     -> Html Msg
 renderLevel model ( world, worldData ) ( level, levelData ) =
     let
@@ -417,7 +417,7 @@ offsetStyles levelNumber =
         (levelNumber - 1)
 
 
-renderNumber : Int -> Bool -> WorldData TutorialConfig -> Html Msg
+renderNumber : Int -> Bool -> WorldData Tutorial.Config -> Html Msg
 renderNumber visibleLevelNumber hasReachedLevel worldData =
     if hasReachedLevel then
         div

@@ -14,7 +14,7 @@ import Scenes.Level as Level
 import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
 import Scenes.Title as Title
-import Scenes.Tutorial.View exposing (tutorialView)
+import Scenes.Tutorial as Tutorial
 import Types exposing (Model, Msg(..))
 import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
@@ -58,7 +58,7 @@ renderScene model =
             [ ( "retry", retryView retryModel ) ]
 
         Tutorial tutorialModel ->
-            [ ( "tutorial", tutorialView tutorialModel |> Html.map TutorialMsg )
+            [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg )
             ]
 
 

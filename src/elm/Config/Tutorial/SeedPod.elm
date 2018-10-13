@@ -1,12 +1,12 @@
-module Config.Tutorial.SeedPod exposing (boardDimensions, config, initialBoard, sequence, text)
+module Config.Tutorial.SeedPod exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, seedPodBoard)
 import Dict exposing (Dict)
-import Scenes.Tutorial.Types as Tutorial exposing (..)
+import Scenes.Tutorial as Tutorial exposing (..)
 
 
-config : TutorialConfig
+config : Tutorial.Config
 config =
     { text = text
     , boardDimensions = boardDimensions

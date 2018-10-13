@@ -1,12 +1,12 @@
-module Config.Tutorial.Square exposing (boardDimensions, config, enteringTiles, initialBoard, sequence, text)
+module Config.Tutorial.Square exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, seedBoard)
 import Dict exposing (Dict)
-import Scenes.Tutorial.Types as Tutorial exposing (..)
+import Scenes.Tutorial as Tutorial exposing (..)
 
 
-config : TutorialConfig
+config : Tutorial.Config
 config =
     { text = text
     , boardDimensions = boardDimensions

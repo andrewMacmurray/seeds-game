@@ -10,7 +10,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Shared
-import State exposing (livesLeft)
 import Types exposing (..)
 import Views.Lives exposing (renderLivesLeft)
 

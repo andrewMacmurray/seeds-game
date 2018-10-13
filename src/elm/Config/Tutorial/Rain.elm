@@ -1,18 +1,12 @@
-module Config.Tutorial.Rain exposing
-    ( boardDimensions
-    , config
-    , initialBoard
-    , sequence
-    , text
-    )
+module Config.Tutorial.Rain exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, rainBoard)
 import Dict exposing (Dict)
-import Scenes.Tutorial.Types as Tutorial exposing (..)
+import Scenes.Tutorial as Tutorial exposing (..)
 
 
-config : TutorialConfig
+config : Tutorial.Config
 config =
     { text = text
     , boardDimensions = boardDimensions
