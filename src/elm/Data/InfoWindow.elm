@@ -1,88 +1,60 @@
 module Data.InfoWindow exposing
     ( InfoWindow
+    , State(..)
+    , content
     , hidden
-    , isHidden
-    , isLeaving
-    , isVisible
-    , leave
-    , map
-    , show
-    , val
+    , leaving
+    , state
+    , visible
     )
 
-import Data.Visibility exposing (..)
+
+type State
+    = Visible
+    | Leaving
+    | Hidden
 
 
-type InfoWindow a
-    = Full Visibility a
-    | Empty Visibility
+type InfoWindow content
+    = WithContent State content
+    | Empty
 
 
-show : a -> InfoWindow a
-show a =
-    Full Visible a
+content : InfoWindow content -> Maybe content
+content infoWindow =
+    case infoWindow of
+        WithContent _ c ->
+            Just c
 
-
-leave : InfoWindow a -> InfoWindow a
-leave info =
-    case info of
-        Full _ a ->
-            Full Leaving a
-
-        _ ->
-            info
-
-
-hidden : InfoWindow a
-hidden =
-    Empty Hidden
-
-
-val : InfoWindow a -> Maybe a
-val info =
-    case info of
-        Full _ a ->
-            Just a
-
-        _ ->
+        Empty ->
             Nothing
 
 
-map : (a -> a) -> InfoWindow a -> InfoWindow a
-map f info =
-    case info of
-        Full v a ->
-            Full v <| f a
+state : InfoWindow content -> State
+state infoWindow =
+    case infoWindow of
+        WithContent state_ _ ->
+            state_
 
-        inf ->
-            inf
-
-
-isVisible : InfoWindow a -> Bool
-isVisible info =
-    case info of
-        Full Visible _ ->
-            True
-
-        _ ->
-            False
+        Empty ->
+            Hidden
 
 
-isLeaving : InfoWindow a -> Bool
-isLeaving info =
-    case info of
-        Full Leaving _ ->
-            True
-
-        _ ->
-            False
+visible : content -> InfoWindow content
+visible =
+    WithContent Visible
 
 
-isHidden : InfoWindow a -> Bool
-isHidden info =
-    case info of
-        Empty Hidden ->
-            True
+leaving : InfoWindow content -> InfoWindow content
+leaving infoWindow =
+    case infoWindow of
+        WithContent _ content_ ->
+            WithContent Leaving content_
 
-        _ ->
-            False
+        Empty ->
+            Empty
+
+
+hidden : InfoWindow content
+hidden =
+    Empty

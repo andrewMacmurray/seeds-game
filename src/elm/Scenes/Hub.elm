@@ -84,13 +84,13 @@ update msg model =
             continue { model | infoWindow = infoWindow } []
 
         ShowLevelInfo levelProgress ->
-            continue { model | infoWindow = InfoWindow.show levelProgress } []
+            continue { model | infoWindow = InfoWindow.visible levelProgress } []
 
         HideLevelInfo ->
             continue model
                 [ sequence
-                    [ ( 0, SetInfoState <| InfoWindow.leave model.infoWindow )
-                    , ( 1000, SetInfoState InfoWindow.hidden )
+                    [ ( 0, SetInfoState <| InfoWindow.leaving model.infoWindow )
+                    , ( 1000, SetInfoState <| InfoWindow.hidden )
                     ]
                 ]
 
@@ -215,19 +215,20 @@ info : Model -> Html Msg
 info { infoWindow } =
     let
         progress =
-            val infoWindow |> Maybe.withDefault ( 1, 1 )
+            InfoWindow.content infoWindow |> Maybe.withDefault ( 1, 1 )
 
         content =
             getLevelConfig progress |> infoContent progress
     in
-    if isHidden infoWindow then
-        span [] []
+    case InfoWindow.state infoWindow of
+        InfoWindow.Hidden ->
+            span [] []
 
-    else if isVisible infoWindow then
-        infoContainer infoWindow <| div [ onClick <| StartLevel progress ] content
+        InfoWindow.Visible ->
+            infoContainer infoWindow <| div [ onClick <| StartLevel progress ] content
 
-    else
-        infoContainer infoWindow <| div [] content
+        InfoWindow.Leaving ->
+            infoContainer infoWindow <| div [] content
 
 
 infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
@@ -324,11 +325,12 @@ renderWeather color =
 
 handleHideInfo : Model -> Attribute Msg
 handleHideInfo model =
-    if isVisible model.infoWindow then
-        onClick HideLevelInfo
+    case InfoWindow.state model.infoWindow of
+        InfoWindow.Visible ->
+            onClick HideLevelInfo
 
-    else
-        emptyProperty
+        _ ->
+            emptyProperty
 
 
 
@@ -437,7 +439,7 @@ renderNumber visibleLevelNumber hasReachedLevel worldData =
 
 showInfo : Progress -> Model -> Attribute Msg
 showInfo currentLevel model =
-    if reachedLevel allLevels currentLevel model.shared.progress && InfoWindow.isHidden model.infoWindow then
+    if reachedLevel allLevels currentLevel model.shared.progress && InfoWindow.state model.infoWindow == Hidden then
         onClick <| ShowLevelInfo currentLevel
 
     else

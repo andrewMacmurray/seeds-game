@@ -225,10 +225,10 @@ update msg model =
             handleCheckLevelComplete model
 
         ShowInfo info ->
-            continue { model | infoWindow = InfoWindow.show info } []
+            continue { model | infoWindow = InfoWindow.visible info } []
 
         RemoveInfo ->
-            continue { model | infoWindow = InfoWindow.leave model.infoWindow } []
+            continue { model | infoWindow = InfoWindow.leaving model.infoWindow } []
 
         InfoHidden ->
             continue { model | infoWindow = InfoWindow.hidden } []
@@ -560,14 +560,15 @@ renderInfoWindow : Model -> Html msg
 renderInfoWindow { infoWindow } =
     let
         infoContent =
-            InfoWindow.val infoWindow |> Maybe.withDefault ""
+            InfoWindow.content infoWindow |> Maybe.withDefault ""
     in
-    if InfoWindow.isHidden infoWindow then
-        span [] []
+    case InfoWindow.state infoWindow of
+        InfoWindow.Hidden ->
+            span [] []
 
-    else
-        infoContainer infoWindow <|
-            div [ class "pv5 f3 tracked-mega" ] [ text infoContent ]
+        _ ->
+            infoContainer infoWindow <|
+                div [ class "pv5 f3 tracked-mega" ] [ text infoContent ]
 
 
 leavingStyles : Model -> Move -> List Style
