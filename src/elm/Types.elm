@@ -7,9 +7,10 @@ module Types exposing
 import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
+import Data.Lives as Lives
 import Data.Visibility exposing (Visibility)
 import Data.Window as Window
-import Ports exposing (RawProgress, Times)
+import Ports exposing (RawProgress)
 import Scene exposing (Scene)
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
@@ -21,8 +22,8 @@ import Time exposing (Posix)
 
 
 type alias Flags =
-    { now : Float
-    , times : Maybe Times
+    { now : Int
+    , lives : Maybe Lives.Cache
     , rawProgress : Maybe RawProgress
     , randomMessageIndex : Int
     , window : Window.Size

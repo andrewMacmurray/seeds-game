@@ -17,7 +17,7 @@ function init() {
     node: document.getElementById("app"),
     flags: {
       now: Date.now(),
-      times: cache.getTimes(),
+      lives: cache.getLives(),
       rawProgress: cache.getProgress(),
       randomMessageIndex: Math.round(Math.random() * 10),
       window: { height: window.innerHeight, width: window.innerWidth }
@@ -56,9 +56,9 @@ function init() {
     window.location.reload();
   });
 
-  // ports.cacheTimes.subscribe(times => {
-  //   cache.setTimes(times);
-  // });
+  ports.cacheLives.subscribe(times => {
+    cache.setLives(times);
+  });
 }
 
 function registerServiceWorker() {

@@ -1,8 +1,7 @@
 port module Ports exposing
     ( RawProgress
-    , Times
     , cacheProgress
-    , cacheTimes
+    , cacheLives
     , clearCache
     , clearCache_
     , fadeMusic
@@ -11,11 +10,7 @@ port module Ports exposing
     , playIntroMusic
     )
 
-
-type alias Times =
-    { timeTillNextLife : Float
-    , lastPlayed : Float
-    }
+import Data.Lives as Lives
 
 
 type alias RawProgress =
@@ -30,7 +25,7 @@ port generateBounceKeyframes : Float -> Cmd msg
 port cacheProgress : RawProgress -> Cmd msg
 
 
-port cacheTimes : Times -> Cmd msg
+port cacheLives : Lives.Cache -> Cmd msg
 
 
 clearCache : Cmd msg

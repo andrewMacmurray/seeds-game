@@ -17,6 +17,7 @@ import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
+import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
 import Data.Window as Window
@@ -133,8 +134,8 @@ getLevelId levelNumber =
 view : Model -> Html Msg
 view model =
     div [ handleHideInfo model ]
-        [ hubTopBar model
-        , info model
+        [ renderTopBar model
+        , renderInfoWindow model
         , div
             [ id "hub"
             , style [ height <| toFloat model.shared.window.height ]
@@ -144,30 +145,29 @@ view model =
         ]
 
 
-hubTopBar : Model -> Html msg
-hubTopBar model =
-    -- FIXME
-    -- let
-    --     lives =
-    --         model.timeTillNextLife
-    --             |> livesLeft
-    --             |> floor
-    --             |> Transitioning
-    -- in
+renderTopBar : Model -> Html msg
+renderTopBar model =
+    let
+        lives =
+            model.shared.lives
+                |> Lives.remaining
+                |> Transitioning
+                |> renderLivesLeft
+    in
     div
         [ style [ background washedYellow ]
         , class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         ]
-        [ div [ style [ transform [ scale 0.5 ] ] ] <| renderLivesLeft <| Transitioning 5
+        [ div [ style [ transform [ scale 0.5 ] ] ] lives
         , div [ style [ color darkYellow ], class "f7" ]
             -- FIXME add time from model
-            [ renderCountDown 0 ]
+            [ renderCountDown model.shared.lives ]
         ]
 
 
-renderCountDown : Float -> Html msg
-renderCountDown timeRemaining =
-    case timeLeft timeRemaining of
+renderCountDown : Lives.Lives -> Html msg
+renderCountDown lives =
+    case Lives.timeTillNextLife lives of
         Nothing ->
             p [ class "ma1 mt0" ] [ text "full life" ]
 
@@ -178,24 +178,9 @@ renderCountDown timeRemaining =
                 ]
 
 
-renderTime : ( Int, Int ) -> String
-renderTime ( m, s ) =
-    String.fromInt m ++ ":" ++ renderSecond s
-
-
-timeLeft : Float -> Maybe ( Int, Int )
-timeLeft timeRemaining =
-    -- let
-    --     d =
-    --         Date.fromTime timeRemaining
-    -- in
-    -- FIXME
-    if timeRemaining == 0 then
-        Nothing
-
-    else
-        -- Just ( modBy 5 (minute d), second d )
-        Just ( 1, 1 )
+renderTime : Lives.TimeTillNextLife -> String
+renderTime { minutes, seconds } =
+    String.fromInt minutes ++ ":" ++ renderSecond seconds
 
 
 renderSecond : Int -> String
@@ -211,8 +196,8 @@ renderSecond n =
 -- INFO WINDOW
 
 
-info : Model -> Html Msg
-info { infoWindow } =
+renderInfoWindow : Model -> Html Msg
+renderInfoWindow { infoWindow } =
     let
         progress =
             InfoWindow.content infoWindow |> Maybe.withDefault ( 1, 1 )

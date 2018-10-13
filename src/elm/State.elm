@@ -10,6 +10,7 @@ import Config.Scale as ScaleConfig
 import Data.Background exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
+import Data.Lives as Lives
 import Data.Transit as Transit exposing (Transit(..))
 import Data.Visibility exposing (Visibility(..))
 import Data.Window as Window
@@ -24,7 +25,7 @@ import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
 import Shared exposing (..)
 import Task
-import Time exposing (posixToMillis)
+import Time exposing (millisToPosix)
 import Types exposing (..)
 
 
@@ -52,6 +53,7 @@ initShared flags =
     , progress = initProgressFromCache flags.rawProgress
     , currentLevel = Nothing
     , successMessageIndex = flags.randomMessageIndex
+    , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
     }
 
 
@@ -153,14 +155,14 @@ update msg model =
             )
 
         UpdateTimes now ->
-            updateTimes (toFloat (posixToMillis now)) model
+            updateTimes now model
 
         -- Summary and Retry
         IncrementProgress ->
             handleIncrementProgress model
 
         DecrementLives ->
-            ( addTimeTillNextLife model, Cmd.none )
+            ( { model | scene = Scene.map decrementLife model.scene }, Cmd.none )
 
 
 withLoadingScreen : Msg -> Cmd Msg
@@ -337,6 +339,24 @@ handleIntroMsg introMsg model =
 -- Misc
 
 
+updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
+updateTimes now model =
+    let
+        nextModel =
+            { model | scene = Scene.map (updateLives now) model.scene }
+    in
+    ( nextModel, saveCurrentLives nextModel )
+
+
+saveCurrentLives : Model -> Cmd Msg
+saveCurrentLives model =
+    model.scene
+        |> Scene.getShared
+        |> .lives
+        |> Lives.toCache
+        |> cacheLives
+
+
 bounceKeyframes : Window.Size -> Cmd msg
 bounceKeyframes window =
     generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window
@@ -435,95 +455,12 @@ levelCompleteScrollNumber model =
         getLevelNumber <| Maybe.withDefault ( 1, 1 ) shared.currentLevel
 
 
-
--- Life Timers
-
-
-initLastPlayed : Flags -> Float
-initLastPlayed flags =
-    flags.times
-        |> Maybe.map .lastPlayed
-        |> Maybe.withDefault flags.now
-
-
-initTimeTillNextLife : Flags -> Float
-initTimeTillNextLife flags =
-    flags.times
-        |> Maybe.map (\t -> decrementAboveZero (flags.now - t.lastPlayed) t.timeTillNextLife)
-        |> Maybe.withDefault 0
-
-
-updateTimes : Float -> Model -> ( Model, Cmd Msg )
-updateTimes now model =
-    let
-        newModel =
-            countDownToNextLife now model
-    in
-    ( newModel
-    , handleCacheTimes newModel
-    )
-
-
-handleCacheTimes : Model -> Cmd msg
-handleCacheTimes model =
-    -- FIXME
-    -- cacheTimes
-    --     { timeTillNextLife = model.timeTillNextLife
-    --     , lastPlayed = model.lastPlayed
-    --     }
-    Cmd.none
-
-
-countDownToNextLife : Float -> Model -> Model
-countDownToNextLife now model =
-    -- FIXME
-    -- if model.timeTillNextLife <= 0 then
-    --     { model | lastPlayed = now }
-    --
-    -- else
-    --     let
-    --         newTimeTillNextLife =
-    --             decrementAboveZero (now - model.lastPlayed) model.timeTillNextLife
-    --
-    --         lifeVal =
-    --             floor <| livesLeft newTimeTillNextLife
-    --     in
-    --     { model
-    --         | timeTillNextLife = newTimeTillNextLife
-    --         , lastPlayed = now
-    --     }
-    model
-
-
 currentLevel : Model -> Progress
 currentLevel model =
-    -- FIXME
-    -- model.currentLevel |> Maybe.withDefault ( 1, 1 )
-    ( 1, 1 )
-
-
-livesLeft : Float -> Float
-livesLeft timeTill =
-    (timeTill - (lifeRecoveryInterval * maxLives)) / -lifeRecoveryInterval
-
-
-addTimeTillNextLife : Model -> Model
-addTimeTillNextLife model =
-    -- FIXME
-    -- { model | timeTillNextLife = model.timeTillNextLife + lifeRecoveryInterval }
-    model
-
-
-decrementLives : Transit Int -> Transit Int
-decrementLives lifeState =
-    lifeState
-        |> Transit.map (decrementAboveZero 1)
-        |> Transit.toTransitioning
-
-
-decrementAboveZero : number -> number -> number
-decrementAboveZero x n =
-    clamp 0 100000000000 (n - x)
+    model.scene
+        |> Scene.getShared
+        |> .currentLevel
+        |> Maybe.withDefault ( 1, 1 )
 
 
 
@@ -541,13 +478,7 @@ subscriptions model =
 
 subscribeDecrement : Model -> Sub Msg
 subscribeDecrement model =
-    -- FIXME
-    -- if model.scene == Hub && model.timeTillNextLife > 0 then
-    --     Time.every 100 UpdateTimes
-    --
-    -- else
-    --     Time.every (10 * 1000) UpdateTimes
-    Sub.none
+    Time.every 1000 UpdateTimes
 
 
 sceneSubscriptions : Model -> Sub Msg
