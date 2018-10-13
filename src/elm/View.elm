@@ -11,8 +11,8 @@ import Scene exposing (Scene(..))
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
-import Scenes.Retry exposing (retryView)
-import Scenes.Summary exposing (summaryView)
+import Scenes.Retry as Retry
+import Scenes.Summary as Summary
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
 import Types exposing (Model, Msg(..))
@@ -26,7 +26,7 @@ view model =
         [ animations
         , reset
         , loadingScreen <| Scene.getShared model.scene
-        , keyedDiv <| renderScene model
+        , keyedDiv <| renderScene model.scene
         , backdrop
         ]
 
@@ -36,9 +36,9 @@ keyedDiv =
     K.node "div" []
 
 
-renderScene : Model -> List ( String, Html Msg )
-renderScene model =
-    case model.scene of
+renderScene : Scene -> List ( String, Html Msg )
+renderScene scene =
+    case scene of
         Hub hubModel ->
             [ ( "hub", Hub.view hubModel |> Html.map HubMsg ) ]
 
@@ -51,15 +51,15 @@ renderScene model =
         Level levelModel ->
             [ ( "level", Level.view levelModel |> Html.map LevelMsg ) ]
 
-        Summary summaryModel ->
-            [ ( "summary", summaryView summaryModel ) ]
-
-        Retry retryModel ->
-            [ ( "retry", retryView retryModel ) ]
-
         Tutorial tutorialModel ->
             [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg )
             ]
+
+        Summary summaryModel ->
+            [ ( "summary", Summary.view summaryModel ) ]
+
+        Retry retryModel ->
+            [ ( "retry", Retry.view retryModel ) ]
 
 
 reset : Html Msg

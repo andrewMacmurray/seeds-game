@@ -18,12 +18,12 @@ import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Transit exposing (Transit(..))
+import Data.Wave exposing (wave)
 import Data.Window as Window
 import Dict
 import Exit exposing (continue, exitWith)
-import Helpers.Delay exposing (delay, sequence)
+import Helpers.Delay exposing (after, sequence)
 import Helpers.Html exposing (emptyProperty)
-import Helpers.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
@@ -62,7 +62,7 @@ type Msg
 init : Int -> Shared.Data -> ( Model, Cmd Msg )
 init levelNumber shared =
     ( initialState shared
-    , delay 1000 <| ScrollHubToLevel levelNumber
+    , after 1000 <| ScrollHubToLevel levelNumber
     )
 
 

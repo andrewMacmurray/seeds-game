@@ -1,18 +1,8 @@
-module Helpers.Html exposing
-    ( embeddedStyle
-    , emptyProperty
-    )
+module Helpers.Html exposing (emptyProperty)
 
-import Html exposing (Attribute, Html, node)
+import Html exposing (Attribute)
 import Html.Attributes exposing (property)
-import Html.Events exposing (on, stopPropagationOn)
-import Json.Decode as Json exposing (Decoder, field, float)
 import Json.Encode exposing (string)
-
-
-embeddedStyle : String -> Html msg
-embeddedStyle styleStr =
-    node "style" [ property "textContent" <| string styleStr ] []
 
 
 emptyProperty : Attribute msg

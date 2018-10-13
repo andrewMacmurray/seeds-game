@@ -1,4 +1,4 @@
-module Scenes.Retry exposing (lifeState, retryView, tryAgain)
+module Scenes.Retry exposing (view)
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color exposing (..)
@@ -14,8 +14,8 @@ import Types exposing (..)
 import Views.Lives exposing (renderLivesLeft)
 
 
-retryView : Shared.Data -> Html Msg
-retryView model =
+view : Shared.Data -> Html Msg
+view model =
     div
         [ style
             [ height <| toFloat model.window.height

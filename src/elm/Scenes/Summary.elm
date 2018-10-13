@@ -1,4 +1,4 @@
-module Scenes.Summary exposing (drop, renderResourceBank, renderResourceFill, seedDrop, summaryView)
+module Scenes.Summary exposing (view)
 
 import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, delay, linear)
@@ -8,7 +8,7 @@ import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
 import Data.Level.Types exposing (Progress)
-import Helpers.Wave exposing (wave)
+import Data.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Shared
@@ -19,8 +19,8 @@ import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
 
 
-summaryView : Shared.Data -> Html Msg
-summaryView ({ progress, currentLevel } as model) =
+view : Shared.Data -> Html Msg
+view ({ progress, currentLevel } as model) =
     let
         primarySeed =
             primarySeedType allLevels progress currentLevel |> Maybe.withDefault Sunflower
