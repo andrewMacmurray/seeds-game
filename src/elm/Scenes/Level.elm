@@ -310,12 +310,16 @@ fallDelay moveShape =
 -- UPDATE Helpers
 
 
+type alias HasBoard model =
+    { model | board : Board, boardDimensions : BoardDimensions }
+
+
 handleGenerateTiles : LevelData tutorialConfig -> Model -> Cmd Msg
 handleGenerateTiles levelData { boardDimensions } =
     generateInitialTiles (InitTiles levelData.walls) levelData.tileSettings boardDimensions
 
 
-handleMakeBoard : List TileType -> BoardConfig model -> BoardConfig model
+handleMakeBoard : List TileType -> HasBoard model -> HasBoard model
 handleMakeBoard tileList ({ boardDimensions } as model) =
     { model | board = makeBoard boardDimensions tileList }
 

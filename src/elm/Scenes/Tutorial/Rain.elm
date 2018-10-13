@@ -1,4 +1,4 @@
-module Config.Tutorial.Rain exposing (config)
+module Scenes.Tutorial.Rain exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, rainBoard)

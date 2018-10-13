@@ -1,4 +1,4 @@
-module Config.Tutorial.SeedPod exposing (config)
+module Scenes.Tutorial.SeedPod exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, seedPodBoard)

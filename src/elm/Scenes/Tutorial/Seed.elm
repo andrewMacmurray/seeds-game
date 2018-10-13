@@ -1,4 +1,4 @@
-module Config.Tutorial.Seed exposing (config)
+module Scenes.Tutorial.Seed exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (seedBoard)

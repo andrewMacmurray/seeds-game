@@ -7,6 +7,10 @@ import Data.Board.Types exposing (..)
 import Helpers.Dict exposing (mapValues)
 
 
+type alias HasBoard a =
+    { a | board : Board }
+
+
 mapBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
 mapBlocks f model =
     { model | board = mapValues f model.board }

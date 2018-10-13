@@ -278,7 +278,7 @@ handleDragTile coord model =
     { model | board = addBearings ( coord, tile ) model.board }
 
 
-handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
+handleInsertEnteringTiles : List TileType -> Model -> Model
 handleInsertEnteringTiles tileList =
     mapBoard <| insertNewEnteringTiles tileList
 

@@ -1,4 +1,4 @@
-module Config.Tutorial.Square exposing (config)
+module Scenes.Tutorial.Square exposing (config)
 
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (addBlock, seedBoard)
