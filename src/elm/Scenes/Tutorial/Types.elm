@@ -3,7 +3,6 @@ module Scenes.Tutorial.Types exposing (Sequence, TutorialConfig, TutorialModel, 
 import Data.Board.Types exposing (Board, BoardDimensions, Coord, MoveShape, SeedType, TileType)
 import Data.Window as Window
 import Dict exposing (Dict)
-import Scenes.Level.Types exposing (LevelModel, LevelMsg)
 import Shared
 
 

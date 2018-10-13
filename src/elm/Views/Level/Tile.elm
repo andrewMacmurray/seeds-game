@@ -19,7 +19,6 @@ import Data.Window as Window exposing (Size)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
-import Scenes.Level.Types as Level exposing (..)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 

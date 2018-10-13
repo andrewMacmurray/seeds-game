@@ -10,7 +10,7 @@ import Html.Keyed as K
 import Scene exposing (Scene(..))
 import Scenes.Hub.View exposing (hubView)
 import Scenes.Intro.View exposing (introView)
-import Scenes.Level.View exposing (levelView)
+import Scenes.Level as Level
 import Scenes.Retry exposing (retryView)
 import Scenes.Summary exposing (summaryView)
 import Scenes.Title as Title
@@ -49,7 +49,7 @@ renderScene model =
             [ ( "title", Title.view titleModel |> Html.map TitleMsg ) ]
 
         Level levelModel ->
-            [ ( "level", levelView levelModel |> Html.map LevelMsg ) ]
+            [ ( "level", Level.view levelModel |> Html.map LevelMsg ) ]
 
         Summary summaryModel ->
             [ ( "summary", summaryView summaryModel ) ]

@@ -52,8 +52,7 @@ import Scenes.Hub.State as Hub
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Scenes.Intro.State as Intro
 import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
-import Scenes.Level.State as Level
-import Scenes.Level.Types exposing (LevelModel, LevelMsg, LevelStatus(..))
+import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial.State as Tutorial
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
@@ -292,7 +291,7 @@ exitTitle model destination =
             ( model, trigger LoadIntro )
 
 
-handleLevelMsg : LevelMsg -> Model -> ( Model, Cmd Msg )
+handleLevelMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
 handleLevelMsg levelMsg model =
     case model.scene of
         Level levelModel ->
@@ -306,16 +305,16 @@ handleLevelMsg levelMsg model =
             ( model, Cmd.none )
 
 
-exitLevel : Model -> LevelStatus -> ( Model, Cmd Msg )
+exitLevel : Model -> Level.Status -> ( Model, Cmd Msg )
 exitLevel model levelStatus =
     case levelStatus of
-        Win ->
+        Level.Win ->
             ( model, trigger LevelWin )
 
-        Lose ->
+        Level.Lose ->
             ( model, trigger LevelLose )
 
-        InProgress ->
+        Level.InProgress ->
             ( model, Cmd.none )
 
 

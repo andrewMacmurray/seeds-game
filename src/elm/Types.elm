@@ -13,7 +13,7 @@ import Ports exposing (RawProgress, Times)
 import Scene exposing (Scene)
 import Scenes.Hub.Types exposing (HubModel, HubMsg)
 import Scenes.Intro.Types exposing (IntroModel, IntroMsg)
-import Scenes.Level.Types exposing (LevelModel, LevelMsg)
+import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial.Types exposing (TutorialConfig, TutorialModel, TutorialMsg)
 import Shared
@@ -36,7 +36,7 @@ type alias Model =
 
 type Msg
     = TitleMsg Title.Msg
-    | LevelMsg LevelMsg
+    | LevelMsg Level.Msg
     | TutorialMsg TutorialMsg
     | IntroMsg IntroMsg
     | HubMsg HubMsg
