@@ -4,7 +4,6 @@ module Types exposing
     , Msg(..)
     )
 
-import Data.Background exposing (Background)
 import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
 import Data.Lives as Lives
@@ -17,7 +16,7 @@ import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
-import Shared
+import Shared exposing (Background)
 import Time exposing (Posix)
 
 

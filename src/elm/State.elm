@@ -4,10 +4,9 @@ module State exposing
     , update
     )
 
-import Browser.Events
+import Browser.Events exposing (onResize)
 import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
-import Data.Background exposing (..)
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
 import Data.Lives as Lives
@@ -132,7 +131,7 @@ update msg model =
             ( model, sequence <| levelLoseSequence model )
 
         ShowLoadingScreen ->
-            ( model, genRandomBackground RandomBackground )
+            ( model, generateBackground RandomBackground )
 
         RandomBackground background ->
             ( { model | scene = Scene.map (showLoadingScreen background) model.scene }, Cmd.none )
@@ -470,7 +469,7 @@ currentLevel model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Browser.Events.onResize WindowSize
+        [ onResize WindowSize
         , subscribeDecrement model
         , sceneSubscriptions model
         ]
