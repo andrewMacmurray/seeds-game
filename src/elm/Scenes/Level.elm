@@ -29,7 +29,7 @@ import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, TileSetting)
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Data.Window as Window
+import Shared exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence, trigger)
@@ -543,7 +543,7 @@ boardLayout model =
         ]
 
 
-renderLineLayer : Window.Size -> Move -> Html msg
+renderLineLayer : Window -> Move -> Html msg
 renderLineLayer window (( coord, _ ) as move) =
     div
         [ styles

@@ -20,7 +20,7 @@ import Css.Transition exposing (transitionAll)
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (TileSetting)
-import Data.Window as Window
+import Shared exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Icons.Tick exposing (tickBackground)
@@ -28,7 +28,7 @@ import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 
 
 type alias TopBarViewModel =
-    { window : Window.Size
+    { window : Window
     , remainingMoves : Int
     , tileSettings : List TileSetting
     , scores : Scores

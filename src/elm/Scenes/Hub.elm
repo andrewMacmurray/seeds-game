@@ -20,7 +20,7 @@ import Data.Level.Types exposing (..)
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
-import Data.Window as Window
+import Shared exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after, sequence)

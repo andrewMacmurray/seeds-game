@@ -10,9 +10,7 @@ import Config.Scale as ScaleConfig
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
 import Data.Lives as Lives
-import Data.Transit as Transit exposing (Transit(..))
 import Data.Visibility exposing (Visibility(..))
-import Data.Window as Window
 import Exit
 import Helpers.Delay exposing (..)
 import Ports exposing (..)
@@ -150,7 +148,7 @@ update msg model =
 
         WindowSize width height ->
             ( { model | scene = Scene.map (setWindow width height) model.scene }
-            , bounceKeyframes <| Window.Size width height
+            , bounceKeyframes <| Window width height
             )
 
         UpdateTimes now ->
@@ -356,7 +354,7 @@ saveCurrentLives model =
         |> cacheLives
 
 
-bounceKeyframes : Window.Size -> Cmd msg
+bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
     generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window
 

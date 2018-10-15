@@ -1,6 +1,7 @@
 module Shared exposing
     ( Background(..)
     , Data
+    , Window
     , decrementLife
     , generateBackground
     , hideLoadingScreen
@@ -15,13 +16,12 @@ module Shared exposing
 import Data.Level.Progress as Progress
 import Data.Level.Types exposing (AllLevels, Progress)
 import Data.Lives as Lives exposing (Lives)
-import Data.Window as Window
 import Random
 import Time
 
 
 type alias Data =
-    { window : Window.Size
+    { window : Window
     , loadingScreen : Maybe Background
     , progress : Progress
     , currentLevel : Maybe Progress
@@ -38,11 +38,6 @@ setCurrentLevel level data =
 hideLoadingScreen : Data -> Data
 hideLoadingScreen data =
     { data | loadingScreen = Nothing }
-
-
-setWindow : Int -> Int -> Data -> Data
-setWindow width height data =
-    { data | window = Window.Size width height }
 
 
 incrementProgress : AllLevels a -> Data -> Data
@@ -63,6 +58,21 @@ updateLives now data =
 decrementLife : Data -> Data
 decrementLife data =
     { data | lives = Lives.decrement data.lives }
+
+
+
+-- Window
+
+
+type alias Window =
+    { width : Int
+    , height : Int
+    }
+
+
+setWindow : Int -> Int -> Data -> Data
+setWindow width height data =
+    { data | window = Window width height }
 
 
 

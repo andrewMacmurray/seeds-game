@@ -7,7 +7,7 @@ import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
 import Data.Board.Types exposing (Board, BoardDimensions)
 import Data.Pointer exposing (Pointer)
-import Data.Window as Window
+import Shared exposing (Window)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -15,7 +15,7 @@ import Views.Level.Styles exposing (..)
 
 
 type alias LineViewModel =
-    { window : Window.Size
+    { window : Window
     , boardDimensions : BoardDimensions
     , board : Board
     , isDragging : Bool

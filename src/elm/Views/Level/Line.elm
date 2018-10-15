@@ -3,7 +3,7 @@ module Views.Level.Line exposing (renderLine)
 import Config.Scale exposing (tileScaleFactor)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
-import Data.Window as Window
+import Shared exposing (Window)
 import Css.Style as Style exposing (Style, marginAuto, svgStyle, svgStyles)
 import Css.Transform as Transform exposing (..)
 import Html exposing (Html, span)
@@ -12,7 +12,7 @@ import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (strokeColors)
 
 
-renderLine : Window.Size -> Move -> Html msg
+renderLine : Window -> Move -> Html msg
 renderLine window ( coord, block ) =
     let
         tileState =
@@ -35,7 +35,7 @@ renderLine window ( coord, block ) =
             span [] []
 
 
-line_ : Window.Size -> TileType -> MoveBearing -> Html msg
+line_ : Window -> TileType -> MoveBearing -> Html msg
 line_ window tileType bearing =
     let
         tileScale =
@@ -62,7 +62,7 @@ line_ window tileType bearing =
         ]
 
 
-lineTransforms : Window.Size -> MoveBearing -> Style
+lineTransforms : Window -> MoveBearing -> Style
 lineTransforms window bearing =
     let
         xOffset =

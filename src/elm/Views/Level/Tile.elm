@@ -15,15 +15,15 @@ import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Window as Window exposing (Size)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
+import Shared exposing (Window)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 
-renderTile_ : List Style -> Window.Size -> Maybe MoveShape -> Move -> Html msg
+renderTile_ : List Style -> Window -> Maybe MoveShape -> Move -> Html msg
 renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
     div
         [ styles
@@ -39,12 +39,12 @@ renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
         ]
 
 
-tracer : Window.Size -> Move -> Html msg
+tracer : Window -> Move -> Html msg
 tracer window move =
     makeInnerTile (moveTracerStyles move) window move
 
 
-wall : Window.Size -> Move -> Html msg
+wall : Window -> Move -> Html msg
 wall window move =
     div
         [ style <| wallStyles window move
@@ -53,12 +53,12 @@ wall window move =
         []
 
 
-innerTile : Window.Size -> Maybe MoveShape -> Move -> Html msg
+innerTile : Window -> Maybe MoveShape -> Move -> Html msg
 innerTile window moveShape move =
     makeInnerTile (draggingStyles moveShape move) window move
 
 
-makeInnerTile : List Style -> Window.Size -> Move -> Html msg
+makeInnerTile : List Style -> Window -> Move -> Html msg
 makeInnerTile extraStyles window (( _, tile ) as move) =
     div
         [ styles
@@ -70,7 +70,7 @@ makeInnerTile extraStyles window (( _, tile ) as move) =
         [ innerSeed tile ]
 
 
-baseTileStyles : Window.Size -> Move -> List Style
+baseTileStyles : Window -> Move -> List Style
 baseTileStyles window (( _, tile ) as move) =
     List.concat
         [ growingStyles move

@@ -39,12 +39,12 @@ import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Window as Window
+import Shared exposing (Window)
 import Dict exposing (Dict)
 
 
 type alias TileViewModel =
-    ( Window.Size, BoardDimensions )
+    ( Window, BoardDimensions )
 
 
 boardMarginTop : TileViewModel -> Style
@@ -72,17 +72,17 @@ boardWidth (( window, dimensions ) as model) =
     tileWidth window * dimensions.x
 
 
-boardFullWidth : Window.Size -> Int
+boardFullWidth : Window -> Int
 boardFullWidth window =
     tileWidth window * 8
 
 
-tileWidth : Window.Size -> Int
+tileWidth : Window -> Int
 tileWidth window =
     round <| ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor window
 
 
-tileCoordsStyles : Window.Size -> Coord -> List Style
+tileCoordsStyles : Window -> Coord -> List Style
 tileCoordsStyles window coord =
     let
         ( y, x ) =
@@ -95,7 +95,7 @@ tileCoordsStyles window coord =
     ]
 
 
-tilePosition : Window.Size -> Coord -> ( Float, Float )
+tilePosition : Window -> Coord -> ( Float, Float )
 tilePosition window ( y, x ) =
     let
         tileScale =
@@ -106,7 +106,7 @@ tilePosition window ( y, x ) =
     )
 
 
-wallStyles : Window.Size -> Move -> List Style
+wallStyles : Window -> Move -> List Style
 wallStyles window ( _, block ) =
     let
         wallSize =
@@ -188,7 +188,7 @@ draggingStyles moveShape ( _, tileState ) =
         []
 
 
-tileWidthheights : Window.Size -> List Style
+tileWidthheights : Window -> List Style
 tileWidthheights window =
     let
         tileScale =

@@ -14,14 +14,14 @@ import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
-import Data.Window as Window
+import Shared exposing (Window)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
 
 
-growingSeeds : Window.Size -> Visibility -> Html msg
+growingSeeds : Window -> Visibility -> Html msg
 growingSeeds window vis =
     div [ class "flex justify-center" ] <|
         [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) seedsLeft
@@ -56,7 +56,7 @@ sideSeedsContainer vis =
             div [ class "o-0 flex justify-center" ]
 
 
-growingSeed : Window.Size -> ( Int, SeedType, Float ) -> Html msg
+growingSeed : Window -> ( Int, SeedType, Float ) -> Html msg
 growingSeed window ( index, seedType, scale ) =
     let
         delayMs =

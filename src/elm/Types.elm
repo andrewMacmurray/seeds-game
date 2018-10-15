@@ -8,7 +8,6 @@ import Data.InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, Progress)
 import Data.Lives as Lives
 import Data.Visibility exposing (Visibility)
-import Data.Window as Window
 import Ports exposing (RawProgress)
 import Scene exposing (Scene)
 import Scenes.Hub as Hub
@@ -16,7 +15,7 @@ import Scenes.Intro as Intro
 import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
-import Shared exposing (Background)
+import Shared exposing (Background, Window)
 import Time exposing (Posix)
 
 
@@ -25,7 +24,7 @@ type alias Flags =
     , lives : Maybe Lives.Cache
     , rawProgress : Maybe RawProgress
     , randomMessageIndex : Int
-    , window : Window.Size
+    , window : Window
     }
 
 

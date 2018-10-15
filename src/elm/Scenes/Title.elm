@@ -14,7 +14,7 @@ import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Level.Types exposing (Progress)
 import Data.Visibility as Visibility exposing (..)
-import Data.Window as Window
+import Shared exposing (Window)
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
@@ -134,7 +134,7 @@ handleStart progress =
         onClick GoToHub
 
 
-percentWindowHeight : Float -> Window.Size -> Float
+percentWindowHeight : Float -> Window -> Float
 percentWindowHeight percent window =
     toFloat window.height / 100 * percent
 

@@ -25,7 +25,7 @@ import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (LevelData)
 import Data.Tutorial exposing (getText)
-import Data.Window as Window
+import Shared exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (pause, sequence, trigger)

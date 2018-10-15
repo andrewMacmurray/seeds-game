@@ -10,7 +10,7 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Visibility exposing (..)
-import Data.Window as Window
+import Shared exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
@@ -197,6 +197,6 @@ renderScene model =
             rollingHills vis
 
 
-textOffset : Window.Size -> Style
+textOffset : Window -> Style
 textOffset window =
     marginTop <| toFloat <| (window.height // 2) - 120
