@@ -23,9 +23,7 @@ import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (LevelData)
 import Data.Tutorial exposing (getText)
-import Shared exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (pause, sequence, trigger)
@@ -33,7 +31,7 @@ import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Shared
+import Shared exposing (Window)
 import Task
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
@@ -97,7 +95,6 @@ type Msg
     | ShowContainer
     | HideCanvas
     | ResetBoard Board
-    | ResetVisibilities
     | NextText
     | SkipTutorial
     | DisableTutorial
@@ -230,26 +227,12 @@ update msg model =
         DisableTutorial ->
             continue { model | skipped = True } []
 
-        ResetVisibilities ->
-            continue (resetVisibilities model) []
-
         ExitTutorial ->
-            exit model [ trigger ResetVisibilities ]
+            exit model []
 
 
 
 -- UPDATE Helpers
-
-
-resetVisibilities : Model -> Model
-resetVisibilities model =
-    { model
-        | boardVisible = True
-        , textVisible = True
-        , resourceBankVisible = False
-        , containerVisible = False
-        , canvasVisible = True
-    }
 
 
 skipSequence : Cmd Msg

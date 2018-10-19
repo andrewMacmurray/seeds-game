@@ -20,7 +20,6 @@ import Data.Level.Types exposing (..)
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
-import Shared exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after, sequence)
@@ -29,7 +28,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial as Tutorial
-import Shared
+import Shared exposing (Window)
 import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
