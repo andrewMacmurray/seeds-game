@@ -9,7 +9,6 @@ module Scenes.Level exposing
 
 import Browser.Events
 import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
-import Config.Text exposing (failureMessage, getSuccessMessage)
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
@@ -29,9 +28,10 @@ import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, TileSetting)
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Dict
+import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence, trigger)
+import Helpers.Dict exposing (indexedDictFrom)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
@@ -454,6 +454,34 @@ hasLost { remainingMoves, levelStatus } =
 hasWon : Model -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
+
+
+
+-- Status Messages
+
+
+getSuccessMessage : Int -> String
+getSuccessMessage i =
+    let
+        ii =
+            modBy (Dict.size successMessages) i
+    in
+    Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
+
+
+successMessages : Dict Int String
+successMessages =
+    indexedDictFrom 0
+        [ "Amazing!"
+        , "Awesome!"
+        , "Success!"
+        , "Win!"
+        ]
+
+
+failureMessage : String
+failureMessage =
+    "No more moves!"
 
 
 
