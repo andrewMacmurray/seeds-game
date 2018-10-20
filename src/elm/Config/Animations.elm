@@ -1,6 +1,6 @@
 module Config.Animations exposing (animations)
 
-import Css.Animation as Animation exposing (KeyframeProperty, KeyframesAnimation, frame, keyframes, opacity, transform)
+import Css.Animation as Animation exposing (frame, keyframes, opacity, transform)
 import Css.Transform exposing (rotateZ, scale, translateX, translateY)
 import Html exposing (Html)
 
@@ -171,11 +171,11 @@ heartBreakRight =
         ]
 
 
-toScale : Float -> KeyframeProperty
+toScale : Float -> Animation.Property
 toScale n =
     transform [ scale n ]
 
 
-toY : Float -> KeyframeProperty
+toY : Float -> Animation.Property
 toY n =
     transform [ translateY n ]

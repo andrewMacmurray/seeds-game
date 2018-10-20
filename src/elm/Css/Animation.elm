@@ -1,8 +1,8 @@
 module Css.Animation exposing
-    ( AnimationOption
-    , Frame
-    , KeyframeProperty
-    , KeyframesAnimation
+    ( Frame
+    , Keyframes
+    , Option
+    , Property
     , animation
     , cubicBezier
     , delay
@@ -33,11 +33,11 @@ import Json.Encode
 --         []
 
 
-type AnimationOption
-    = AnimationOption Style
+type Option
+    = Option Style
 
 
-animation : String -> Int -> List AnimationOption -> Style
+animation : String -> Int -> List Option -> Style
 animation name duration options =
     [ [ animationName name
       , animationDuration duration
@@ -49,34 +49,34 @@ animation name duration options =
         |> Style.compose
 
 
-delay : Int -> AnimationOption
+delay : Int -> Option
 delay duration =
-    animationOption <| animationDelay duration
+    option <| animationDelay duration
 
 
-ease : AnimationOption
+ease : Option
 ease =
-    animationOption <| animationTimingFunction "ease"
+    option <| animationTimingFunction "ease"
 
 
-easeOut : AnimationOption
+easeOut : Option
 easeOut =
-    animationOption <| animationTimingFunction "ease-out"
+    option <| animationTimingFunction "ease-out"
 
 
-linear : AnimationOption
+linear : Option
 linear =
-    animationOption <| animationTimingFunction "linear"
+    option <| animationTimingFunction "linear"
 
 
-cubicBezier : Float -> Float -> Float -> Float -> AnimationOption
+cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
-    animationOption <| animationTimingFunction (cubicBezier_ a b c d)
+    option <| animationTimingFunction (cubicBezier_ a b c d)
 
 
-infinite : AnimationOption
+infinite : Option
 infinite =
-    animationOption <| animationIterationCount "infinite"
+    option <| animationIterationCount "infinite"
 
 
 
@@ -113,14 +113,14 @@ fillForwards =
     Style.property "animation-fill-mode" "forwards"
 
 
-animationOption : Style -> AnimationOption
-animationOption =
-    AnimationOption
+option : Style -> Option
+option =
+    Option
 
 
-toStyles : List AnimationOption -> List Style
+toStyles : List Option -> List Style
 toStyles =
-    List.map (\(AnimationOption s) -> s)
+    List.map (\(Option s) -> s)
 
 
 
@@ -134,47 +134,47 @@ toStyles =
 --         ]
 
 
-type KeyframesAnimation
-    = KeyframesAnimation String (List Frame)
+type Keyframes
+    = Keyframes String (List Frame)
 
 
 type Frame
-    = Frame Float (List KeyframeProperty)
+    = Frame Float (List Property)
 
 
-type KeyframeProperty
-    = KeyframeProperty Style
+type Property
+    = Property Style
 
 
 
 -- Construct Keyframes
 
 
-keyframes : String -> List Frame -> KeyframesAnimation
+keyframes : String -> List Frame -> Keyframes
 keyframes =
-    KeyframesAnimation
+    Keyframes
 
 
-frame : Float -> List KeyframeProperty -> Frame
+frame : Float -> List Property -> Frame
 frame =
     Frame
 
 
-transform : List Transform -> KeyframeProperty
+transform : List Transform -> Property
 transform =
-    KeyframeProperty << Style.transform
+    Property << Style.transform
 
 
-opacity : Float -> KeyframeProperty
+opacity : Float -> Property
 opacity =
-    KeyframeProperty << Style.opacity
+    Property << Style.opacity
 
 
 
 -- Embed Keyframes
 
 
-embed : List KeyframesAnimation -> Html msg
+embed : List Keyframes -> Html msg
 embed frames =
     let
         renderedKeyframes =
@@ -186,8 +186,8 @@ embed frames =
     Html.node "style" [ Html.Attributes.property "textContent" renderedKeyframes ] []
 
 
-render : KeyframesAnimation -> String
-render (KeyframesAnimation name frames) =
+render : Keyframes -> String
+render (Keyframes name frames) =
     join [ "@keyframes", name, "{", renderFrames frames, "}" ]
 
 
@@ -198,16 +198,16 @@ renderFrames =
 
 renderFrame : Frame -> String
 renderFrame (Frame n props) =
-    join [ pc n, "{", renderProps props, "}" ]
+    join [ pc n, "{", renderProperties props, "}" ]
 
 
-renderProps : List KeyframeProperty -> String
-renderProps =
+renderProperties : List Property -> String
+renderProperties =
     List.map getStyle >> Style.renderStyles_
 
 
-getStyle : KeyframeProperty -> Style
-getStyle (KeyframeProperty s) =
+getStyle : Property -> Style
+getStyle (Property s) =
     s
 
 
