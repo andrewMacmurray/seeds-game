@@ -29,14 +29,13 @@ import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, TileSetting)
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Shared exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
-import Shared
+import Shared exposing (Window)
 import Task
 import Views.Backdrop exposing (backdrop)
 import Views.InfoWindow exposing (infoContainer)
@@ -529,7 +528,7 @@ renderLines : Model -> List (Html msg)
 renderLines model =
     model.board
         |> Dict.toList
-        |> List.map (renderLineLayer model.shared.window)
+        |> List.map (renderLine model.shared.window)
 
 
 boardLayout : Model -> List (Html msg) -> Html msg
@@ -541,18 +540,6 @@ boardLayout model =
             ]
         , class "relative z-3 center flex flex-wrap"
         ]
-
-
-renderLineLayer : Window -> Move -> Html msg
-renderLineLayer window (( coord, _ ) as move) =
-    div
-        [ styles
-            [ tileWidthheights window
-            , tileCoordsStyles window coord
-            ]
-        , class "dib absolute touch-disabled"
-        ]
-        [ renderLine window move ]
 
 
 hanldeMoveEvents : Model -> Move -> Attribute Msg
