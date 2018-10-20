@@ -21,7 +21,7 @@ import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
 import Dict
-import Exit exposing (continue, exitWith)
+import Data.Exit as Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after, sequence)
 import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)

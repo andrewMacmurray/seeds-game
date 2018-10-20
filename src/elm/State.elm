@@ -11,7 +11,7 @@ import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
 import Data.Lives as Lives
 import Data.Visibility exposing (Visibility(..))
-import Exit
+import Data.Exit as Exit
 import Helpers.Delay exposing (..)
 import Ports exposing (..)
 import Scene exposing (Scene(..))

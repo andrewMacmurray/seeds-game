@@ -1,4 +1,4 @@
-module Exit exposing
+module Data.Exit exposing
     ( Handler
     , Status
     , With
