@@ -1,8 +1,10 @@
 module Scenes.Hub exposing
     ( Model
     , Msg
+    , getShared
     , init
     , update
+    , updateShared
     , view
     )
 
@@ -53,6 +55,20 @@ type Msg
     | ScrollHubToLevel Levels.Key
     | StartLevel Levels.Key
     | DomNoOp (Result Dom.Error ())
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
 
 
 

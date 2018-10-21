@@ -6,17 +6,16 @@ import Config.Scale as ScaleConfig
 import Css.Color exposing (darkYellow)
 import Css.Style exposing (color, style)
 import Data.Exit as Exit
-import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
-import Data.Visibility exposing (Visibility(..))
 import Helpers.Delay exposing (..)
-import Html exposing (..)
+import Html exposing (Html, div, p, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
 import Ports exposing (..)
+import Scene exposing (Scene(..))
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
@@ -25,7 +24,6 @@ import Scenes.Summary as Summary
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
 import Shared exposing (..)
-import Task
 import Time exposing (millisToPosix)
 import Views.Animations exposing (animations)
 import Views.Backdrop exposing (backdrop)
@@ -95,70 +93,6 @@ type Msg
 
 
 
--- Scene
-
-
-type Scene
-    = Title Title.Model
-    | Level Level.Model
-    | Tutorial Tutorial.Model
-    | Intro Intro.Model
-    | Hub Hub.Model
-    | Summary Shared.Data
-    | Retry Shared.Data
-
-
-mapScene : (Shared.Data -> Shared.Data) -> Scene -> Scene
-mapScene f scene =
-    case scene of
-        Title titleModel ->
-            Title { titleModel | shared = f titleModel.shared }
-
-        Level levelModel ->
-            Level { levelModel | shared = f levelModel.shared }
-
-        Tutorial tutorialModel ->
-            Tutorial { tutorialModel | shared = f tutorialModel.shared }
-
-        Intro introModel ->
-            Intro { introModel | shared = f introModel.shared }
-
-        Hub hubModel ->
-            Hub { hubModel | shared = f hubModel.shared }
-
-        Summary shared ->
-            Summary <| f shared
-
-        Retry shared ->
-            Retry <| f shared
-
-
-getShared : Scene -> Shared.Data
-getShared scene =
-    case scene of
-        Title { shared } ->
-            shared
-
-        Level { shared } ->
-            shared
-
-        Tutorial { shared } ->
-            shared
-
-        Intro { shared } ->
-            shared
-
-        Hub { shared } ->
-            shared
-
-        Summary shared ->
-            shared
-
-        Retry shared ->
-            shared
-
-
-
 -- Init
 
 
@@ -209,7 +143,7 @@ update msg model =
             handleIntroMsg introMsg model
 
         IncrementSuccessMessageIndex ->
-            ( { model | scene = mapScene incrementMessageIndex model.scene }, Cmd.none )
+            ( { model | scene = Scene.map incrementMessageIndex model.scene }, Cmd.none )
 
         StartLevel level ->
             case Worlds.tutorial level of
@@ -264,13 +198,13 @@ update msg model =
             ( model, generateBackground RandomBackground )
 
         RandomBackground background ->
-            ( { model | scene = mapScene (showLoadingScreen background) model.scene }, Cmd.none )
+            ( { model | scene = Scene.map (showLoadingScreen background) model.scene }, Cmd.none )
 
         HideLoadingScreen ->
-            ( { model | scene = mapScene hideLoadingScreen model.scene }, Cmd.none )
+            ( { model | scene = Scene.map hideLoadingScreen model.scene }, Cmd.none )
 
         SetCurrentLevel progress ->
-            ( { model | scene = mapScene (setCurrentLevel progress) model.scene }, Cmd.none )
+            ( { model | scene = Scene.map (setCurrentLevel progress) model.scene }, Cmd.none )
 
         GoToHub ->
             ( model, withLoadingScreen <| LoadHub <| getProgress model )
@@ -279,7 +213,7 @@ update msg model =
             ( model, clearCache )
 
         WindowSize width height ->
-            ( { model | scene = mapScene (setWindow width height) model.scene }
+            ( { model | scene = Scene.map (setWindow width height) model.scene }
             , bounceKeyframes <| Window width height
             )
 
@@ -291,7 +225,7 @@ update msg model =
             handleIncrementProgress model
 
         DecrementLives ->
-            ( { model | scene = mapScene decrementLife model.scene }, Cmd.none )
+            ( { model | scene = Scene.map decrementLife model.scene }, Cmd.none )
 
 
 withLoadingScreen : Msg -> Cmd Msg
@@ -333,12 +267,12 @@ loadHub level =
 
 loadSummary : Model -> Model
 loadSummary model =
-    { model | scene = Summary <| getShared model.scene }
+    { model | scene = Summary <| Scene.getShared model.scene }
 
 
 loadRetry : Model -> Model
 loadRetry model =
-    { model | scene = Retry <| getShared model.scene }
+    { model | scene = Retry <| Scene.getShared model.scene }
 
 
 loadScene :
@@ -348,7 +282,7 @@ loadScene :
     -> Model
     -> ( Model, Cmd Msg )
 loadScene modelF msg initF model =
-    getShared model.scene
+    Scene.getShared model.scene
         |> initF
         |> updateWith modelF msg model
 
@@ -472,7 +406,7 @@ updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
 updateTimes now model =
     let
         nextModel =
-            { model | scene = mapScene (updateLives now) model.scene }
+            { model | scene = Scene.map (updateLives now) model.scene }
     in
     ( nextModel, saveCurrentLives nextModel )
 
@@ -480,7 +414,7 @@ updateTimes now model =
 saveCurrentLives : Model -> Cmd Msg
 saveCurrentLives model =
     model.scene
-        |> getShared
+        |> Scene.getShared
         |> .lives
         |> Lives.toCache
         |> cacheLives
@@ -503,12 +437,12 @@ handleIncrementProgress model =
     -- FIXME put me in Success scene
     -- let
     --     shared =
-    --         getShared model.scene
+    --         Scene.getShared model.scene
     --
     --     progress =
     --         incrementProgress allLevels shared.currentLevel shared.progress
     -- in
-    -- ( { model | scene = mapScene (incrementProgress allLevels) model.scene }
+    -- ( { model | scene = Scene.map (incrementProgress allLevels) model.scene }
     -- , cacheProgress <| fromProgress progress
     -- )
     ( model, Cmd.none )
@@ -516,7 +450,7 @@ handleIncrementProgress model =
 
 getProgress : Model -> Levels.Key
 getProgress model =
-    getShared model.scene |> .progress
+    Scene.getShared model.scene |> .progress
 
 
 levelWinSequence : Model -> List ( Float, Msg )
@@ -526,7 +460,7 @@ levelWinSequence model =
             backToHubSequence <| levelCompleteKey model
 
         shared =
-            getShared model.scene
+            Scene.getShared model.scene
     in
     if shouldIncrement shared.currentLevel shared.progress then
         [ ( 0, LoadSummary )
@@ -559,7 +493,7 @@ levelCompleteKey : Model -> Levels.Key
 levelCompleteKey model =
     let
         shared =
-            getShared model.scene
+            Scene.getShared model.scene
     in
     if shouldIncrement shared.currentLevel shared.progress then
         Worlds.next shared.progress
@@ -571,7 +505,7 @@ levelCompleteKey model =
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
-        |> getShared
+        |> Scene.getShared
         |> .currentLevel
         |> Maybe.withDefault Levels.empty
 
@@ -618,12 +552,16 @@ sceneSubscriptions model =
             Sub.none
 
 
+
+-- View
+
+
 view : Model -> Html Msg
 view model =
     div []
         [ animations
         , reset
-        , loadingScreen <| getShared model.scene
+        , loadingScreen <| Scene.getShared model.scene
         , keyedDiv <| renderScene model.scene
         , backdrop
         ]
@@ -658,11 +596,7 @@ renderScene scene =
 
         Retry retryModel ->
             [ ( "retry"
-              , Retry.view
-                    { hub = GoToHub
-                    , restart = RestartLevel
-                    }
-                    retryModel
+              , Retry.view { hub = GoToHub, restart = RestartLevel } retryModel
               )
             ]
 

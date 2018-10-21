@@ -3,8 +3,10 @@ module Scenes.Tutorial exposing
     , Model
     , Msg(..)
     , Sequence
+    , getShared
     , init
     , update
+    , updateShared
     , view
     )
 
@@ -23,11 +25,11 @@ import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
+import Data.Exit as Exit exposing (continue, exit)
 import Data.Tutorial exposing (getText)
 import Dict exposing (Dict)
-import Data.Exit as Exit exposing (continue, exit)
-import Helpers.Delay exposing (pause, sequence, trigger)
 import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
@@ -99,6 +101,20 @@ type Msg
     | SkipTutorial
     | DisableTutorial
     | ExitTutorial
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
 
 
 

@@ -1,21 +1,22 @@
 module Scenes.Intro exposing
     ( Model
     , Msg
+    , getShared
     , init
     , update
+    , updateShared
     , view
     )
 
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Visibility exposing (..)
-import Shared exposing (Window)
 import Data.Exit as Exit exposing (continue, exit)
+import Data.Visibility exposing (..)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
-import Shared
+import Shared exposing (Window)
 import Task
 import Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
 import Views.Intro.GrowingSeeds exposing (growingSeeds)
@@ -57,6 +58,20 @@ type Msg
     | HideText
     | KillEnvironment
     | IntroComplete
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
 
 
 

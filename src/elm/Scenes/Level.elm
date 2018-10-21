@@ -2,8 +2,10 @@ module Scenes.Level exposing
     ( Model
     , Msg
     , Status(..)
+    , getShared
     , init
     , update
+    , updateShared
     , view
     )
 
@@ -27,7 +29,7 @@ import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.Exit as Exit exposing (continue, exitWith)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
-import Data.Level.Types exposing (LevelData, TileSetting)
+import Data.Level.Types exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Dict exposing (Dict)
@@ -95,6 +97,20 @@ type Status
     = InProgress
     | Lose
     | Win
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
 
 
 

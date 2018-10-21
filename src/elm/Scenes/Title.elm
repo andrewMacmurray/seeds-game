@@ -2,9 +2,11 @@ module Scenes.Title exposing
     ( Destination(..)
     , Model
     , Msg
+    , getShared
     , init
     , subscriptions
     , update
+    , updateShared
     , view
     )
 
@@ -52,6 +54,24 @@ type FadeDirection
 type Destination
     = Hub
     | Intro
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
+
+
+
+-- Init
 
 
 init : Shared.Data -> Model
