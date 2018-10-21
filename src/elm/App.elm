@@ -618,22 +618,22 @@ view model =
         [ animations
         , reset
         , loadingScreen <| Scene.getShared model.scene
-        , keyedDiv <| renderScene model.scene
-        , renderBackrop model.backdrop
+        , renderStage
+            [ renderScene model.scene
+            , renderBackrop model.backdrop
+            ]
         , background
         ]
 
 
-renderBackrop : Maybe Scene -> Html Msg
-renderBackrop backdrop =
-    backdrop
-        |> Maybe.map (renderScene >> keyedDiv)
-        |> Maybe.withDefault (span [] [])
+renderStage : List (List ( String, Html msg )) -> Html msg
+renderStage =
+    K.node "div" [] << List.concat
 
 
-keyedDiv : List ( String, Html msg ) -> Html msg
-keyedDiv =
-    K.node "div" []
+renderBackrop : Maybe Scene -> List ( String, Html Msg )
+renderBackrop =
+    Maybe.map renderScene >> Maybe.withDefault []
 
 
 renderScene : Scene -> List ( String, Html Msg )
