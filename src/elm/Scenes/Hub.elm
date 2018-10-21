@@ -7,23 +7,22 @@ module Scenes.Hub exposing
     )
 
 import Browser.Dom as Dom
-import Config.Levels exposing (allLevels, getLevelConfig)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Types exposing (..)
+import Data.Exit as Exit exposing (continue, exitWith)
 import Data.InfoWindow as InfoWindow exposing (..)
-import Data.Level.Progress exposing (..)
 import Data.Level.Types exposing (..)
+import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
 import Dict
-import Data.Exit as Exit exposing (continue, exitWith)
+import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (after, sequence)
-import Helpers.Html exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
@@ -34,6 +33,7 @@ import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives exposing (renderLivesLeft)
 import Views.Seed.All exposing (renderSeed)
+import Worlds
 
 
 
@@ -42,16 +42,16 @@ import Views.Seed.All exposing (renderSeed)
 
 type alias Model =
     { shared : Shared.Data
-    , infoWindow : InfoWindow Progress
+    , infoWindow : InfoWindow Levels.Key
     }
 
 
 type Msg
-    = ShowLevelInfo Progress
+    = ShowLevelInfo Levels.Key
     | HideLevelInfo
-    | SetInfoState (InfoWindow Progress)
-    | ScrollHubToLevel Int
-    | StartLevel Progress
+    | SetInfoState (InfoWindow Levels.Key)
+    | ScrollHubToLevel Levels.Key
+    | StartLevel Levels.Key
     | DomNoOp (Result Dom.Error ())
 
 
@@ -59,10 +59,10 @@ type Msg
 -- INIT
 
 
-init : Int -> Shared.Data -> ( Model, Cmd Msg )
-init levelNumber shared =
+init : Levels.Key -> Shared.Data -> ( Model, Cmd Msg )
+init level shared =
     ( initialState shared
-    , after 1000 <| ScrollHubToLevel levelNumber
+    , after 1000 <| ScrollHubToLevel level
     )
 
 
@@ -77,7 +77,7 @@ initialState shared =
 -- UPDATE
 
 
-update : Msg -> Model -> Exit.With Progress ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetInfoState infoWindow ->
@@ -108,9 +108,9 @@ update msg model =
 -- Update Helpers
 
 
-scrollHubToLevel : Int -> Cmd Msg
-scrollHubToLevel levelNumber =
-    getLevelId levelNumber
+scrollHubToLevel : Levels.Key -> Cmd Msg
+scrollHubToLevel level =
+    Levels.toId level
         |> Dom.getElement
         |> Task.andThen scrollLevelToView
         |> Task.attempt DomNoOp
@@ -119,11 +119,6 @@ scrollHubToLevel levelNumber =
 scrollLevelToView : Dom.Element -> Task Dom.Error ()
 scrollLevelToView { element, viewport } =
     Dom.setViewportOf "hub" 0 <| element.y - viewport.height / 2
-
-
-getLevelId : Int -> String
-getLevelId levelNumber =
-    "level-" ++ String.fromInt levelNumber
 
 
 
@@ -159,7 +154,6 @@ renderTopBar model =
         ]
         [ div [ style [ transform [ scale 0.5 ] ] ] lives
         , div [ style [ color darkYellow ], class "f7" ]
-            -- FIXME add time from model
             [ renderCountDown model.shared.lives ]
         ]
 
@@ -198,33 +192,36 @@ renderSecond n =
 renderInfoWindow : Model -> Html Msg
 renderInfoWindow { infoWindow } =
     let
-        progress =
-            InfoWindow.content infoWindow |> Maybe.withDefault ( 1, 1 )
-
-        content =
-            getLevelConfig progress |> infoContent progress
+        level =
+            InfoWindow.content infoWindow |> Maybe.withDefault Levels.empty
     in
     case InfoWindow.state infoWindow of
         InfoWindow.Hidden ->
             span [] []
 
         InfoWindow.Visible ->
-            infoContainer infoWindow <| div [ onClick <| StartLevel progress ] content
+            infoContainer infoWindow <| div [ onClick <| StartLevel level ] <| infoContent level
 
         InfoWindow.Leaving ->
-            infoContainer infoWindow <| div [] content
+            infoContainer infoWindow <| div [] <| infoContent level
 
 
-infoContent : Progress -> CurrentLevelConfig tutorialConfig -> List (Html msg)
-infoContent ( world, level ) ( worldData, levelData ) =
+infoContent : Levels.Key -> List (Html msg)
+infoContent level =
     let
         levelText =
-            levelNumber allLevels ( world, level )
-                |> String.fromInt
-                |> (++) "Level "
+            Worlds.number level
+                |> Maybe.map String.fromInt
+                |> Maybe.map ((++) "Level ")
+                |> Maybe.withDefault ""
+
+        icons =
+            Worlds.getLevel level
+                |> Maybe.map infoIcons
+                |> Maybe.withDefault (span [] [])
     in
     [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
-    , infoIcons levelData worldData.seedType
+    , icons
     , p
         [ style
             [ backgroundColor gold
@@ -237,9 +234,10 @@ infoContent ( world, level ) ( worldData, levelData ) =
     ]
 
 
-infoIcons : LevelData tutorialConfig -> SeedType -> Html msg
-infoIcons levelData seedType =
-    levelData.tileSettings
+infoIcons : Levels.Level -> Html msg
+infoIcons level =
+    Levels.config level
+        |> .tiles
         |> List.filter collectable
         |> List.map renderIcon
         |> infoIconsContainer
@@ -314,7 +312,7 @@ handleHideInfo model =
             onClick HideLevelInfo
 
         _ ->
-            emptyProperty
+            Attribute.emptyProperty
 
 
 
@@ -323,57 +321,49 @@ handleHideInfo model =
 
 renderWorlds : Model -> List (Html Msg)
 renderWorlds model =
-    allLevels
-        |> Dict.toList
-        |> List.reverse
-        |> List.map (renderWorld model)
+    List.map (renderWorld model) Worlds.list
 
 
-renderWorld : Model -> ( WorldNumber, WorldData Tutorial.Config ) -> Html Msg
-renderWorld model (( _, worldData ) as world) =
-    div [ style [ backgroundColor worldData.background ], class "pa5 flex" ]
+renderWorld : Model -> ( Levels.WorldConfig, List Levels.Key ) -> Html Msg
+renderWorld model ( config, levels ) =
+    div [ style [ backgroundColor config.backdropColor ], class "pa5 flex" ]
         [ div
             [ style [ width 300 ], class "center" ]
-            (worldData.levels
-                |> Dict.toList
+            (levels
                 |> List.reverse
-                |> List.map (renderLevel model world)
+                |> List.map (renderLevel model config)
             )
         ]
 
 
-renderLevel :
-    Model
-    -> ( WorldNumber, WorldData Tutorial.Config )
-    -> ( LevelNumber, LevelData Tutorial.Config )
-    -> Html Msg
-renderLevel model ( world, worldData ) ( level, levelData ) =
+renderLevel : Model -> Levels.WorldConfig -> Levels.Key -> Html Msg
+renderLevel model config level =
     let
-        ln =
-            levelNumber allLevels ( world, level )
+        levelNumber =
+            Worlds.number level |> Maybe.withDefault 1
 
         hasReachedLevel =
-            reachedLevel allLevels ( world, level ) model.shared.progress
+            Levels.reached level model.shared.progress
 
         isCurrentLevel =
-            ( world, level ) == model.shared.progress
+            level == model.shared.progress
     in
     div
         [ styles
             [ [ width 35
               , marginTop 50
               , marginBottom 50
-              , color worldData.textColor
+              , color config.textColor
               ]
-            , offsetStyles level
+            , offsetStyles levelNumber
             ]
-        , showInfo ( world, level ) model
+        , showInfo level model
         , class "tc pointer relative"
-        , id <| "level-" ++ String.fromInt ln
+        , id <| Levels.toId level
         ]
         [ currentLevelPointer isCurrentLevel
-        , renderLevelIcon ( world, level ) worldData.seedType model
-        , renderNumber ln hasReachedLevel worldData
+        , renderLevelIcon level config.seedType model
+        , renderNumber levelNumber hasReachedLevel config
         ]
 
 
@@ -403,45 +393,45 @@ offsetStyles levelNumber =
         (levelNumber - 1)
 
 
-renderNumber : Int -> Bool -> WorldData Tutorial.Config -> Html Msg
-renderNumber visibleLevelNumber hasReachedLevel worldData =
+renderNumber : Int -> Bool -> Levels.WorldConfig -> Html Msg
+renderNumber visibleLevelNumber hasReachedLevel config =
     if hasReachedLevel then
         div
             [ style
-                [ backgroundColor worldData.textBackgroundColor
+                [ backgroundColor config.textBackgroundColor
                 , marginTop 10
                 , width 25
                 , height 25
                 ]
             , class "br-100 center flex justify-center items-center"
             ]
-            [ p [ style [ color worldData.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
+            [ p [ style [ color config.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
 
     else
-        p [ style [ color worldData.textColor ] ] [ text <| String.fromInt visibleLevelNumber ]
+        p [ style [ color config.textColor ] ] [ text <| String.fromInt visibleLevelNumber ]
 
 
-showInfo : Progress -> Model -> Attribute Msg
-showInfo currentLevel model =
-    if reachedLevel allLevels currentLevel model.shared.progress && InfoWindow.state model.infoWindow == Hidden then
-        onClick <| ShowLevelInfo currentLevel
-
-    else
-        emptyProperty
-
-
-handleStartLevel : Progress -> Model -> Attribute Msg
-handleStartLevel currentLevel model =
-    if reachedLevel allLevels currentLevel model.shared.progress then
-        onClick <| StartLevel currentLevel
+showInfo : Levels.Key -> Model -> Attribute Msg
+showInfo level model =
+    if Levels.reached level model.shared.progress && InfoWindow.state model.infoWindow == Hidden then
+        onClick <| ShowLevelInfo level
 
     else
-        emptyProperty
+        Attribute.emptyProperty
 
 
-renderLevelIcon : ( WorldNumber, LevelNumber ) -> SeedType -> Model -> Html msg
-renderLevelIcon currentLevel seedType model =
-    if completedLevel allLevels currentLevel model.shared.progress then
+handleStartLevel : Levels.Key -> Model -> Attribute Msg
+handleStartLevel level model =
+    if Levels.reached level model.shared.progress then
+        onClick <| StartLevel level
+
+    else
+        Attribute.emptyProperty
+
+
+renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
+renderLevelIcon level seedType model =
+    if Levels.completed level model.shared.progress then
         renderSeed seedType
 
     else

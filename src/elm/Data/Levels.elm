@@ -1,21 +1,32 @@
-module Data.Level exposing
+module Data.Levels exposing
     ( Cache
     , Key
     , Level
     , LevelConfig
+    , Tutorial(..)
     , World
     , WorldConfig
     , Worlds
     , completed
     , config
+    , empty
     , fromCache
+    , getKeysForWorld
     , getLevel
+    , getLevels
+    , isFirstLevelOfWorld
     , isLastLevelOfWorld
+    , level
+    , next
     , number
     , reached
     , seedType
     , toCache
     , toId
+    , tutorial
+    , withTutorial
+    , world
+    , worlds
     , worldsToList
     )
 
@@ -49,6 +60,11 @@ toCache key =
     { worldId = worldId_ key
     , levelId = levelId_ key
     }
+
+
+empty : Key
+empty =
+    keyFromRaw 1 1
 
 
 toId : Key -> String
@@ -119,12 +135,30 @@ type Tutorial
     | Square
 
 
+
+-- Query Worlds And Levels with Key
+
+
 getLevel : Worlds -> Key -> Maybe Level
 getLevel worlds_ key =
     worlds_
         |> getWorld_ key
         |> Maybe.map unboxLevels_
         |> Maybe.andThen (getLevel_ key)
+
+
+getLevels : Worlds -> Key -> Maybe (List Level)
+getLevels worlds_ key =
+    worlds_
+        |> getWorld_ key
+        |> Maybe.map (unboxLevels_ >> Dict.toList >> List.map Tuple.second)
+
+
+getKeysForWorld : Worlds -> Key -> Maybe (List Key)
+getKeysForWorld worlds_ key =
+    worlds_
+        |> getWorld_ key
+        |> Maybe.map (unboxLevels_ >> levelKeys (worldId_ key))
 
 
 getWorld_ : Key -> Worlds -> Maybe World
@@ -146,6 +180,20 @@ isLastLevelOfWorld worlds_ key =
         |> Maybe.withDefault False
 
 
+isFirstLevelOfWorld : Key -> Bool
+isFirstLevelOfWorld key =
+    levelId_ key == 1
+
+
+next : Worlds -> Key -> Key
+next worlds_ key =
+    if isLastLevelOfWorld worlds_ key then
+        keyFromRaw (worldId_ key + 1) 1
+
+    else
+        keyFromRaw (worldId_ key) (levelId_ key + 1)
+
+
 reached : Key -> Key -> Bool
 reached (Key current) (Key target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId >= target.levelId)
@@ -157,10 +205,8 @@ completed (Key current) (Key target) =
 
 
 tutorial : Worlds -> Key -> Maybe Tutorial
-tutorial worlds_ key =
-    key
-        |> getLevel worlds_
-        |> Maybe.andThen tutorial_
+tutorial worlds_ =
+    getLevel worlds_ >> Maybe.andThen tutorial_
 
 
 tutorial_ : Level -> Maybe Tutorial
@@ -175,6 +221,17 @@ config (Level l) =
     , boardDimensions = l.boardDimensions
     , moves = l.moves
     }
+
+
+seedType : Worlds -> Key -> Maybe SeedType
+seedType worlds_ key =
+    worlds_
+        |> getWorld_ key
+        |> Maybe.map (\(World w) -> w.seedType)
+
+
+
+-- Construct Worlds And Levels
 
 
 worlds : List World -> Worlds
@@ -235,11 +292,16 @@ number worlds_ key =
         worldId_ key
             |> List.range 1
             |> List.map (getWorldSizeFromIndex_ worlds_)
-            |> List.foldr (\size total -> total + Maybe.withDefault 0 size) (levelId_ key)
+            |> List.foldr accumulateSize (levelId_ key)
             |> Just
 
     else
         Nothing
+
+
+accumulateSize : Maybe Int -> Int -> Int
+accumulateSize size total =
+    total + Maybe.withDefault 0 size
 
 
 getWorldSizeFromIndex_ : Worlds -> Int -> Maybe Int
@@ -247,26 +309,27 @@ getWorldSizeFromIndex_ worlds_ i =
     getWorld_ (keyFromRaw i 1) worlds_ |> Maybe.map worldSize
 
 
-seedType : Worlds -> Key -> Maybe SeedType
-seedType worlds_ key =
-    worlds_
-        |> getWorld_ key
-        |> Maybe.map (\(World w) -> w.seedType)
-
-
-worldsToList : Worlds -> List ( WorldConfig, List ( Key, Level ) )
+worldsToList : Worlds -> List ( WorldConfig, List Key )
 worldsToList worlds_ =
     worlds_
         |> unboxWorlds_
         |> Dict.toList
-        |> List.map (\( wIndex, w ) -> ( worldConfig w, levelsToList wIndex <| unboxLevels_ w ))
+        |> List.map configWithKeys
 
 
-levelsToList : Int -> Levels -> List ( Key, Level )
-levelsToList worldIndex levels =
+configWithKeys : ( Int, World ) -> ( WorldConfig, List Key )
+configWithKeys ( worldIndex, world_ ) =
+    ( worldConfig world_
+    , levelKeys worldIndex <| unboxLevels_ world_
+    )
+
+
+levelKeys : Int -> Levels -> List Key
+levelKeys worldIndex levels =
     levels
         |> Dict.toList
-        |> List.map (Tuple.mapFirst (keyFromRaw worldIndex))
+        |> List.map Tuple.first
+        |> List.map (keyFromRaw worldIndex)
 
 
 worldSize : World -> Int

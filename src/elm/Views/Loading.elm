@@ -1,15 +1,16 @@
 module Views.Loading exposing (loadingScreen)
 
-import Config.Levels exposing (allLevels)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
 import Css.Transition exposing (transitionAll)
-import Data.Level.Progress exposing (currentLevelSeedType)
+import Data.Board.Types exposing (SeedType(..))
+import Data.Levels as Levels
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Shared exposing (Background(..))
 import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
+import Worlds
 
 
 loadingScreen : Shared.Data -> Html msg
@@ -25,9 +26,23 @@ loadingScreen model =
             ]
         ]
         [ div [ style [ width 50 ] ]
-            [ renderSeed <| currentLevelSeedType allLevels model.currentLevel model.progress
+            [ renderSeed <| currentLevelSeedType model.currentLevel model.progress
             ]
         ]
+
+
+currentLevelSeedType : Maybe Levels.Key -> Levels.Key -> SeedType
+currentLevelSeedType current progress =
+    current
+        |> Maybe.andThen Worlds.seedType
+        |> Maybe.withDefault (currentProgressSeedType progress)
+
+
+currentProgressSeedType : Levels.Key -> SeedType
+currentProgressSeedType level =
+    level
+        |> Worlds.seedType
+        |> Maybe.withDefault Sunflower
 
 
 backgroundStyle : Maybe Background -> Style

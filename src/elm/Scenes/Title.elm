@@ -12,16 +12,16 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Data.Level.Types exposing (Progress)
-import Data.Visibility as Visibility exposing (..)
-import Shared exposing (Window)
 import Data.Exit as Exit exposing (continue, exitWith)
+import Data.Level.Types exposing (Progress)
+import Data.Levels as Levels
+import Data.Visibility as Visibility exposing (..)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Shared
+import Shared exposing (Window)
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
@@ -125,9 +125,9 @@ view { shared, fadeDirection } =
         ]
 
 
-handleStart : Progress -> Attribute Msg
+handleStart : Levels.Key -> Attribute Msg
 handleStart progress =
-    if progress == ( 1, 1 ) then
+    if progress == Levels.empty then
         onClick PlayIntro
 
     else

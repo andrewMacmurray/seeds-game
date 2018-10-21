@@ -13,8 +13,7 @@ module Shared exposing
     , updateLives
     )
 
-import Data.Level.Progress as Progress
-import Data.Level.Types exposing (AllLevels, Progress)
+import Data.Levels as Levels
 import Data.Lives as Lives exposing (Lives)
 import Random
 import Time
@@ -23,14 +22,14 @@ import Time
 type alias Data =
     { window : Window
     , loadingScreen : Maybe Background
-    , progress : Progress
-    , currentLevel : Maybe Progress
+    , progress : Levels.Key
+    , currentLevel : Maybe Levels.Key
     , successMessageIndex : Int
     , lives : Lives
     }
 
 
-setCurrentLevel : Maybe Progress -> Data -> Data
+setCurrentLevel : Maybe Levels.Key -> Data -> Data
 setCurrentLevel level data =
     { data | currentLevel = level }
 
@@ -40,9 +39,9 @@ hideLoadingScreen data =
     { data | loadingScreen = Nothing }
 
 
-incrementProgress : AllLevels a -> Data -> Data
+incrementProgress : Levels.Worlds -> Data -> Data
 incrementProgress allLevels data =
-    { data | progress = Progress.incrementProgress allLevels data.currentLevel data.progress }
+    { data | progress = handleNextLevel allLevels data.progress data.currentLevel }
 
 
 incrementMessageIndex : Data -> Data
@@ -58,6 +57,24 @@ updateLives now data =
 decrementLife : Data -> Data
 decrementLife data =
     { data | lives = Lives.decrement data.lives }
+
+
+
+-- Progress
+
+
+handleNextLevel : Levels.Worlds -> Levels.Key -> Maybe Levels.Key -> Levels.Key
+handleNextLevel allLevels progress currentLevel =
+    case currentLevel of
+        Nothing ->
+            progress
+
+        Just current ->
+            if not <| Levels.completed current progress then
+                Levels.next allLevels current
+
+            else
+                progress
 
 
 

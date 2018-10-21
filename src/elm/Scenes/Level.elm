@@ -28,11 +28,12 @@ import Data.Board.Wall exposing (addWalls)
 import Data.Exit as Exit exposing (continue, exitWith)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (LevelData, TileSetting)
+import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Dict exposing (Dict)
+import Helpers.Attribute exposing (emptyProperty)
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
-import Helpers.Html exposing (emptyProperty)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
 import Shared exposing (Window)
@@ -100,24 +101,24 @@ type Status
 -- INIT
 
 
-init : LevelData tutorialConfig -> Shared.Data -> ( Model, Cmd Msg )
-init levelData shared =
+init : Levels.LevelConfig -> Shared.Data -> ( Model, Cmd Msg )
+init config shared =
     let
         model =
-            addLevelData levelData <| initialState shared
+            addLevelData config <| initialState shared
     in
     ( model
-    , handleGenerateTiles levelData model
+    , handleGenerateTiles config model
     )
 
 
-addLevelData : LevelData tutorialConfig -> Model -> Model
-addLevelData { tileSettings, walls, boardDimensions, moves } model =
+addLevelData : Levels.LevelConfig -> Model -> Model
+addLevelData { tiles, walls, boardDimensions, moves } model =
     { model
-        | scores = initialScores tileSettings
+        | scores = initialScores tiles
         , board = addWalls walls model.board
         , boardDimensions = boardDimensions
-        , tileSettings = tileSettings
+        , tileSettings = tiles
         , levelStatus = InProgress
         , remainingMoves = moves
     }
@@ -313,9 +314,9 @@ type alias HasBoard model =
     { model | board : Board, boardDimensions : BoardDimensions }
 
 
-handleGenerateTiles : LevelData tutorialConfig -> Model -> Cmd Msg
-handleGenerateTiles levelData { boardDimensions } =
-    generateInitialTiles (InitTiles levelData.walls) levelData.tileSettings boardDimensions
+handleGenerateTiles : Levels.LevelConfig -> Model -> Cmd Msg
+handleGenerateTiles config { boardDimensions } =
+    generateInitialTiles (InitTiles config.walls) config.tiles boardDimensions
 
 
 handleMakeBoard : List TileType -> HasBoard model -> HasBoard model

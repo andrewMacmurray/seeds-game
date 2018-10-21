@@ -1,4 +1,4 @@
-module Helpers.Html exposing (emptyProperty)
+module Helpers.Attribute exposing (emptyProperty)
 
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)

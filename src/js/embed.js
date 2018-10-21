@@ -18,7 +18,7 @@ function init() {
     flags: {
       now: Date.now(),
       lives: cache.getLives(),
-      rawProgress: cache.getProgress(),
+      level: cache.getProgress(),
       randomMessageIndex: Math.round(Math.random() * 10),
       window: { height: window.innerHeight, width: window.innerWidth }
     }

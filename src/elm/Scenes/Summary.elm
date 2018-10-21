@@ -1,13 +1,12 @@
 module Scenes.Summary exposing (view)
 
-import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
-import Data.Level.Types exposing (Progress)
+import Data.Levels as Levels
 import Data.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -17,16 +16,17 @@ import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
+import Worlds
 
 
 view : Shared.Data -> Html Msg
 view ({ progress, currentLevel } as model) =
     let
         primarySeed =
-            primarySeedType allLevels progress currentLevel |> Maybe.withDefault Sunflower
+            Worlds.seedType progress |> Maybe.withDefault Sunflower
 
         resources =
-            secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
+            secondaryResourceTypes progress |> Maybe.withDefault []
     in
     div
         [ style
@@ -44,17 +44,17 @@ view ({ progress, currentLevel } as model) =
                     ]
                 , class "center"
                 ]
-                [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
+                [ seedBank primarySeed <| percentComplete (Seed primarySeed) progress ]
             , div [ style [ height 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
             ]
         ]
 
 
-renderResourceBank : Progress -> Maybe Progress -> TileType -> Html msg
+renderResourceBank : Levels.Key -> Maybe Levels.Key -> TileType -> Html msg
 renderResourceBank progress currentLevel tileType =
     let
         fillLevel =
-            percentComplete allLevels tileType progress currentLevel
+            percentComplete tileType progress
     in
     case tileType of
         Rain ->

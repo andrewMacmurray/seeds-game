@@ -1,7 +1,21 @@
 module Helpers.List exposing
     ( groupWhile
     , splitAt
+    , unique
     )
+
+
+unique : List a -> List a
+unique =
+    let
+        accum a b =
+            if List.member a b then
+                b
+
+            else
+                a :: b
+    in
+    List.foldr accum []
 
 
 splitAt : Int -> List a -> ( List a, List a )

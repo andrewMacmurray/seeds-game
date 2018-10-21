@@ -4,11 +4,8 @@ module Types exposing
     , Msg(..)
     )
 
-import Data.InfoWindow exposing (InfoWindow)
-import Data.Level.Types exposing (LevelData, Progress)
+import Data.Levels as Levels
 import Data.Lives as Lives
-import Data.Visibility exposing (Visibility)
-import Ports exposing (RawProgress)
 import Scene exposing (Scene)
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
@@ -16,13 +13,13 @@ import Scenes.Level as Level
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
 import Shared exposing (Background, Window)
-import Time exposing (Posix)
+import Time
 
 
 type alias Flags =
     { now : Int
     , lives : Maybe Lives.Cache
-    , rawProgress : Maybe RawProgress
+    , level : Maybe Levels.Cache
     , randomMessageIndex : Int
     , window : Window
     }
@@ -40,23 +37,23 @@ type Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
     | IncrementSuccessMessageIndex
-    | StartLevel Progress
+    | StartLevel Levels.Key
     | RestartLevel
     | LevelWin
     | LevelLose
     | LoadTutorial Tutorial.Config
-    | LoadLevel Progress
+    | LoadLevel Levels.LevelConfig
     | LoadIntro
-    | LoadHub Int
+    | LoadHub Levels.Key
     | LoadSummary
     | LoadRetry
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
-    | SetCurrentLevel (Maybe Progress)
+    | SetCurrentLevel (Maybe Levels.Key)
     | GoToHub
     | ClearCache
     | WindowSize Int Int
-    | UpdateTimes Posix
+    | UpdateTimes Time.Posix
     | IncrementProgress
     | DecrementLives

@@ -15,7 +15,7 @@ import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Helpers.Html exposing (emptyProperty)
+import Helpers.Attribute exposing (emptyProperty)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
 import Shared exposing (Window)

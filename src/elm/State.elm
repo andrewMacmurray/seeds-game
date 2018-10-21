@@ -5,13 +5,13 @@ module State exposing
     )
 
 import Browser.Events exposing (onResize)
-import Config.Levels exposing (..)
 import Config.Scale as ScaleConfig
+import Data.Exit as Exit
 import Data.InfoWindow as InfoWindow
 import Data.Level.Types exposing (..)
+import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Visibility exposing (Visibility(..))
-import Data.Exit as Exit
 import Helpers.Delay exposing (..)
 import Ports exposing (..)
 import Scene exposing (Scene(..))
@@ -24,6 +24,7 @@ import Shared exposing (..)
 import Task
 import Time exposing (millisToPosix)
 import Types exposing (..)
+import Worlds
 
 
 
@@ -47,7 +48,7 @@ initShared : Flags -> Shared.Data
 initShared flags =
     { window = flags.window
     , loadingScreen = Nothing
-    , progress = initProgressFromCache flags.rawProgress
+    , progress = initProgressFromCache flags.level
     , currentLevel = Nothing
     , successMessageIndex = flags.randomMessageIndex
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
@@ -80,7 +81,7 @@ update msg model =
             ( { model | scene = Scene.map incrementMessageIndex model.scene }, Cmd.none )
 
         StartLevel level ->
-            case tutorialData level of
+            case Worlds.tutorial level of
                 Just tutorialConfig ->
                     ( model
                     , sequence
@@ -96,13 +97,13 @@ update msg model =
                     , sequence
                         [ ( 600, SetCurrentLevel <| Just level )
                         , ( 10, ShowLoadingScreen )
-                        , ( 1000, LoadLevel level )
+                        , ( 1000, LoadLevel <| Worlds.levelConfig level )
                         , ( 2000, HideLoadingScreen )
                         ]
                     )
 
         RestartLevel ->
-            ( model, withLoadingScreen <| LoadLevel <| currentLevel model )
+            ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
 
         LoadTutorial config ->
             loadTutorial config model
@@ -113,8 +114,8 @@ update msg model =
         LoadIntro ->
             loadIntro model
 
-        LoadHub levelNumber ->
-            loadHub levelNumber model
+        LoadHub level ->
+            loadHub level model
 
         LoadSummary ->
             ( loadSummary model, Cmd.none )
@@ -179,9 +180,9 @@ loadingSequence msg =
 -- Scene Loaders
 
 
-loadLevel : Progress -> Model -> ( Model, Cmd Msg )
-loadLevel level =
-    loadScene Level LevelMsg <| Level.init (getLevelData level)
+loadLevel : Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+loadLevel config =
+    loadScene Level LevelMsg <| Level.init config
 
 
 loadTutorial : Tutorial.Config -> Model -> ( Model, Cmd Msg )
@@ -194,9 +195,9 @@ loadIntro =
     loadScene Intro IntroMsg Intro.init
 
 
-loadHub : Int -> Model -> ( Model, Cmd Msg )
-loadHub levelNumber =
-    loadScene Hub HubMsg <| Hub.init levelNumber
+loadHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+loadHub level =
+    loadScene Hub HubMsg <| Hub.init level
 
 
 loadSummary : Model -> Model
@@ -313,7 +314,7 @@ handleHubMsg hubMsg model =
             ( model, Cmd.none )
 
 
-exitHub : Model -> Progress -> ( Model, Cmd Msg )
+exitHub : Model -> Levels.Key -> ( Model, Cmd Msg )
 exitHub model level =
     ( model, trigger <| StartLevel level )
 
@@ -359,25 +360,11 @@ bounceKeyframes window =
     generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window
 
 
-initProgressFromCache : Maybe RawProgress -> Progress
-initProgressFromCache rawProgress =
-    rawProgress
-        |> Maybe.map (\{ world, level } -> ( world, level ))
-        |> Maybe.withDefault ( 1, 1 )
-
-
-fromProgress : Progress -> RawProgress
-fromProgress ( world, level ) =
-    RawProgress world level
-
-
-tutorialData : Progress -> Maybe Tutorial.Config
-tutorialData level =
-    let
-        ( _, levelData ) =
-            getLevelConfig level
-    in
-    levelData.tutorial
+initProgressFromCache : Maybe Levels.Cache -> Levels.Key
+initProgressFromCache cachedLevel =
+    cachedLevel
+        |> Maybe.map Levels.fromCache
+        |> Maybe.withDefault Levels.empty
 
 
 handleIncrementProgress : Model -> ( Model, Cmd Msg )
@@ -396,18 +383,16 @@ handleIncrementProgress model =
     ( model, Cmd.none )
 
 
-progressLevelNumber : Model -> Int
+progressLevelNumber : Model -> Levels.Key
 progressLevelNumber model =
-    Scene.getShared model.scene
-        |> .progress
-        |> getLevelNumber
+    Scene.getShared model.scene |> .progress
 
 
 levelWinSequence : Model -> List ( Float, Msg )
 levelWinSequence model =
     let
         backToHub =
-            backToHubSequence <| levelCompleteScrollNumber model
+            backToHubSequence <| levelCompleteKey model
 
         shared =
             Scene.getShared model.scene
@@ -431,33 +416,47 @@ levelLoseSequence model =
     ]
 
 
-backToHubSequence : Int -> List ( Float, Msg )
-backToHubSequence levelNumber =
-    [ ( 1000, LoadHub levelNumber )
+backToHubSequence : Levels.Key -> List ( Float, Msg )
+backToHubSequence level =
+    [ ( 1000, LoadHub level )
     , ( 1500, HideLoadingScreen )
     , ( 500, SetCurrentLevel Nothing )
     ]
 
 
-levelCompleteScrollNumber : Model -> Int
-levelCompleteScrollNumber model =
+levelCompleteKey : Model -> Levels.Key
+levelCompleteKey model =
     let
         shared =
             Scene.getShared model.scene
     in
     if shouldIncrement shared.currentLevel shared.progress then
-        progressLevelNumber model + 1
+        Worlds.next shared.progress
 
     else
-        getLevelNumber <| Maybe.withDefault ( 1, 1 ) shared.currentLevel
+        Maybe.withDefault Levels.empty shared.currentLevel
 
 
-currentLevel : Model -> Progress
+currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
         |> Scene.getShared
         |> .currentLevel
-        |> Maybe.withDefault ( 1, 1 )
+        |> Maybe.withDefault Levels.empty
+
+
+shouldIncrement : Maybe Levels.Key -> Levels.Key -> Bool
+shouldIncrement current progress =
+    case current of
+        Just key ->
+            if not <| Levels.reached key progress then
+                True
+
+            else
+                False
+
+        Nothing ->
+            False
 
 
 
