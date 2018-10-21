@@ -3,14 +3,14 @@ module App exposing (main)
 import Browser
 import Browser.Events exposing (onResize)
 import Config.Scale as ScaleConfig
-import Css.Color exposing (darkYellow)
-import Css.Style exposing (color, style)
+import Css.Color exposing (darkYellow, lightYellow)
+import Css.Style exposing (backgroundColor, color, style)
 import Data.Exit as Exit
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Helpers.Delay exposing (..)
-import Html exposing (Html, div, p, text)
+import Html exposing (Html, div, p, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Html.Keyed as K
@@ -26,7 +26,6 @@ import Scenes.Tutorial as Tutorial
 import Shared exposing (..)
 import Time exposing (millisToPosix)
 import Views.Animations exposing (animations)
-import Views.Backdrop exposing (backdrop)
 import Views.Loading exposing (loadingScreen)
 import Worlds
 
@@ -60,6 +59,7 @@ type alias Flags =
 
 type alias Model =
     { scene : Scene
+    , backdrop : Maybe Scene
     }
 
 
@@ -74,7 +74,7 @@ type Msg
     | RestartLevel
     | LevelWin
     | LevelLose
-    | LoadTutorial Tutorial.Config
+    | LoadTutorial Tutorial.Config Levels.LevelConfig
     | LoadLevel Levels.LevelConfig
     | LoadIntro
     | LoadHub Levels.Key
@@ -106,6 +106,7 @@ init flags =
 initialState : Flags -> Model
 initialState flags =
     { scene = Title <| Title.init <| initShared flags
+    , backdrop = Nothing
     }
 
 
@@ -152,7 +153,7 @@ update msg model =
                     , sequence
                         [ ( 600, SetCurrentLevel <| Just level )
                         , ( 10, ShowLoadingScreen )
-                        , ( 2500, LoadTutorial tutorialConfig )
+                        , ( 2500, LoadTutorial tutorialConfig <| Worlds.levelConfig level )
                         , ( 500, HideLoadingScreen )
                         ]
                     )
@@ -170,8 +171,8 @@ update msg model =
         RestartLevel ->
             ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
 
-        LoadTutorial config ->
-            loadTutorial config model
+        LoadTutorial tutorialConfig levelConfig ->
+            loadTutorial tutorialConfig levelConfig model
 
         LoadLevel level ->
             loadLevel level model
@@ -197,8 +198,8 @@ update msg model =
         ShowLoadingScreen ->
             ( model, generateBackground RandomBackground )
 
-        RandomBackground background ->
-            ( { model | scene = Scene.map (showLoadingScreen background) model.scene }, Cmd.none )
+        RandomBackground bgColor ->
+            ( { model | scene = Scene.map (showLoadingScreen bgColor) model.scene }, Cmd.none )
 
         HideLoadingScreen ->
             ( { model | scene = Scene.map hideLoadingScreen model.scene }, Cmd.none )
@@ -250,9 +251,16 @@ loadLevel config =
     loadScene Level LevelMsg <| Level.init config
 
 
-loadTutorial : Tutorial.Config -> Model -> ( Model, Cmd Msg )
-loadTutorial config =
-    loadScene Tutorial TutorialMsg <| Tutorial.init config
+loadTutorial : Tutorial.Config -> Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+loadTutorial tutorialConfig levelConfig model =
+    let
+        ( m1, cmd1 ) =
+            loadScene Tutorial TutorialMsg (Tutorial.init tutorialConfig) model
+
+        ( m2, cmd2 ) =
+            loadBackdrop Level LevelMsg (Level.init levelConfig) m1
+    in
+    ( m2, Cmd.batch [ cmd1, cmd2 ] )
 
 
 loadIntro : Model -> ( Model, Cmd Msg )
@@ -275,21 +283,30 @@ loadRetry model =
     { model | scene = Retry <| Scene.getShared model.scene }
 
 
-loadScene :
-    (subModel -> Scene)
-    -> (subMsg -> Msg)
-    -> (Shared.Data -> ( subModel, Cmd subMsg ))
-    -> Model
-    -> ( Model, Cmd Msg )
+loadScene : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
 loadScene modelF msg initF model =
     Scene.getShared model.scene
         |> initF
         |> updateWith modelF msg model
 
 
+loadBackdrop : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
+loadBackdrop modelF msg initF model =
+    Scene.getShared model.scene
+        |> initF
+        |> updateBackdropWith modelF msg model
+
+
 updateWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
 updateWith toScene toMsg model ( subModel, subCmd ) =
     ( { model | scene = toScene subModel }
+    , Cmd.map toMsg subCmd
+    )
+
+
+updateBackdropWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
+updateBackdropWith toScene toMsg model ( subModel, subCmd ) =
+    ( { model | backdrop = Just <| toScene subModel }
     , Cmd.map toMsg subCmd
     )
 
@@ -324,12 +341,38 @@ exitTitle model destination =
 
 handleLevelMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
 handleLevelMsg levelMsg model =
+    let
+        ( m1, cmd1 ) =
+            handleLevelForegroundMsg levelMsg model
+
+        ( m2, cmd2 ) =
+            handleLevelBackdropMsg levelMsg m1
+    in
+    ( m2, Cmd.batch [ cmd1, cmd2 ] )
+
+
+handleLevelForegroundMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
+handleLevelForegroundMsg levelMsg model =
     case model.scene of
         Level levelModel ->
             Exit.handle
                 { state = Level.update levelMsg levelModel
                 , onContinue = updateWith Level LevelMsg model
                 , onExit = exitLevel model
+                }
+
+        _ ->
+            ( model, Cmd.none )
+
+
+handleLevelBackdropMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
+handleLevelBackdropMsg levelMsg model =
+    case model.backdrop of
+        Just (Level levelModel) ->
+            Exit.handle
+                { state = Level.update levelMsg levelModel
+                , onContinue = updateBackdropWith Level LevelMsg model
+                , onExit = always ( model, Cmd.none )
                 }
 
         _ ->
@@ -356,13 +399,26 @@ handleTutorialMsg tutorialMsg model =
             Exit.handle
                 { state = Tutorial.update tutorialMsg tutorialModel
                 , onContinue = updateWith Tutorial TutorialMsg model
-
-                -- FIXME need to load level
-                , onExit = always ( model, Cmd.none )
+                , onExit = always ( promoteBackdrop model, Cmd.none )
                 }
 
         _ ->
             ( model, Cmd.none )
+
+
+promoteBackdrop : Model -> Model
+promoteBackdrop model =
+    case model.backdrop of
+        Just scene ->
+            { model | scene = syncShared model scene, backdrop = Nothing }
+
+        _ ->
+            model
+
+
+syncShared : Model -> Scene -> Scene
+syncShared model scene =
+    Scene.map (always <| Scene.getShared model.scene) scene
 
 
 handleHubMsg : Hub.Msg -> Model -> ( Model, Cmd Msg )
@@ -563,8 +619,16 @@ view model =
         , reset
         , loadingScreen <| Scene.getShared model.scene
         , keyedDiv <| renderScene model.scene
-        , backdrop
+        , renderBackrop model.backdrop
+        , background
         ]
+
+
+renderBackrop : Maybe Scene -> Html Msg
+renderBackrop backdrop =
+    backdrop
+        |> Maybe.map (renderScene >> keyedDiv)
+        |> Maybe.withDefault (span [] [])
 
 
 keyedDiv : List ( String, Html msg ) -> Html msg
@@ -609,3 +673,12 @@ reset =
         , style [ color darkYellow ]
         ]
         [ text "reset" ]
+
+
+background : Html msg
+background =
+    div
+        [ style [ backgroundColor lightYellow ]
+        , class "fixed w-100 h-100 top-0 left-0 z-0"
+        ]
+        []

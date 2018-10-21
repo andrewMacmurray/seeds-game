@@ -1,6 +1,5 @@
 module Data.Level.Settings exposing
-    ( makeWorldLevels
-    , rain
+    ( rain
     , seed
     , seedPod
     , sun
@@ -9,11 +8,6 @@ module Data.Level.Settings exposing
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (..)
 import Helpers.Dict exposing (indexedDictFrom)
-
-
-makeWorldLevels : List (LevelData tutorialConfig) -> WorldLevels tutorialConfig
-makeWorldLevels =
-    indexedDictFrom 1
 
 
 rain : Probability -> TargetScore -> TileSetting

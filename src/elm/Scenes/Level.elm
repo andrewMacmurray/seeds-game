@@ -40,7 +40,6 @@ import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
 import Shared exposing (Window)
 import Task
-import Views.Backdrop exposing (backdrop)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Level.Line exposing (renderLine)
 import Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
@@ -516,7 +515,7 @@ view model =
         , renderInfoWindow model
         , renderBoard model
         , handleLineDrag <| lineViewModel model
-        , div [ class "w-100 h-100 fixed z-1 top-0" ] [ backdrop ]
+        , moveCaptureArea
         ]
 
 
@@ -542,6 +541,11 @@ applyIf predicate attr =
 
     else
         emptyProperty
+
+
+moveCaptureArea : Html msg
+moveCaptureArea =
+    div [ class "w-100 h-100 fixed z-1 top-0" ] []
 
 
 renderBoard : Model -> Html Msg
