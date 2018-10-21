@@ -45,7 +45,7 @@ main =
 
 
 
--- Types
+-- Model
 
 
 type alias Flags =
@@ -70,6 +70,7 @@ type Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
     | SummaryMsg Summary.Msg
+    | RetryMsg Retry.Msg
     | LoadTutorial Tutorial.Config Levels.LevelConfig
     | LoadLevel Levels.LevelConfig
     | LoadIntro
@@ -79,13 +80,10 @@ type Msg
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
-    | ClearCache
+    | ResetData
     | WindowSize Int Int
     | UpdateTimes Time.Posix
-    | LevelLose
     | GoToHub
-    | RestartLevel
-    | DecrementLives
 
 
 
@@ -142,8 +140,8 @@ update msg model =
         SummaryMsg summaryMsg ->
             handleSummaryMsg summaryMsg model
 
-        RestartLevel ->
-            ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
+        RetryMsg retryMsg ->
+            handleRetryMsg retryMsg model
 
         LoadTutorial tutorialConfig levelConfig ->
             loadTutorial tutorialConfig levelConfig model
@@ -161,10 +159,7 @@ update msg model =
             loadSummary model
 
         LoadRetry ->
-            ( loadRetry model, Cmd.none )
-
-        LevelLose ->
-            ( model, sequence <| levelLoseSequence model )
+            loadRetry model
 
         ShowLoadingScreen ->
             ( model, generateBackground RandomBackground )
@@ -178,7 +173,7 @@ update msg model =
         GoToHub ->
             ( model, withLoadingScreen <| LoadHub <| getProgress model )
 
-        ClearCache ->
+        ResetData ->
             ( model, clearCache )
 
         WindowSize width height ->
@@ -188,9 +183,6 @@ update msg model =
 
         UpdateTimes now ->
             updateTimes now model
-
-        DecrementLives ->
-            ( { model | scene = Scene.map decrementLife model.scene }, Cmd.none )
 
 
 withLoadingScreen : Msg -> Cmd Msg
@@ -238,9 +230,9 @@ loadSummary =
     loadScene Summary SummaryMsg Summary.init
 
 
-loadRetry : Model -> Model
-loadRetry model =
-    { model | scene = Retry <| Scene.getShared model.scene }
+loadRetry : Model -> ( Model, Cmd Msg )
+loadRetry =
+    loadScene Retry RetryMsg Retry.init
 
 
 loadScene : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
@@ -346,7 +338,7 @@ exitLevel model levelStatus =
             ( model, trigger LoadSummary )
 
         Level.Lose ->
-            ( model, trigger LevelLose )
+            ( model, trigger LoadRetry )
 
         Level.InProgress ->
             ( model, Cmd.none )
@@ -433,17 +425,42 @@ handleSummaryMsg summaryMsg model =
             ( model, Cmd.none )
 
 
+handleRetryMsg : Retry.Msg -> Model -> ( Model, Cmd Msg )
+handleRetryMsg retryMsg model =
+    case model.scene of
+        Retry retryModel ->
+            Exit.handle
+                { state = Retry.update retryMsg retryModel
+                , onContinue = updateWith Retry RetryMsg model
+                , onExit = exitRetry model
+                }
+
+        _ ->
+            ( model, Cmd.none )
+
+
+exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
+exitRetry model destination =
+    case destination of
+        Retry.Level ->
+            ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
+
+        Retry.Hub ->
+            ( model, trigger GoToHub )
+
+
 
 -- Misc
 
 
 updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
 updateTimes now model =
-    let
-        nextModel =
-            { model | scene = Scene.map (updateLives now) model.scene }
-    in
-    ( nextModel, saveCurrentLives nextModel )
+    { model | scene = Scene.map (updateLives now) model.scene } |> andCmd saveCurrentLives
+
+
+andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
+andCmd cmdF model =
+    ( model, cmdF model )
 
 
 saveCurrentLives : Model -> Cmd Msg
@@ -472,19 +489,16 @@ getProgress model =
     Scene.getShared model.scene |> .progress
 
 
-levelLoseSequence : Model -> List ( Float, Msg )
-levelLoseSequence model =
-    [ ( 0, LoadRetry )
-    , ( 1000, DecrementLives )
-    ]
-
-
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
         |> Scene.getShared
         |> .currentLevel
         |> Maybe.withDefault Levels.empty
+
+
+
+-- Subscriptions
 
 
 subscriptions : Model -> Sub Msg
@@ -561,20 +575,13 @@ renderScene scene =
             [ ( "summary", Summary.view summaryModel |> Html.map SummaryMsg ) ]
 
         Retry retryModel ->
-            [ ( "retry", Retry.view retryMsgs retryModel ) ]
-
-
-retryMsgs : Retry.Msg Msg
-retryMsgs =
-    { goToHub = GoToHub
-    , restartLevel = RestartLevel
-    }
+            [ ( "retry", Retry.view retryModel |> Html.map RetryMsg ) ]
 
 
 reset : Html Msg
 reset =
     p
-        [ onClick ClearCache
+        [ onClick ResetData
         , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
         , style [ color darkYellow ]
         ]

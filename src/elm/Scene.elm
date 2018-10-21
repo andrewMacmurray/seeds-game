@@ -25,7 +25,7 @@ type Scene
     | Intro Intro.Model
     | Hub Hub.Model
     | Summary Summary.Model
-    | Retry Shared.Data
+    | Retry Retry.Model
 
 
 map : (Shared.Data -> Shared.Data) -> Scene -> Scene
@@ -49,8 +49,8 @@ map f scene =
         Summary model ->
             Summary <| Summary.updateShared f model
 
-        Retry shared ->
-            Retry <| f shared
+        Retry model ->
+            Retry <| Retry.updateShared f model
 
 
 getShared : Scene -> Shared.Data
@@ -74,5 +74,5 @@ getShared scene =
         Summary model ->
             Summary.getShared model
 
-        Retry shared ->
-            shared
+        Retry model ->
+            Retry.getShared model

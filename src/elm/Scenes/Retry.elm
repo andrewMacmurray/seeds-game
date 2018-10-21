@@ -1,5 +1,11 @@
 module Scenes.Retry exposing
-    ( Msg
+    ( Destination(..)
+    , Model
+    , Msg
+    , getShared
+    , init
+    , update
+    , updateShared
     , view
     )
 
@@ -8,8 +14,10 @@ import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
+import Data.Exit as Exit exposing (continue, exitWith)
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
+import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -17,14 +25,73 @@ import Shared
 import Views.Lives exposing (renderLivesLeft)
 
 
-type alias Msg msg =
-    { goToHub : msg
-    , restartLevel : msg
-    }
+
+-- Model
 
 
-view : Msg msg -> Shared.Data -> Html msg
-view msgConfig model =
+type alias Model =
+    Shared.Data
+
+
+type Msg
+    = DecrementLives
+    | RestartLevel
+    | ReturnToHub
+
+
+type Destination
+    = Level
+    | Hub
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared =
+    identity
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared =
+    identity
+
+
+
+-- Init
+
+
+init : Shared.Data -> ( Model, Cmd Msg )
+init shared =
+    ( shared
+    , after 1000 DecrementLives
+    )
+
+
+
+-- Update
+
+
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        DecrementLives ->
+            continue (updateShared Shared.decrementLife model) []
+
+        RestartLevel ->
+            exitWith Level model []
+
+        ReturnToHub ->
+            exitWith Hub model []
+
+
+
+-- View
+
+
+view : Model -> Html Msg
+view model =
     div
         [ style
             [ height <| toFloat model.window.height
@@ -52,7 +119,7 @@ view msgConfig model =
                     , transform [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
-                [ tryAgain msgConfig model ]
+                [ tryAgain model ]
             ]
         ]
 
@@ -64,8 +131,8 @@ lifeState model =
         |> Transitioning
 
 
-tryAgain : Msg msg -> Shared.Data -> Html msg
-tryAgain { goToHub, restartLevel } model =
+tryAgain : Model -> Html Msg
+tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style
@@ -78,7 +145,7 @@ tryAgain { goToHub, restartLevel } model =
                 , leftPill
                 ]
             , class "dib"
-            , onClick goToHub
+            , onClick ReturnToHub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
@@ -92,7 +159,7 @@ tryAgain { goToHub, restartLevel } model =
                 , rightPill
                 ]
             , class "dib"
-            , onClick restartLevel
+            , onClick RestartLevel
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]
