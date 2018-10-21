@@ -1,4 +1,4 @@
-module Config.Animations exposing (animations)
+module Views.Animations exposing (animations)
 
 import Css.Animation as Animation exposing (frame, keyframes, opacity, transform)
 import Css.Transform exposing (rotateZ, scale, translateX, translateY)

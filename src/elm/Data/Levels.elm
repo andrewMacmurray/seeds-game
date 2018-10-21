@@ -289,7 +289,7 @@ withTutorial t levelConfig =
 number : Worlds -> Key -> Maybe Int
 number worlds_ key =
     if levelExists worlds_ key then
-        worldId_ key
+        (worldId_ key - 1)
             |> List.range 1
             |> List.map (getWorldSizeFromIndex_ worlds_)
             |> List.foldr accumulateSize (levelId_ key)

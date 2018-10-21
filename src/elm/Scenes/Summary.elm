@@ -11,7 +11,6 @@ import Data.Wave exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Shared
-import Types exposing (..)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
@@ -19,7 +18,7 @@ import Views.Seed.All exposing (renderSeed)
 import Worlds
 
 
-view : Shared.Data -> Html Msg
+view : Shared.Data -> Html msg
 view ({ progress, currentLevel } as model) =
     let
         primarySeed =

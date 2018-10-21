@@ -1,7 +1,6 @@
 port module Ports exposing
-    ( RawProgress
+    ( cacheLives
     , cacheProgress
-    , cacheLives
     , clearCache
     , clearCache_
     , fadeMusic
@@ -10,19 +9,14 @@ port module Ports exposing
     , playIntroMusic
     )
 
+import Data.Levels as Levels
 import Data.Lives as Lives
-
-
-type alias RawProgress =
-    { world : Int
-    , level : Int
-    }
 
 
 port generateBounceKeyframes : Float -> Cmd msg
 
 
-port cacheProgress : RawProgress -> Cmd msg
+port cacheProgress : Levels.Cache -> Cmd msg
 
 
 port cacheLives : Lives.Cache -> Cmd msg

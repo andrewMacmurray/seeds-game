@@ -9,7 +9,7 @@ init();
 
 util.bumpDebuggerPanel();
 
-Window.skipToLevel = util.skipToLevel;
+window.skipToLevel = util.skipToLevel;
 
 function init() {
   // Init Elm App

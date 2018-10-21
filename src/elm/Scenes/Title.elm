@@ -13,7 +13,6 @@ import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Exit as Exit exposing (continue, exitWith)
-import Data.Level.Types exposing (Progress)
 import Data.Levels as Levels
 import Data.Visibility as Visibility exposing (..)
 import Helpers.Delay exposing (sequence)

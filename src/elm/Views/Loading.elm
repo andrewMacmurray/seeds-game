@@ -8,7 +8,6 @@ import Data.Levels as Levels
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Shared exposing (Background(..))
-import Types exposing (..)
 import Views.Seed.All exposing (renderSeed)
 import Worlds
 

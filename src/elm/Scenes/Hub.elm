@@ -321,7 +321,7 @@ handleHideInfo model =
 
 renderWorlds : Model -> List (Html Msg)
 renderWorlds model =
-    List.map (renderWorld model) Worlds.list
+    List.map (renderWorld model) <| List.reverse Worlds.list
 
 
 renderWorld : Model -> ( Levels.WorldConfig, List Levels.Key ) -> Html Msg
@@ -329,21 +329,18 @@ renderWorld model ( config, levels ) =
     div [ style [ backgroundColor config.backdropColor ], class "pa5 flex" ]
         [ div
             [ style [ width 300 ], class "center" ]
-            (levels
-                |> List.reverse
-                |> List.map (renderLevel model config)
-            )
+            (List.reverse levels |> List.indexedMap (renderLevel model config))
         ]
 
 
-renderLevel : Model -> Levels.WorldConfig -> Levels.Key -> Html Msg
-renderLevel model config level =
+renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Key -> Html Msg
+renderLevel model config index level =
     let
         levelNumber =
             Worlds.number level |> Maybe.withDefault 1
 
         hasReachedLevel =
-            Levels.reached level model.shared.progress
+            Levels.reached model.shared.progress level
 
         isCurrentLevel =
             level == model.shared.progress
@@ -355,7 +352,7 @@ renderLevel model config level =
               , marginBottom 50
               , color config.textColor
               ]
-            , offsetStyles levelNumber
+            , offsetStyles <| index + 1
             ]
         , showInfo level model
         , class "tc pointer relative"
@@ -408,12 +405,13 @@ renderNumber visibleLevelNumber hasReachedLevel config =
             [ p [ style [ color config.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
 
     else
-        p [ style [ color config.textColor ] ] [ text <| String.fromInt visibleLevelNumber ]
+        p [ style [ color config.textColor ] ]
+            [ text <| String.fromInt visibleLevelNumber ]
 
 
 showInfo : Levels.Key -> Model -> Attribute Msg
 showInfo level model =
-    if Levels.reached level model.shared.progress && InfoWindow.state model.infoWindow == Hidden then
+    if Levels.reached model.shared.progress level && InfoWindow.state model.infoWindow == Hidden then
         onClick <| ShowLevelInfo level
 
     else
@@ -422,7 +420,7 @@ showInfo level model =
 
 handleStartLevel : Levels.Key -> Model -> Attribute Msg
 handleStartLevel level model =
-    if Levels.reached level model.shared.progress then
+    if Levels.reached model.shared.progress level then
         onClick <| StartLevel level
 
     else
@@ -431,7 +429,7 @@ handleStartLevel level model =
 
 renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
 renderLevelIcon level seedType model =
-    if Levels.completed level model.shared.progress then
+    if Levels.completed model.shared.progress level then
         renderSeed seedType
 
     else

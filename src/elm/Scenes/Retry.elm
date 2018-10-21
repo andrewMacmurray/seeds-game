@@ -1,4 +1,4 @@
-module Scenes.Retry exposing (view)
+module Scenes.Retry exposing (GoTo, view)
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color exposing (..)
@@ -10,12 +10,17 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Shared
-import Types exposing (..)
 import Views.Lives exposing (renderLivesLeft)
 
 
-view : Shared.Data -> Html Msg
-view model =
+type alias GoTo msg =
+    { hub : msg
+    , restart : msg
+    }
+
+
+view : GoTo msg -> Shared.Data -> Html msg
+view goTo model =
     div
         [ style
             [ height <| toFloat model.window.height
@@ -43,7 +48,7 @@ view model =
                     , transform [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
-                [ tryAgain model ]
+                [ tryAgain goTo model ]
             ]
         ]
 
@@ -58,8 +63,8 @@ lifeState model =
     Transitioning 4
 
 
-tryAgain : Shared.Data -> Html Msg
-tryAgain model =
+tryAgain : GoTo msg -> Shared.Data -> Html msg
+tryAgain goTo model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style
@@ -72,7 +77,7 @@ tryAgain model =
                 , leftPill
                 ]
             , class "dib"
-            , onClick GoToHub
+            , onClick goTo.hub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
@@ -86,7 +91,7 @@ tryAgain model =
                 , rightPill
                 ]
             , class "dib"
-            , onClick RestartLevel
+            , onClick goTo.restart
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]
