@@ -47,9 +47,9 @@ function init() {
   });
 
   // LocalStorgage Cache
-  // ports.cacheProgress.subscribe(progress => {
-  //   cache.setProgress(progress);
-  // });
+  ports.cacheProgress.subscribe(progress => {
+    cache.setProgress(progress);
+  });
 
   ports.clearCache_.subscribe(() => {
     cache.clear();

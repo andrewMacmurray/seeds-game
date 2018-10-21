@@ -24,7 +24,7 @@ type Scene
     | Tutorial Tutorial.Model
     | Intro Intro.Model
     | Hub Hub.Model
-    | Summary Shared.Data
+    | Summary Summary.Model
     | Retry Shared.Data
 
 
@@ -46,8 +46,8 @@ map f scene =
         Hub model ->
             Hub <| Hub.updateShared f model
 
-        Summary shared ->
-            Summary <| f shared
+        Summary model ->
+            Summary <| Summary.updateShared f model
 
         Retry shared ->
             Retry <| f shared
@@ -71,8 +71,8 @@ getShared scene =
         Hub model ->
             Hub.getShared model
 
-        Summary shared ->
-            shared
+        Summary model ->
+            Summary.getShared model
 
         Retry shared ->
             shared

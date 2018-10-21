@@ -1,10 +1,14 @@
-module Scenes.Retry exposing (GoTo, view)
+module Scenes.Retry exposing
+    ( Msg
+    , view
+    )
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
+import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -13,14 +17,14 @@ import Shared
 import Views.Lives exposing (renderLivesLeft)
 
 
-type alias GoTo msg =
-    { hub : msg
-    , restart : msg
+type alias Msg msg =
+    { goToHub : msg
+    , restartLevel : msg
     }
 
 
-view : GoTo msg -> Shared.Data -> Html msg
-view goTo model =
+view : Msg msg -> Shared.Data -> Html msg
+view msgConfig model =
     div
         [ style
             [ height <| toFloat model.window.height
@@ -48,23 +52,20 @@ view goTo model =
                     , transform [ translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
-                [ tryAgain goTo model ]
+                [ tryAgain msgConfig model ]
             ]
         ]
 
 
 lifeState : Shared.Data -> Transit Int
 lifeState model =
-    -- let
-    --     lives =
-    --         model.timeTillNextLife |> livesLeft |> floor
-    -- in
-    -- FIXME
-    Transitioning 4
+    model.lives
+        |> Lives.remaining
+        |> Transitioning
 
 
-tryAgain : GoTo msg -> Shared.Data -> Html msg
-tryAgain goTo model =
+tryAgain : Msg msg -> Shared.Data -> Html msg
+tryAgain { goToHub, restartLevel } model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style
@@ -77,7 +78,7 @@ tryAgain goTo model =
                 , leftPill
                 ]
             , class "dib"
-            , onClick goTo.hub
+            , onClick goToHub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
@@ -91,7 +92,7 @@ tryAgain goTo model =
                 , rightPill
                 ]
             , class "dib"
-            , onClick goTo.restart
+            , onClick restartLevel
             ]
             [ p [ class "ma0" ] [ text "Try again?" ] ]
         ]

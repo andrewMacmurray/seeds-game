@@ -124,7 +124,7 @@ updateShared f model =
 init : Config -> Shared.Data -> ( Model, Cmd Msg )
 init config shared =
     ( loadTutorialData config <| initialState shared
-    , sequence <| pause 500 config.sequence
+    , sequence <| pause 2000 config.sequence
     )
 
 

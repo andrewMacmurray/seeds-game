@@ -1,15 +1,26 @@
-module Scenes.Summary exposing (view)
+module Scenes.Summary exposing
+    ( Model
+    , Msg
+    , getShared
+    , init
+    , update
+    , updateShared
+    , view
+    )
 
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
+import Data.Exit as Exit exposing (continue, exitWith)
 import Data.Level.Summary exposing (..)
 import Data.Levels as Levels
 import Data.Wave exposing (wave)
+import Helpers.Delay exposing (after, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Ports exposing (cacheProgress)
 import Shared
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
@@ -18,18 +29,106 @@ import Views.Seed.All exposing (renderSeed)
 import Worlds
 
 
-view : Shared.Data -> Html msg
-view ({ progress, currentLevel } as model) =
+
+-- Model
+
+
+type alias Model =
+    { shared : Shared.Data
+    , resources : Resources
+    }
+
+
+type Msg
+    = IncrementProgress
+    | CacheProgress
+    | BackToHub
+
+
+type Resources
+    = Waiting
+    | Filling
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
+
+
+
+-- Init
+
+
+init : Shared.Data -> ( Model, Cmd Msg )
+init shared =
+    ( initialState shared
+    , after 1500 IncrementProgress
+    )
+
+
+initialState : Shared.Data -> Model
+initialState shared =
+    { shared = shared
+    , resources = Waiting
+    }
+
+
+
+-- Update
+
+
+update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        IncrementProgress ->
+            continue (handleIncremetProgress model)
+                [ trigger CacheProgress
+                , after 2500 BackToHub
+                ]
+
+        CacheProgress ->
+            continue model [ cacheProgress <| Levels.toCache model.shared.progress ]
+
+        BackToHub ->
+            exitWith model.shared.progress model []
+
+
+handleIncremetProgress : Model -> Model
+handleIncremetProgress model =
+    { model
+        | resources = Filling
+        , shared =
+            model.shared
+                |> Shared.incrementProgress Worlds.all
+                |> Shared.incrementMessageIndex
+    }
+
+
+
+-- View
+
+
+view : Model -> Html Msg
+view { shared } =
     let
         primarySeed =
-            Worlds.seedType progress |> Maybe.withDefault Sunflower
+            Worlds.seedType shared.progress |> Maybe.withDefault Sunflower
 
         resources =
-            secondaryResourceTypes progress |> Maybe.withDefault []
+            secondaryResourceTypes shared.progress |> Maybe.withDefault []
     in
     div
         [ style
-            [ height <| toFloat model.window.height
+            [ height <| toFloat shared.window.height
             , background washedYellow
             , animation "fade-in" 1000 [ linear ]
             ]
@@ -43,8 +142,8 @@ view ({ progress, currentLevel } as model) =
                     ]
                 , class "center"
                 ]
-                [ seedBank primarySeed <| percentComplete (Seed primarySeed) progress ]
-            , div [ style [ height 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
+                [ seedBank primarySeed <| percentComplete (Seed primarySeed) shared.progress ]
+            , div [ style [ height 50 ] ] <| List.map (renderResourceBank shared.progress shared.currentLevel) resources
             ]
         ]
 

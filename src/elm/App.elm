@@ -69,11 +69,7 @@ type Msg
     | TutorialMsg Tutorial.Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
-    | IncrementSuccessMessageIndex
-    | StartLevel Levels.Key
-    | RestartLevel
-    | LevelWin
-    | LevelLose
+    | SummaryMsg Summary.Msg
     | LoadTutorial Tutorial.Config Levels.LevelConfig
     | LoadLevel Levels.LevelConfig
     | LoadIntro
@@ -83,12 +79,12 @@ type Msg
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
-    | SetCurrentLevel (Maybe Levels.Key)
-    | GoToHub
     | ClearCache
     | WindowSize Int Int
     | UpdateTimes Time.Posix
-    | IncrementProgress
+    | LevelLose
+    | GoToHub
+    | RestartLevel
     | DecrementLives
 
 
@@ -143,30 +139,8 @@ update msg model =
         IntroMsg introMsg ->
             handleIntroMsg introMsg model
 
-        IncrementSuccessMessageIndex ->
-            ( { model | scene = Scene.map incrementMessageIndex model.scene }, Cmd.none )
-
-        StartLevel level ->
-            case Worlds.tutorial level of
-                Just tutorialConfig ->
-                    ( model
-                    , sequence
-                        [ ( 600, SetCurrentLevel <| Just level )
-                        , ( 10, ShowLoadingScreen )
-                        , ( 2500, LoadTutorial tutorialConfig <| Worlds.levelConfig level )
-                        , ( 500, HideLoadingScreen )
-                        ]
-                    )
-
-                Nothing ->
-                    ( model
-                    , sequence
-                        [ ( 600, SetCurrentLevel <| Just level )
-                        , ( 10, ShowLoadingScreen )
-                        , ( 1000, LoadLevel <| Worlds.levelConfig level )
-                        , ( 2000, HideLoadingScreen )
-                        ]
-                    )
+        SummaryMsg summaryMsg ->
+            handleSummaryMsg summaryMsg model
 
         RestartLevel ->
             ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
@@ -184,13 +158,10 @@ update msg model =
             loadHub level model
 
         LoadSummary ->
-            ( loadSummary model, Cmd.none )
+            loadSummary model
 
         LoadRetry ->
             ( loadRetry model, Cmd.none )
-
-        LevelWin ->
-            ( model, sequence <| levelWinSequence model )
 
         LevelLose ->
             ( model, sequence <| levelLoseSequence model )
@@ -203,9 +174,6 @@ update msg model =
 
         HideLoadingScreen ->
             ( { model | scene = Scene.map hideLoadingScreen model.scene }, Cmd.none )
-
-        SetCurrentLevel progress ->
-            ( { model | scene = Scene.map (setCurrentLevel progress) model.scene }, Cmd.none )
 
         GoToHub ->
             ( model, withLoadingScreen <| LoadHub <| getProgress model )
@@ -221,25 +189,17 @@ update msg model =
         UpdateTimes now ->
             updateTimes now model
 
-        -- Summary and Retry
-        IncrementProgress ->
-            handleIncrementProgress model
-
         DecrementLives ->
             ( { model | scene = Scene.map decrementLife model.scene }, Cmd.none )
 
 
 withLoadingScreen : Msg -> Cmd Msg
-withLoadingScreen =
-    sequence << loadingSequence
-
-
-loadingSequence : Msg -> List ( Float, Msg )
-loadingSequence msg =
-    [ ( 0, ShowLoadingScreen )
-    , ( 1000, msg )
-    , ( 2000, HideLoadingScreen )
-    ]
+withLoadingScreen msg =
+    sequence
+        [ ( 0, ShowLoadingScreen )
+        , ( 1000, msg )
+        , ( 2000, HideLoadingScreen )
+        ]
 
 
 
@@ -273,9 +233,9 @@ loadHub level =
     loadScene Hub HubMsg <| Hub.init level
 
 
-loadSummary : Model -> Model
-loadSummary model =
-    { model | scene = Summary <| Scene.getShared model.scene }
+loadSummary : Model -> ( Model, Cmd Msg )
+loadSummary =
+    loadScene Summary SummaryMsg Summary.init
 
 
 loadRetry : Model -> Model
@@ -383,7 +343,7 @@ exitLevel : Model -> Level.Status -> ( Model, Cmd Msg )
 exitLevel model levelStatus =
     case levelStatus of
         Level.Win ->
-            ( model, trigger LevelWin )
+            ( model, trigger LoadSummary )
 
         Level.Lose ->
             ( model, trigger LevelLose )
@@ -428,16 +388,21 @@ handleHubMsg hubMsg model =
             Exit.handle
                 { state = Hub.update hubMsg hubModel
                 , onContinue = updateWith Hub HubMsg model
-                , onExit = exitHub model
+                , onExit = handleStartLevel model
                 }
 
         _ ->
             ( model, Cmd.none )
 
 
-exitHub : Model -> Levels.Key -> ( Model, Cmd Msg )
-exitHub model level =
-    ( model, trigger <| StartLevel level )
+handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
+handleStartLevel model level =
+    case Worlds.tutorial level of
+        Just tutorialConfig ->
+            ( model, withLoadingScreen <| LoadTutorial tutorialConfig (Worlds.levelConfig level) )
+
+        Nothing ->
+            ( model, withLoadingScreen <| LoadLevel (Worlds.levelConfig level) )
 
 
 handleIntroMsg : Intro.Msg -> Model -> ( Model, Cmd Msg )
@@ -448,6 +413,20 @@ handleIntroMsg introMsg model =
                 { state = Intro.update introMsg introModel
                 , onContinue = updateWith Intro IntroMsg model
                 , onExit = always ( model, Cmd.batch [ trigger GoToHub, fadeMusic () ] )
+                }
+
+        _ ->
+            ( model, Cmd.none )
+
+
+handleSummaryMsg : Summary.Msg -> Model -> ( Model, Cmd Msg )
+handleSummaryMsg summaryMsg model =
+    case model.scene of
+        Summary summaryModel ->
+            Exit.handle
+                { state = Summary.update summaryMsg summaryModel
+                , onContinue = updateWith Summary SummaryMsg model
+                , onExit = always ( model, trigger GoToHub )
                 }
 
         _ ->
@@ -488,46 +467,9 @@ initProgressFromCache cachedLevel =
         |> Maybe.withDefault Levels.empty
 
 
-handleIncrementProgress : Model -> ( Model, Cmd Msg )
-handleIncrementProgress model =
-    -- FIXME put me in Success scene
-    -- let
-    --     shared =
-    --         Scene.getShared model.scene
-    --
-    --     progress =
-    --         incrementProgress allLevels shared.currentLevel shared.progress
-    -- in
-    -- ( { model | scene = Scene.map (incrementProgress allLevels) model.scene }
-    -- , cacheProgress <| fromProgress progress
-    -- )
-    ( model, Cmd.none )
-
-
 getProgress : Model -> Levels.Key
 getProgress model =
     Scene.getShared model.scene |> .progress
-
-
-levelWinSequence : Model -> List ( Float, Msg )
-levelWinSequence model =
-    let
-        backToHub =
-            backToHubSequence <| levelCompleteKey model
-
-        shared =
-            Scene.getShared model.scene
-    in
-    if shouldIncrement shared.currentLevel shared.progress then
-        [ ( 0, LoadSummary )
-        , ( 2000, IncrementProgress )
-        , ( 2500, ShowLoadingScreen )
-        , ( 0, IncrementSuccessMessageIndex )
-        ]
-            ++ backToHub
-
-    else
-        ( 0, ShowLoadingScreen ) :: backToHub
 
 
 levelLoseSequence : Model -> List ( Float, Msg )
@@ -537,51 +479,12 @@ levelLoseSequence model =
     ]
 
 
-backToHubSequence : Levels.Key -> List ( Float, Msg )
-backToHubSequence level =
-    [ ( 1000, LoadHub level )
-    , ( 1500, HideLoadingScreen )
-    , ( 500, SetCurrentLevel Nothing )
-    ]
-
-
-levelCompleteKey : Model -> Levels.Key
-levelCompleteKey model =
-    let
-        shared =
-            Scene.getShared model.scene
-    in
-    if shouldIncrement shared.currentLevel shared.progress then
-        Worlds.next shared.progress
-
-    else
-        Maybe.withDefault Levels.empty shared.currentLevel
-
-
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
         |> Scene.getShared
         |> .currentLevel
         |> Maybe.withDefault Levels.empty
-
-
-shouldIncrement : Maybe Levels.Key -> Levels.Key -> Bool
-shouldIncrement current progress =
-    case current of
-        Just key ->
-            if not <| Levels.reached key progress then
-                True
-
-            else
-                False
-
-        Nothing ->
-            False
-
-
-
--- Subscriptions
 
 
 subscriptions : Model -> Sub Msg
@@ -652,17 +555,20 @@ renderScene scene =
             [ ( "level", Level.view levelModel |> Html.map LevelMsg ) ]
 
         Tutorial tutorialModel ->
-            [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg )
-            ]
+            [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg ) ]
 
         Summary summaryModel ->
-            [ ( "summary", Summary.view summaryModel ) ]
+            [ ( "summary", Summary.view summaryModel |> Html.map SummaryMsg ) ]
 
         Retry retryModel ->
-            [ ( "retry"
-              , Retry.view { hub = GoToHub, restart = RestartLevel } retryModel
-              )
-            ]
+            [ ( "retry", Retry.view retryMsgs retryModel ) ]
+
+
+retryMsgs : Retry.Msg Msg
+retryMsgs =
+    { goToHub = GoToHub
+    , restartLevel = RestartLevel
+    }
 
 
 reset : Html Msg

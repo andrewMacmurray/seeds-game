@@ -2,6 +2,7 @@ module Shared exposing
     ( Background(..)
     , Data
     , Window
+    , clearCurrentLevel
     , decrementLife
     , generateBackground
     , hideLoadingScreen
@@ -29,9 +30,14 @@ type alias Data =
     }
 
 
-setCurrentLevel : Maybe Levels.Key -> Data -> Data
+setCurrentLevel : Levels.Key -> Data -> Data
 setCurrentLevel level data =
-    { data | currentLevel = level }
+    { data | currentLevel = Just level }
+
+
+clearCurrentLevel : Data -> Data
+clearCurrentLevel data =
+    { data | currentLevel = Nothing }
 
 
 hideLoadingScreen : Data -> Data

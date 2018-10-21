@@ -24,7 +24,7 @@ import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
 import Dict
 import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (after, sequence)
+import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
@@ -52,8 +52,11 @@ type Msg
     = ShowLevelInfo Levels.Key
     | HideLevelInfo
     | SetInfoState (InfoWindow Levels.Key)
-    | ScrollHubToLevel Levels.Key
+    | SetCurrentLevel Levels.Key
+    | ScrollHubTo Levels.Key
+    | ClearCurrentLevel
     | StartLevel Levels.Key
+    | ExitToLevel Levels.Key
     | DomNoOp (Result Dom.Error ())
 
 
@@ -78,7 +81,10 @@ updateShared f model =
 init : Levels.Key -> Shared.Data -> ( Model, Cmd Msg )
 init level shared =
     ( initialState shared
-    , after 1000 <| ScrollHubToLevel level
+    , sequence
+        [ ( 1000, ScrollHubTo level )
+        , ( 1000, ClearCurrentLevel )
+        ]
     )
 
 
@@ -110,13 +116,29 @@ update msg model =
                     ]
                 ]
 
-        ScrollHubToLevel level ->
+        ScrollHubTo level ->
             continue model [ scrollHubToLevel level ]
+
+        SetCurrentLevel level ->
+            continue { model | shared = Shared.setCurrentLevel level model.shared } []
+
+        ClearCurrentLevel ->
+            continue { model | shared = Shared.clearCurrentLevel model.shared } []
 
         DomNoOp _ ->
             continue model []
 
         StartLevel level ->
+            continue model
+                [ sequence
+                    [ ( 0, SetCurrentLevel level )
+                    , ( 10, SetInfoState <| InfoWindow.leaving model.infoWindow )
+                    , ( 600, SetInfoState <| InfoWindow.hidden )
+                    , ( 100, ExitToLevel level )
+                    ]
+                ]
+
+        ExitToLevel level ->
             exitWith level model []
 
 
