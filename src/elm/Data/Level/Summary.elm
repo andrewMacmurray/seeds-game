@@ -47,8 +47,8 @@ getScoreFor =
 
 
 worldComplete : Levels.Key -> Bool
-worldComplete level =
-    Levels.isFirstLevelOfWorld level
+worldComplete =
+    Levels.isFirstLevelOfWorld
 
 
 secondaryResourceTypes_ : SeedType -> List Levels.Level -> List TileType

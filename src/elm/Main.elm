@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Config.Scale as ScaleConfig
+import Config.Scale as Scale
 import Css.Color exposing (darkYellow, lightYellow)
 import Css.Style exposing (backgroundColor, color, style)
 import Data.Exit as Exit
@@ -83,7 +83,7 @@ type Msg
     | ResetData
     | WindowSize Int Int
     | UpdateTimes Time.Posix
-    | GoToHub
+    | GoToHub Levels.Key
 
 
 
@@ -165,19 +165,19 @@ update msg model =
             ( model, generateBackground RandomBackground )
 
         RandomBackground bgColor ->
-            ( { model | scene = Scene.map (showLoadingScreen bgColor) model.scene }, Cmd.none )
+            ( updateShared model <| showLoadingScreen bgColor, Cmd.none )
 
         HideLoadingScreen ->
-            ( { model | scene = Scene.map hideLoadingScreen model.scene }, Cmd.none )
+            ( updateShared model hideLoadingScreen, Cmd.none )
 
-        GoToHub ->
-            ( model, withLoadingScreen <| LoadHub <| getProgress model )
+        GoToHub level ->
+            ( model, withLoadingScreen <| LoadHub level )
 
         ResetData ->
             ( model, clearCache )
 
         WindowSize width height ->
-            ( { model | scene = Scene.map (setWindow width height) model.scene }
+            ( updateShared model <| setWindow width height
             , bounceKeyframes <| Window width height
             )
 
@@ -192,6 +192,11 @@ withLoadingScreen msg =
         , ( 1000, msg )
         , ( 2000, HideLoadingScreen )
         ]
+
+
+updateShared : Model -> (Shared.Data -> Shared.Data) -> Model
+updateShared model f =
+    { model | scene = Scene.map f model.scene }
 
 
 
@@ -227,12 +232,12 @@ loadHub level =
 
 loadSummary : Model -> ( Model, Cmd Msg )
 loadSummary =
-    loadScene Summary SummaryMsg Summary.init
+    sceneToBackdrop >> loadScene Summary SummaryMsg Summary.init
 
 
 loadRetry : Model -> ( Model, Cmd Msg )
 loadRetry =
-    loadScene Retry RetryMsg Retry.init
+    sceneToBackdrop >> loadScene Retry RetryMsg Retry.init
 
 
 loadScene : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
@@ -285,7 +290,7 @@ exitTitle : Model -> Title.Destination -> ( Model, Cmd Msg )
 exitTitle model destination =
     case destination of
         Title.Hub ->
-            ( model, trigger GoToHub )
+            ( model, goToHubCurrentProgress model )
 
         Title.Intro ->
             ( model, trigger LoadIntro )
@@ -335,7 +340,11 @@ exitLevel : Model -> Level.Status -> ( Model, Cmd Msg )
 exitLevel model levelStatus =
     case levelStatus of
         Level.Win ->
-            ( model, trigger LoadSummary )
+            if shouldIncrement <| Scene.getShared model.scene then
+                ( model, trigger LoadSummary )
+
+            else
+                ( model, goToHubCurrentLevel model )
 
         Level.Lose ->
             ( model, trigger LoadRetry )
@@ -351,26 +360,11 @@ handleTutorialMsg tutorialMsg model =
             Exit.handle
                 { state = Tutorial.update tutorialMsg tutorialModel
                 , onContinue = updateWith Tutorial TutorialMsg model
-                , onExit = always ( promoteBackdrop model, Cmd.none )
+                , onExit = always ( backdropToScene model, Cmd.none )
                 }
 
         _ ->
             ( model, Cmd.none )
-
-
-promoteBackdrop : Model -> Model
-promoteBackdrop model =
-    case model.backdrop of
-        Just scene ->
-            { model | scene = syncShared model scene, backdrop = Nothing }
-
-        _ ->
-            model
-
-
-syncShared : Model -> Scene -> Scene
-syncShared model scene =
-    Scene.map (always <| Scene.getShared model.scene) scene
 
 
 handleHubMsg : Hub.Msg -> Model -> ( Model, Cmd Msg )
@@ -404,7 +398,7 @@ handleIntroMsg introMsg model =
             Exit.handle
                 { state = Intro.update introMsg introModel
                 , onContinue = updateWith Intro IntroMsg model
-                , onExit = always ( model, Cmd.batch [ trigger GoToHub, fadeMusic () ] )
+                , onExit = always ( model, Cmd.batch [ goToHubCurrentProgress model, fadeMusic () ] )
                 }
 
         _ ->
@@ -418,7 +412,7 @@ handleSummaryMsg summaryMsg model =
             Exit.handle
                 { state = Summary.update summaryMsg summaryModel
                 , onContinue = updateWith Summary SummaryMsg model
-                , onExit = always ( model, trigger GoToHub )
+                , onExit = always ( clearBackdrop model, goToHubCurrentProgress model )
                 }
 
         _ ->
@@ -443,14 +437,58 @@ exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
 exitRetry model destination =
     case destination of
         Retry.Level ->
-            ( model, withLoadingScreen <| LoadLevel <| Worlds.levelConfig <| currentLevel model )
+            ( clearBackdrop model, reloadCurrentLevel model )
 
         Retry.Hub ->
-            ( model, trigger GoToHub )
+            ( clearBackdrop model, goToHubCurrentLevel model )
+
+
+
+-- Backdrop
+
+
+sceneToBackdrop : Model -> Model
+sceneToBackdrop model =
+    { model | backdrop = Just model.scene }
+
+
+clearBackdrop : Model -> Model
+clearBackdrop model =
+    { model | backdrop = Nothing }
+
+
+backdropToScene : Model -> Model
+backdropToScene model =
+    case model.backdrop of
+        Just scene ->
+            { model | scene = syncShared model scene, backdrop = Nothing }
+
+        _ ->
+            model
+
+
+syncShared : Model -> Scene -> Scene
+syncShared model scene =
+    Scene.map (always <| Scene.getShared model.scene) scene
 
 
 
 -- Misc
+
+
+reloadCurrentLevel : Model -> Cmd Msg
+reloadCurrentLevel =
+    withLoadingScreen << LoadLevel << Worlds.levelConfig << currentLevel
+
+
+goToHubCurrentLevel : Model -> Cmd Msg
+goToHubCurrentLevel =
+    trigger << GoToHub << currentLevel
+
+
+goToHubCurrentProgress : Model -> Cmd Msg
+goToHubCurrentProgress =
+    trigger << GoToHub << getProgress
 
 
 updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
@@ -474,7 +512,7 @@ saveCurrentLives model =
 
 bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
-    generateBounceKeyframes <| ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window
+    generateBounceKeyframes <| Scale.baseTileSizeY * Scale.tileScaleFactor window
 
 
 initProgressFromCache : Maybe Levels.Cache -> Levels.Key
@@ -497,6 +535,13 @@ currentLevel model =
         |> Maybe.withDefault Levels.empty
 
 
+shouldIncrement : Shared.Data -> Bool
+shouldIncrement shared =
+    shared.currentLevel
+        |> Maybe.map (not << Levels.completed shared.progress)
+        |> Maybe.withDefault False
+
+
 
 -- Subscriptions
 
@@ -512,7 +557,12 @@ subscriptions model =
 
 subscribeDecrement : Model -> Sub Msg
 subscribeDecrement model =
-    Time.every 1000 UpdateTimes
+    case model.scene of
+        Hub _ ->
+            Time.every 100 UpdateTimes
+
+        _ ->
+            Time.every 5000 UpdateTimes
 
 
 sceneSubscriptions : Model -> Sub Msg

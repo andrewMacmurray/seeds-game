@@ -47,7 +47,7 @@ hideLoadingScreen data =
 
 incrementProgress : Levels.Worlds -> Data -> Data
 incrementProgress allLevels data =
-    { data | progress = handleNextLevel allLevels data.progress data.currentLevel }
+    { data | progress = handleIncrementProgress allLevels data.progress data.currentLevel }
 
 
 incrementMessageIndex : Data -> Data
@@ -69,18 +69,14 @@ decrementLife data =
 -- Progress
 
 
-handleNextLevel : Levels.Worlds -> Levels.Key -> Maybe Levels.Key -> Levels.Key
-handleNextLevel allLevels progress currentLevel =
+handleIncrementProgress : Levels.Worlds -> Levels.Key -> Maybe Levels.Key -> Levels.Key
+handleIncrementProgress allLevels progress currentLevel =
     case currentLevel of
         Nothing ->
             progress
 
         Just current ->
-            if not <| Levels.completed current progress then
-                Levels.next allLevels current
-
-            else
-                progress
+            Levels.next allLevels current
 
 
 

@@ -90,7 +90,7 @@ update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
-            continue (handleIncremetProgress model)
+            continue (incrementProgress model)
                 [ trigger CacheProgress
                 , after 2500 BackToHub
                 ]
@@ -102,8 +102,8 @@ update msg model =
             exitWith model.shared.progress model []
 
 
-handleIncremetProgress : Model -> Model
-handleIncremetProgress model =
+incrementProgress : Model -> Model
+incrementProgress model =
     { model
         | resources = Filling
         , shared =
@@ -204,36 +204,14 @@ renderResourceFill tileType =
 
 seedDrop : SeedType -> Int -> Html msg
 seedDrop seedType n =
-    let
-        d =
-            if modBy 3 n == 0 then
-                30
-
-            else if modBy 3 n == 1 then
-                60
-
-            else
-                90
-    in
     div
-        [ style
-            [ transform
-                [ translateX <|
-                    wave
-                        { left = -5
-                        , center = 0
-                        , right = 5
-                        }
-                        (n - 1)
-                ]
-            ]
-        ]
+        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 5
                 , height 8
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay <| n * d, linear ]
+                , animation "fade-slide-down" 150 [ delay <| n * dropDelay n, linear ]
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]
@@ -243,39 +221,29 @@ seedDrop seedType n =
 
 drop : String -> Int -> Html msg
 drop bgColor n =
-    let
-        d =
-            if modBy 3 n == 0 then
-                30
-
-            else if modBy 3 n == 1 then
-                60
-
-            else
-                90
-    in
     div
-        [ style
-            [ transform
-                [ translateX <|
-                    wave
-                        { left = -5
-                        , center = 0
-                        , right = 5
-                        }
-                        (n - 1)
-                ]
-            ]
-        ]
+        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 6
                 , height 6
                 , background bgColor
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay (n * d), linear ]
+                , animation "fade-slide-down" 150 [ delay (n * dropDelay n), linear ]
                 ]
             , class "br-100 absolute left-0 right-0 center"
             ]
             []
         ]
+
+
+dropDelay : Int -> Int
+dropDelay n =
+    if modBy 3 n == 0 then
+        30
+
+    else if modBy 3 n == 1 then
+        60
+
+    else
+        90
