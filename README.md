@@ -2,11 +2,9 @@
 
 A connect the dots game with seeds: https://www.seedsgame.com
 
-Heavily inspired by the fantastic [Two Dots](https://www.dots.co/twodots/)
+Inspired by the fantastic [Two Dots](https://www.dots.co/twodots/)
 
 ![seeds](https://raw.githubusercontent.com/andrewMacmurray/seeds/master/public/img/seed-collection.png)
-
-Built using [Elm](http://elm-lang.org/). Check out the original built in `React` and `Redux` https://github.com/andrewMacmurray/seeds
 
 ## Run Locally
 
@@ -26,16 +24,16 @@ install the dependencies with:
 > npm install
 ```
 
-install elm packages with:
-
-```sh
-> elm package install -y
-```
-
-run the dev environment (watches for changes in css and elm, auto launches and live reloads a dev server) with:
+run the dev environment (watches for changes in css and elm, launches and live reloads a dev server) with:
 
 ```sh
 > npm run dev
+```
+
+build the project with:
+
+```sh
+> npm run build
 ```
 
 Suggestions are welcome: https://github.com/andrewMacmurray/seeds-game/issues

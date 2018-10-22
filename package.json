@@ -31,7 +31,7 @@
   "homepage": "https://github.com/andrewMacmurray/seeds-game#readme",
   "dependencies": {
     "bounce.js": "^0.8.2",
-    "elm": "^0.18.0",
+    "elm": "^0.19.0",
     "howler": "^2.0.9",
     "pepjs": "^0.4.3",
     "tachyons-custom": "^4.5.4"
