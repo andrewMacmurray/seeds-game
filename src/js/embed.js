@@ -13,7 +13,7 @@ window.skipToLevel = util.skipToLevel;
 
 function init() {
   // Init Elm App
-  const { ports } = Elm.App.init({
+  const { ports } = Elm.Main.init({
     node: document.getElementById("app"),
     flags: {
       now: Date.now(),

@@ -2,7 +2,7 @@ module Views.Loading exposing (loadingScreen)
 
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
-import Css.Transition exposing (transitionAll)
+import Css.Transition exposing (easeInOut, transitionAll)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Levels as Levels
 import Html exposing (..)
@@ -21,7 +21,7 @@ loadingScreen model =
             ]
         , style
             [ backgroundStyle model.loadingScreen
-            , transitionAll 600 []
+            , transitionAll 500 [ easeInOut ]
             ]
         ]
         [ div [ style [ width 50 ] ]

@@ -83,7 +83,7 @@ init level shared =
     ( initialState shared
     , sequence
         [ ( 1000, ScrollHubTo level )
-        , ( 1000, ClearCurrentLevel )
+        , ( 1500, ClearCurrentLevel )
         ]
     )
 
