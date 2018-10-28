@@ -8,6 +8,7 @@ module Worlds exposing
     , list
     , next
     , number
+    , previous
     , seedType
     , tutorial
     )
@@ -80,6 +81,11 @@ list =
 next : Key -> Key
 next =
     Levels.next all
+
+
+previous : Key -> Key
+previous =
+    Levels.previous all
 
 
 seedType : Key -> Maybe SeedType

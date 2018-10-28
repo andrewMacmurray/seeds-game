@@ -19,6 +19,7 @@ module Data.Levels exposing
     , level
     , next
     , number
+    , previous
     , reached
     , seedType
     , toCache
@@ -192,6 +193,22 @@ next worlds_ key =
 
     else
         keyFromRaw (worldId_ key) (levelId_ key + 1)
+
+
+previous : Worlds -> Key -> Key
+previous worlds_ key =
+    if isFirstLevelOfWorld key then
+        let
+            wId =
+                worldId_ key - 1
+
+            lId =
+                getWorldSizeFromIndex_ worlds_ wId |> Maybe.withDefault 1
+        in
+        keyFromRaw wId lId
+
+    else
+        keyFromRaw (worldId_ key) (levelId_ key - 1)
 
 
 reached : Key -> Key -> Bool

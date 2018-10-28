@@ -1,5 +1,6 @@
 module Data.Level.Summary exposing
     ( percentComplete
+    , primaryResourceType
     , secondaryResourceTypes
     )
 
@@ -14,31 +15,60 @@ import Helpers.List exposing (unique)
 import Worlds
 
 
-secondaryResourceTypes : Levels.Key -> Maybe (List TileType)
-secondaryResourceTypes level =
+primaryResourceType : Levels.Key -> Maybe Levels.Key -> Maybe SeedType
+primaryResourceType progress currentLevel =
+    levelOffset progress currentLevel |> Worlds.seedType
+
+
+secondaryResourceTypes : Levels.Key -> Maybe Levels.Key -> Maybe (List TileType)
+secondaryResourceTypes progress currentLevel =
     Maybe.map2
         secondaryResourceTypes_
-        (Worlds.seedType level)
-        (Worlds.getLevels level)
+        (Worlds.seedType <| levelOffset progress currentLevel)
+        (Worlds.getLevels <| levelOffset progress currentLevel)
 
 
-percentComplete : TileType -> Levels.Key -> Float
-percentComplete tileType progress =
+percentComplete : TileType -> Levels.Key -> Maybe Levels.Key -> Float
+percentComplete tileType progress currentLevel =
     let
-        target =
+        targetScores =
             targetWorldScores progress |> Maybe.andThen (getScoreFor tileType)
 
-        current =
+        currentScores =
             scoresAtLevel progress |> getScoreFor tileType
 
         percent a b =
             (toFloat b / toFloat a) * 100
     in
-    if worldComplete progress then
+    if displayFinal progress currentLevel then
         100
 
+    else if displayFirst progress currentLevel then
+        0
+
     else
-        Maybe.map2 percent target current |> Maybe.withDefault 0
+        Maybe.map2 percent targetScores currentScores |> Maybe.withDefault 0
+
+
+displayFirst : Levels.Key -> Maybe Levels.Key -> Bool
+displayFirst progress currentLevel =
+    Levels.isFirstLevelOfWorld progress
+        && (Maybe.map Levels.isFirstLevelOfWorld currentLevel |> Maybe.withDefault False)
+
+
+displayFinal : Levels.Key -> Maybe Levels.Key -> Bool
+displayFinal progress currentLevel =
+    Levels.isFirstLevelOfWorld progress
+        && (Maybe.map Worlds.isLastLevelOfWorld currentLevel |> Maybe.withDefault False)
+
+
+levelOffset : Levels.Key -> Maybe Levels.Key -> Levels.Key
+levelOffset progress currentLevel =
+    if displayFinal progress currentLevel then
+        Worlds.previous progress
+
+    else
+        progress
 
 
 getScoreFor : TileType -> Dict String Int -> Maybe Int

@@ -121,10 +121,10 @@ view : Model -> Html Msg
 view { shared } =
     let
         primarySeed =
-            Worlds.seedType shared.progress |> Maybe.withDefault Sunflower
+            primaryResourceType shared.progress shared.currentLevel |> Maybe.withDefault Sunflower
 
         resources =
-            secondaryResourceTypes shared.progress |> Maybe.withDefault []
+            secondaryResourceTypes shared.progress shared.currentLevel |> Maybe.withDefault []
     in
     div
         [ style
@@ -142,7 +142,7 @@ view { shared } =
                     ]
                 , class "center"
                 ]
-                [ seedBank primarySeed <| percentComplete (Seed primarySeed) shared.progress ]
+                [ seedBank primarySeed <| percentComplete (Seed primarySeed) shared.progress shared.currentLevel ]
             , div [ style [ height 50 ] ] <| List.map (renderResourceBank shared.progress shared.currentLevel) resources
             ]
         ]
@@ -152,7 +152,7 @@ renderResourceBank : Levels.Key -> Maybe Levels.Key -> TileType -> Html msg
 renderResourceBank progress currentLevel tileType =
     let
         fillLevel =
-            percentComplete tileType progress
+            percentComplete tileType progress currentLevel
     in
     case tileType of
         Rain ->
