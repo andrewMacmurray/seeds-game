@@ -1,12 +1,10 @@
 module Data.Board.Types exposing
     ( Block(..)
     , Board
-    , BoardConfig
     , BoardDimensions
     , Coord
     , FallingDistance
     , GrowingOrder
-    , HasBoard
     , LeavingOrder
     , Move
     , MoveBearing(..)
@@ -15,7 +13,6 @@ module Data.Board.Types exposing
     , Score
     , Scores
     , SeedType(..)
-    , TileConfig
     , TileState(..)
     , TileType(..)
     , X
@@ -23,37 +20,7 @@ module Data.Board.Types exposing
     )
 
 import Css.Color exposing (Color)
-import Data.Window as Window
 import Dict exposing (Dict)
-
-
-
--- Extensible Records for working with a Board
-
-
-type alias HasBoard a =
-    { a | board : Board }
-
-
-type alias BoardConfig a =
-    { a
-        | board : Board
-        , boardDimensions : BoardDimensions
-    }
-
-
-type alias TileConfig a =
-    { a
-        | moveShape : Maybe MoveShape
-        , window : Window.Size
-        , boardDimensions : BoardDimensions
-    }
-
-
-type alias BoardDimensions =
-    { x : Int
-    , y : Int
-    }
 
 
 
@@ -72,6 +39,12 @@ type alias Score =
 
 
 -- Core Board Type
+
+
+type alias BoardDimensions =
+    { x : Int
+    , y : Int
+    }
 
 
 type alias Board =

@@ -1,21 +1,91 @@
-module Scenes.Retry exposing (lifeState, retryView, tryAgain)
+module Scenes.Retry exposing
+    ( Model
+    , Msg
+    , getShared
+    , init
+    , update
+    , updateShared
+    , view
+    )
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
+import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
+import Exit exposing (continue, exitTo)
+import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import State exposing (livesLeft)
-import Types exposing (..)
+import Shared
 import Views.Lives exposing (renderLivesLeft)
 
 
-retryView : Model -> Html Msg
-retryView model =
+
+-- Model
+
+
+type alias Model =
+    Shared.Data
+
+
+type Msg
+    = DecrementLives
+    | RestartLevel
+    | ReturnToHub
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared =
+    identity
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared =
+    identity
+
+
+
+-- Init
+
+
+init : Shared.Data -> ( Model, Cmd Msg )
+init shared =
+    ( shared
+    , after 1000 DecrementLives
+    )
+
+
+
+-- Update
+
+
+update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        DecrementLives ->
+            continue (updateShared Shared.decrementLife model) []
+
+        RestartLevel ->
+            exitTo Exit.ToLevel model
+
+        ReturnToHub ->
+            exitTo Exit.ToHub model
+
+
+
+-- View
+
+
+view : Model -> Html Msg
+view model =
     div
         [ style
             [ height <| toFloat model.window.height
@@ -48,18 +118,11 @@ retryView model =
         ]
 
 
-lifeState : Model -> Transit Int
+lifeState : Shared.Data -> Transit Int
 lifeState model =
-    let
-        lives =
-            model.timeTillNextLife |> livesLeft |> floor
-    in
-    case model.scene of
-        Transition _ ->
-            Static lives
-
-        _ ->
-            Transitioning lives
+    model.lives
+        |> Lives.remaining
+        |> Transitioning
 
 
 tryAgain : Model -> Html Msg
@@ -76,7 +139,7 @@ tryAgain model =
                 , leftPill
                 ]
             , class "dib"
-            , onClick GoToHub
+            , onClick ReturnToHub
             ]
             [ p [ class "ma0" ] [ text "X" ] ]
         , div

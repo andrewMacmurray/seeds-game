@@ -1,75 +1,12 @@
 module Data.Level.Types exposing
-    ( AllLevels
-    , CurrentLevelConfig
-    , LevelData
-    , LevelNumber
-    , Probability(..)
-    , Progress
+    ( Probability(..)
     , TargetScore(..)
     , TileSetting
-    , WorldData
-    , WorldLevels
-    , WorldNumber
     )
 
 import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
 import Dict exposing (Dict)
-
-
-
--- Identifier for a level
-
-
-type alias Progress =
-    ( WorldNumber, LevelNumber )
-
-
-
--- Types to represent settings for all levels and worlds
-
-
-type alias AllLevels tutorialData =
-    Dict WorldNumber (WorldData tutorialData)
-
-
-type alias CurrentLevelConfig tutorialData =
-    ( WorldData tutorialData, LevelData tutorialData )
-
-
-type alias WorldNumber =
-    Int
-
-
-type alias WorldData tutorialData =
-    { levels : WorldLevels tutorialData
-    , seedType : SeedType
-    , background : String
-    , textColor : String
-    , textCompleteColor : String
-    , textBackgroundColor : String
-    }
-
-
-type alias WorldLevels tutorialData =
-    Dict LevelNumber (LevelData tutorialData)
-
-
-type alias LevelNumber =
-    Int
-
-
-type alias LevelData tutorialData =
-    { tileSettings : List TileSetting
-    , walls : List ( Color, Coord )
-    , boardDimensions : BoardDimensions
-    , tutorial : Maybe tutorialData
-    , moves : Int
-    }
-
-
-
--- Types for initializing level with settings
 
 
 type alias TileSetting =

@@ -8,10 +8,10 @@ module Config.Scale exposing
     , windowPadding
     )
 
-import Data.Window as Window
+import Shared exposing (Window)
 
 
-tileScaleFactor : Window.Size -> Float
+tileScaleFactor : Window -> Float
 tileScaleFactor window =
     let
         dimension =
@@ -27,7 +27,7 @@ tileScaleFactor window =
         1.2
 
 
-smallestWindowDimension : Window.Size -> Int
+smallestWindowDimension : Window -> Int
 smallestWindowDimension { height, width } =
     if height >= width then
         width

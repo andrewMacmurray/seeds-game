@@ -1,37 +1,37 @@
-const { localStorage } = window
+const { localStorage } = window;
 
-function getTimes() {
-  return safeParse(localStorage.getItem('times'))
+function getLives() {
+  return safeParse(localStorage.getItem("lives"));
 }
 
-function setTimes(times) {
-  return localStorage.setItem('times', JSON.stringify(times))
+function setLives(lives) {
+  return localStorage.setItem("lives", JSON.stringify(lives));
 }
 
 function getProgress() {
-  return safeParse(localStorage.getItem('progress'))
+  return safeParse(localStorage.getItem("progress"));
 }
 
 function setProgress(progress) {
-  return localStorage.setItem('progress', JSON.stringify(progress))
+  return localStorage.setItem("progress", JSON.stringify(progress));
 }
 
 function clear() {
-  localStorage.clear()
+  localStorage.clear();
 }
 
 function safeParse(JSONstring) {
   try {
-    return JSON.parse(JSONstring)
+    return JSON.parse(JSONstring);
   } catch (e) {
-    return null
+    return null;
   }
 }
 
 module.exports = {
-  getTimes,
-  setTimes,
+  getLives,
+  setLives,
   getProgress,
   setProgress,
   clear
-}
+};

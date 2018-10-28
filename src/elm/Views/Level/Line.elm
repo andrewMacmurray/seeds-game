@@ -1,42 +1,54 @@
 module Views.Level.Line exposing (renderLine)
 
 import Config.Scale exposing (tileScaleFactor)
+import Css.Style as Style exposing (Style, marginAuto, styles, svgStyle, svgStyles)
+import Css.Transform as Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Types exposing (..)
-import Data.Window as Window
-import Css.Style as Style exposing (Style, marginAuto, svgStyle, svgStyles)
-import Css.Transform as Transform exposing (..)
-import Html exposing (Html, span)
+import Html exposing (Html, div, span)
+import Shared exposing (Window)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Level.Styles exposing (strokeColors)
+import Views.Level.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
 
 
-renderLine : Window.Size -> Move -> Html msg
-renderLine window ( coord, block ) =
+renderLine : Window -> Move -> Html msg
+renderLine window (( coord, _ ) as move) =
+    div
+        [ styles
+            [ tileWidthheights window
+            , tileCoordsStyles window coord
+            ]
+        , class "dib absolute touch-disabled"
+        ]
+        [ lineFromMove window move ]
+
+
+lineFromMove : Window -> Move -> Html msg
+lineFromMove window ( coord, block ) =
     let
         tileState =
             getTileState block
     in
     case tileState of
         Dragging tileType _ Left _ ->
-            line_ window tileType Left
+            innerLine window tileType Left
 
         Dragging tileType _ Right _ ->
-            line_ window tileType Right
+            innerLine window tileType Right
 
         Dragging tileType _ Up _ ->
-            line_ window tileType Up
+            innerLine window tileType Up
 
         Dragging tileType _ Down _ ->
-            line_ window tileType Down
+            innerLine window tileType Down
 
         _ ->
             span [] []
 
 
-line_ : Window.Size -> TileType -> MoveBearing -> Html msg
-line_ window tileType bearing =
+innerLine : Window -> TileType -> MoveBearing -> Html msg
+innerLine window tileType bearing =
     let
         tileScale =
             tileScaleFactor window
@@ -62,7 +74,7 @@ line_ window tileType bearing =
         ]
 
 
-lineTransforms : Window.Size -> MoveBearing -> Style
+lineTransforms : Window -> MoveBearing -> Style
 lineTransforms window bearing =
     let
         xOffset =

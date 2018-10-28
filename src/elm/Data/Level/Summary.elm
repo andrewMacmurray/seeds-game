@@ -1,140 +1,135 @@
 module Data.Level.Summary exposing
     ( percentComplete
-    , primarySeedType
+    , primaryResourceType
     , secondaryResourceTypes
     )
 
-import Config.Levels exposing (allLevels)
 import Data.Board.Score exposing (collectable)
 import Data.Board.Tile as Tile exposing (getSeedType)
 import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (..)
+import Data.Level.Types exposing (TargetScore(..), TileSetting)
+import Data.Levels as Levels
 import Dict exposing (Dict)
 import Helpers.Dict exposing (insertWith, mapValues)
+import Helpers.List exposing (unique)
+import Worlds
 
 
-percentComplete : AllLevels tutorial -> TileType -> Progress -> Maybe Progress -> Float
-percentComplete allLevels tileType ( w, l ) currentLevel =
+primaryResourceType : Levels.Key -> Maybe Levels.Key -> Maybe SeedType
+primaryResourceType progress currentLevel =
+    levelOffset progress currentLevel |> Worlds.seedType
+
+
+secondaryResourceTypes : Levels.Key -> Maybe Levels.Key -> Maybe (List TileType)
+secondaryResourceTypes progress currentLevel =
+    Maybe.map2
+        secondaryResourceTypes_
+        (Worlds.seedType <| levelOffset progress currentLevel)
+        (Worlds.getLevels <| levelOffset progress currentLevel)
+
+
+percentComplete : TileType -> Levels.Key -> Maybe Levels.Key -> Float
+percentComplete tileType progress currentLevel =
     let
-        target =
-            totalTargetScoresForWorld w
-                |> Maybe.andThen (Dict.get (Tile.hash tileType))
+        targetScores =
+            targetWorldScores progress |> Maybe.andThen (getScoreFor tileType)
 
-        current =
-            currentTotalScoresForWorld allLevels ( w, l )
-                |> Maybe.andThen (Dict.get (Tile.hash tileType))
+        currentScores =
+            scoresAtLevel progress |> getScoreFor tileType
 
         percent a b =
             (toFloat b / toFloat a) * 100
     in
-    if worldComplete ( w, l ) currentLevel then
+    if displayFinal progress currentLevel then
         100
 
-    else
-        Maybe.map2 percent target current
-            |> Maybe.withDefault 0
-
-
-primarySeedType : AllLevels tutorial -> Progress -> Maybe Progress -> Maybe SeedType
-primarySeedType allLevels progress currentLevel =
-    if worldComplete progress currentLevel then
-        currentLevel |> Maybe.andThen (worldSeedType allLevels)
+    else if displayFirst progress currentLevel then
+        0
 
     else
-        worldSeedType allLevels progress
+        Maybe.map2 percent targetScores currentScores |> Maybe.withDefault 0
 
 
-secondaryResourceTypes : AllLevels tutorial -> Maybe Progress -> Maybe (List TileType)
-secondaryResourceTypes allLevels currentLevel =
-    currentLevel
-        |> Maybe.andThen (getWorld allLevels)
-        |> Maybe.map secondaryResourceTypes_
+displayFirst : Levels.Key -> Maybe Levels.Key -> Bool
+displayFirst progress currentLevel =
+    Levels.isFirstLevelOfWorld progress
+        && (Maybe.map Levels.isFirstLevelOfWorld currentLevel |> Maybe.withDefault False)
 
 
-secondaryResourceTypes_ : WorldData tutorialConfig -> List TileType
-secondaryResourceTypes_ { levels, seedType } =
-    levels
-        |> mapValues .tileSettings
-        |> Dict.values
-        |> List.concat
-        |> List.filter collectable
-        |> List.map .tileType
-        |> List.filter (secondaryResource seedType)
-        |> uniqueMembers
+displayFinal : Levels.Key -> Maybe Levels.Key -> Bool
+displayFinal progress currentLevel =
+    Levels.isFirstLevelOfWorld progress
+        && (Maybe.map Worlds.isLastLevelOfWorld currentLevel |> Maybe.withDefault False)
+
+
+levelOffset : Levels.Key -> Maybe Levels.Key -> Levels.Key
+levelOffset progress currentLevel =
+    if displayFinal progress currentLevel then
+        Worlds.previous progress
+
+    else
+        progress
+
+
+getScoreFor : TileType -> Dict String Int -> Maybe Int
+getScoreFor =
+    Tile.hash >> Dict.get
+
+
+worldComplete : Levels.Key -> Bool
+worldComplete =
+    Levels.isFirstLevelOfWorld
+
+
+secondaryResourceTypes_ : SeedType -> List Levels.Level -> List TileType
+secondaryResourceTypes_ worldSeedType =
+    List.map tileSettings
+        >> List.concat
+        >> List.filter collectable
+        >> List.map .tileType
+        >> List.filter (secondaryResource worldSeedType)
+        >> unique
 
 
 secondaryResource : SeedType -> TileType -> Bool
-secondaryResource seedType tileType =
+secondaryResource worldSeedType tileType =
     case getSeedType tileType of
-        Just seedType_ ->
-            not <| seedType == seedType_
+        Just seedType ->
+            not <| worldSeedType == seedType
 
         Nothing ->
             True
 
 
-uniqueMembers : List a -> List a
-uniqueMembers =
-    let
-        accum a b =
-            if List.member a b then
-                b
-
-            else
-                a :: b
-    in
-    List.foldr accum []
+scoresAtLevel : Levels.Key -> Dict String Int
+scoresAtLevel level =
+    level
+        |> Worlds.getKeysForWorld
+        |> Maybe.withDefault []
+        |> List.filter (Levels.completed level)
+        |> List.map (Worlds.getLevel >> Maybe.map tileSettings >> Maybe.withDefault [])
+        |> List.concat
+        |> totalScoresDict
 
 
-worldComplete : Progress -> Maybe Progress -> Bool
-worldComplete progress curr =
-    case curr of
-        Just ( w, _ ) ->
-            progress == ( w + 1, 1 )
-
-        Nothing ->
-            False
-
-
-worldSeedType : AllLevels tutorial -> Progress -> Maybe SeedType
-worldSeedType allLevels =
-    getWorld allLevels >> Maybe.map .seedType
-
-
-currentTotalScoresForWorld : AllLevels tutorial -> Progress -> Maybe (Dict String Int)
-currentTotalScoresForWorld allLevels (( worldNumber, levelNumber ) as progress) =
-    getWorld allLevels progress |> Maybe.map (scoresAtLevel levelNumber)
-
-
-getWorld : AllLevels tutorial -> Progress -> Maybe (WorldData tutorial)
-getWorld allLevels ( w, _ ) =
-    Dict.get w allLevels
-
-
-totalTargetScoresForWorld : Int -> Maybe (Dict String Int)
-totalTargetScoresForWorld worldNumber =
-    allLevels
-        |> Dict.get worldNumber
+targetWorldScores : Levels.Key -> Maybe (Dict String Int)
+targetWorldScores level =
+    level
+        |> Worlds.getLevels
         |> Maybe.map scoresForWorld
 
 
-scoresAtLevel : Int -> WorldData tutorialConfig -> Dict String Int
-scoresAtLevel level { levels } =
+scoresForWorld : List Levels.Level -> Dict String Int
+scoresForWorld levels =
     levels
-        |> mapValues .tileSettings
-        |> Dict.filter (\k _ -> k < level)
-        |> Dict.values
+        |> List.map tileSettings
         |> List.concat
         |> totalScoresDict
 
 
-scoresForWorld : WorldData tutorialConfig -> Dict String Int
-scoresForWorld { levels } =
-    levels
-        |> mapValues .tileSettings
-        |> Dict.values
-        |> List.concat
-        |> totalScoresDict
+tileSettings : Levels.Level -> List TileSetting
+tileSettings =
+    Levels.config >> .tiles
 
 
 totalScoresDict : List TileSetting -> Dict String Int
@@ -143,10 +138,10 @@ totalScoresDict =
 
 
 accumSettings : TileSetting -> Dict String Int -> Dict String Int
-accumSettings val acc =
-    case val.targetScore of
+accumSettings setting acc =
+    case setting.targetScore of
         Just (TargetScore n) ->
-            insertWith (+) (Tile.hash val.tileType) n acc
+            insertWith (+) (Tile.hash setting.tileType) n acc
 
         Nothing ->
             acc

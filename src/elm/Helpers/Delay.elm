@@ -1,4 +1,4 @@
-module Helpers.Delay exposing (delay, pause, sequence, trigger)
+module Helpers.Delay exposing (after, pause, sequence, trigger)
 
 import Delay
 import Task
@@ -9,8 +9,8 @@ sequence steps =
     Delay.sequence <| Delay.withUnit Delay.Millisecond <| steps
 
 
-delay : Float -> msg -> Cmd msg
-delay time =
+after : Float -> msg -> Cmd msg
+after time =
     Delay.after time Delay.Millisecond
 
 

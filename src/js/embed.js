@@ -13,12 +13,13 @@ window.skipToLevel = util.skipToLevel;
 
 function init() {
   // Init Elm App
-  const { ports } = Elm.App.init({
+  const { ports } = Elm.Main.init({
     node: document.getElementById("app"),
     flags: {
       now: Date.now(),
-      times: cache.getTimes(),
-      rawProgress: cache.getProgress(),
+      lives: cache.getLives(),
+      level: cache.getProgress(),
+      randomMessageIndex: Math.round(Math.random() * 10),
       window: { height: window.innerHeight, width: window.innerWidth }
     }
   });
@@ -55,8 +56,8 @@ function init() {
     window.location.reload();
   });
 
-  ports.cacheTimes.subscribe(times => {
-    cache.setTimes(times);
+  ports.cacheLives.subscribe(times => {
+    cache.setLives(times);
   });
 }
 

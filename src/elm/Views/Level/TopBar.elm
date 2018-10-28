@@ -1,5 +1,6 @@
 module Views.Level.TopBar exposing
-    ( moveCounterColor
+    ( TopBarViewModel
+    , moveCounterColor
     , remainingMoves
     , renderScore
     , renderScoreIcon
@@ -18,14 +19,23 @@ import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
+import Data.Level.Types exposing (TileSetting)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Scenes.Level.Types exposing (LevelModel)
+import Shared exposing (Window)
 import Views.Icons.Tick exposing (tickBackground)
 import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 
 
-topBar : LevelModel -> Html msg
+type alias TopBarViewModel =
+    { window : Window
+    , remainingMoves : Int
+    , tileSettings : List TileSetting
+    , scores : Scores
+    }
+
+
+topBar : TopBarViewModel -> Html msg
 topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -37,7 +47,7 @@ topBar model =
         ]
         [ div
             [ style
-                [ width <| toFloat <| boardFullWidth model
+                [ width <| toFloat <| boardFullWidth model.window
                 , height ScaleConfig.topBarHeight
                 ]
             , class "flex items-center justify-center relative"
@@ -57,7 +67,7 @@ topBar model =
         ]
 
 
-renderScore : LevelModel -> TileType -> Html msg
+renderScore : TopBarViewModel -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =

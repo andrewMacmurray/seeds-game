@@ -4,43 +4,44 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, cubicBezier, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Data.InfoWindow exposing (..)
+import Data.InfoWindow as InfoWindow exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg
 infoContainer infoWindow content =
-    if isHidden infoWindow then
-        span [] []
+    case InfoWindow.state infoWindow of
+        Hidden ->
+            span [] []
 
-    else if isVisible infoWindow then
-        infoContainer_ infoWindow
-            [ div
-                [ class "pa3 br3 tc relative"
-                , style
-                    [ animation "elastic-bounce-in" 2000 [ linear ]
-                    , background seedPodGradient
-                    , color white
-                    , width 380
+        Visible ->
+            infoContainer_ infoWindow
+                [ div
+                    [ class "pa3 br3 tc relative"
+                    , style
+                        [ animation "elastic-bounce-in" 2000 [ linear ]
+                        , background seedPodGradient
+                        , color white
+                        , width 380
+                        ]
                     ]
+                    [ content ]
                 ]
-                [ content ]
-            ]
 
-    else
-        infoContainer_ infoWindow
-            [ div
-                [ class "pa3 br3 tc relative"
-                , style
-                    [ background seedPodGradient
-                    , color white
-                    , width 380
-                    , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]
+        Leaving ->
+            infoContainer_ infoWindow
+                [ div
+                    [ class "pa3 br3 tc relative"
+                    , style
+                        [ background seedPodGradient
+                        , color white
+                        , width 380
+                        , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]
+                        ]
                     ]
+                    [ content ]
                 ]
-                [ content ]
-            ]
 
 
 infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
@@ -53,20 +54,21 @@ infoContainer_ infoWindow =
                 , animation "fade-in" 100 [ ease ]
                 ]
     in
-    if isLeaving infoWindow then
-        div
-            [ classes
-                [ "touch-disabled"
-                , infoContainerBaseClasses
+    case InfoWindow.state infoWindow of
+        Leaving ->
+            div
+                [ classes
+                    [ "touch-disabled"
+                    , infoContainerBaseClasses
+                    ]
+                , containerStyles
                 ]
-            , containerStyles
-            ]
 
-    else
-        div
-            [ classes [ infoContainerBaseClasses ]
-            , containerStyles
-            ]
+        _ ->
+            div
+                [ classes [ infoContainerBaseClasses ]
+                , containerStyles
+                ]
 
 
 infoContainerBaseClasses : String

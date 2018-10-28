@@ -1,6 +1,7 @@
 module Css.Transition exposing
     ( cubicBezier
     , delay
+    , easeInOut
     , easeOut
     , linear
     , transition
@@ -11,11 +12,11 @@ import Css.Style as Style exposing (Style)
 import Css.Unit exposing (cubicBezier_, ms)
 
 
-type TransitionOption
-    = TransitionOption Style
+type Option
+    = Option Style
 
 
-transition : String -> Int -> List TransitionOption -> Style
+transition : String -> Int -> List Option -> Style
 transition prop duration options =
     [ [ transitionProperty prop
       , transitionDuration duration
@@ -27,29 +28,34 @@ transition prop duration options =
         |> Style.compose
 
 
-transitionAll : Int -> List TransitionOption -> Style
+transitionAll : Int -> List Option -> Style
 transitionAll =
     transition "all"
 
 
-easeOut : TransitionOption
+easeInOut : Option
+easeInOut =
+    option <| transitionTimingFunction "ease-in-out"
+
+
+easeOut : Option
 easeOut =
-    transitionOption <| transitionTimingFunction "ease-out"
+    option <| transitionTimingFunction "ease-out"
 
 
-linear : TransitionOption
+linear : Option
 linear =
-    transitionOption <| transitionTimingFunction "linear"
+    option <| transitionTimingFunction "linear"
 
 
-cubicBezier : Float -> Float -> Float -> Float -> TransitionOption
+cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
-    transitionOption <| transitionTimingFunction <| cubicBezier_ a b c d
+    option <| transitionTimingFunction <| cubicBezier_ a b c d
 
 
-delay : Int -> TransitionOption
+delay : Int -> Option
 delay =
-    transitionOption << transitionDelay
+    option << transitionDelay
 
 
 
@@ -80,11 +86,11 @@ transitionProperty =
 -- Helpers
 
 
-transitionOption : Style -> TransitionOption
-transitionOption =
-    TransitionOption
+option : Style -> Option
+option =
+    Option
 
 
-toStyles : List TransitionOption -> List Style
+toStyles : List Option -> List Style
 toStyles =
-    List.map (\(TransitionOption s) -> s)
+    List.map (\(Option s) -> s)

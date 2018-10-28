@@ -7,8 +7,8 @@
     "deploy-staging": "npm run build && firebase deploy -P staging",
     "dev": "npm run elm-dev & npm run css-dev & npm run copy-pep & npm run js-dev",
     "build": "npm run elm-build && npm run js-build && npm run copy-pep && npm run css-build && npm run sw-generate",
-    "elm-dev": "elm-live src/elm/App.elm --dir=public --open --pushstate -- --output=public/main.js --debug",
-    "elm-build": "elm make src/elm/App.elm --output=public/main.js --optimize && npm run compress-main",
+    "elm-dev": "elm-live src/elm/Main.elm --dir=public --open --pushstate -- --output=public/main.js --debug",
+    "elm-build": "elm make src/elm/Main.elm --output=public/main.js --optimize && npm run compress-main",
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
     "js-dev": "watchify src/js/embed.js -o public/embed.js -v",
@@ -17,7 +17,7 @@
     "sw-generate": "workbox injectManifest",
     "compress-main": "uglifyjs -c -m -o public/main.js public/main.js",
     "compress-embed": "uglifyjs -c -m -o public/embed.js public/embed.js",
-    "test": "cd ./test && elm-test App.elm"
+    "test": "elm-test"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/andrewMacmurray/seeds-game#readme",
   "dependencies": {
     "bounce.js": "^0.8.2",
-    "elm": "^0.18.0",
+    "elm": "^0.19.0",
     "howler": "^2.0.9",
     "pepjs": "^0.4.3",
     "tachyons-custom": "^4.5.4"

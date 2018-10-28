@@ -1,6 +1,6 @@
 port module Ports exposing
-    ( cacheProgress
-    , cacheTimes
+    ( cacheLives
+    , cacheProgress
     , clearCache
     , clearCache_
     , fadeMusic
@@ -9,16 +9,17 @@ port module Ports exposing
     , playIntroMusic
     )
 
-import Types exposing (RawProgress, Times)
+import Data.Levels as Levels
+import Data.Lives as Lives
 
 
 port generateBounceKeyframes : Float -> Cmd msg
 
 
-port cacheProgress : RawProgress -> Cmd msg
+port cacheProgress : Levels.Cache -> Cmd msg
 
 
-port cacheTimes : Times -> Cmd msg
+port cacheLives : Lives.Cache -> Cmd msg
 
 
 clearCache : Cmd msg

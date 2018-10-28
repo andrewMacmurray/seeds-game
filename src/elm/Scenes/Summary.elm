@@ -1,35 +1,134 @@
-module Scenes.Summary exposing (drop, renderResourceBank, renderResourceFill, seedDrop, summaryView)
+module Scenes.Summary exposing
+    ( Model
+    , Msg
+    , getShared
+    , init
+    , update
+    , updateShared
+    , view
+    )
 
-import Config.Levels exposing (allLevels)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
-import Data.Level.Types exposing (Progress)
-import Helpers.Wave exposing (wave)
+import Data.Levels as Levels
+import Data.Wave exposing (wave)
+import Exit exposing (continue, exit)
+import Helpers.Delay exposing (after, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Types exposing (..)
+import Ports exposing (cacheProgress)
+import Shared
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
+import Worlds
 
 
-summaryView : Model -> Html Msg
-summaryView ({ progress, currentLevel } as model) =
+
+-- Model
+
+
+type alias Model =
+    { shared : Shared.Data
+    , resources : Resources
+    }
+
+
+type Msg
+    = IncrementProgress
+    | CacheProgress
+    | BackToHub
+
+
+type Resources
+    = Waiting
+    | Filling
+
+
+
+-- Shared
+
+
+getShared : Model -> Shared.Data
+getShared model =
+    model.shared
+
+
+updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
+updateShared f model =
+    { model | shared = f model.shared }
+
+
+
+-- Init
+
+
+init : Shared.Data -> ( Model, Cmd Msg )
+init shared =
+    ( initialState shared
+    , after 1500 IncrementProgress
+    )
+
+
+initialState : Shared.Data -> Model
+initialState shared =
+    { shared = shared
+    , resources = Waiting
+    }
+
+
+
+-- Update
+
+
+update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        IncrementProgress ->
+            continue (incrementProgress model)
+                [ trigger CacheProgress
+                , after 2500 BackToHub
+                ]
+
+        CacheProgress ->
+            continue model [ cacheProgress <| Levels.toCache model.shared.progress ]
+
+        BackToHub ->
+            exit model
+
+
+incrementProgress : Model -> Model
+incrementProgress model =
+    { model
+        | resources = Filling
+        , shared =
+            model.shared
+                |> Shared.incrementProgress Worlds.all
+                |> Shared.incrementMessageIndex
+    }
+
+
+
+-- View
+
+
+view : Model -> Html Msg
+view { shared } =
     let
         primarySeed =
-            primarySeedType allLevels progress currentLevel |> Maybe.withDefault Sunflower
+            primaryResourceType shared.progress shared.currentLevel |> Maybe.withDefault Sunflower
 
         resources =
-            secondaryResourceTypes allLevels currentLevel |> Maybe.withDefault []
+            secondaryResourceTypes shared.progress shared.currentLevel |> Maybe.withDefault []
     in
     div
         [ style
-            [ height <| toFloat model.window.height
+            [ height <| toFloat shared.window.height
             , background washedYellow
             , animation "fade-in" 1000 [ linear ]
             ]
@@ -43,17 +142,17 @@ summaryView ({ progress, currentLevel } as model) =
                     ]
                 , class "center"
                 ]
-                [ seedBank primarySeed <| percentComplete allLevels (Seed primarySeed) progress currentLevel ]
-            , div [ style [ height 50 ] ] <| List.map (renderResourceBank progress currentLevel) resources
+                [ seedBank primarySeed <| percentComplete (Seed primarySeed) shared.progress shared.currentLevel ]
+            , div [ style [ height 50 ] ] <| List.map (renderResourceBank shared.progress shared.currentLevel) resources
             ]
         ]
 
 
-renderResourceBank : Progress -> Maybe Progress -> TileType -> Html msg
+renderResourceBank : Levels.Key -> Maybe Levels.Key -> TileType -> Html msg
 renderResourceBank progress currentLevel tileType =
     let
         fillLevel =
-            percentComplete allLevels tileType progress currentLevel
+            percentComplete tileType progress currentLevel
     in
     case tileType of
         Rain ->
@@ -105,36 +204,14 @@ renderResourceFill tileType =
 
 seedDrop : SeedType -> Int -> Html msg
 seedDrop seedType n =
-    let
-        d =
-            if modBy 3 n == 0 then
-                30
-
-            else if modBy 3 n == 1 then
-                60
-
-            else
-                90
-    in
     div
-        [ style
-            [ transform
-                [ translateX <|
-                    wave
-                        { left = -5
-                        , center = 0
-                        , right = 5
-                        }
-                        (n - 1)
-                ]
-            ]
-        ]
+        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 5
                 , height 8
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay <| n * d, linear ]
+                , animation "fade-slide-down" 150 [ delay <| n * dropDelay n, linear ]
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]
@@ -144,39 +221,29 @@ seedDrop seedType n =
 
 drop : String -> Int -> Html msg
 drop bgColor n =
-    let
-        d =
-            if modBy 3 n == 0 then
-                30
-
-            else if modBy 3 n == 1 then
-                60
-
-            else
-                90
-    in
     div
-        [ style
-            [ transform
-                [ translateX <|
-                    wave
-                        { left = -5
-                        , center = 0
-                        , right = 5
-                        }
-                        (n - 1)
-                ]
-            ]
-        ]
+        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 6
                 , height 6
                 , background bgColor
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay (n * d), linear ]
+                , animation "fade-slide-down" 150 [ delay (n * dropDelay n), linear ]
                 ]
             , class "br-100 absolute left-0 right-0 center"
             ]
             []
         ]
+
+
+dropDelay : Int -> Int
+dropDelay n =
+    if modBy 3 n == 0 then
+        30
+
+    else if modBy 3 n == 1 then
+        60
+
+    else
+        90
