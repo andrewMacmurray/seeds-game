@@ -15,7 +15,6 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Types exposing (..)
-import Data.Exit as Exit exposing (continue, exitWith)
 import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
@@ -23,6 +22,7 @@ import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
 import Dict
+import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
@@ -139,7 +139,7 @@ update msg model =
                 ]
 
         ExitToLevel level ->
-            exitWith level model []
+            exitWith level model
 
 
 

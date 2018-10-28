@@ -13,10 +13,10 @@ import Css.Color exposing (gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
-import Data.Exit as Exit exposing (continue, exitWith)
 import Data.Level.Summary exposing (..)
 import Data.Levels as Levels
 import Data.Wave exposing (wave)
+import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -86,7 +86,7 @@ initialState shared =
 -- Update
 
 
-update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
@@ -99,7 +99,7 @@ update msg model =
             continue model [ cacheProgress <| Levels.toCache model.shared.progress ]
 
         BackToHub ->
-            exitWith model.shared.progress model []
+            exit model
 
 
 incrementProgress : Model -> Model

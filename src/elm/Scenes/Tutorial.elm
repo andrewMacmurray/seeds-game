@@ -25,9 +25,9 @@ import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
-import Data.Exit as Exit exposing (continue, exit)
 import Data.Tutorial exposing (getText)
 import Dict exposing (Dict)
+import Exit exposing (continue, exit)
 import Helpers.Attribute exposing (emptyProperty)
 import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
@@ -244,7 +244,7 @@ update msg model =
             continue { model | skipped = True } []
 
         ExitTutorial ->
-            exit model []
+            exit model
 
 
 

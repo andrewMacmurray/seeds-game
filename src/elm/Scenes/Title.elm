@@ -14,9 +14,9 @@ import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Data.Exit as Exit exposing (continue, exitWith)
 import Data.Levels as Levels
 import Data.Visibility as Visibility exposing (..)
+import Exit exposing (continue, exitTo, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -81,7 +81,7 @@ init shared =
     }
 
 
-update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
 update msg model =
     case msg of
         FadeSeeds ->
@@ -96,10 +96,10 @@ update msg model =
                 ]
 
         GoToIntro ->
-            exitWith Intro model []
+            exitTo Exit.ToIntro model
 
         GoToHub ->
-            exitWith Hub model []
+            exitTo Exit.ToHub model
 
 
 subscriptions : Model -> Sub Msg

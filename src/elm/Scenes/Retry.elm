@@ -1,6 +1,5 @@
 module Scenes.Retry exposing
-    ( Destination(..)
-    , Model
+    ( Model
     , Msg
     , getShared
     , init
@@ -14,9 +13,9 @@ import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
-import Data.Exit as Exit exposing (continue, exitWith)
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
+import Exit exposing (continue, exitTo)
 import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -37,11 +36,6 @@ type Msg
     = DecrementLives
     | RestartLevel
     | ReturnToHub
-
-
-type Destination
-    = Level
-    | Hub
 
 
 
@@ -73,17 +67,17 @@ init shared =
 -- Update
 
 
-update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
 update msg model =
     case msg of
         DecrementLives ->
             continue (updateShared Shared.decrementLife model) []
 
         RestartLevel ->
-            exitWith Level model []
+            exitTo Exit.ToLevel model
 
         ReturnToHub ->
-            exitWith Hub model []
+            exitTo Exit.ToHub model
 
 
 

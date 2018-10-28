@@ -11,8 +11,8 @@ module Scenes.Intro exposing
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Exit as Exit exposing (continue, exit)
 import Data.Visibility exposing (..)
+import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
@@ -169,7 +169,7 @@ update msg model =
             continue { model | scene = DyingLandscape Dead Visible } []
 
         IntroComplete ->
-            exit model []
+            exit model
 
 
 

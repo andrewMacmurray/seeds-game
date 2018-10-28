@@ -5,15 +5,16 @@ import Browser.Events exposing (onResize)
 import Config.Scale as Scale
 import Css.Color exposing (darkYellow, lightYellow)
 import Css.Style exposing (backgroundColor, color, style)
-import Data.Exit as Exit
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
+import Exit
 import Helpers.Delay exposing (..)
+import Helpers.Return as Return
 import Html exposing (Html, div, p, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Html.Keyed as K
+import Html.Keyed as Keyed
 import Ports exposing (..)
 import Scene exposing (Scene(..))
 import Scenes.Hub as Hub
@@ -71,12 +72,12 @@ type Msg
     | HubMsg Hub.Msg
     | SummaryMsg Summary.Msg
     | RetryMsg Retry.Msg
-    | LoadTutorial Tutorial.Config Levels.LevelConfig
-    | LoadLevel Levels.LevelConfig
-    | LoadIntro
-    | LoadHub Levels.Key
-    | LoadSummary
-    | LoadRetry
+    | InitTutorial Tutorial.Config Levels.LevelConfig
+    | InitLevel Levels.LevelConfig
+    | InitIntro
+    | InitHub Levels.Key
+    | InitSummary
+    | InitRetry
     | ShowLoadingScreen
     | HideLoadingScreen
     | RandomBackground Background
@@ -120,69 +121,75 @@ initShared flags =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        TitleMsg titleMsg ->
-            handleTitleMsg titleMsg model
+update msg ({ scene, backdrop } as model) =
+    case ( msg, scene, backdrop ) of
+        ( TitleMsg title, Title titleModel, _ ) ->
+            updateTitle title titleModel model
 
-        LevelMsg levelMsg ->
-            handleLevelMsg levelMsg model
+        ( IntroMsg intro, Intro introModel, _ ) ->
+            updateIntro intro introModel model
 
-        TutorialMsg tutorialMsg ->
-            handleTutorialMsg tutorialMsg model
+        ( HubMsg hub, Hub hubModel, _ ) ->
+            updateHub hub hubModel model
 
-        HubMsg hubMsg ->
-            handleHubMsg hubMsg model
+        ( LevelMsg level, Level levelModel, _ ) ->
+            updateLevel level levelModel model
 
-        IntroMsg introMsg ->
-            handleIntroMsg introMsg model
+        ( LevelMsg level, _, Just (Level levelModel) ) ->
+            updateLevelBackdrop level levelModel model
 
-        SummaryMsg summaryMsg ->
-            handleSummaryMsg summaryMsg model
+        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
+            updateTutorial tutorial tutorialModel model
 
-        RetryMsg retryMsg ->
-            handleRetryMsg retryMsg model
+        ( RetryMsg retry, Retry retryModel, _ ) ->
+            updateRetry retry retryModel model
 
-        LoadTutorial tutorialConfig levelConfig ->
-            loadTutorial tutorialConfig levelConfig model
+        ( SummaryMsg summary, Summary summaryModel, _ ) ->
+            updateSummary summary summaryModel model
 
-        LoadLevel level ->
-            loadLevel level model
+        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
+            initTutorial tutorialConfig levelConfig model
 
-        LoadIntro ->
-            loadIntro model
+        ( InitLevel level, _, _ ) ->
+            initLevel level model
 
-        LoadHub level ->
-            loadHub level model
+        ( InitIntro, _, _ ) ->
+            initIntro model
 
-        LoadSummary ->
-            loadSummary model
+        ( InitHub level, _, _ ) ->
+            initHub level model
 
-        LoadRetry ->
-            loadRetry model
+        ( InitSummary, _, _ ) ->
+            initSummary model
 
-        ShowLoadingScreen ->
+        ( InitRetry, _, _ ) ->
+            initRetry model
+
+        ( ShowLoadingScreen, _, _ ) ->
             ( model, generateBackground RandomBackground )
 
-        RandomBackground bgColor ->
+        ( RandomBackground bgColor, _, _ ) ->
             ( updateShared model <| showLoadingScreen bgColor, Cmd.none )
 
-        HideLoadingScreen ->
+        ( HideLoadingScreen, _, _ ) ->
             ( updateShared model hideLoadingScreen, Cmd.none )
 
-        GoToHub level ->
-            ( model, withLoadingScreen <| LoadHub level )
+        ( GoToHub level, _, _ ) ->
+            ( model, withLoadingScreen <| InitHub level )
 
-        ResetData ->
+        ( ResetData, _, _ ) ->
             ( model, clearCache )
 
-        WindowSize width height ->
+        ( WindowSize width height, _, _ ) ->
             ( updateShared model <| setWindow width height
             , bounceKeyframes <| Window width height
             )
 
-        UpdateTimes now ->
+        ( UpdateTimes now, _, _ ) ->
             updateTimes now model
+
+        _ ->
+            ( model, Cmd.none )
 
 
 withLoadingScreen : Msg -> Cmd Msg
@@ -200,255 +207,222 @@ updateShared model f =
 
 
 
--- Scene Loaders
+-- Title
 
 
-loadLevel : Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
-loadLevel config =
-    loadScene Level LevelMsg <| Level.init config
+updateTitle : Title.Msg -> Title.Model -> Model -> ( Model, Cmd Msg )
+updateTitle =
+    updateScene Title TitleMsg Title.update |> Exit.onExit exitTitle
 
 
-loadTutorial : Tutorial.Config -> Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
-loadTutorial tutorialConfig levelConfig model =
-    let
-        ( m1, cmd1 ) =
-            loadScene Tutorial TutorialMsg (Tutorial.init tutorialConfig) model
-
-        ( m2, cmd2 ) =
-            loadBackdrop Level LevelMsg (Level.init levelConfig) m1
-    in
-    ( m2, Cmd.batch [ cmd1, cmd2 ] )
-
-
-loadIntro : Model -> ( Model, Cmd Msg )
-loadIntro =
-    loadScene Intro IntroMsg Intro.init
-
-
-loadHub : Levels.Key -> Model -> ( Model, Cmd Msg )
-loadHub level =
-    loadScene Hub HubMsg <| Hub.init level
-
-
-loadSummary : Model -> ( Model, Cmd Msg )
-loadSummary =
-    sceneToBackdrop >> loadScene Summary SummaryMsg Summary.init
-
-
-loadRetry : Model -> ( Model, Cmd Msg )
-loadRetry =
-    sceneToBackdrop >> loadScene Retry RetryMsg Retry.init
-
-
-loadScene : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
-loadScene modelF msg initF model =
-    Scene.getShared model.scene
-        |> initF
-        |> updateWith modelF msg model
-
-
-loadBackdrop : (subModel -> Scene) -> (subMsg -> Msg) -> (Shared.Data -> ( subModel, Cmd subMsg )) -> Model -> ( Model, Cmd Msg )
-loadBackdrop modelF msg initF model =
-    Scene.getShared model.scene
-        |> initF
-        |> updateBackdropWith modelF msg model
-
-
-updateWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
-updateWith toScene toMsg model ( subModel, subCmd ) =
-    ( { model | scene = toScene subModel }
-    , Cmd.map toMsg subCmd
-    )
-
-
-updateBackdropWith : (sceneModel -> Scene) -> (sceneMsg -> Msg) -> Model -> ( sceneModel, Cmd sceneMsg ) -> ( Model, Cmd Msg )
-updateBackdropWith toScene toMsg model ( subModel, subCmd ) =
-    ( { model | backdrop = Just <| toScene subModel }
-    , Cmd.map toMsg subCmd
-    )
-
-
-
--- Scene updaters
-
-
-handleTitleMsg : Title.Msg -> Model -> ( Model, Cmd Msg )
-handleTitleMsg titleMsg model =
-    case model.scene of
-        Title titleModel ->
-            Exit.handle
-                { state = Title.update titleMsg titleModel
-                , onContinue = updateWith Title TitleMsg model
-                , onExit = exitTitle model
-                }
-
-        _ ->
-            ( model, Cmd.none )
-
-
-exitTitle : Model -> Title.Destination -> ( Model, Cmd Msg )
+exitTitle : Model -> Exit.Destination -> ( Model, Cmd Msg )
 exitTitle model destination =
     case destination of
-        Title.Hub ->
+        Exit.ToHub ->
             ( model, goToHubCurrentProgress model )
 
-        Title.Intro ->
-            ( model, trigger LoadIntro )
-
-
-handleLevelMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
-handleLevelMsg levelMsg model =
-    let
-        ( m1, cmd1 ) =
-            handleLevelForegroundMsg levelMsg model
-
-        ( m2, cmd2 ) =
-            handleLevelBackdropMsg levelMsg m1
-    in
-    ( m2, Cmd.batch [ cmd1, cmd2 ] )
-
-
-handleLevelForegroundMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
-handleLevelForegroundMsg levelMsg model =
-    case model.scene of
-        Level levelModel ->
-            Exit.handle
-                { state = Level.update levelMsg levelModel
-                , onContinue = updateWith Level LevelMsg model
-                , onExit = exitLevel model
-                }
+        Exit.ToIntro ->
+            ( model, trigger InitIntro )
 
         _ ->
             ( model, Cmd.none )
 
 
-handleLevelBackdropMsg : Level.Msg -> Model -> ( Model, Cmd Msg )
-handleLevelBackdropMsg levelMsg model =
-    case model.backdrop of
-        Just (Level levelModel) ->
-            Exit.handle
-                { state = Level.update levelMsg levelModel
-                , onContinue = updateBackdropWith Level LevelMsg model
-                , onExit = always ( model, Cmd.none )
-                }
+
+-- Tutorial
+
+
+initTutorial : Tutorial.Config -> Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+initTutorial tutorialConfig levelConfig model =
+    Return.pipe model
+        [ initScene Tutorial TutorialMsg (Tutorial.init tutorialConfig)
+        , initBackdrop Level LevelMsg (Level.init levelConfig)
+        ]
+
+
+updateTutorial : Tutorial.Msg -> Tutorial.Model -> Model -> ( Model, Cmd Msg )
+updateTutorial =
+    updateScene Tutorial TutorialMsg Tutorial.update |> Exit.onExit exitTutorial
+
+
+exitTutorial : Model -> () -> ( Model, Cmd Msg )
+exitTutorial model _ =
+    ( promoteBackdropToScene model, Cmd.none )
+
+
+
+-- Retry
+
+
+initRetry : Model -> ( Model, Cmd Msg )
+initRetry =
+    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
+
+
+updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
+updateRetry =
+    updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
+
+
+exitRetry : Model -> Exit.Destination -> ( Model, Cmd Msg )
+exitRetry model destination =
+    case destination of
+        Exit.ToLevel ->
+            ( clearBackdrop model, reloadCurrentLevel model )
+
+        Exit.ToHub ->
+            ( clearBackdrop model, goToHubCurrentLevel model )
 
         _ ->
             ( model, Cmd.none )
+
+
+
+-- Level
+
+
+initLevel : Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+initLevel config =
+    initScene Level LevelMsg <| Level.init config
+
+
+updateLevel : Level.Msg -> Level.Model -> Model -> ( Model, Cmd Msg )
+updateLevel =
+    updateScene Level LevelMsg Level.update |> Exit.onExit exitLevel
+
+
+updateLevelBackdrop : Level.Msg -> Level.Model -> Model -> ( Model, Cmd Msg )
+updateLevelBackdrop =
+    updateBackdrop Level LevelMsg Level.update |> Exit.ignore
 
 
 exitLevel : Model -> Level.Status -> ( Model, Cmd Msg )
 exitLevel model levelStatus =
     case levelStatus of
         Level.Win ->
-            if shouldIncrement <| Scene.getShared model.scene then
-                ( model, trigger LoadSummary )
-
-            else
-                ( model, goToHubCurrentLevel model )
+            levelWin model
 
         Level.Lose ->
-            ( model, trigger LoadRetry )
+            ( model, trigger InitRetry )
 
         Level.InProgress ->
             ( model, Cmd.none )
 
 
-handleTutorialMsg : Tutorial.Msg -> Model -> ( Model, Cmd Msg )
-handleTutorialMsg tutorialMsg model =
-    case model.scene of
-        Tutorial tutorialModel ->
-            Exit.handle
-                { state = Tutorial.update tutorialMsg tutorialModel
-                , onContinue = updateWith Tutorial TutorialMsg model
-                , onExit = always ( backdropToScene model, Cmd.none )
-                }
+levelWin : Model -> ( Model, Cmd Msg )
+levelWin model =
+    if shouldIncrement <| Scene.getShared model.scene then
+        ( model, trigger InitSummary )
 
-        _ ->
-            ( model, Cmd.none )
+    else
+        ( model, goToHubCurrentLevel model )
 
 
-handleHubMsg : Hub.Msg -> Model -> ( Model, Cmd Msg )
-handleHubMsg hubMsg model =
-    case model.scene of
-        Hub hubModel ->
-            Exit.handle
-                { state = Hub.update hubMsg hubModel
-                , onContinue = updateWith Hub HubMsg model
-                , onExit = handleStartLevel model
-                }
 
-        _ ->
-            ( model, Cmd.none )
+-- Hub
+
+
+initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+initHub level =
+    initScene Hub HubMsg <| Hub.init level
+
+
+updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
+updateHub =
+    updateScene Hub HubMsg Hub.update |> Exit.onExit handleStartLevel
 
 
 handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
 handleStartLevel model level =
     case Worlds.tutorial level of
         Just tutorialConfig ->
-            ( model, withLoadingScreen <| LoadTutorial tutorialConfig (Worlds.levelConfig level) )
+            ( model, withLoadingScreen <| InitTutorial tutorialConfig (Worlds.levelConfig level) )
 
         Nothing ->
-            ( model, withLoadingScreen <| LoadLevel (Worlds.levelConfig level) )
-
-
-handleIntroMsg : Intro.Msg -> Model -> ( Model, Cmd Msg )
-handleIntroMsg introMsg model =
-    case model.scene of
-        Intro introModel ->
-            Exit.handle
-                { state = Intro.update introMsg introModel
-                , onContinue = updateWith Intro IntroMsg model
-                , onExit = always ( model, Cmd.batch [ goToHubCurrentProgress model, fadeMusic () ] )
-                }
-
-        _ ->
-            ( model, Cmd.none )
-
-
-handleSummaryMsg : Summary.Msg -> Model -> ( Model, Cmd Msg )
-handleSummaryMsg summaryMsg model =
-    case model.scene of
-        Summary summaryModel ->
-            Exit.handle
-                { state = Summary.update summaryMsg summaryModel
-                , onContinue = updateWith Summary SummaryMsg model
-                , onExit = always ( clearBackdrop model, goToHubCurrentProgress model )
-                }
-
-        _ ->
-            ( model, Cmd.none )
-
-
-handleRetryMsg : Retry.Msg -> Model -> ( Model, Cmd Msg )
-handleRetryMsg retryMsg model =
-    case model.scene of
-        Retry retryModel ->
-            Exit.handle
-                { state = Retry.update retryMsg retryModel
-                , onContinue = updateWith Retry RetryMsg model
-                , onExit = exitRetry model
-                }
-
-        _ ->
-            ( model, Cmd.none )
-
-
-exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
-exitRetry model destination =
-    case destination of
-        Retry.Level ->
-            ( clearBackdrop model, reloadCurrentLevel model )
-
-        Retry.Hub ->
-            ( clearBackdrop model, goToHubCurrentLevel model )
+            ( model, withLoadingScreen <| InitLevel (Worlds.levelConfig level) )
 
 
 
--- Backdrop
+-- Summary
 
 
-sceneToBackdrop : Model -> Model
-sceneToBackdrop model =
+initSummary : Model -> ( Model, Cmd Msg )
+initSummary =
+    copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
+
+
+updateSummary : Summary.Msg -> Summary.Model -> Model -> ( Model, Cmd Msg )
+updateSummary =
+    updateScene Summary SummaryMsg Summary.update |> Exit.onExit exitSummary
+
+
+exitSummary : Model -> () -> ( Model, Cmd Msg )
+exitSummary model _ =
+    ( clearBackdrop model, goToHubCurrentProgress model )
+
+
+
+-- Intro
+
+
+initIntro : Model -> ( Model, Cmd Msg )
+initIntro =
+    initScene Intro IntroMsg Intro.init
+
+
+updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
+updateIntro =
+    updateScene Intro IntroMsg Intro.update |> Exit.onExit exitIntro
+
+
+exitIntro : Model -> () -> ( Model, Cmd Msg )
+exitIntro model _ =
+    ( model, Cmd.batch [ goToHubCurrentProgress model, fadeMusic () ] )
+
+
+
+-- Util
+
+
+initScene =
+    load asForeground
+
+
+initBackdrop =
+    load asBackdrop
+
+
+updateScene sceneF =
+    Exit.handle (composeScene sceneF asForeground)
+
+
+updateBackdrop sceneF =
+    Exit.handle (composeScene sceneF asBackdrop)
+
+
+load embedModel embedScene msg initSceneF model =
+    Scene.getShared model.scene
+        |> initSceneF
+        |> Return.map msg (embedScene >> embedModel model)
+
+
+composeScene : (subModel -> Scene) -> (Model -> Scene -> Model) -> (subModel -> Model -> Model)
+composeScene sceneF modelF sceneModel model =
+    modelF model (sceneF sceneModel)
+
+
+asForeground : Model -> Scene -> Model
+asForeground model scene =
+    { model | scene = scene }
+
+
+asBackdrop : Model -> Scene -> Model
+asBackdrop model scene =
+    { model | backdrop = Just scene }
+
+
+copyCurrentSceneToBackdrop : Model -> Model
+copyCurrentSceneToBackdrop model =
     { model | backdrop = Just model.scene }
 
 
@@ -457,8 +431,8 @@ clearBackdrop model =
     { model | backdrop = Nothing }
 
 
-backdropToScene : Model -> Model
-backdropToScene model =
+promoteBackdropToScene : Model -> Model
+promoteBackdropToScene model =
     case model.backdrop of
         Just scene ->
             { model | scene = syncShared model scene, backdrop = Nothing }
@@ -478,7 +452,7 @@ syncShared model scene =
 
 reloadCurrentLevel : Model -> Cmd Msg
 reloadCurrentLevel =
-    withLoadingScreen << LoadLevel << Worlds.levelConfig << currentLevel
+    withLoadingScreen << InitLevel << Worlds.levelConfig << currentLevel
 
 
 goToHubCurrentLevel : Model -> Cmd Msg
@@ -595,7 +569,7 @@ view model =
 
 renderStage : List (List ( String, Html msg )) -> Html msg
 renderStage =
-    K.node "div" [] << List.concat
+    Keyed.node "div" [] << List.concat
 
 
 renderBackrop : Maybe Scene -> List ( String, Html Msg )

@@ -27,12 +27,12 @@ import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
-import Data.Exit as Exit exposing (continue, exitWith)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Dict exposing (Dict)
+import Exit exposing (continue, exitWith)
 import Helpers.Attribute exposing (emptyProperty)
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
@@ -249,10 +249,10 @@ update msg model =
             continue { model | infoWindow = InfoWindow.hidden } []
 
         LevelWon ->
-            exitWith Win model []
+            exitWith Win model
 
         LevelLost ->
-            exitWith Lose model []
+            exitWith Lose model
 
 
 
