@@ -33,7 +33,7 @@ import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
-import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, span, text)
@@ -540,7 +540,7 @@ applyIf predicate attr =
         attr
 
     else
-        emptyProperty
+        Attribute.empty
 
 
 moveCaptureArea : Html msg
@@ -643,7 +643,7 @@ getLeavingStyle : TileType -> Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault empty
+        |> Maybe.withDefault Style.empty
 
 
 newLeavingStyles : Model -> Dict.Dict String Style

@@ -1,10 +1,10 @@
-module Helpers.Attribute exposing (emptyProperty)
+module Helpers.Attribute exposing (empty)
 
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)
 import Json.Encode exposing (string)
 
 
-emptyProperty : Attribute msg
-emptyProperty =
+empty : Attribute msg
+empty =
     property "" <| string ""

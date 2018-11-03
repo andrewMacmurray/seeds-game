@@ -14,10 +14,10 @@ import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
-import Shared exposing (Window)
-import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Attribute as Attribute
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Shared exposing (Window)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -37,7 +37,7 @@ mainSeedStyles vis =
             style [ animation "slide-down-scale-out" 2000 [ delay 500, ease ] ]
 
         _ ->
-            emptyProperty
+            Attribute.empty
 
 
 sideSeedsContainer : Visibility -> List (Html msg) -> Html msg

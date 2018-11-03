@@ -350,7 +350,7 @@ handleHideInfo model =
             onClick HideLevelInfo
 
         _ ->
-            Attribute.emptyProperty
+            Attribute.empty
 
 
 
@@ -453,7 +453,7 @@ showInfo level model =
         onClick <| ShowLevelInfo level
 
     else
-        Attribute.emptyProperty
+        Attribute.empty
 
 
 handleStartLevel : Levels.Key -> Model -> Attribute Msg
@@ -462,7 +462,7 @@ handleStartLevel level model =
         onClick <| StartLevel level
 
     else
-        Attribute.emptyProperty
+        Attribute.empty
 
 
 renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
