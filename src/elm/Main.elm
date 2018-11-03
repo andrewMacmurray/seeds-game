@@ -8,6 +8,7 @@ import Css.Style exposing (backgroundColor, color, style)
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
+import Data.Progress as Progress exposing (Progress)
 import Exit
 import Helpers.Delay exposing (..)
 import Helpers.Return as Return
@@ -109,10 +110,9 @@ initShared : Flags -> Shared.Data
 initShared flags =
     { window = flags.window
     , loadingScreen = Nothing
-    , progress = initProgressFromCache flags.level
-    , currentLevel = Nothing
-    , successMessageIndex = flags.randomMessageIndex
+    , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
+    , successMessageIndex = flags.randomMessageIndex
     }
 
 
@@ -219,7 +219,7 @@ exitTitle : Model -> Exit.Destination -> ( Model, Cmd Msg )
 exitTitle model destination =
     case destination of
         Exit.ToHub ->
-            ( model, goToHubCurrentProgress model )
+            ( model, goToHubReachedLevel model )
 
         Exit.ToIntro ->
             ( model, trigger InitIntro )
@@ -358,7 +358,7 @@ updateSummary =
 
 exitSummary : Model -> () -> ( Model, Cmd Msg )
 exitSummary model _ =
-    ( clearBackdrop model, goToHubCurrentProgress model )
+    ( clearBackdrop model, goToHubReachedLevel model )
 
 
 
@@ -377,7 +377,7 @@ updateIntro =
 
 exitIntro : Model -> () -> ( Model, Cmd Msg )
 exitIntro model _ =
-    ( model, Cmd.batch [ goToHubCurrentProgress model, fadeMusic () ] )
+    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
 
 
 
@@ -460,9 +460,9 @@ goToHubCurrentLevel =
     trigger << GoToHub << currentLevel
 
 
-goToHubCurrentProgress : Model -> Cmd Msg
-goToHubCurrentProgress =
-    trigger << GoToHub << getProgress
+goToHubReachedLevel : Model -> Cmd Msg
+goToHubReachedLevel =
+    trigger << GoToHub << reachedLevel
 
 
 updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
@@ -478,10 +478,8 @@ andCmd cmdF model =
 saveCurrentLives : Model -> Cmd Msg
 saveCurrentLives model =
     model.scene
-        |> Scene.getShared
-        |> .lives
-        |> Lives.toCache
-        |> cacheLives
+        |> (Scene.getShared >> .lives)
+        |> (Lives.toCache >> cacheLives)
 
 
 bounceKeyframes : Window -> Cmd msg
@@ -489,31 +487,24 @@ bounceKeyframes window =
     generateBounceKeyframes <| Scale.baseTileSizeY * Scale.tileScaleFactor window
 
 
-initProgressFromCache : Maybe Levels.Cache -> Levels.Key
-initProgressFromCache cachedLevel =
-    cachedLevel
-        |> Maybe.map Levels.fromCache
-        |> Maybe.withDefault Levels.empty
-
-
-getProgress : Model -> Levels.Key
-getProgress model =
-    Scene.getShared model.scene |> .progress
+reachedLevel : Model -> Levels.Key
+reachedLevel model =
+    Scene.getShared model.scene
+        |> .progress
+        |> Progress.reachedLevel
 
 
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
-        |> Scene.getShared
-        |> .currentLevel
+        |> (Scene.getShared >> .progress)
+        |> Progress.currentLevel
         |> Maybe.withDefault Levels.empty
 
 
 shouldIncrement : Shared.Data -> Bool
 shouldIncrement shared =
-    shared.currentLevel
-        |> Maybe.map (not << Levels.completed shared.progress)
-        |> Maybe.withDefault False
+    not <| Progress.currentLevelComplete shared.progress
 
 
 
@@ -524,7 +515,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ onResize WindowSize
-        , subscribeDecrement model
+
+        -- , subscribeDecrement model
         , sceneSubscriptions model
         ]
 

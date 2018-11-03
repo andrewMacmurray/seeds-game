@@ -15,6 +15,7 @@ import Css.Transform exposing (translateX, translateY)
 import Data.Board.Types exposing (..)
 import Data.Level.Summary exposing (..)
 import Data.Levels as Levels
+import Data.Progress as Progress exposing (Progress)
 import Data.Wave exposing (wave)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after, trigger)
@@ -35,7 +36,7 @@ import Worlds
 
 type alias Model =
     { shared : Shared.Data
-    , resources : Resources
+    , resourceState : ResourceState
     }
 
 
@@ -45,7 +46,7 @@ type Msg
     | BackToHub
 
 
-type Resources
+type ResourceState
     = Waiting
     | Filling
 
@@ -78,7 +79,7 @@ init shared =
 initialState : Shared.Data -> Model
 initialState shared =
     { shared = shared
-    , resources = Waiting
+    , resourceState = Waiting
     }
 
 
@@ -96,7 +97,7 @@ update msg model =
                 ]
 
         CacheProgress ->
-            continue model [ cacheProgress <| Levels.toCache model.shared.progress ]
+            continue model [ cacheProgress <| Progress.toCache model.shared.progress ]
 
         BackToHub ->
             exit model
@@ -105,7 +106,7 @@ update msg model =
 incrementProgress : Model -> Model
 incrementProgress model =
     { model
-        | resources = Filling
+        | resourceState = Filling
         , shared =
             model.shared
                 |> Shared.incrementProgress Worlds.all
@@ -118,13 +119,13 @@ incrementProgress model =
 
 
 view : Model -> Html Msg
-view { shared } =
+view { shared, resourceState } =
     let
-        primarySeed =
-            primaryResourceType shared.progress shared.currentLevel |> Maybe.withDefault Sunflower
+        primayResource =
+            Progress.seedType Worlds.all shared.progress |> Maybe.withDefault Sunflower
 
-        resources =
-            secondaryResourceTypes shared.progress shared.currentLevel |> Maybe.withDefault []
+        secondaryResources =
+            Progress.resources Worlds.all shared.progress |> Maybe.withDefault []
     in
     div
         [ style
@@ -142,34 +143,34 @@ view { shared } =
                     ]
                 , class "center"
                 ]
-                [ seedBank primarySeed <| percentComplete (Seed primarySeed) shared.progress shared.currentLevel ]
-            , div [ style [ height 50 ] ] <| List.map (renderResourceBank shared.progress shared.currentLevel) resources
+                [ seedBank primayResource <| Progress.percentComplete Worlds.all (Seed primayResource) shared.progress ]
+            , div [ style [ height 50 ] ] <| List.map (renderResourceBank resourceState shared.progress) secondaryResources
             ]
         ]
 
 
-renderResourceBank : Levels.Key -> Maybe Levels.Key -> TileType -> Html msg
-renderResourceBank progress currentLevel tileType =
+renderResourceBank : ResourceState -> Progress -> TileType -> Html msg
+renderResourceBank resourceState progress tileType =
     let
         fillLevel =
-            percentComplete tileType progress currentLevel
+            Progress.percentComplete Worlds.all tileType progress
     in
     case tileType of
         Rain ->
             div [ style [ width 40 ], class "dib ph1 mh4" ]
-                [ renderResourceFill tileType
+                [ renderResourceFill resourceState progress tileType
                 , rainBank fillLevel
                 ]
 
         Sun ->
             div [ style [ width 40 ], class "dib mh4" ]
-                [ renderResourceFill tileType
+                [ renderResourceFill resourceState progress tileType
                 , sunBank fillLevel
                 ]
 
         Seed seedType ->
             div [ style [ width 40 ], class "dib ph1 mh4" ]
-                [ renderResourceFill tileType
+                [ renderResourceFill resourceState progress tileType
                 , seedBank seedType fillLevel
                 ]
 
@@ -177,29 +178,49 @@ renderResourceBank progress currentLevel tileType =
             span [] []
 
 
-renderResourceFill : TileType -> Html msg
-renderResourceFill tileType =
+renderResourceFill : ResourceState -> Progress -> TileType -> Html msg
+renderResourceFill resourceState progress tileType =
+    let
+        fill =
+            renderFill resourceState tileType progress
+    in
     case tileType of
         Rain ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
-                , div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
+                , fill <| div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
-                , div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
+                , fill <| div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 15 ], class "center" ] [ renderSeed seedType ]
-                , div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
+                , fill <| div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
         _ ->
             span [] []
+
+
+renderFill : ResourceState -> TileType -> Progress -> Html msg -> Html msg
+renderFill resourceState tileType progess element =
+    if resourceState == Filling && shouldRenderDifference tileType progess then
+        element
+
+    else
+        span [] []
+
+
+shouldRenderDifference : TileType -> Progress -> Bool
+shouldRenderDifference tileType progress =
+    Progress.pointsFromPreviousLevel Worlds.all tileType progress
+        |> Maybe.map (\points -> points > 0)
+        |> Maybe.withDefault False
 
 
 seedDrop : SeedType -> Int -> Html msg
