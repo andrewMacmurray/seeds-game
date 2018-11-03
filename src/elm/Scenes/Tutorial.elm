@@ -28,7 +28,7 @@ import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
-import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
@@ -334,21 +334,21 @@ handleSkip model =
         onClick SkipTutorial
 
     else
-        emptyProperty
+        Attribute.empty
 
 
 tutorialBoard : Model -> Html msg
 tutorialBoard model =
     let
-        vm =
+        viewModel =
             ( model.shared.window, model.boardDimensions )
     in
     div
         [ class "center relative"
         , showIf model.boardVisible
         , style
-            [ width <| toFloat <| boardWidth vm
-            , height <| toFloat <| boardHeight vm
+            [ width <| toFloat <| boardWidth viewModel
+            , height <| toFloat <| boardHeight viewModel
             , transitionAll 500 []
             ]
         ]
@@ -415,7 +415,7 @@ renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model.shared.window model.moveShape mv)
+        |> List.map (\move -> renderTile_ (leavingStyles model move) model.shared.window model.moveShape move)
 
 
 leavingStyles : Model -> Move -> List Style
