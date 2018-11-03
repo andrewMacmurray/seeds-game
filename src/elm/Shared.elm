@@ -16,6 +16,7 @@ module Shared exposing
 
 import Data.Levels as Levels
 import Data.Lives as Lives exposing (Lives)
+import Data.Progress as Progress exposing (Progress)
 import Random
 import Time
 
@@ -23,8 +24,7 @@ import Time
 type alias Data =
     { window : Window
     , loadingScreen : Maybe Background
-    , progress : Levels.Key
-    , currentLevel : Maybe Levels.Key
+    , progress : Progress
     , successMessageIndex : Int
     , lives : Lives
     }
@@ -32,12 +32,12 @@ type alias Data =
 
 setCurrentLevel : Levels.Key -> Data -> Data
 setCurrentLevel level data =
-    { data | currentLevel = Just level }
+    { data | progress = Progress.setCurrentLevel level data.progress }
 
 
 clearCurrentLevel : Data -> Data
 clearCurrentLevel data =
-    { data | currentLevel = Nothing }
+    { data | progress = Progress.clearCurrentLevel data.progress }
 
 
 hideLoadingScreen : Data -> Data
@@ -47,7 +47,7 @@ hideLoadingScreen data =
 
 incrementProgress : Levels.Worlds -> Data -> Data
 incrementProgress allLevels data =
-    { data | progress = handleIncrementProgress allLevels data.progress data.currentLevel }
+    { data | progress = Progress.handleIncrement allLevels data.progress }
 
 
 incrementMessageIndex : Data -> Data
@@ -63,20 +63,6 @@ updateLives now data =
 decrementLife : Data -> Data
 decrementLife data =
     { data | lives = Lives.decrement data.lives }
-
-
-
--- Progress
-
-
-handleIncrementProgress : Levels.Worlds -> Levels.Key -> Maybe Levels.Key -> Levels.Key
-handleIncrementProgress allLevels progress currentLevel =
-    case currentLevel of
-        Nothing ->
-            progress
-
-        Just current ->
-            Levels.next allLevels current
 
 
 

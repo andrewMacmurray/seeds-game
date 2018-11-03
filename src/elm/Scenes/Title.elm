@@ -15,6 +15,7 @@ import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Levels as Levels
+import Data.Progress as Progress
 import Data.Visibility as Visibility exposing (..)
 import Exit exposing (continue, exitTo, exitWith)
 import Helpers.Delay exposing (sequence)
@@ -92,7 +93,10 @@ update msg model =
 
         IntroMusicPlaying _ ->
             continue model
-                [ sequence [ ( 0, FadeSeeds ), ( 2000, GoToIntro ) ]
+                [ sequence
+                    [ ( 0, FadeSeeds )
+                    , ( 2000, GoToIntro )
+                    ]
                 ]
 
         GoToIntro ->
@@ -138,7 +142,7 @@ view { shared, fadeDirection } =
                 , fadeOutStyles fadeDirection 1000 0
                 ]
             , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart shared.progress
+            , handleStart <| Progress.reachedLevel shared.progress
             ]
             [ text "PLAY" ]
         ]

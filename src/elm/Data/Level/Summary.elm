@@ -1,6 +1,7 @@
 module Data.Level.Summary exposing
     ( percentComplete
     , primaryResourceType
+    , scoreDifference
     , secondaryResourceTypes
     )
 
@@ -26,6 +27,36 @@ secondaryResourceTypes progress currentLevel =
         secondaryResourceTypes_
         (Worlds.seedType <| levelOffset progress currentLevel)
         (Worlds.getLevels <| levelOffset progress currentLevel)
+
+
+scoreDifference : TileType -> Levels.Key -> Maybe Levels.Key -> Maybe Int
+scoreDifference tileType progress currentLevel =
+    let
+        _ =
+            Debug.log "curr" progress
+
+        _ =
+            Debug.log "prev" (Worlds.previous progress)
+
+        totalScores =
+            targetWorldScores progress
+                |> Maybe.andThen (getScoreFor tileType)
+
+        targetScore =
+            scoresAtLevel progress
+                |> Debug.log "target"
+                |> getScoreFor tileType
+
+        score =
+            scoresAtLevel (Worlds.previous progress)
+                |> Debug.log "current"
+                |> getScoreFor tileType
+    in
+    if displayFinal progress currentLevel then
+        Maybe.map2 (-) totalScores score
+
+    else
+        Maybe.map2 (-) targetScore score
 
 
 percentComplete : TileType -> Levels.Key -> Maybe Levels.Key -> Float
