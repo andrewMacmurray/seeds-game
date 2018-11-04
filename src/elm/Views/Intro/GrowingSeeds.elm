@@ -7,7 +7,7 @@ module Views.Intro.GrowingSeeds exposing
     , sideSeedsContainer
     )
 
-import Config.Scale exposing (tileScaleFactor)
+import Config.Scale exposing (ScreenSize(..), screenSize, tileScaleFactor)
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
 import Css.Transform as Transform
@@ -23,10 +23,14 @@ import Views.Seed.All exposing (renderSeed)
 
 growingSeeds : Window -> Visibility -> Html msg
 growingSeeds window vis =
+    let
+        size =
+            screenSize window
+    in
     div [ class "flex justify-center" ] <|
-        [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) seedsLeft
+        [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) (seedsLeft size)
         , div [ mainSeedStyles vis ] [ growingSeed window ( 0, Sunflower, 1.1 ) ]
-        , sideSeedsContainer vis <| List.map (growingSeed window) seedsRight
+        , sideSeedsContainer vis <| List.map (growingSeed window) (seedsRight size)
         ]
 
 
@@ -34,7 +38,10 @@ mainSeedStyles : Visibility -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
-            style [ animation "slide-down-scale-out" 2000 [ delay 500, ease ] ]
+            style
+                [ animation "slide-down-scale-out" 2000 [ delay 500, ease ]
+                , transformOrigin "bottom"
+                ]
 
         _ ->
             Attribute.empty
@@ -78,21 +85,39 @@ growingSeed window ( index, seedType, scale ) =
         ]
 
 
-seedsLeft : List ( Int, SeedType, Float )
-seedsLeft =
-    [ ( 3, Marigold, 0.7 )
-    , ( 9, Foxglove, 0.5 )
-    , ( 7, Rose, 0.8 )
-    , ( 1, Lupin, 1 )
-    , ( 5, Marigold, 0.6 )
-    ]
+seedsLeft : ScreenSize -> List ( Int, SeedType, Float )
+seedsLeft screenSize =
+    case screenSize of
+        Small ->
+            [ ( 3, Marigold, 0.7 )
+            , ( 1, Foxglove, 0.5 )
+            , ( 5, Rose, 0.8 )
+            , ( 10, Lupin, 0.5 )
+            ]
+
+        _ ->
+            [ ( 3, Marigold, 0.7 )
+            , ( 9, Foxglove, 0.5 )
+            , ( 7, Rose, 0.8 )
+            , ( 1, Lupin, 1 )
+            , ( 5, Marigold, 0.6 )
+            ]
 
 
-seedsRight : List ( Int, SeedType, Float )
-seedsRight =
-    [ ( 10, Foxglove, 0.6 )
-    , ( 2, Marigold, 0.7 )
-    , ( 8, Sunflower, 0.5 )
-    , ( 6, Rose, 1 )
-    , ( 4, Lupin, 0.8 )
-    ]
+seedsRight : ScreenSize -> List ( Int, SeedType, Float )
+seedsRight screenSize =
+    case screenSize of
+        Small ->
+            [ ( 2, Foxglove, 0.6 )
+            , ( 3, Marigold, 0.7 )
+            , ( 9, Sunflower, 0.5 )
+            , ( 6, Lupin, 0.5 )
+            ]
+
+        _ ->
+            [ ( 10, Foxglove, 0.6 )
+            , ( 2, Marigold, 0.7 )
+            , ( 8, Sunflower, 0.5 )
+            , ( 6, Rose, 1 )
+            , ( 4, Lupin, 0.8 )
+            ]

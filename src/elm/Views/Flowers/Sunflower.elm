@@ -1,4 +1,7 @@
-module Views.Flowers.Sunflower exposing (sunflower)
+module Views.Flowers.Sunflower exposing
+    ( animated
+    , static
+    )
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
@@ -7,8 +10,20 @@ import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
-sunflower : Int -> Svg msg
-sunflower delayMs =
+static : Svg msg
+static =
+    Svg.svg [ viewBox "-30 -25 237 220", width "100%" ]
+        [ Svg.g [] petals
+        , Svg.path
+            [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
+            , fill "#8A5D3B"
+            ]
+            []
+        ]
+
+
+animated : Int -> Svg msg
+animated delayMs =
     Svg.svg [ viewBox "-30 -25 237 220", width "100%" ]
         [ Svg.g [] <| List.indexedMap (fadePetal delayMs) petals
         , Svg.path

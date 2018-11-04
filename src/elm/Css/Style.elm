@@ -102,7 +102,9 @@ svgStyle =
 
 renderStyles_ : List Style -> String
 renderStyles_ =
-    List.map styleToString_ >> String.join ";"
+    List.filter isNonEmpty
+        >> List.map styleToString_
+        >> String.join ";"
 
 
 styleToString_ : Style -> String
@@ -113,6 +115,21 @@ styleToString_ s =
 
         Raw val ->
             val
+
+
+isNonEmpty : Style -> Bool
+isNonEmpty s =
+    case s of
+        Property prop val ->
+            nonEmpty prop && nonEmpty val
+
+        Raw _ ->
+            True
+
+
+nonEmpty : String -> Bool
+nonEmpty =
+    String.trim >> String.isEmpty >> not
 
 
 

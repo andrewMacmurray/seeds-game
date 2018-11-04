@@ -209,7 +209,7 @@ renderScene model =
             growingSeeds model.shared.window vis
 
         RollingHills vis ->
-            rollingHills vis
+            rollingHills model.shared.window vis
 
 
 textOffset : Window -> Style

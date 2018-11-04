@@ -26,20 +26,20 @@ loadingScreen model =
             ]
         ]
         [ div [ style [ width 50 ] ]
-            [ renderSeed <| currentLevelSeedType model.progress
+            [ renderSeed <| seedType model.progress
             ]
         ]
 
 
-currentLevelSeedType : Progress -> SeedType
-currentLevelSeedType progress =
+seedType : Progress -> SeedType
+seedType progress =
     Progress.currentLevelSeedType Worlds.all progress
-        |> Maybe.withDefault (currentProgressSeedType progress)
+        |> Maybe.withDefault (reachedLevelSeedType progress)
 
 
-currentProgressSeedType : Progress -> SeedType
-currentProgressSeedType progress =
-    Progress.seedType Worlds.all progress
+reachedLevelSeedType : Progress -> SeedType
+reachedLevelSeedType progress =
+    Progress.reachedLevelSeedType Worlds.all progress
         |> Maybe.withDefault Sunflower
 
 
