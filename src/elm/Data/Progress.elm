@@ -4,13 +4,14 @@ module Data.Progress exposing
     , currentLevel
     , currentLevelComplete
     , currentLevelSeedType
+    , currentWorldComplete
     , fromCache
     , handleIncrement
     , percentComplete
     , pointsFromPreviousLevel
     , reachedLevel
+    , reachedLevelSeedType
     , resources
-    , seedType
     , setCurrentLevel
     , toCache
     )
@@ -26,13 +27,19 @@ import Helpers.List
 
 
 type Progress
-    = Progress ProgressState
+    = Progress State
 
 
-type alias ProgressState =
+type alias State =
     { current : Maybe Levels.Key
     , reached : Levels.Key
     }
+
+
+type Position
+    = CurrentWorldComplete
+    | FirstLevelOfWorld
+    | MiddleLevel
 
 
 
@@ -98,16 +105,23 @@ currentLevel (Progress progress) =
     progress.current
 
 
-currentLevelComplete : Progress -> Bool
-currentLevelComplete (Progress progress) =
-    progress.current
-        |> Maybe.map (\l -> Levels.completed l progress.reached)
+currentWorldComplete : Levels.Worlds -> Progress -> Bool
+currentWorldComplete worlds (Progress { current, reached }) =
+    current
+        |> Maybe.map (\level -> Levels.isLastLevelOfWorld worlds level && Levels.isFirstLevelOfWorld reached)
         |> Maybe.withDefault False
 
 
-seedType : Levels.Worlds -> Progress -> Maybe SeedType
-seedType worlds (Progress progress) =
-    withLevelOffset worlds progress |> Levels.seedType worlds
+currentLevelComplete : Progress -> Bool
+currentLevelComplete (Progress { current, reached }) =
+    current
+        |> Maybe.map (\level -> Levels.completed level reached)
+        |> Maybe.withDefault False
+
+
+reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType
+reachedLevelSeedType worlds (Progress progress) =
+    Levels.seedType worlds progress.reached
 
 
 currentLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType
@@ -117,29 +131,27 @@ currentLevelSeedType worlds (Progress progress) =
 
 resources : Levels.Worlds -> Progress -> Maybe (List TileType)
 resources worlds (Progress progress) =
-    Maybe.map2
-        resourcesInLevels
-        (Levels.seedType worlds <| withLevelOffset worlds progress)
-        (Levels.getLevels worlds <| withLevelOffset worlds progress)
+    case progress.current of
+        Just level ->
+            Maybe.map2
+                resourcesInLevels
+                (Levels.seedType worlds level)
+                (Levels.getLevels worlds level)
+
+        Nothing ->
+            Nothing
 
 
-percentComplete : Levels.Worlds -> TileType -> Progress -> Float
-percentComplete worlds tileType (Progress progress) =
-    let
-        targetScores =
-            targetWorldScores worlds progress.reached |> Maybe.andThen (getScoreFor tileType)
+percentComplete : Levels.Worlds -> TileType -> Progress -> Maybe Float
+percentComplete worlds tileType ((Progress { reached }) as progress) =
+    case position worlds progress of
+        CurrentWorldComplete ->
+            Just 100
 
-        currentScores =
-            scoresAtLevel worlds progress.reached |> getScoreFor tileType
-    in
-    if atFinalLevelOfWorld worlds progress then
-        100
-
-    else if atFirstLevelOfWorld progress then
-        0
-
-    else
-        Maybe.map2 percent currentScores targetScores |> Maybe.withDefault 0
+        _ ->
+            Maybe.map2 percent
+                (scoresAtLevel worlds reached |> getScoreFor tileType)
+                (targetWorldScores worlds reached |> Maybe.andThen (getScoreFor tileType))
 
 
 percent : Int -> Int -> Float
@@ -148,71 +160,57 @@ percent a b =
 
 
 pointsFromPreviousLevel : Levels.Worlds -> TileType -> Progress -> Maybe Int
-pointsFromPreviousLevel worlds tileType (Progress progress) =
-    if atFinalLevelOfWorld worlds progress then
-        let
-            curr =
-                progress.current
-                    |> Maybe.andThen (targetWorldScores worlds)
-                    |> Maybe.andThen (getScoreFor tileType)
+pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as progress) =
+    let
+        tileScore =
+            getScoreFor tileType
 
-            prev =
-                progress.current
-                    |> Maybe.map (Levels.previous worlds >> scoresAtLevel worlds)
-                    |> Maybe.andThen (getScoreFor tileType)
-        in
-        Maybe.map2 (-) curr prev
+        levelScores =
+            scoresAtLevel worlds
 
-    else if atFirst progress then
-        progress.current
-            |> Maybe.map (Levels.next worlds >> scoresAtLevel worlds)
-            |> Maybe.andThen (getScoreFor tileType)
+        previous =
+            Levels.previous worlds
+    in
+    case position worlds progress of
+        CurrentWorldComplete ->
+            let
+                curr =
+                    current
+                        |> Maybe.andThen (targetWorldScores worlds)
+                        |> Maybe.andThen tileScore
 
-    else
-        let
-            curr =
-                scoresAtLevel worlds progress.reached
-                    |> getScoreFor tileType
+                prev =
+                    current
+                        |> Maybe.map (previous >> levelScores)
+                        |> Maybe.andThen tileScore
+            in
+            Maybe.map2 (-) curr prev
 
-            prev =
-                scoresAtLevel worlds (Levels.previous worlds progress.reached)
-                    |> getScoreFor tileType
-        in
-        Maybe.map2 (-) curr prev
+        FirstLevelOfWorld ->
+            current
+                |> Maybe.map (Levels.next worlds >> levelScores)
+                |> Maybe.andThen tileScore
+
+        MiddleLevel ->
+            Maybe.map2 (-)
+                (tileScore <| levelScores reached)
+                (tileScore <| levelScores <| previous reached)
 
 
 
 -- Internal
 
 
-withLevelOffset : Levels.Worlds -> ProgressState -> Levels.Key
-withLevelOffset worlds rawProgress =
-    if atFinalLevelOfWorld worlds rawProgress then
-        Levels.previous worlds rawProgress.reached
+position : Levels.Worlds -> Progress -> Position
+position worlds ((Progress { current }) as progress) =
+    if currentWorldComplete worlds progress then
+        CurrentWorldComplete
+
+    else if Maybe.map Levels.isFirstLevelOfWorld current == Just True then
+        FirstLevelOfWorld
 
     else
-        rawProgress.reached
-
-
-atFinalLevelOfWorld : Levels.Worlds -> ProgressState -> Bool
-atFinalLevelOfWorld worlds { current, reached } =
-    Levels.isFirstLevelOfWorld reached
-        && (Maybe.map (Levels.isLastLevelOfWorld worlds) current |> Maybe.withDefault False)
-
-
-atFirstLevelOfWorld : ProgressState -> Bool
-atFirstLevelOfWorld { current, reached } =
-    Levels.isFirstLevelOfWorld reached
-        && (Maybe.map Levels.isFirstLevelOfWorld current |> Maybe.withDefault False)
-
-
-atFirst : ProgressState -> Bool
-atFirst { current } =
-    Maybe.map Levels.isFirstLevelOfWorld current |> Maybe.withDefault False
-
-
-
--- Scores
+        MiddleLevel
 
 
 getScoreFor : TileType -> Dict String Int -> Maybe Int

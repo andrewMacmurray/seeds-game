@@ -8,21 +8,23 @@ module Scenes.Summary exposing
     , view
     )
 
-import Css.Animation exposing (animation, delay, linear)
-import Css.Color exposing (gold, rainBlue, washedYellow)
+import Css.Animation as Animation exposing (animation, linear)
+import Css.Color as Color exposing (darkYellow, gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
-import Css.Transform exposing (translateX, translateY)
+import Css.Transform exposing (scale, translateX, translateY)
+import Css.Transition as Transition exposing (transition, transitionAll)
 import Data.Board.Types exposing (..)
-import Data.Level.Summary exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
 import Data.Wave exposing (wave)
 import Exit exposing (continue, exit)
-import Helpers.Delay exposing (after, trigger)
+import Helpers.Delay exposing (after, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
 import Shared
+import Views.Flowers.Sunflower as Sunflower
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
@@ -36,19 +38,31 @@ import Worlds
 
 type alias Model =
     { shared : Shared.Data
+    , seedBankState : SeedBankState
     , resourceState : ResourceState
+    , levelSuccessVisible : Bool
     }
 
 
 type Msg
     = IncrementProgress
     | CacheProgress
+    | ShowLevelSuccess
+    | BeginSeedBankTransformation
+    | BloomWorldFlower
     | BackToHub
+
+
+type SeedBankState
+    = Visible
+    | Leaving
+    | Blooming
 
 
 type ResourceState
     = Waiting
     | Filling
+    | Hidden
 
 
 
@@ -79,7 +93,9 @@ init shared =
 initialState : Shared.Data -> Model
 initialState shared =
     { shared = shared
+    , seedBankState = Visible
     , resourceState = Waiting
+    , levelSuccessVisible = False
     }
 
 
@@ -91,16 +107,46 @@ update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
-            continue (incrementProgress model)
-                [ trigger CacheProgress
-                , after 2500 BackToHub
-                ]
+            continue (incrementProgress model) [ trigger CacheProgress ]
 
         CacheProgress ->
-            continue model [ cacheProgress <| Progress.toCache model.shared.progress ]
+            continue model
+                [ cacheProgress <| Progress.toCache model.shared.progress
+                , handleSuccessMessage model
+                ]
+
+        ShowLevelSuccess ->
+            continue { model | levelSuccessVisible = True } []
+
+        BeginSeedBankTransformation ->
+            continue
+                { model
+                    | seedBankState = Leaving
+                    , resourceState = Hidden
+                }
+                []
+
+        BloomWorldFlower ->
+            continue { model | seedBankState = Blooming } []
 
         BackToHub ->
             exit model
+
+
+handleSuccessMessage : Model -> Cmd Msg
+handleSuccessMessage { shared } =
+    if Progress.currentWorldComplete Worlds.all shared.progress then
+        sequence
+            [ ( 3000, BeginSeedBankTransformation )
+            , ( 3000, BloomWorldFlower )
+            , ( 7000, BackToHub )
+            ]
+
+    else
+        sequence
+            [ ( 1500, ShowLevelSuccess )
+            , ( 2500, BackToHub )
+            ]
 
 
 incrementProgress : Model -> Model
@@ -118,42 +164,198 @@ incrementProgress model =
 -- View
 
 
-view : Model -> Html Msg
-view { shared, resourceState } =
-    let
-        primayResource =
-            Progress.seedType Worlds.all shared.progress |> Maybe.withDefault Sunflower
-
-        secondaryResources =
-            Progress.resources Worlds.all shared.progress |> Maybe.withDefault []
-    in
+view : Model -> Html msg
+view model =
     div
         [ style
-            [ height <| toFloat shared.window.height
-            , background washedYellow
-            , animation "fade-in" 1000 [ linear ]
+            [ height <| toFloat model.shared.window.height
+            , backgroundColor model.seedBankState
+            , transition "background" 3000 [ Transition.linear ]
+            , animation "fade-in" 1000 [ Animation.linear ]
             ]
-        , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
+        , class "fixed z-5 w-100 top-0 left-0"
+        ]
+        [ renderFlowerLayer model
+        , renderResourcesLayer model
+        ]
+
+
+backgroundColor : SeedBankState -> Style
+backgroundColor seedBankState =
+    case seedBankState of
+        Blooming ->
+            background Color.meadowGreen
+
+        _ ->
+            background Color.washedYellow
+
+
+renderFlowerLayer : Model -> Html msg
+renderFlowerLayer model =
+    case model.seedBankState of
+        Blooming ->
+            div
+                [ style
+                    [ height <| toFloat model.shared.window.height
+                    , marginTop -40
+                    ]
+                , class "w-100 absolute z-2 flex flex-column items-center justify-center"
+                ]
+                [ mainFlower
+                , worldCompleteText
+                , div [ class "flex" ] <| List.map smallFlower [ 500, 0, 700, 300, 100, 800 ]
+                ]
+
+        _ ->
+            span [] []
+
+
+mainFlower : Html msg
+mainFlower =
+    div [ style [ height 180, width 200 ] ] [ Sunflower.animated 500 ]
+
+
+smallFlower : Int -> Html msg
+smallFlower delayMs =
+    div
+        [ style
+            [ width 50
+            , height 50
+            , opacity 0
+            , animation "fade-in" 1000 [ Animation.delay <| delayMs + 500 ]
+            ]
+        ]
+        [ Sunflower.static ]
+
+
+worldCompleteText : Html msg
+worldCompleteText =
+    div
+        [ style [ color Color.white ]
+        , class "tc relative w-100"
+        ]
+        [ p
+            [ style
+                [ animation "fade-in-out" 3000 [ Animation.delay 1500 ]
+                , opacity 0
+                ]
+            ]
+            [ text "You saved the Sunflower!" ]
+        , p
+            [ style
+                [ animation "fade-in" 1000 [ Animation.delay 4500 ]
+                , opacity 0
+                ]
+            , class "absolute top-0 left-0 right-0"
+            ]
+            [ text "It will bloom again on our new world" ]
+        ]
+
+
+renderResourcesLayer : Model -> Html msg
+renderResourcesLayer ({ shared } as model) =
+    let
+        levelSeed =
+            Progress.currentLevelSeedType Worlds.all shared.progress |> Maybe.withDefault Sunflower
+    in
+    div
+        [ style [ height <| toFloat shared.window.height ]
+        , class "flex justify-center items-center w-100"
         ]
         [ div [ style [ marginTop -100 ] ]
-            [ div
+            [ div [ style [ width 65, marginBottom 30 ], class "center" ]
+                [ renderSeedBank model levelSeed ]
+            , renderResources model
+            , p
                 [ style
-                    [ width 65
-                    , marginBottom 30
+                    [ color darkYellow
+                    , marginTop 100
+                    , marginBottom -40
+                    , transition "opacity" 1000 []
                     ]
-                , class "center"
+                , class "tc"
+                , showIf model.levelSuccessVisible
                 ]
-                [ seedBank primayResource <| Progress.percentComplete Worlds.all (Seed primayResource) shared.progress ]
-            , div [ style [ height 50 ] ] <| List.map (renderResourceBank resourceState shared.progress) secondaryResources
+                [ text "We're one step closer..." ]
             ]
         ]
 
 
-renderResourceBank : ResourceState -> Progress -> TileType -> Html msg
-renderResourceBank resourceState progress tileType =
+renderResources : Model -> Html msg
+renderResources ({ shared } as model) =
+    let
+        resources =
+            Progress.resources Worlds.all shared.progress
+                |> Maybe.withDefault []
+                |> List.map (renderResource model.resourceState shared.progress)
+    in
+    div
+        [ style [ height 50, transition "opacity" 1000 [] ]
+        , resourceVisibility model.resourceState
+        ]
+        resources
+
+
+renderSeedBank : Model -> SeedType -> Html msg
+renderSeedBank model seedType =
+    let
+        progress =
+            model.shared.progress
+
+        fillLevel =
+            Progress.percentComplete Worlds.all (Seed seedType) progress
+                |> Maybe.withDefault 0
+    in
+    div []
+        [ div
+            [ style [ transition "opacity" 1000 [ Transition.delay 500 ] ]
+            , resourceVisibility model.resourceState
+            ]
+            [ renderResourceFill model.resourceState progress (Seed seedType) ]
+        , innerSeedBank model.seedBankState seedType fillLevel
+        ]
+
+
+innerSeedBank : SeedBankState -> SeedType -> Float -> Html msg
+innerSeedBank seedBankState seedType fillLevel =
+    case seedBankState of
+        Visible ->
+            div [ style [ transform [ translateY 0 ], transitionAll 2000 [] ] ]
+                [ seedBank seedType fillLevel ]
+
+        Leaving ->
+            div
+                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
+                [ div
+                    [ style
+                        [ animation "shake" 500 [ Animation.delay 1000, Animation.linear, Animation.count 6 ]
+                        , transformOrigin "bottom"
+                        ]
+                    ]
+                    [ seedBank seedType fillLevel ]
+                ]
+
+        Blooming ->
+            div
+                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
+                [ div
+                    [ style [ animation "bulge-fade" 500 [] ] ]
+                    [ seedBank seedType fillLevel
+                    ]
+                ]
+
+
+resourceVisibility : ResourceState -> Attribute msg
+resourceVisibility resourceState =
+    showIf <| resourceState == Waiting || resourceState == Filling
+
+
+renderResource : ResourceState -> Progress -> TileType -> Html msg
+renderResource resourceState progress tileType =
     let
         fillLevel =
             Progress.percentComplete Worlds.all tileType progress
+                |> Maybe.withDefault 0
     in
     case tileType of
         Rain ->
@@ -188,18 +390,18 @@ renderResourceFill resourceState progress tileType =
         Rain ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
-                , fill <| div [ class "relative" ] <| List.map (drop rainBlue) <| List.range 1 50
+                , fill <| div [ class "relative" ] <| List.map (weatherDrop rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
-                , fill <| div [ class "relative" ] <| List.map (drop gold) <| List.range 4 54
+                , fill <| div [ class "relative" ] <| List.map (weatherDrop gold) <| List.range 4 54
                 ]
 
         Seed seedType ->
             div [ style [ height 50 ] ]
-                [ div [ style [ width 15 ], class "center" ] [ renderSeed seedType ]
+                [ div [ style [ width 12 ], class "center" ] [ renderSeed seedType ]
                 , fill <| div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
                 ]
 
@@ -209,18 +411,17 @@ renderResourceFill resourceState progress tileType =
 
 renderFill : ResourceState -> TileType -> Progress -> Html msg -> Html msg
 renderFill resourceState tileType progess element =
-    if resourceState == Filling && shouldRenderDifference tileType progess then
+    if resourceState == Filling && pointsFromPreviousLevel tileType progess > 0 then
         element
 
     else
         span [] []
 
 
-shouldRenderDifference : TileType -> Progress -> Bool
-shouldRenderDifference tileType progress =
+pointsFromPreviousLevel : TileType -> Progress -> Int
+pointsFromPreviousLevel tileType progress =
     Progress.pointsFromPreviousLevel Worlds.all tileType progress
-        |> Maybe.map (\points -> points > 0)
-        |> Maybe.withDefault False
+        |> Maybe.withDefault 0
 
 
 seedDrop : SeedType -> Int -> Html msg
@@ -232,7 +433,7 @@ seedDrop seedType n =
                 [ width 5
                 , height 8
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay <| n * dropDelay n, linear ]
+                , animation "fade-slide-down" 150 [ Animation.delay <| n * dropDelay n, linear ]
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]
@@ -240,8 +441,8 @@ seedDrop seedType n =
         ]
 
 
-drop : String -> Int -> Html msg
-drop bgColor n =
+weatherDrop : String -> Int -> Html msg
+weatherDrop bgColor n =
     div
         [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
@@ -250,7 +451,7 @@ drop bgColor n =
                 , height 6
                 , background bgColor
                 , opacity 0
-                , animation "fade-slide-down" 150 [ delay (n * dropDelay n), linear ]
+                , animation "fade-slide-down" 150 [ Animation.delay (n * dropDelay n), linear ]
                 ]
             , class "br-100 absolute left-0 right-0 center"
             ]

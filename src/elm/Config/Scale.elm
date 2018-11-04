@@ -1,8 +1,9 @@
 module Config.Scale exposing
-    ( baseTileSizeX
+    ( ScreenSize(..)
+    , baseTileSizeX
     , baseTileSizeY
     , scoreIconSize
-    , smallestWindowDimension
+    , screenSize
     , tileScaleFactor
     , topBarHeight
     , windowPadding
@@ -11,20 +12,39 @@ module Config.Scale exposing
 import Shared exposing (Window)
 
 
+type ScreenSize
+    = Small
+    | Medium
+    | Large
+
+
 tileScaleFactor : Window -> Float
 tileScaleFactor window =
+    case screenSize window of
+        Small ->
+            0.8
+
+        Medium ->
+            0.98
+
+        Large ->
+            1.2
+
+
+screenSize : Window -> ScreenSize
+screenSize window =
     let
         dimension =
             smallestWindowDimension window
     in
     if dimension < 480 then
-        0.8
+        Small
 
     else if dimension > 480 && dimension < 720 then
-        0.98
+        Medium
 
     else
-        1.2
+        Large
 
 
 smallestWindowDimension : Window -> Int

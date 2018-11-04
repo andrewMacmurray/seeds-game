@@ -348,7 +348,8 @@ handleStartLevel model level =
 
 initSummary : Model -> ( Model, Cmd Msg )
 initSummary =
-    copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
+    -- copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
+    initScene Summary SummaryMsg Summary.init
 
 
 updateSummary : Summary.Msg -> Summary.Model -> Model -> ( Model, Cmd Msg )
