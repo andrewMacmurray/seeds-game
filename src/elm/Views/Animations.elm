@@ -10,6 +10,7 @@ animations =
     Animation.embed
         [ fadeOut
         , fadeIn
+        , hoverBig
         , fadeInOut
         , fadeSlideDown
         , slideDownScaleOut
@@ -105,6 +106,14 @@ hover =
     keyframes "hover"
         [ frame 0 [ toY 0 ]
         , frame 50 [ toY -5 ]
+        , frame 100 [ toY 0 ]
+        ]
+
+
+hoverBig =
+    keyframes "hover-big"
+        [ frame 0 [ toY 0 ]
+        , frame 50 [ toY -20 ]
         , frame 100 [ toY 0 ]
         ]
 

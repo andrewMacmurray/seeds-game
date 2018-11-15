@@ -348,8 +348,7 @@ handleStartLevel model level =
 
 initSummary : Model -> ( Model, Cmd Msg )
 initSummary =
-    -- copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
-    initScene Summary SummaryMsg Summary.init
+    copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
 
 
 updateSummary : Summary.Msg -> Summary.Model -> Model -> ( Model, Cmd Msg )
@@ -516,8 +515,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ onResize WindowSize
-
-        -- , subscribeDecrement model
+        , subscribeDecrement model
         , sceneSubscriptions model
         ]
 
@@ -573,26 +571,26 @@ renderBackrop =
 renderScene : Scene -> List ( String, Html Msg )
 renderScene scene =
     case scene of
-        Hub hubModel ->
-            [ ( "hub", Hub.view hubModel |> Html.map HubMsg ) ]
+        Hub model ->
+            [ ( "hub", Hub.view model |> Html.map HubMsg ) ]
 
-        Intro introModel ->
-            [ ( "intro", Intro.view introModel |> Html.map IntroMsg ) ]
+        Intro model ->
+            [ ( "intro", Intro.view model |> Html.map IntroMsg ) ]
 
-        Title titleModel ->
-            [ ( "title", Title.view titleModel |> Html.map TitleMsg ) ]
+        Title model ->
+            [ ( "title", Title.view model |> Html.map TitleMsg ) ]
 
-        Level levelModel ->
-            [ ( "level", Level.view levelModel |> Html.map LevelMsg ) ]
+        Level model ->
+            [ ( "level", Level.view model |> Html.map LevelMsg ) ]
 
-        Tutorial tutorialModel ->
-            [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg ) ]
+        Tutorial model ->
+            [ ( "tutorial", Tutorial.view model |> Html.map TutorialMsg ) ]
 
-        Summary summaryModel ->
-            [ ( "summary", Summary.view summaryModel |> Html.map SummaryMsg ) ]
+        Summary model ->
+            [ ( "summary", Summary.view model |> Html.map SummaryMsg ) ]
 
-        Retry retryModel ->
-            [ ( "retry", Retry.view retryModel |> Html.map RetryMsg ) ]
+        Retry model ->
+            [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
 
 
 reset : Html Msg

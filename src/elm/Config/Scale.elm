@@ -4,6 +4,7 @@ module Config.Scale exposing
     , baseTileSizeY
     , scoreIconSize
     , screenSize
+    , smallestWindowDimension
     , tileScaleFactor
     , topBarHeight
     , windowPadding
