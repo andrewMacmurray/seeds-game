@@ -11,7 +11,7 @@ module Scenes.Summary exposing
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (darkYellow, gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale, translateX, translateY)
+import Css.Transform as Transform exposing (scale, translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
 import Data.Board.Types exposing (..)
 import Data.Levels as Levels
@@ -23,11 +23,12 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
-import Shared
+import Shared exposing (Window)
 import Views.Flowers.Sunflower as Sunflower
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
+import Views.Landscape.SunflowerMeadow as SunflowerMeadow
 import Views.Seed.All exposing (renderSeed)
 import Worlds
 
@@ -38,6 +39,7 @@ import Worlds
 
 type alias Model =
     { shared : Shared.Data
+    , textState : TextState
     , seedBankState : SeedBankState
     , resourceState : ResourceState
     , levelSuccessVisible : Bool
@@ -51,6 +53,10 @@ type Msg
     | BeginSeedBankTransformation
     | BloomWorldFlower
     | BackToHub
+    | ShowFirstText
+    | HideFirstText
+    | ShowSecondText
+    | HidenSecondText
 
 
 type SeedBankState
@@ -63,6 +69,15 @@ type ResourceState
     = Waiting
     | Filling
     | Hidden
+
+
+type TextState
+    = First TextVisible
+    | Second TextVisible
+
+
+type alias TextVisible =
+    Bool
 
 
 
@@ -93,6 +108,7 @@ init shared =
 initialState : Shared.Data -> Model
 initialState shared =
     { shared = shared
+    , textState = First False
     , seedBankState = Visible
     , resourceState = Waiting
     , levelSuccessVisible = False
@@ -129,6 +145,18 @@ update msg model =
         BloomWorldFlower ->
             continue { model | seedBankState = Blooming } []
 
+        ShowFirstText ->
+            continue { model | textState = First True } []
+
+        HideFirstText ->
+            continue { model | textState = First False } []
+
+        ShowSecondText ->
+            continue { model | textState = Second True } []
+
+        HidenSecondText ->
+            continue { model | textState = Second False } []
+
         BackToHub ->
             exit model
 
@@ -138,13 +166,17 @@ handleSuccessMessage { shared } =
     if Progress.currentWorldComplete Worlds.all shared.progress then
         sequence
             [ ( 3000, BeginSeedBankTransformation )
-            , ( 3000, BloomWorldFlower )
-            , ( 7000, BackToHub )
+            , ( 4000, BloomWorldFlower )
+            , ( 2000, ShowFirstText )
+            , ( 3000, HideFirstText )
+            , ( 1000, ShowSecondText )
+            , ( 3000, HidenSecondText )
+            , ( 2000, BackToHub )
             ]
 
     else
         sequence
-            [ ( 1500, ShowLevelSuccess )
+            [ ( 2000, ShowLevelSuccess )
             , ( 2500, BackToHub )
             ]
 
@@ -183,6 +215,9 @@ view model =
 backgroundColor : SeedBankState -> Style
 backgroundColor seedBankState =
     case seedBankState of
+        Leaving ->
+            background Color.lightGold
+
         Blooming ->
             background Color.meadowGreen
 
@@ -193,26 +228,117 @@ backgroundColor seedBankState =
 renderFlowerLayer : Model -> Html msg
 renderFlowerLayer model =
     case model.seedBankState of
-        Blooming ->
-            div
-                [ style
-                    [ height <| toFloat model.shared.window.height
-                    , marginTop -40
-                    ]
-                , class "w-100 absolute z-2 flex flex-column items-center justify-center"
+        Leaving ->
+            Keyed.node "div"
+                []
+                [ ( "meadow"
+                  , div [ class "w-100 absolute z-1 top-0 left-0" ]
+                        [ SunflowerMeadow.animated model.shared.window SunflowerMeadow.Hidden ]
+                  )
                 ]
-                [ mainFlower
-                , worldCompleteText
-                , div [ class "flex" ] <| List.map smallFlower [ 500, 0, 700, 300, 100, 800 ]
+
+        Blooming ->
+            Keyed.node "div"
+                []
+                [ ( "flowers"
+                  , div []
+                        [ div
+                            [ style [ height <| toFloat model.shared.window.height, marginTop -40 ]
+                            , class "w-100 absolute z-3 flex flex-column items-center justify-center"
+                            ]
+                            [ mainFlower
+                            , worldCompleteText model.textState
+                            ]
+                        , flowerSpriteLayer model.shared.window
+                        ]
+                  )
+                , ( "meadow"
+                  , div [ class "w-100 absolute z-1 top-0 left-0" ]
+                        [ SunflowerMeadow.animated model.shared.window SunflowerMeadow.Visible ]
+                  )
                 ]
 
         _ ->
             span [] []
 
 
+flowerSpriteLayer : Window -> Html msg
+flowerSpriteLayer window =
+    flowerSprites window
+        [ Sprite 0 0 1 Color.sunflowerYellow
+        , Sprite -3 100 1.2 Color.petalOrange
+        , Sprite -5 20 1.5 Color.sunflowerYellow
+        , Sprite -2 95 1.6 Color.petalOrange
+        , Sprite -5 140 1 Color.sunflowerYellow
+        , Sprite -2 105 1.4 Color.petalOrange
+        , Sprite -3 110 0.8 Color.sunflowerYellow
+        , Sprite -7 100 1.2 Color.petalOrange
+        , Sprite -8 130 0.8 Color.sunflowerYellow
+        , Sprite -6 100 1.4 Color.petalOrange
+        , Sprite -3 30 1 Color.sunflowerYellow
+        , Sprite -2 130 1.1 Color.sunflowerYellow
+        , Sprite -4 85 1.6 Color.petalOrange
+        , Sprite -1 110 0.8 Color.sunflowerYellow
+        , Sprite -8 20 2 Color.sunflowerYellow
+        , Sprite -3 100 1.2 Color.petalOrange
+        , Sprite -7 0 1 Color.sunflowerYellow
+        ]
+
+
+flowerSprites : Window -> List Sprite -> Html msg
+flowerSprites window sprites =
+    div
+        [ style [ height <| toFloat window.height ]
+        , class "w-100 absolute z-2 top-0 left-0 flex items-center justify-center"
+        ]
+    <|
+        List.map flowerSprite sprites
+
+
+type alias Sprite =
+    { delay : Int
+    , yOffset : Float
+    , scale : Float
+    , color : Color.Color
+    }
+
+
+flowerSprite { delay, yOffset, scale, color } =
+    div
+        [ style
+            [ Animation.animation "fade-in" 2000 [ Animation.delay <| abs <| delay * 300 ]
+            , opacity 0
+            ]
+        ]
+        [ div
+            [ style
+                [ Animation.animation "hover-big"
+                    4000
+                    [ Animation.ease
+                    , Animation.infinite
+                    , Animation.delay <| delay * 300
+                    ]
+                ]
+            ]
+            [ div
+                [ style
+                    [ width 10
+                    , height 10
+                    , marginLeft 10
+                    , marginRight 10
+                    , Style.backgroundColor color
+                    , Style.transform [ Transform.translateY yOffset, Transform.scale scale ]
+                    ]
+                , class "dib br-100"
+                ]
+                []
+            ]
+        ]
+
+
 mainFlower : Html msg
 mainFlower =
-    div [ style [ height 180, width 200 ] ] [ Sunflower.animated 500 ]
+    div [ style [ height 180, width 200 ] ] [ Sunflower.animated 1000 ]
 
 
 smallFlower : Int -> Html msg
@@ -228,28 +354,34 @@ smallFlower delayMs =
         [ Sunflower.static ]
 
 
-worldCompleteText : Html msg
-worldCompleteText =
+worldCompleteText : TextState -> Html msg
+worldCompleteText textState =
     div
-        [ style [ color Color.white ]
+        [ style [ color Color.white, transitionAll 1000 [] ]
         , class "tc relative w-100"
+        , textVisibility textState
         ]
-        [ p
-            [ style
-                [ animation "fade-in-out" 3000 [ Animation.delay 1500 ]
-                , opacity 0
-                ]
-            ]
-            [ text "You saved the Sunflower!" ]
-        , p
-            [ style
-                [ animation "fade-in" 1000 [ Animation.delay 4500 ]
-                , opacity 0
-                ]
-            , class "absolute top-0 left-0 right-0"
-            ]
-            [ text "It will bloom again on our new world" ]
-        ]
+        [ text <| textContent textState ]
+
+
+textVisibility : TextState -> Attribute msg
+textVisibility textState =
+    case textState of
+        First visible ->
+            showIf visible
+
+        Second visible ->
+            showIf visible
+
+
+textContent : TextState -> String
+textContent textState =
+    case textState of
+        First _ ->
+            "You saved the Sunflower!"
+
+        Second _ ->
+            "It will bloom again on our new world"
 
 
 renderResourcesLayer : Model -> Html msg

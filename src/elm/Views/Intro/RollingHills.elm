@@ -12,6 +12,7 @@ module Views.Intro.RollingHills exposing
 
 import Config.Scale exposing (ScreenSize(..), screenSize)
 import Css.Animation as Animation exposing (animation)
+import Css.Color as Color
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
 import Css.Transform as Transform exposing (translate)
 import Css.Transition exposing (cubicBezier, delay, transitionAll)
@@ -37,26 +38,26 @@ hills window vis =
     Svg.svg [ viewBox "0 0 1000 800", width "100%", class "absolute bottom-0", hillsStyle vis ]
         [ Svg.g [ fill "none", fillRule "evenodd", style "transform: translate(-500px)" ]
             [ Svg.g [ hillOffset 1200 300 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill "#325448", r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill "#1F7D5C", r "650" ] []
+                [ Svg.circle [ cx "1325", cy "650", fill Color.ashGreen, r "650" ] []
+                , Svg.circle [ cx "650", cy "650", fill Color.seaGreen, r "650" ] []
                 ]
             , Svg.g [ hillOffset 900 400 vis ]
-                [ Svg.circle [ cx "650", cy "650", fill "#5BCA78", r "650" ] []
-                , Svg.circle [ cx "1325", cy "650", fill "#40914E", r "650" ] []
+                [ Svg.circle [ cx "650", cy "650", fill Color.meadowGreen, r "650" ] []
+                , Svg.circle [ cx "1325", cy "650", fill Color.pineGreen, r "650" ] []
                 ]
             , Svg.g [ hillOffset 600 500 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill "#288868", r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill "#3A5E52", r "650" ] []
+                [ Svg.circle [ cx "1325", cy "650", fill Color.seaGreen, r "650" ] []
+                , Svg.circle [ cx "650", cy "650", fill Color.ashGreen, r "650" ] []
                 , renderFlowers 600 window vis
                 ]
             , Svg.g [ hillOffset 300 600 vis ]
-                [ Svg.circle [ cx "650", cy "650", fill "#56B466", r "650" ] []
-                , Svg.circle [ cx "1325", cy "650", fill "#62DE83", r "650" ] []
+                [ Svg.circle [ cx "650", cy "650", fill Color.lightPine, r "650" ] []
+                , Svg.circle [ cx "1325", cy "650", fill Color.meadowGreen, r "650" ] []
                 , renderFlowers 300 window vis
                 ]
             , Svg.g [ hillOffset 0 700 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill "#268135", r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill "#15674D", r "650" ] []
+                [ Svg.circle [ cx "1325", cy "650", fill Color.deepPine, r "650" ] []
+                , Svg.circle [ cx "650", cy "650", fill Color.darkSeaGreen, r "650" ] []
                 , renderFlowers 0 window vis
                 ]
             ]
