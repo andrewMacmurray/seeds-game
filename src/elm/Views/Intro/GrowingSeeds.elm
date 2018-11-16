@@ -7,11 +7,11 @@ module Views.Intro.GrowingSeeds exposing
     , sideSeedsContainer
     )
 
-import Config.Scale exposing (tileScaleFactor)
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
 import Data.Window as Window exposing (Window, size)
@@ -72,7 +72,7 @@ growingSeed window ( index, seedType, scale ) =
     div [ class "flex items-end" ]
         [ div
             [ style
-                [ width <| 50 * scale * tileScaleFactor window
+                [ width <| 50 * scale * Tile.scaleFactor window
                 , marginLeft 5
                 , marginRight 5
                 , transform [ Transform.scale 0 ]

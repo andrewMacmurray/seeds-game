@@ -10,14 +10,13 @@ module Views.Level.Tile exposing
     , wall
     )
 
-import Config.Scale exposing (tileScaleFactor)
 import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
+import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
-import Data.Window exposing (Window)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
@@ -75,7 +74,7 @@ baseTileStyles window (( _, tile ) as move) =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , widthHeight <| toFloat <| round <| tileSizeMap tile * tileScaleFactor window
+        , widthHeight <| toFloat <| round <| tileSizeMap tile * Tile.scaleFactor window
         , tileBackgroundMap tile
         ]
 
