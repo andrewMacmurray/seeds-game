@@ -1,7 +1,6 @@
 module Shared exposing
     ( Background(..)
     , Data
-    , Window
     , clearCurrentLevel
     , decrementLife
     , generateBackground
@@ -17,6 +16,7 @@ module Shared exposing
 import Data.Levels as Levels
 import Data.Lives as Lives exposing (Lives)
 import Data.Progress as Progress exposing (Progress)
+import Data.Window exposing (Window)
 import Random
 import Time
 
@@ -63,16 +63,6 @@ updateLives now data =
 decrementLife : Data -> Data
 decrementLife data =
     { data | lives = Lives.decrement data.lives }
-
-
-
--- Window
-
-
-type alias Window =
-    { width : Int
-    , height : Int
-    }
 
 
 setWindow : Int -> Int -> Data -> Data

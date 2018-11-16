@@ -31,6 +31,7 @@ import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
@@ -38,7 +39,7 @@ import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
-import Shared exposing (Window)
+import Shared
 import Task
 import Views.InfoWindow exposing (infoContainer)
 import Views.Level.Line exposing (renderLine)

@@ -1,10 +1,10 @@
 module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoContainer_)
 
-import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, cubicBezier, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
+import Data.Window as Window
 import Html exposing (..)
 import Html.Attributes exposing (class)
 
@@ -49,8 +49,8 @@ infoContainer_ infoWindow =
     let
         containerStyles =
             style
-                [ paddingLeft ScaleConfig.windowPadding
-                , paddingRight ScaleConfig.windowPadding
+                [ paddingLeft Window.padding
+                , paddingRight Window.padding
                 , animation "fade-in" 100 [ ease ]
                 ]
     in

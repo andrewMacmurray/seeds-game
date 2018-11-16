@@ -10,16 +10,15 @@ module Views.Intro.RollingHills exposing
     , rollingHills
     )
 
-import Config.Scale exposing (ScreenSize(..), screenSize)
 import Css.Animation as Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
 import Css.Transform as Transform exposing (translate)
 import Css.Transition exposing (cubicBezier, delay, transitionAll)
 import Data.Visibility exposing (..)
+import Data.Window as Window exposing (Window)
 import Html exposing (Html, div)
 import Html.Attributes
-import Shared exposing (Window)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Views.Flowers.Sunflower as Sunflower
@@ -140,8 +139,8 @@ flowersLeft delay window =
 
 sunflower : Window -> Int -> Svg msg
 sunflower window delay =
-    case screenSize window of
-        Small ->
+    case Window.size window of
+        Window.Small ->
             Svg.g
                 [ svgStyles
                     [ animation "fade-in" 3000 [ Animation.delay <| delay ]

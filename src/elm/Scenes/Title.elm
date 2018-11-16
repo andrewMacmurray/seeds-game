@@ -17,13 +17,14 @@ import Css.Style as Style exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress
 import Data.Visibility as Visibility exposing (..)
+import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exitTo, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Shared exposing (Window)
+import Shared
 import Views.Landscape.SunflowerMeadow as SunflowerMeadow exposing (animated)
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
@@ -168,8 +169,8 @@ seeds fadeDirection =
     div
         [ style
             [ maxWidth 450
-            , paddingLeft ScaleConfig.windowPadding
-            , paddingRight ScaleConfig.windowPadding
+            , paddingLeft Window.padding
+            , paddingRight Window.padding
             ]
         , class "flex center"
         ]

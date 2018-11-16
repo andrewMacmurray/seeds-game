@@ -26,6 +26,7 @@ import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute
@@ -33,7 +34,7 @@ import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Shared exposing (Window)
+import Shared
 import Task
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)

@@ -22,7 +22,7 @@ import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (TileSetting)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Shared exposing (Window)
+import Data.Window exposing (Window)
 import Views.Icons.Tick exposing (tickBackground)
 import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
 

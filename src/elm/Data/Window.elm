@@ -3,6 +3,7 @@ module Data.Window exposing
     , Window
     , padding
     , size
+    , smallestDimension
     )
 
 

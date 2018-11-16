@@ -3,12 +3,11 @@ module Views.Landscape.SunflowerMeadow exposing
     , animated
     )
 
-import Config.Scale exposing (ScreenSize(..), screenSize, smallestWindowDimension)
 import Css.Color as Color
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
-import Shared exposing (Window)
+import Data.Window as Window exposing (Window)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -72,7 +71,7 @@ bigHill : Window -> Svg msg
 bigHill window =
     let
         size =
-            smallestWindowDimension window // 2 + 400
+            Window.smallestDimension window // 2 + 400
     in
     Svg.circle
         [ r_ size
@@ -101,14 +100,14 @@ hill color x window =
 
 hillOffset : Window -> Int
 hillOffset window =
-    case screenSize window of
-        Small ->
+    case Window.size window of
+        Window.Small ->
             100
 
-        Medium ->
+        Window.Medium ->
             450
 
-        Large ->
+        Window.Large ->
             600
 
 

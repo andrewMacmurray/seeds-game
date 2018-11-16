@@ -9,8 +9,9 @@ import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Progress as Progress exposing (Progress)
+import Data.Window exposing (Window)
 import Exit
-import Helpers.Delay exposing (..)
+import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
 import Html exposing (Html, div, p, span, text)
 import Html.Attributes exposing (class)
@@ -194,7 +195,7 @@ update msg ({ scene, backdrop } as model) =
 
 withLoadingScreen : Msg -> Cmd Msg
 withLoadingScreen msg =
-    sequence
+    Delay.sequence
         [ ( 0, ShowLoadingScreen )
         , ( 1000, msg )
         , ( 2000, HideLoadingScreen )
@@ -247,7 +248,11 @@ updateTutorial =
 
 exitTutorial : Model -> () -> ( Model, Cmd Msg )
 exitTutorial model _ =
-    ( promoteBackdropToScene model, Cmd.none )
+    ( model
+        |> copyBackdropToScene
+        |> clearBackdrop
+    , Cmd.none
+    )
 
 
 
@@ -431,11 +436,11 @@ clearBackdrop model =
     { model | backdrop = Nothing }
 
 
-promoteBackdropToScene : Model -> Model
-promoteBackdropToScene model =
+copyBackdropToScene : Model -> Model
+copyBackdropToScene model =
     case model.backdrop of
         Just scene ->
-            { model | scene = syncShared model scene, backdrop = Nothing }
+            { model | scene = syncShared model scene }
 
         _ ->
             model
