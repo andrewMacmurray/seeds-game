@@ -11,7 +11,6 @@ module Scenes.Tutorial exposing
     )
 
 import Browser.Events
-import Config.Scale as ScaleConfig
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
@@ -24,6 +23,7 @@ import Data.Board.Map exposing (..)
 import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
 import Data.Window exposing (Window)
@@ -366,7 +366,7 @@ renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
             shared.window
 
         tileScale =
-            ScaleConfig.tileScaleFactor window
+            Tile.scaleFactor window
 
         offsetX =
             resourceBankOffsetX model
@@ -381,14 +381,14 @@ renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
             ]
         , showIf resourceBankVisible
         ]
-        [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
+        [ scoreIcon resourceBank <| Tile.baseSizeY * tileScale ]
 
 
 resourceBankOffsetX : Model -> Float
 resourceBankOffsetX model =
-    ScaleConfig.baseTileSizeX
+    Tile.baseSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * ScaleConfig.tileScaleFactor model.shared.window
+        * Tile.scaleFactor model.shared.window
         / 2
 
 

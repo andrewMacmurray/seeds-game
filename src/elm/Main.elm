@@ -2,9 +2,9 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Config.Scale as Scale
 import Css.Color exposing (darkYellow, lightYellow)
 import Css.Style exposing (backgroundColor, color, style)
+import Data.Board.Tile as Tile
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
@@ -489,7 +489,7 @@ saveCurrentLives model =
 
 bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
-    generateBounceKeyframes <| Scale.baseTileSizeY * Scale.tileScaleFactor window
+    generateBounceKeyframes <| Tile.baseSizeY * Tile.scaleFactor window
 
 
 reachedLevel : Model -> Levels.Key

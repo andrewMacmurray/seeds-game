@@ -1,9 +1,8 @@
 module Worlds.One exposing (default, world)
 
-import Config.Wall exposing (s, w, yellowWalls)
 import Css.Color as Css
 import Data.Board.Types exposing (Coord, SeedType(..))
-import Data.Board.Wall exposing (toCoords)
+import Data.Board.Wall exposing (..)
 import Data.Level.Settings exposing (rain, seed, seedPod, sun)
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels

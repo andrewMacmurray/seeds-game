@@ -10,7 +10,6 @@ module Scenes.Level exposing
     )
 
 import Browser.Events
-import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
@@ -433,10 +432,10 @@ coordsFromPosition pointer model =
             toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
-            tileScaleFactor model.shared.window * baseTileSizeY
+            Tile.scaleFactor model.shared.window * Tile.baseSizeY
 
         scaleFactorX =
-            tileScaleFactor model.shared.window * baseTileSizeX
+            Tile.scaleFactor model.shared.window * Tile.baseSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -669,7 +668,7 @@ exitXDistance : Int -> Model -> Float
 exitXDistance resourceBankIndex model =
     let
         scoreWidth =
-            ScaleConfig.scoreIconSize * 2
+            scoreIconSize * 2
 
         scoreBarWidth =
             model.tileSettings
@@ -681,14 +680,14 @@ exitXDistance resourceBankIndex model =
             (boardWidth (tileViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| ScaleConfig.tileScaleFactor model.shared.window
+            exitOffsetFunction <| Tile.scaleFactor model.shared.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
 
 exitOffsetFunction : Float -> Float
 exitOffsetFunction x =
-    25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
+    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
 
 
 exitYdistance : TileViewModel -> Float
