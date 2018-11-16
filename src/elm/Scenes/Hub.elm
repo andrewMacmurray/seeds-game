@@ -22,6 +22,7 @@ import Data.Lives as Lives
 import Data.Progress as Progress
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
+import Data.Window exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
@@ -30,7 +31,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial as Tutorial
-import Shared exposing (Window)
+import Shared
 import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)

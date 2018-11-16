@@ -7,17 +7,17 @@ module Views.Intro.GrowingSeeds exposing
     , sideSeedsContainer
     )
 
-import Config.Scale exposing (ScreenSize(..), screenSize, tileScaleFactor)
+import Config.Scale exposing (tileScaleFactor)
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Visibility exposing (..)
+import Data.Window as Window exposing (Window, size)
 import Helpers.Attribute as Attribute
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Shared exposing (Window)
 import Views.Seed.All exposing (renderSeed)
 
 
@@ -25,7 +25,7 @@ growingSeeds : Window -> Visibility -> Html msg
 growingSeeds window vis =
     let
         size =
-            screenSize window
+            Window.size window
     in
     div [ class "flex justify-center" ] <|
         [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) (seedsLeft size)
@@ -85,10 +85,10 @@ growingSeed window ( index, seedType, scale ) =
         ]
 
 
-seedsLeft : ScreenSize -> List ( Int, SeedType, Float )
+seedsLeft : Window.Size -> List ( Int, SeedType, Float )
 seedsLeft screenSize =
     case screenSize of
-        Small ->
+        Window.Small ->
             [ ( 3, Marigold, 0.7 )
             , ( 1, Foxglove, 0.5 )
             , ( 5, Rose, 0.8 )
@@ -104,10 +104,10 @@ seedsLeft screenSize =
             ]
 
 
-seedsRight : ScreenSize -> List ( Int, SeedType, Float )
+seedsRight : Window.Size -> List ( Int, SeedType, Float )
 seedsRight screenSize =
     case screenSize of
-        Small ->
+        Window.Small ->
             [ ( 2, Foxglove, 0.6 )
             , ( 3, Marigold, 0.7 )
             , ( 9, Sunflower, 0.5 )

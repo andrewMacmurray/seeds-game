@@ -17,13 +17,14 @@ import Data.Board.Types exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
 import Data.Wave exposing (wave)
+import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
-import Shared exposing (Window)
+import Shared
 import Views.Flowers.Sunflower as Sunflower
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)

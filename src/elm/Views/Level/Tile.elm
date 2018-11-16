@@ -17,7 +17,7 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
-import Shared exposing (Window)
+import Data.Window exposing (Window)
 import Views.Level.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 

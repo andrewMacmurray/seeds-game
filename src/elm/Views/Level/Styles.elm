@@ -39,7 +39,7 @@ import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Shared exposing (Window)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 
 
