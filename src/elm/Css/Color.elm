@@ -1,6 +1,7 @@
 module Css.Color exposing
     ( Color
     , ashGreen
+    , black
     , blockYellow
     , brown
     , brownYellow
@@ -312,3 +313,8 @@ transparentGray =
 white : Color
 white =
     "rgb(255, 255, 255)"
+
+
+black : Color
+black =
+    "rgb(0, 0, 0)"

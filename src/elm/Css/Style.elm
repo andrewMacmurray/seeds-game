@@ -4,6 +4,8 @@ module Css.Style exposing
     , backgroundColor
     , backgroundImage
     , borderNone
+    , borderRadiusBottomLeft
+    , borderRadiusTopLeft
     , bottom
     , classes
     , color
@@ -255,17 +257,37 @@ borderNone =
 rightPill : Style
 rightPill =
     compose
-        [ property "border-top-right-radius" <| px 9999
-        , property "border-bottom-right-radius" <| px 9999
+        [ borderRadiusTopRight 9999
+        , borderRadiusBottomRight 9999
         ]
 
 
 leftPill : Style
 leftPill =
     compose
-        [ property "border-top-left-radius" <| px 9999
-        , property "border-bottom-left-radius" <| px 9999
+        [ borderRadiusTopLeft 9999
+        , borderRadiusBottomLeft 9999
         ]
+
+
+borderRadiusTopRight : Float -> Style
+borderRadiusTopRight n =
+    property "border-top-right-radius" <| px n
+
+
+borderRadiusBottomRight : Float -> Style
+borderRadiusBottomRight n =
+    property "border-bottom-right-radius" <| px n
+
+
+borderRadiusBottomLeft : Float -> Style
+borderRadiusBottomLeft n =
+    property "border-bottom-left-radius" <| px n
+
+
+borderRadiusTopLeft : Float -> Style
+borderRadiusTopLeft n =
+    property "border-top-left-radius" <| px n
 
 
 backgroundImage : String -> Style
