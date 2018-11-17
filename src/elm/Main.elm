@@ -2,14 +2,16 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Config.Scale as Scale
 import Css.Color exposing (darkYellow, lightYellow)
 import Css.Style exposing (backgroundColor, color, style)
+import Data.Board.Tile as Tile
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
+import Data.Progress as Progress exposing (Progress)
+import Data.Window exposing (Window)
 import Exit
-import Helpers.Delay exposing (..)
+import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
 import Html exposing (Html, div, p, span, text)
 import Html.Attributes exposing (class)
@@ -109,10 +111,9 @@ initShared : Flags -> Shared.Data
 initShared flags =
     { window = flags.window
     , loadingScreen = Nothing
-    , progress = initProgressFromCache flags.level
-    , currentLevel = Nothing
-    , successMessageIndex = flags.randomMessageIndex
+    , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
+    , successMessageIndex = flags.randomMessageIndex
     }
 
 
@@ -194,7 +195,7 @@ update msg ({ scene, backdrop } as model) =
 
 withLoadingScreen : Msg -> Cmd Msg
 withLoadingScreen msg =
-    sequence
+    Delay.sequence
         [ ( 0, ShowLoadingScreen )
         , ( 1000, msg )
         , ( 2000, HideLoadingScreen )
@@ -219,7 +220,7 @@ exitTitle : Model -> Exit.Destination -> ( Model, Cmd Msg )
 exitTitle model destination =
     case destination of
         Exit.ToHub ->
-            ( model, goToHubCurrentProgress model )
+            ( model, goToHubReachedLevel model )
 
         Exit.ToIntro ->
             ( model, trigger InitIntro )
@@ -247,7 +248,11 @@ updateTutorial =
 
 exitTutorial : Model -> () -> ( Model, Cmd Msg )
 exitTutorial model _ =
-    ( promoteBackdropToScene model, Cmd.none )
+    ( model
+        |> copyBackdropToScene
+        |> clearBackdrop
+    , Cmd.none
+    )
 
 
 
@@ -358,7 +363,7 @@ updateSummary =
 
 exitSummary : Model -> () -> ( Model, Cmd Msg )
 exitSummary model _ =
-    ( clearBackdrop model, goToHubCurrentProgress model )
+    ( clearBackdrop model, goToHubReachedLevel model )
 
 
 
@@ -377,7 +382,7 @@ updateIntro =
 
 exitIntro : Model -> () -> ( Model, Cmd Msg )
 exitIntro model _ =
-    ( model, Cmd.batch [ goToHubCurrentProgress model, fadeMusic () ] )
+    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
 
 
 
@@ -431,11 +436,11 @@ clearBackdrop model =
     { model | backdrop = Nothing }
 
 
-promoteBackdropToScene : Model -> Model
-promoteBackdropToScene model =
+copyBackdropToScene : Model -> Model
+copyBackdropToScene model =
     case model.backdrop of
         Just scene ->
-            { model | scene = syncShared model scene, backdrop = Nothing }
+            { model | scene = syncShared model scene }
 
         _ ->
             model
@@ -460,9 +465,9 @@ goToHubCurrentLevel =
     trigger << GoToHub << currentLevel
 
 
-goToHubCurrentProgress : Model -> Cmd Msg
-goToHubCurrentProgress =
-    trigger << GoToHub << getProgress
+goToHubReachedLevel : Model -> Cmd Msg
+goToHubReachedLevel =
+    trigger << GoToHub << reachedLevel
 
 
 updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
@@ -478,42 +483,33 @@ andCmd cmdF model =
 saveCurrentLives : Model -> Cmd Msg
 saveCurrentLives model =
     model.scene
-        |> Scene.getShared
-        |> .lives
-        |> Lives.toCache
-        |> cacheLives
+        |> (Scene.getShared >> .lives)
+        |> (Lives.toCache >> cacheLives)
 
 
 bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
-    generateBounceKeyframes <| Scale.baseTileSizeY * Scale.tileScaleFactor window
+    generateBounceKeyframes <| Tile.baseSizeY * Tile.scaleFactor window
 
 
-initProgressFromCache : Maybe Levels.Cache -> Levels.Key
-initProgressFromCache cachedLevel =
-    cachedLevel
-        |> Maybe.map Levels.fromCache
-        |> Maybe.withDefault Levels.empty
-
-
-getProgress : Model -> Levels.Key
-getProgress model =
-    Scene.getShared model.scene |> .progress
+reachedLevel : Model -> Levels.Key
+reachedLevel model =
+    Scene.getShared model.scene
+        |> .progress
+        |> Progress.reachedLevel
 
 
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
-        |> Scene.getShared
-        |> .currentLevel
+        |> (Scene.getShared >> .progress)
+        |> Progress.currentLevel
         |> Maybe.withDefault Levels.empty
 
 
 shouldIncrement : Shared.Data -> Bool
 shouldIncrement shared =
-    shared.currentLevel
-        |> Maybe.map (not << Levels.completed shared.progress)
-        |> Maybe.withDefault False
+    not <| Progress.currentLevelComplete shared.progress
 
 
 
@@ -580,26 +576,26 @@ renderBackrop =
 renderScene : Scene -> List ( String, Html Msg )
 renderScene scene =
     case scene of
-        Hub hubModel ->
-            [ ( "hub", Hub.view hubModel |> Html.map HubMsg ) ]
+        Hub model ->
+            [ ( "hub", Hub.view model |> Html.map HubMsg ) ]
 
-        Intro introModel ->
-            [ ( "intro", Intro.view introModel |> Html.map IntroMsg ) ]
+        Intro model ->
+            [ ( "intro", Intro.view model |> Html.map IntroMsg ) ]
 
-        Title titleModel ->
-            [ ( "title", Title.view titleModel |> Html.map TitleMsg ) ]
+        Title model ->
+            [ ( "title", Title.view model |> Html.map TitleMsg ) ]
 
-        Level levelModel ->
-            [ ( "level", Level.view levelModel |> Html.map LevelMsg ) ]
+        Level model ->
+            [ ( "level", Level.view model |> Html.map LevelMsg ) ]
 
-        Tutorial tutorialModel ->
-            [ ( "tutorial", Tutorial.view tutorialModel |> Html.map TutorialMsg ) ]
+        Tutorial model ->
+            [ ( "tutorial", Tutorial.view model |> Html.map TutorialMsg ) ]
 
-        Summary summaryModel ->
-            [ ( "summary", Summary.view summaryModel |> Html.map SummaryMsg ) ]
+        Summary model ->
+            [ ( "summary", Summary.view model |> Html.map SummaryMsg ) ]
 
-        Retry retryModel ->
-            [ ( "retry", Retry.view retryModel |> Html.map RetryMsg ) ]
+        Retry model ->
+            [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
 
 
 reset : Html Msg

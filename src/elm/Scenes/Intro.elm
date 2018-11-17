@@ -12,11 +12,12 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Visibility exposing (..)
+import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
-import Shared exposing (Window)
+import Shared
 import Task
 import Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
 import Views.Intro.GrowingSeeds exposing (growingSeeds)
@@ -209,7 +210,7 @@ renderScene model =
             growingSeeds model.shared.window vis
 
         RollingHills vis ->
-            rollingHills vis
+            rollingHills model.shared.window vis
 
 
 textOffset : Window -> Style

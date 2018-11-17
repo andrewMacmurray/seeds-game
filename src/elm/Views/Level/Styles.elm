@@ -13,6 +13,7 @@ module Views.Level.Styles exposing
     , fallingStyles
     , growingStyles
     , moveTracerStyles
+    , scoreIconSize
     , seedBackgrounds
     , seedStrokeColors
     , strokeColors
@@ -26,10 +27,10 @@ module Views.Level.Styles exposing
     , tileStyleMap
     , tileWidth
     , tileWidthheights
+    , topBarHeight
     , wallStyles
     )
 
-import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
@@ -39,7 +40,7 @@ import Data.Board.Block as Block exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Shared exposing (Window)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 
 
@@ -54,7 +55,7 @@ boardMarginTop model =
 
 boardOffsetTop : TileViewModel -> Int
 boardOffsetTop (( window, _ ) as model) =
-    (window.height - boardHeight model) // 2 + (ScaleConfig.topBarHeight // 2) - 10
+    (window.height - boardHeight model) // 2 + (topBarHeight // 2) - 10
 
 
 boardOffsetLeft : TileViewModel -> Int
@@ -64,7 +65,7 @@ boardOffsetLeft (( window, _ ) as model) =
 
 boardHeight : TileViewModel -> Int
 boardHeight ( window, dimensions ) =
-    round (ScaleConfig.baseTileSizeY * ScaleConfig.tileScaleFactor window) * dimensions.y
+    round (Tile.baseSizeY * Tile.scaleFactor window) * dimensions.y
 
 
 boardWidth : TileViewModel -> Int
@@ -79,7 +80,17 @@ boardFullWidth window =
 
 tileWidth : Window -> Int
 tileWidth window =
-    round <| ScaleConfig.baseTileSizeX * ScaleConfig.tileScaleFactor window
+    round <| Tile.baseSizeX * Tile.scaleFactor window
+
+
+scoreIconSize : number
+scoreIconSize =
+    32
+
+
+topBarHeight : number
+topBarHeight =
+    80
 
 
 tileCoordsStyles : Window -> Coord -> List Style
@@ -99,10 +110,10 @@ tilePosition : Window -> Coord -> ( Float, Float )
 tilePosition window ( y, x ) =
     let
         tileScale =
-            ScaleConfig.tileScaleFactor window
+            Tile.scaleFactor window
     in
-    ( toFloat y * ScaleConfig.baseTileSizeY * tileScale
-    , toFloat x * ScaleConfig.baseTileSizeX * tileScale
+    ( toFloat y * Tile.baseSizeY * tileScale
+    , toFloat x * Tile.baseSizeX * tileScale
     )
 
 
@@ -110,7 +121,7 @@ wallStyles : Window -> Move -> List Style
 wallStyles window ( _, block ) =
     let
         wallSize =
-            ScaleConfig.tileScaleFactor window * 45
+            Tile.scaleFactor window * 45
     in
     case block of
         Wall color ->
@@ -192,10 +203,10 @@ tileWidthheights : Window -> List Style
 tileWidthheights window =
     let
         tileScale =
-            ScaleConfig.tileScaleFactor window
+            Tile.scaleFactor window
     in
-    [ width <| ScaleConfig.baseTileSizeX * tileScale
-    , height <| ScaleConfig.baseTileSizeY * tileScale
+    [ width <| Tile.baseSizeX * tileScale
+    , height <| Tile.baseSizeY * tileScale
     ]
 
 

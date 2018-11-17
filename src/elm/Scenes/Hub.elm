@@ -19,8 +19,10 @@ import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
+import Data.Progress as Progress
 import Data.Transit exposing (Transit(..))
 import Data.Wave exposing (wave)
+import Data.Window exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
@@ -29,7 +31,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial as Tutorial
-import Shared exposing (Window)
+import Shared
 import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
@@ -350,7 +352,7 @@ handleHideInfo model =
             onClick HideLevelInfo
 
         _ ->
-            Attribute.emptyProperty
+            Attribute.empty
 
 
 
@@ -374,14 +376,17 @@ renderWorld model ( config, levels ) =
 renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Key -> Html Msg
 renderLevel model config index level =
     let
+        reachedLevel =
+            Progress.reachedLevel model.shared.progress
+
         levelNumber =
             Worlds.number level |> Maybe.withDefault 1
 
         hasReachedLevel =
-            Levels.reached model.shared.progress level
+            Levels.reached reachedLevel level
 
         isCurrentLevel =
-            level == model.shared.progress
+            level == reachedLevel
     in
     div
         [ styles
@@ -449,25 +454,25 @@ renderNumber visibleLevelNumber hasReachedLevel config =
 
 showInfo : Levels.Key -> Model -> Attribute Msg
 showInfo level model =
-    if Levels.reached model.shared.progress level && InfoWindow.state model.infoWindow == Hidden then
+    if Levels.reached (Progress.reachedLevel model.shared.progress) level && InfoWindow.state model.infoWindow == Hidden then
         onClick <| ShowLevelInfo level
 
     else
-        Attribute.emptyProperty
+        Attribute.empty
 
 
 handleStartLevel : Levels.Key -> Model -> Attribute Msg
 handleStartLevel level model =
-    if Levels.reached model.shared.progress level then
+    if Levels.reached (Progress.reachedLevel model.shared.progress) level then
         onClick <| StartLevel level
 
     else
-        Attribute.emptyProperty
+        Attribute.empty
 
 
 renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
 renderLevelIcon level seedType model =
-    if Levels.completed model.shared.progress level then
+    if Levels.completed (Progress.reachedLevel model.shared.progress) level then
         renderSeed seedType
 
     else

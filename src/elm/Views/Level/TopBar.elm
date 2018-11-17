@@ -1,17 +1,10 @@
 module Views.Level.TopBar exposing
     ( TopBarViewModel
-    , moveCounterColor
     , remainingMoves
-    , renderScore
-    , renderScoreIcon
-    , scoreContent
     , scoreIcon
-    , scoreIconUrl
-    , tickFadeIn
     , topBar
     )
 
-import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
@@ -20,11 +13,11 @@ import Css.Transition exposing (transitionAll)
 import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
 import Data.Board.Types exposing (..)
 import Data.Level.Types exposing (TileSetting)
+import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Shared exposing (Window)
 import Views.Icons.Tick exposing (tickBackground)
-import Views.Level.Styles exposing (boardFullWidth, boardWidth, seedBackgrounds)
+import Views.Level.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, seedBackgrounds, topBarHeight)
 
 
 type alias TopBarViewModel =
@@ -40,7 +33,7 @@ topBar model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
         , style
-            [ height ScaleConfig.topBarHeight
+            [ height topBarHeight
             , color gold
             , backgroundColor washedYellow
             ]
@@ -48,7 +41,7 @@ topBar model =
         [ div
             [ style
                 [ width <| toFloat <| boardFullWidth model.window
-                , height ScaleConfig.topBarHeight
+                , height topBarHeight
                 ]
             , class "flex items-center justify-center relative"
             ]
@@ -71,7 +64,7 @@ renderScore : TopBarViewModel -> TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
-            ScaleConfig.scoreIconSize // 2
+            scoreIconSize // 2
     in
     div
         [ class "relative tc"
@@ -80,7 +73,7 @@ renderScore model tileType =
             , marginLeft <| toFloat scoreMargin
             ]
         ]
-        [ renderScoreIcon tileType
+        [ scoreIcon tileType scoreIconSize
         , p
             [ class "ma0 absolute left-0 right-0 f6"
             , Html.Attributes.style "bottom" "-1.5em"
@@ -161,21 +154,16 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : TileType -> Html msg
-renderScoreIcon tileType =
-    scoreIcon tileType ScaleConfig.scoreIconSize
-
-
 scoreIcon : TileType -> Float -> Html msg
-scoreIcon tileType scoreIconSize =
+scoreIcon tileType iconSize =
     case scoreIconUrl tileType of
         Just url ->
             div
                 [ class "bg-center contain"
                 , style
                     [ backgroundImage url
-                    , width scoreIconSize
-                    , height scoreIconSize
+                    , width iconSize
+                    , height iconSize
                     ]
                 ]
                 []

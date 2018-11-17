@@ -11,7 +11,6 @@ module Scenes.Tutorial exposing
     )
 
 import Browser.Events
-import Config.Scale as ScaleConfig
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
@@ -24,16 +23,18 @@ import Data.Board.Map exposing (..)
 import Data.Board.Move.Bearing exposing (addBearings)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Tutorial exposing (getText)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
-import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Shared exposing (Window)
+import Shared
 import Task
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
@@ -334,21 +335,21 @@ handleSkip model =
         onClick SkipTutorial
 
     else
-        emptyProperty
+        Attribute.empty
 
 
 tutorialBoard : Model -> Html msg
 tutorialBoard model =
     let
-        vm =
+        viewModel =
             ( model.shared.window, model.boardDimensions )
     in
     div
         [ class "center relative"
         , showIf model.boardVisible
         , style
-            [ width <| toFloat <| boardWidth vm
-            , height <| toFloat <| boardHeight vm
+            [ width <| toFloat <| boardWidth viewModel
+            , height <| toFloat <| boardHeight viewModel
             , transitionAll 500 []
             ]
         ]
@@ -365,7 +366,7 @@ renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
             shared.window
 
         tileScale =
-            ScaleConfig.tileScaleFactor window
+            Tile.scaleFactor window
 
         offsetX =
             resourceBankOffsetX model
@@ -380,14 +381,14 @@ renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
             ]
         , showIf resourceBankVisible
         ]
-        [ scoreIcon resourceBank <| ScaleConfig.baseTileSizeY * tileScale ]
+        [ scoreIcon resourceBank <| Tile.baseSizeY * tileScale ]
 
 
 resourceBankOffsetX : Model -> Float
 resourceBankOffsetX model =
-    ScaleConfig.baseTileSizeX
+    Tile.baseSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * ScaleConfig.tileScaleFactor model.shared.window
+        * Tile.scaleFactor model.shared.window
         / 2
 
 
@@ -415,7 +416,7 @@ renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\mv -> renderTile_ (leavingStyles model mv) model.shared.window model.moveShape mv)
+        |> List.map (\move -> renderTile_ (leavingStyles model move) model.shared.window model.moveShape move)
 
 
 leavingStyles : Model -> Move -> List Style

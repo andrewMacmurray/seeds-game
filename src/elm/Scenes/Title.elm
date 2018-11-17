@@ -10,19 +10,21 @@ module Scenes.Title exposing
     , view
     )
 
-import Config.Scale as ScaleConfig
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Data.Levels as Levels
+import Data.Progress as Progress
 import Data.Visibility as Visibility exposing (..)
+import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exitTo, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Shared exposing (Window)
+import Shared
+import Views.Landscape.SunflowerMeadow as SunflowerMeadow exposing (animated)
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
@@ -92,7 +94,10 @@ update msg model =
 
         IntroMusicPlaying _ ->
             continue model
-                [ sequence [ ( 0, FadeSeeds ), ( 2000, GoToIntro ) ]
+                [ sequence
+                    [ ( 0, FadeSeeds )
+                    , ( 2000, GoToIntro )
+                    ]
                 ]
 
         GoToIntro ->
@@ -138,7 +143,7 @@ view { shared, fadeDirection } =
                 , fadeOutStyles fadeDirection 1000 0
                 ]
             , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart shared.progress
+            , handleStart <| Progress.reachedLevel shared.progress
             ]
             [ text "PLAY" ]
         ]
@@ -163,8 +168,8 @@ seeds fadeDirection =
     div
         [ style
             [ maxWidth 450
-            , paddingLeft ScaleConfig.windowPadding
-            , paddingRight ScaleConfig.windowPadding
+            , paddingLeft Window.padding
+            , paddingRight Window.padding
             ]
         , class "flex center"
         ]

@@ -5,6 +5,7 @@ import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Levels as Levels
+import Data.Progress as Progress exposing (Progress)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Shared exposing (Background(..))
@@ -25,22 +26,20 @@ loadingScreen model =
             ]
         ]
         [ div [ style [ width 50 ] ]
-            [ renderSeed <| currentLevelSeedType model.currentLevel model.progress
+            [ renderSeed <| seedType model.progress
             ]
         ]
 
 
-currentLevelSeedType : Maybe Levels.Key -> Levels.Key -> SeedType
-currentLevelSeedType current progress =
-    current
-        |> Maybe.andThen Worlds.seedType
-        |> Maybe.withDefault (currentProgressSeedType progress)
+seedType : Progress -> SeedType
+seedType progress =
+    Progress.currentLevelSeedType Worlds.all progress
+        |> Maybe.withDefault (reachedLevelSeedType progress)
 
 
-currentProgressSeedType : Levels.Key -> SeedType
-currentProgressSeedType level =
-    level
-        |> Worlds.seedType
+reachedLevelSeedType : Progress -> SeedType
+reachedLevelSeedType progress =
+    Progress.reachedLevelSeedType Worlds.all progress
         |> Maybe.withDefault Sunflower
 
 

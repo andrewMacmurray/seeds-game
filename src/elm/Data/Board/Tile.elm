@@ -1,5 +1,7 @@
 module Data.Board.Tile exposing
     ( addBearing
+    , baseSizeX
+    , baseSizeY
     , getSeedType
     , getTileType
     , growSeedPod
@@ -16,6 +18,7 @@ module Data.Board.Tile exposing
     , leavingOrder
     , map
     , moveOrder
+    , scaleFactor
     , setDraggingToGrowing
     , setEnteringToSatic
     , setFallingToStatic
@@ -28,6 +31,7 @@ module Data.Board.Tile exposing
     )
 
 import Data.Board.Types exposing (..)
+import Data.Window as Window
 
 
 map : a -> (TileType -> a) -> TileState -> a
@@ -340,3 +344,26 @@ hashSeedType seedType =
 
         GreyedOut ->
             "greyed-out"
+
+
+scaleFactor : Window.Window -> Float
+scaleFactor window =
+    case Window.size window of
+        Window.Small ->
+            0.8
+
+        Window.Medium ->
+            0.98
+
+        Window.Large ->
+            1.2
+
+
+baseSizeX : number
+baseSizeX =
+    55
+
+
+baseSizeY : number
+baseSizeY =
+    51

@@ -1,12 +1,12 @@
 module Views.Level.Line exposing (renderLine)
 
-import Config.Scale exposing (tileScaleFactor)
 import Css.Style as Style exposing (Style, marginAuto, styles, svgStyle, svgStyles)
 import Css.Transform as Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
+import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
-import Shared exposing (Window)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Level.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
@@ -51,7 +51,7 @@ innerLine : Window -> TileType -> MoveBearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =
-            tileScaleFactor window
+            Tile.scaleFactor window
     in
     svg
         [ width <| String.fromFloat <| 50 * tileScale
@@ -78,7 +78,7 @@ lineTransforms : Window -> MoveBearing -> Style
 lineTransforms window bearing =
     let
         xOffset =
-            tileScaleFactor window * 25
+            Tile.scaleFactor window * 25
     in
     case bearing of
         Left ->

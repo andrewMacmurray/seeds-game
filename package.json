@@ -15,7 +15,7 @@
     "js-build": "browserify src/js/embed.js -o public/embed.js -t [ babelify --presets [ env ] ]",
     "copy-pep": "cp node_modules/pepjs/dist/pep.min.js public",
     "sw-generate": "workbox injectManifest",
-    "compress-main": "uglifyjs -c -m -o public/main.js public/main.js",
+    "compress-main": "uglifyjs public/main.js --compress 'pure_funcs=\"F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9\",pure_getters=true,keep_fargs=false,unsafe_comps=true,unsafe=true,passes=2' --output=public/main.js && uglifyjs public/main.js --mangle --output=public/main.js",
     "compress-embed": "uglifyjs -c -m -o public/embed.js public/embed.js",
     "test": "elm-test"
   },

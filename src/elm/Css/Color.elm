@@ -1,13 +1,17 @@
 module Css.Color exposing
     ( Color
+    , ashGreen
     , blockYellow
     , brown
     , brownYellow
     , chocolate
     , crimson
     , darkBrown
+    , darkForestGreen
     , darkRed
+    , darkSeaGreen
     , darkYellow
+    , deepPine
     , fadedOrange
     , gold
     , green
@@ -18,19 +22,25 @@ module Css.Color exposing
     , lightGray
     , lightGreen
     , lightOrange
+    , lightPine
     , lightYellow
     , meadowGreen
     , mediumGreen
     , midnightBlue
     , orange
+    , petalOrange
+    , pineGreen
     , pinkRed
     , purple
     , rainBlue
+    , seaGreen
     , seedPodGradient
     , silver
     , skyGreen
     , skyYellow
     , softRed
+    , sunflowerOffYellow
+    , sunflowerYellow
     , transparent
     , transparentGray
     , washedYellow
@@ -104,6 +114,11 @@ fadedOrange =
     "rgb(247, 179, 113)"
 
 
+petalOrange : Color
+petalOrange =
+    "rgb(255, 204, 71)"
+
+
 lightOrange : Color
 lightOrange =
     "rgb(238, 124, 51)"
@@ -132,6 +147,16 @@ darkYellow =
 brownYellow : Color
 brownYellow =
     "rgb(105, 88, 35)"
+
+
+sunflowerYellow : Color
+sunflowerYellow =
+    "rgb(255, 241, 0)"
+
+
+sunflowerOffYellow : Color
+sunflowerOffYellow =
+    "rgb(226, 227, 24)"
 
 
 yellow : Color
@@ -207,6 +232,41 @@ skyGreen =
 meadowGreen : Color
 meadowGreen =
     "rgb(91, 201, 120)"
+
+
+lightPine : Color
+lightPine =
+    "rgb(86, 180, 102)"
+
+
+pineGreen : Color
+pineGreen =
+    "rgb(64, 145, 78)"
+
+
+deepPine : Color
+deepPine =
+    "rgb(38, 129, 53)"
+
+
+seaGreen : Color
+seaGreen =
+    "rgb(31, 125, 92)"
+
+
+darkSeaGreen : Color
+darkSeaGreen =
+    "rgb(21, 103, 77)"
+
+
+darkForestGreen : Color
+darkForestGreen =
+    "rgb(8, 71, 38)"
+
+
+ashGreen : Color
+ashGreen =
+    "rgb(58, 94, 82)"
 
 
 lightBlue : Color

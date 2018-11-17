@@ -10,10 +10,13 @@ animations =
     Animation.embed
         [ fadeOut
         , fadeIn
+        , hoverBig
+        , fadeInOut
         , fadeSlideDown
         , slideDownScaleOut
         , exitDown
         , hover
+        , shake
         , bulgeFade
         , bulge
         , bulgeElastic
@@ -35,6 +38,15 @@ fadeIn =
 fadeOut =
     keyframes "fade-out"
         [ frame 0 [ opacity 1 ]
+        , frame 100 [ opacity 0 ]
+        ]
+
+
+fadeInOut =
+    keyframes "fade-in-out"
+        [ frame 0 [ opacity 0 ]
+        , frame 20 [ opacity 1 ]
+        , frame 80 [ opacity 1 ]
         , frame 100 [ opacity 0 ]
         ]
 
@@ -67,6 +79,20 @@ slideDownScaleOut =
         ]
 
 
+shake =
+    keyframes "shake"
+        [ frame 10 [ toX -1 ]
+        , frame 20 [ toX 1 ]
+        , frame 30 [ toX -1 ]
+        , frame 40 [ toX 1 ]
+        , frame 50 [ toX -1 ]
+        , frame 60 [ toX 1 ]
+        , frame 70 [ toX -1 ]
+        , frame 80 [ toX 1 ]
+        , frame 90 [ toX -1 ]
+        ]
+
+
 exitDown =
     keyframes "exit-down"
         [ frame 0
@@ -80,6 +106,14 @@ hover =
     keyframes "hover"
         [ frame 0 [ toY 0 ]
         , frame 50 [ toY -5 ]
+        , frame 100 [ toY 0 ]
+        ]
+
+
+hoverBig =
+    keyframes "hover-big"
+        [ frame 0 [ toY 0 ]
+        , frame 50 [ toY -20 ]
         , frame 100 [ toY 0 ]
         ]
 
@@ -179,3 +213,8 @@ toScale n =
 toY : Float -> Animation.Property
 toY n =
     transform [ translateY n ]
+
+
+toX : Float -> Animation.Property
+toX n =
+    transform [ translateX n ]

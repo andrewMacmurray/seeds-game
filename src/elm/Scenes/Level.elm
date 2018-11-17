@@ -10,7 +10,6 @@ module Scenes.Level exposing
     )
 
 import Browser.Events
-import Config.Scale as ScaleConfig exposing (baseTileSizeX, baseTileSizeY, tileScaleFactor)
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
@@ -31,14 +30,15 @@ import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
+import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
-import Helpers.Attribute exposing (emptyProperty)
+import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, span, text)
 import Html.Attributes exposing (attribute, class)
-import Shared exposing (Window)
+import Shared
 import Task
 import Views.InfoWindow exposing (infoContainer)
 import Views.Level.Line exposing (renderLine)
@@ -432,10 +432,10 @@ coordsFromPosition pointer model =
             toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
-            tileScaleFactor model.shared.window * baseTileSizeY
+            Tile.scaleFactor model.shared.window * Tile.baseSizeY
 
         scaleFactorX =
-            tileScaleFactor model.shared.window * baseTileSizeX
+            Tile.scaleFactor model.shared.window * Tile.baseSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -540,7 +540,7 @@ applyIf predicate attr =
         attr
 
     else
-        emptyProperty
+        Attribute.empty
 
 
 moveCaptureArea : Html msg
@@ -643,7 +643,7 @@ getLeavingStyle : TileType -> Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault empty
+        |> Maybe.withDefault Style.empty
 
 
 newLeavingStyles : Model -> Dict.Dict String Style
@@ -668,7 +668,7 @@ exitXDistance : Int -> Model -> Float
 exitXDistance resourceBankIndex model =
     let
         scoreWidth =
-            ScaleConfig.scoreIconSize * 2
+            scoreIconSize * 2
 
         scoreBarWidth =
             model.tileSettings
@@ -680,14 +680,14 @@ exitXDistance resourceBankIndex model =
             (boardWidth (tileViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| ScaleConfig.tileScaleFactor model.shared.window
+            exitOffsetFunction <| Tile.scaleFactor model.shared.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
 
 exitOffsetFunction : Float -> Float
 exitOffsetFunction x =
-    25 * (x ^ 2) - (75 * x) + ScaleConfig.baseTileSizeX
+    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
 
 
 exitYdistance : TileViewModel -> Float
