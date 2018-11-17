@@ -50,7 +50,7 @@ lineDrag model =
                 |> Maybe.withDefault ""
 
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
     in
     svg
         [ width <| px <| toFloat window.width
@@ -78,7 +78,7 @@ lastMoveOrigin model =
             model.window
 
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
 
         ( ( y, x ), _ ) =
             lastMove model.board

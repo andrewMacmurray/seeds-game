@@ -72,7 +72,7 @@ growingSeed window ( index, seedType, scale ) =
     div [ class "flex items-end" ]
         [ div
             [ style
-                [ width <| 50 * scale * Tile.scaleFactor window
+                [ width <| 50 * scale * Tile.scale window
                 , marginLeft 5
                 , marginRight 5
                 , transform [ Transform.scale 0 ]

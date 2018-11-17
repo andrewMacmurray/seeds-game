@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Css.Color exposing (darkYellow, lightYellow)
+import Css.Color as Color
 import Css.Style exposing (backgroundColor, color, style)
 import Data.Board.Tile as Tile
 import Data.Level.Types exposing (..)
@@ -30,6 +30,7 @@ import Shared exposing (..)
 import Time exposing (millisToPosix)
 import Views.Animations exposing (animations)
 import Views.Loading exposing (loadingScreen)
+import Views.Menu as Menu
 import Worlds
 
 
@@ -82,6 +83,8 @@ type Msg
     | InitRetry
     | ShowLoadingScreen
     | HideLoadingScreen
+    | OpenMenu
+    | CloseMenu
     | RandomBackground Background
     | ResetData
     | WindowSize Int Int
@@ -114,6 +117,7 @@ initShared flags =
     , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
+    , menu = Shared.Closed
     }
 
 
@@ -174,6 +178,12 @@ update msg ({ scene, backdrop } as model) =
 
         ( HideLoadingScreen, _, _ ) ->
             ( updateShared model hideLoadingScreen, Cmd.none )
+
+        ( OpenMenu, _, _ ) ->
+            ( updateShared model openMenu, Cmd.none )
+
+        ( CloseMenu, _, _ ) ->
+            ( updateShared model closeMenu, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen <| InitHub level )
@@ -310,6 +320,15 @@ exitLevel model levelStatus =
         Level.Lose ->
             ( model, trigger InitRetry )
 
+        Level.Restart ->
+            ( model, reloadCurrentLevel model )
+
+        Level.Exit ->
+            ( model, goToHubCurrentLevel model )
+
+        Level.NotStarted ->
+            ( model, Cmd.none )
+
         Level.InProgress ->
             ( model, Cmd.none )
 
@@ -407,6 +426,7 @@ updateBackdrop sceneF =
 
 load embedModel embedScene msg initSceneF model =
     Scene.getShared model.scene
+        |> closeMenu
         |> initSceneF
         |> Return.map msg (embedScene >> embedModel model)
 
@@ -489,7 +509,7 @@ saveCurrentLives model =
 
 bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
-    generateBounceKeyframes <| Tile.baseSizeY * Tile.scaleFactor window
+    generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
 
 
 reachedLevel : Model -> Levels.Key
@@ -553,8 +573,8 @@ view : Model -> Html Msg
 view model =
     div []
         [ animations
-        , reset
         , loadingScreen <| Scene.getShared model.scene
+        , menu model.scene
         , renderStage
             [ renderScene model.scene
             , renderBackrop model.backdrop
@@ -598,20 +618,38 @@ renderScene scene =
             [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
 
 
-reset : Html Msg
-reset =
-    p
-        [ onClick ResetData
-        , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
-        , style [ color darkYellow ]
-        ]
-        [ text "reset" ]
+
+-- Menu
+
+
+menu : Scene -> Html Msg
+menu scene =
+    let
+        renderMenu =
+            Menu.view
+                { close = CloseMenu
+                , open = OpenMenu
+                , resetData = ResetData
+                }
+    in
+    case scene of
+        Title model ->
+            renderMenu model.shared TitleMsg Title.menuOptions
+
+        Hub model ->
+            renderMenu model.shared HubMsg []
+
+        Level model ->
+            renderMenu model.shared LevelMsg Level.menuOptions
+
+        _ ->
+            Menu.fadeOut
 
 
 background : Html msg
 background =
     div
-        [ style [ backgroundColor lightYellow ]
+        [ style [ backgroundColor Color.lightYellow ]
         , class "fixed w-100 h-100 top-0 left-0 z-0"
         ]
         []

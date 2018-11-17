@@ -4,6 +4,7 @@ module Scenes.Title exposing
     , Msg
     , getShared
     , init
+    , menuOptions
     , subscriptions
     , update
     , updateShared
@@ -11,7 +12,7 @@ module Scenes.Title exposing
     )
 
 import Css.Animation exposing (animation, delay, linear)
-import Css.Color exposing (..)
+import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress
@@ -25,6 +26,7 @@ import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Shared
 import Views.Landscape.SunflowerMeadow as SunflowerMeadow exposing (animated)
+import Views.Menu as Menu
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
@@ -70,6 +72,11 @@ getShared model =
 updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
 updateShared f model =
     { model | shared = f model.shared }
+
+
+menuOptions : List (Menu.Option Msg)
+menuOptions =
+    [ Menu.option GoToHub "Levels" ]
 
 
 
@@ -125,7 +132,7 @@ view { shared, fadeDirection } =
         [ div [] [ seeds fadeDirection ]
         , p
             [ styles
-                [ [ color darkYellow, marginTop 45 ]
+                [ [ color Color.darkYellow, marginTop 45 ]
                 , fadeInStyles fadeDirection 1500 500
                 , fadeOutStyles fadeDirection 1000 500
                 ]
@@ -136,8 +143,8 @@ view { shared, fadeDirection } =
             [ styles
                 [ [ borderNone
                   , marginTop 15
-                  , color white
-                  , backgroundColor lightOrange
+                  , color Color.white
+                  , backgroundColor Color.lightOrange
                   ]
                 , fadeInStyles fadeDirection 800 2500
                 , fadeOutStyles fadeDirection 1000 0

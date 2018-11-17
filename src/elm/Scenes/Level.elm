@@ -4,13 +4,14 @@ module Scenes.Level exposing
     , Status(..)
     , getShared
     , init
+    , menuOptions
     , update
     , updateShared
     , view
     )
 
 import Browser.Events
-import Css.Color exposing (Color)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
@@ -36,16 +37,18 @@ import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
 import Helpers.Dict exposing (indexedDictFrom)
-import Html exposing (Attribute, Html, div, span, text)
+import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
+import Html.Events exposing (onClick)
 import Shared
 import Task
-import Views.InfoWindow exposing (infoContainer)
+import Views.InfoWindow
 import Views.Level.Line exposing (renderLine)
 import Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Views.Level.Styles exposing (..)
 import Views.Level.Tile exposing (renderTile_)
 import Views.Level.TopBar exposing (TopBarViewModel, remainingMoves, topBar)
+import Views.Menu as Menu
 
 
 
@@ -62,7 +65,7 @@ type alias Model =
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
     , levelStatus : Status
-    , infoWindow : InfoWindow String
+    , infoWindow : InfoWindow InfoContent
     , pointer : Pointer
     }
 
@@ -85,17 +88,34 @@ type Msg
     | ShiftBoard
     | ResetMove
     | CheckLevelComplete
-    | ShowInfo String
-    | RemoveInfo
+    | ShowInfo InfoContent
+    | HideInfo
+    | InfoLeaving
     | InfoHidden
+    | PromptRestart
+    | PromptExit
     | LevelWon
     | LevelLost
+    | RestartLevel
+    | RestartLevelLoseLife
+    | ExitLevel
+    | ExitLevelLoseLife
 
 
 type Status
-    = InProgress
+    = NotStarted
+    | InProgress
     | Lose
     | Win
+    | Restart
+    | Exit
+
+
+type InfoContent
+    = Success
+    | NoMovesLeft
+    | RestartAreYouSure
+    | ExitAreYouSure
 
 
 
@@ -112,15 +132,24 @@ updateShared f model =
     { model | shared = f model.shared }
 
 
+menuOptions : List (Menu.Option Msg)
+menuOptions =
+    [ Menu.option PromptRestart "Restart"
+    , Menu.option PromptExit "Exit"
+    ]
 
--- INIT
+
+
+-- Init
 
 
 init : Levels.LevelConfig -> Shared.Data -> ( Model, Cmd Msg )
 init config shared =
     let
         model =
-            addLevelData config <| initialState shared
+            shared
+                |> initialState
+                |> addLevelData config
     in
     ( model
     , handleGenerateTiles config model
@@ -134,7 +163,6 @@ addLevelData { tiles, walls, boardDimensions, moves } model =
         , board = addWalls walls model.board
         , boardDimensions = boardDimensions
         , tileSettings = tiles
-        , levelStatus = InProgress
         , remainingMoves = moves
     }
 
@@ -149,14 +177,14 @@ initialState shared =
     , moveShape = Nothing
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
-    , levelStatus = InProgress
+    , levelStatus = NotStarted
     , infoWindow = InfoWindow.hidden
     , pointer = { y = 0, x = 0 }
     }
 
 
 
--- UPDATE
+-- Update
 
 
 update : Msg -> Model -> Exit.With Status ( Model, Cmd Msg )
@@ -239,14 +267,23 @@ update msg model =
         CheckLevelComplete ->
             handleCheckLevelComplete model
 
+        HideInfo ->
+            continue model [ hideInfoSequence ]
+
         ShowInfo info ->
             continue { model | infoWindow = InfoWindow.visible info } []
 
-        RemoveInfo ->
+        InfoLeaving ->
             continue { model | infoWindow = InfoWindow.leaving model.infoWindow } []
 
         InfoHidden ->
             continue { model | infoWindow = InfoWindow.hidden } []
+
+        PromptRestart ->
+            continue model [ handleRestartPrompt model ]
+
+        PromptExit ->
+            continue model [ handleExitPrompt model ]
 
         LevelWon ->
             exitWith Win model
@@ -254,9 +291,21 @@ update msg model =
         LevelLost ->
             exitWith Lose model
 
+        RestartLevel ->
+            exitWith Restart model
+
+        RestartLevelLoseLife ->
+            exitWith Restart <| updateShared Shared.decrementLife model
+
+        ExitLevel ->
+            exitWith Exit model
+
+        ExitLevelLoseLife ->
+            exitWith Exit <| updateShared Shared.decrementLife model
 
 
--- SEQUENCES
+
+-- Sequences
 
 
 growSeedPodsSequence : Maybe MoveShape -> Cmd Msg
@@ -286,20 +335,26 @@ removeTilesSequence moveShape =
 winSequence : Model -> Cmd Msg
 winSequence model =
     sequence
-        [ ( 500, ShowInfo <| getSuccessMessage model.shared.successMessageIndex )
-        , ( 2000, RemoveInfo )
-        , ( 1000, InfoHidden )
-        , ( 0, LevelWon )
+        [ ( 500, ShowInfo Success )
+        , ( 2000, HideInfo )
+        , ( 1000, LevelWon )
         ]
 
 
 loseSequence : Cmd Msg
 loseSequence =
     sequence
-        [ ( 500, ShowInfo failureMessage )
-        , ( 2000, RemoveInfo )
+        [ ( 500, ShowInfo NoMovesLeft )
+        , ( 2000, HideInfo )
+        , ( 1000, LevelLost )
+        ]
+
+
+hideInfoSequence : Cmd Msg
+hideInfoSequence =
+    sequence
+        [ ( 0, InfoLeaving )
         , ( 1000, InfoHidden )
-        , ( 0, LevelLost )
         ]
 
 
@@ -322,7 +377,7 @@ fallDelay moveShape =
 
 
 
--- UPDATE Helpers
+-- Update Helpers
 
 
 type alias HasBoard model =
@@ -432,10 +487,10 @@ coordsFromPosition pointer model =
             toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
-            Tile.scaleFactor model.shared.window * Tile.baseSizeY
+            Tile.scale model.shared.window * Tile.baseSizeY
 
         scaleFactorX =
-            Tile.scaleFactor model.shared.window * Tile.baseSizeX
+            Tile.scale model.shared.window * Tile.baseSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -452,14 +507,18 @@ handleSquareMove model =
 
 handleCheckLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
 handleCheckLevelComplete model =
+    let
+        disableMenu =
+            updateShared Shared.disableMenu
+    in
     if hasWon model then
-        continue { model | levelStatus = Win } [ winSequence model ]
+        continue (disableMenu { model | levelStatus = Win }) [ winSequence model ]
 
     else if hasLost model then
-        continue { model | levelStatus = Lose } [ loseSequence ]
+        continue (disableMenu { model | levelStatus = Lose }) [ loseSequence ]
 
     else
-        continue model []
+        continue { model | levelStatus = InProgress } []
 
 
 hasLost : Model -> Bool
@@ -470,6 +529,24 @@ hasLost { remainingMoves, levelStatus } =
 hasWon : Model -> Bool
 hasWon { scores, levelStatus } =
     levelComplete scores && levelStatus == InProgress
+
+
+handleExitPrompt : Model -> Cmd Msg
+handleExitPrompt model =
+    if model.levelStatus == NotStarted then
+        trigger ExitLevel
+
+    else
+        trigger <| ShowInfo ExitAreYouSure
+
+
+handleRestartPrompt : Model -> Cmd Msg
+handleRestartPrompt model =
+    if model.levelStatus == NotStarted then
+        trigger RestartLevel
+
+    else
+        trigger <| ShowInfo RestartAreYouSure
 
 
 
@@ -531,7 +608,7 @@ handleCheck model =
 
 disableIfComplete : Model -> Attribute msg
 disableIfComplete model =
-    applyIf (not <| model.levelStatus == InProgress) <| class "touch-disabled"
+    applyIf (not <| model.levelStatus == InProgress || model.levelStatus == NotStarted) <| class "touch-disabled"
 
 
 applyIf : Bool -> Attribute msg -> Attribute msg
@@ -596,19 +673,84 @@ hanldeMoveEvents model move =
     applyIf (not model.isDragging) <| onPointerDown <| StartMove move
 
 
-renderInfoWindow : Model -> Html msg
-renderInfoWindow { infoWindow } =
-    let
-        infoContent =
-            InfoWindow.content infoWindow |> Maybe.withDefault ""
-    in
-    case InfoWindow.state infoWindow of
-        InfoWindow.Hidden ->
-            span [] []
+renderInfoWindow : Model -> Html Msg
+renderInfoWindow { infoWindow, shared } =
+    InfoWindow.content infoWindow
+        |> Maybe.map (renderInfoContent shared.successMessageIndex)
+        |> Maybe.map (infoContainer infoWindow)
+        |> Maybe.withDefault (span [] [])
+
+
+infoContainer : InfoWindow InfoContent -> Html Msg -> Html Msg
+infoContainer infoWindow rendered =
+    case InfoWindow.content infoWindow of
+        Just RestartAreYouSure ->
+            div [ onClick HideInfo ] [ Views.InfoWindow.infoContainer infoWindow rendered ]
+
+        Just ExitAreYouSure ->
+            div [ onClick HideInfo ] [ Views.InfoWindow.infoContainer infoWindow rendered ]
 
         _ ->
-            infoContainer infoWindow <|
-                div [ class "pv5 f3 tracked-mega" ] [ text infoContent ]
+            Views.InfoWindow.infoContainer infoWindow rendered
+
+
+renderInfoContent : Int -> InfoContent -> Html Msg
+renderInfoContent successMessageIndex infoContent =
+    case infoContent of
+        Success ->
+            div [ class "pv5 f3 tracked-mega" ] [ text <| getSuccessMessage successMessageIndex ]
+
+        NoMovesLeft ->
+            div [ class "pv5 f3 tracked" ] [ text failureMessage ]
+
+        RestartAreYouSure ->
+            areYouSure "Restart" RestartLevelLoseLife
+
+        ExitAreYouSure ->
+            areYouSure "Exit" ExitLevelLoseLife
+
+
+areYouSure : String -> Msg -> Html Msg
+areYouSure yesText msg =
+    div [ class "pv4" ]
+        [ p [ class "f3 ma0 tracked" ] [ text "Are You Sure?" ]
+        , p [ class "f7 tracked", style [ marginTop 15, marginBottom 20 ] ] [ text "You will lose a life" ]
+        , yesNoButton yesText msg
+        ]
+
+
+yesNoButton : String -> Msg -> Html Msg
+yesNoButton yesText msg =
+    div []
+        [ div
+            [ class "dib"
+            , onClick HideInfo
+            , style
+                [ color Color.green
+                , backgroundColor Color.sunflowerYellow
+                , paddingLeft 25
+                , paddingRight 15
+                , paddingTop 10
+                , paddingBottom 10
+                , leftPill
+                ]
+            ]
+            [ text "X" ]
+        , div
+            [ class "dib"
+            , onClick msg
+            , style
+                [ color Color.white
+                , backgroundColor Color.gold
+                , paddingLeft 15
+                , paddingRight 20
+                , paddingTop 10
+                , paddingBottom 10
+                , rightPill
+                ]
+            ]
+            [ text yesText ]
+        ]
 
 
 leavingStyles : Model -> Move -> List Style
@@ -680,7 +822,7 @@ exitXDistance resourceBankIndex model =
             (boardWidth (tileViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| Tile.scaleFactor model.shared.window
+            exitOffsetFunction <| Tile.scale model.shared.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 

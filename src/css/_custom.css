@@ -9,7 +9,11 @@ img {
 
 div {
   user-select: none;
-  -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+.sans-serif {
+  font-family: var(--sans-serif);
 }
 
 .w-100 {
@@ -47,6 +51,14 @@ div {
 
 .z-2 {
   z-index: 2;
+}
+
+.z-6 {
+  z-index: 6;
+}
+
+.z-7 {
+  z-index: 7;
 }
 
 .f7 {

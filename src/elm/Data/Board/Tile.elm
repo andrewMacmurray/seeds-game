@@ -18,7 +18,7 @@ module Data.Board.Tile exposing
     , leavingOrder
     , map
     , moveOrder
-    , scaleFactor
+    , scale
     , setDraggingToGrowing
     , setEnteringToSatic
     , setFallingToStatic
@@ -346,8 +346,8 @@ hashSeedType seedType =
             "greyed-out"
 
 
-scaleFactor : Window.Window -> Float
-scaleFactor window =
+scale : Window.Window -> Float
+scale window =
     case Window.size window of
         Window.Small ->
             0.8
