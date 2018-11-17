@@ -51,7 +51,7 @@ innerLine : Window -> TileType -> MoveBearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
     in
     svg
         [ width <| String.fromFloat <| 50 * tileScale
@@ -78,7 +78,7 @@ lineTransforms : Window -> MoveBearing -> Style
 lineTransforms window bearing =
     let
         xOffset =
-            Tile.scaleFactor window * 25
+            Tile.scale window * 25
     in
     case bearing of
         Left ->

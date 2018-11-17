@@ -432,10 +432,10 @@ coordsFromPosition pointer model =
             toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
-            Tile.scaleFactor model.shared.window * Tile.baseSizeY
+            Tile.scale model.shared.window * Tile.baseSizeY
 
         scaleFactorX =
-            Tile.scaleFactor model.shared.window * Tile.baseSizeX
+            Tile.scale model.shared.window * Tile.baseSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -680,7 +680,7 @@ exitXDistance resourceBankIndex model =
             (boardWidth (tileViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| Tile.scaleFactor model.shared.window
+            exitOffsetFunction <| Tile.scale model.shared.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 

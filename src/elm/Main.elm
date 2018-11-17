@@ -489,7 +489,7 @@ saveCurrentLives model =
 
 bounceKeyframes : Window -> Cmd msg
 bounceKeyframes window =
-    generateBounceKeyframes <| Tile.baseSizeY * Tile.scaleFactor window
+    generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
 
 
 reachedLevel : Model -> Levels.Key

@@ -366,7 +366,7 @@ renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
             shared.window
 
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
 
         offsetX =
             resourceBankOffsetX model
@@ -388,7 +388,7 @@ resourceBankOffsetX : Model -> Float
 resourceBankOffsetX model =
     Tile.baseSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * Tile.scaleFactor model.shared.window
+        * Tile.scale model.shared.window
         / 2
 
 

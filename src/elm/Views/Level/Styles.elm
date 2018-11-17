@@ -65,7 +65,7 @@ boardOffsetLeft (( window, _ ) as model) =
 
 boardHeight : TileViewModel -> Int
 boardHeight ( window, dimensions ) =
-    round (Tile.baseSizeY * Tile.scaleFactor window) * dimensions.y
+    round (Tile.baseSizeY * Tile.scale window) * dimensions.y
 
 
 boardWidth : TileViewModel -> Int
@@ -80,7 +80,7 @@ boardFullWidth window =
 
 tileWidth : Window -> Int
 tileWidth window =
-    round <| Tile.baseSizeX * Tile.scaleFactor window
+    round <| Tile.baseSizeX * Tile.scale window
 
 
 scoreIconSize : number
@@ -110,7 +110,7 @@ tilePosition : Window -> Coord -> ( Float, Float )
 tilePosition window ( y, x ) =
     let
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
     in
     ( toFloat y * Tile.baseSizeY * tileScale
     , toFloat x * Tile.baseSizeX * tileScale
@@ -121,7 +121,7 @@ wallStyles : Window -> Move -> List Style
 wallStyles window ( _, block ) =
     let
         wallSize =
-            Tile.scaleFactor window * 45
+            Tile.scale window * 45
     in
     case block of
         Wall color ->
@@ -203,7 +203,7 @@ tileWidthheights : Window -> List Style
 tileWidthheights window =
     let
         tileScale =
-            Tile.scaleFactor window
+            Tile.scale window
     in
     [ width <| Tile.baseSizeX * tileScale
     , height <| Tile.baseSizeY * tileScale
