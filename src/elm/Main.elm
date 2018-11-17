@@ -629,6 +629,7 @@ menu scene =
         |> Menu.view
             { close = CloseMenu
             , open = OpenMenu
+            , resetData = ResetData
             }
 
 

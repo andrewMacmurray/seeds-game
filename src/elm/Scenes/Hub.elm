@@ -172,7 +172,10 @@ view model =
         , renderInfoWindow model
         , div
             [ id "hub"
-            , style [ height <| toFloat model.shared.window.height ]
+            , style
+                [ height <| toFloat model.shared.window.height
+                , paddingTop 60
+                ]
             , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             ]
             (renderWorlds model)
