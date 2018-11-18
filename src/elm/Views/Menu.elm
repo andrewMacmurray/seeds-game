@@ -1,9 +1,16 @@
-module Views.Menu exposing (Msg, view)
+module Views.Menu exposing
+    ( Msg
+    , Option
+    , fadeOut
+    , option
+    , view
+    )
 
+import Css.Animation as Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
-import Css.Transition exposing (transitionAll)
+import Css.Transition exposing (transition, transitionAll)
 import Helpers.Attribute as Attribute
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (class)
@@ -19,20 +26,54 @@ type alias Msg msg =
     }
 
 
-view : Msg msg -> Shared.Data -> Html msg
-view msg shared =
-    div [ class "absolute top-0 right-0 w-100" ]
-        [ menuDrawerButton msg shared
-        , div [ class "absolute z-6", enableWhenOpen shared.menuOpen ]
+type alias OptionConfig msg =
+    { msg : msg
+    , text : String
+    , backgroundColor : Color.Color
+    }
+
+
+type Option msg
+    = Option (OptionConfig msg)
+
+
+option : msg -> String -> Color.Color -> Option msg
+option msg text color =
+    OptionConfig msg text color |> Option
+
+
+fadeOut =
+    div
+        [ style
+            [ opacity 1
+            , width 20
+            , height 20
+            , animation "fade-out" 1000 []
+            ]
+        , class "absolute top-1 right-1 z-7"
+        ]
+        [ cog Color.darkYellow ]
+
+
+view : Msg msg -> Shared.Data -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
+view msg shared sceneMsg sceneSpecificOptions =
+    div []
+        [ div
+            [ class "fixed pointer right-1 top-1 z-7"
+            , withDisable shared.menu
+            , style [ animation "fade-in" 500 [] ]
+            ]
+            [ menuDrawerButton msg shared ]
+        , div [ class "fixed z-6 top-0", enableWhenOpen shared.menu ]
             [ div
                 [ style
                     [ height <| toFloat shared.window.height
                     , width <| toFloat shared.window.width
                     , backgroundColor Color.black
-                    , overlayVisibility shared.menuOpen
+                    , overlayVisibility shared.menu
                     , transitionAll 300 []
                     ]
-                , enableWhenOpen shared.menuOpen
+                , enableWhenOpen shared.menu
                 , onClick msg.close
                 ]
                 []
@@ -44,32 +85,53 @@ view msg shared =
                     , width 270
                     , borderRadiusBottomLeft 20
                     , borderRadiusTopLeft 20
-                    , menuDrawerPosition shared.menuOpen
+                    , menuDrawerPosition shared.menu
                     , transitionAll 300 []
                     ]
                 , class "absolute right-0 top-0 flex flex-column items-center justify-center"
                 ]
-                [ menuButton msg.close Color.lightGold "Go To Levels"
-                , menuButton msg.resetData Color.lightOrange "Reset Data"
-                ]
+              <|
+                List.concat
+                    [ List.map (renderOption >> Html.map sceneMsg >> closeMenu msg) sceneSpecificOptions
+                    , [ menuButton msg.resetData Color.lightOrange "Reset Data" ]
+                    ]
             ]
         ]
 
 
-overlayVisibility menuOpen =
-    if menuOpen then
-        opacity 0.6
+withDisable menu =
+    case menu of
+        Shared.Disabled ->
+            class "touch-disabled"
 
-    else
-        opacity 0
+        _ ->
+            Attribute.empty
 
 
-enableWhenOpen menuOpen =
-    if menuOpen then
-        Attribute.empty
+closeMenu msg button =
+    div [ onClick msg.close ] [ button ]
 
-    else
-        class "touch-disabled"
+
+renderOption (Option config) =
+    menuButton config.msg config.backgroundColor config.text
+
+
+overlayVisibility menu =
+    case menu of
+        Shared.Open ->
+            opacity 0.6
+
+        _ ->
+            opacity 0
+
+
+enableWhenOpen menu =
+    case menu of
+        Shared.Open ->
+            Attribute.empty
+
+        _ ->
+            class "touch-disabled"
 
 
 menuButton msg bgColor content =
@@ -86,41 +148,38 @@ menuButton msg bgColor content =
         [ text content ]
 
 
+menuDrawerButton : Msg msg -> Shared.Data -> Html msg
 menuDrawerButton { open, close } shared =
-    let
-        classes =
-            "absolute pointer right-1 top-1 z-7"
-    in
-    if shared.menuOpen then
-        div
-            [ onClick close
-            , class classes
-            , style
-                [ transform [ Transform.rotateZ 0 ]
-                , width 20
-                , height 20
-                , transitionAll 300 []
+    case shared.menu of
+        Shared.Open ->
+            div
+                [ onClick close
+                , style
+                    [ transform [ Transform.rotateZ 0 ]
+                    , width 20
+                    , height 20
+                    , transitionAll 300 []
+                    ]
                 ]
-            ]
-            [ cog Color.white ]
+                [ cog Color.white ]
 
-    else
-        div
-            [ onClick open
-            , class classes
-            , style
-                [ transform [ Transform.rotateZ 180 ]
-                , width 20
-                , height 20
-                , transitionAll 300 []
+        _ ->
+            div
+                [ onClick open
+                , style
+                    [ transform [ Transform.rotateZ 180 ]
+                    , width 20
+                    , height 20
+                    , transitionAll 300 []
+                    ]
                 ]
-            ]
-            [ cog Color.darkYellow ]
+                [ cog Color.darkYellow ]
 
 
-menuDrawerPosition menuOpen =
-    if menuOpen then
-        transform [ translateX 0 ]
+menuDrawerPosition menu =
+    case menu of
+        Shared.Open ->
+            transform [ translateX 0 ]
 
-    else
-        transform [ translateX 270 ]
+        _ ->
+            transform [ translateX 270 ]

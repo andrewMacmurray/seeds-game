@@ -117,7 +117,7 @@ initShared flags =
     , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
-    , menuOpen = False
+    , menu = Shared.Closed
     }
 
 
@@ -320,6 +320,9 @@ exitLevel model levelStatus =
         Level.Lose ->
             ( model, trigger InitRetry )
 
+        Level.Restart ->
+            ( model, reloadCurrentLevel model )
+
         Level.InProgress ->
             ( model, Cmd.none )
 
@@ -417,6 +420,7 @@ updateBackdrop sceneF =
 
 load embedModel embedScene msg initSceneF model =
     Scene.getShared model.scene
+        |> closeMenu
         |> initSceneF
         |> Return.map msg (embedScene >> embedModel model)
 
@@ -608,29 +612,32 @@ renderScene scene =
             [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
 
 
-reset : Html Msg
-reset =
-    p
-        [ onClick ResetData
-        , class "dib top-0 right-1 tracked pointer f7 absolute z-999"
-        , style [ color Color.darkYellow ]
-        ]
-        [ text "reset" ]
-
-
 
 -- Menu
 
 
 menu : Scene -> Html Msg
 menu scene =
-    scene
-        |> Scene.getShared
-        |> Menu.view
-            { close = CloseMenu
-            , open = OpenMenu
-            , resetData = ResetData
-            }
+    let
+        renderMenu =
+            Menu.view
+                { close = CloseMenu
+                , open = OpenMenu
+                , resetData = ResetData
+                }
+    in
+    case scene of
+        Title model ->
+            renderMenu model.shared TitleMsg Title.menuOptions
+
+        Hub model ->
+            renderMenu model.shared HubMsg []
+
+        Level model ->
+            renderMenu model.shared LevelMsg Level.menuOptions
+
+        _ ->
+            Menu.fadeOut
 
 
 background : Html msg

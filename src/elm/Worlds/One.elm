@@ -52,11 +52,11 @@ levels =
         , boardDimensions = { x = 6, y = 6 }
         , moves = 10
         , tiles =
-            [ seed
-                Sunflower
+            [ rain
                 (Probability 33)
                 (TargetScore 10)
-            , rain
+            , seed
+                Sunflower
                 (Probability 33)
                 (TargetScore 10)
             , sun

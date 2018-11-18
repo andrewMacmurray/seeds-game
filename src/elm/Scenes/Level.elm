@@ -4,13 +4,14 @@ module Scenes.Level exposing
     , Status(..)
     , getShared
     , init
+    , menuOptions
     , update
     , updateShared
     , view
     )
 
 import Browser.Events
-import Css.Color exposing (Color)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
@@ -46,6 +47,7 @@ import Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Views.Level.Styles exposing (..)
 import Views.Level.Tile exposing (renderTile_)
 import Views.Level.TopBar exposing (TopBarViewModel, remainingMoves, topBar)
+import Views.Menu as Menu
 
 
 
@@ -88,14 +90,17 @@ type Msg
     | ShowInfo String
     | RemoveInfo
     | InfoHidden
+    | PromptRestart
     | LevelWon
     | LevelLost
+    | RestartLevel
 
 
 type Status
     = InProgress
     | Lose
     | Win
+    | Restart
 
 
 
@@ -112,6 +117,12 @@ updateShared f model =
     { model | shared = f model.shared }
 
 
+menuOptions : List (Menu.Option Msg)
+menuOptions =
+    [ Menu.option PromptRestart "Restart" Color.lightGold
+    ]
+
+
 
 -- INIT
 
@@ -120,7 +131,9 @@ init : Levels.LevelConfig -> Shared.Data -> ( Model, Cmd Msg )
 init config shared =
     let
         model =
-            addLevelData config <| initialState shared
+            shared
+                |> initialState
+                |> addLevelData config
     in
     ( model
     , handleGenerateTiles config model
@@ -248,11 +261,17 @@ update msg model =
         InfoHidden ->
             continue { model | infoWindow = InfoWindow.hidden } []
 
+        PromptRestart ->
+            continue { model | infoWindow = InfoWindow.visible "Are you sure?" } []
+
         LevelWon ->
             exitWith Win model
 
         LevelLost ->
             exitWith Lose model
+
+        RestartLevel ->
+            exitWith Restart model
 
 
 
@@ -453,13 +472,18 @@ handleSquareMove model =
 handleCheckLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
 handleCheckLevelComplete model =
     if hasWon model then
-        continue { model | levelStatus = Win } [ winSequence model ]
+        continue (disableMenu { model | levelStatus = Win }) [ winSequence model ]
 
     else if hasLost model then
-        continue { model | levelStatus = Lose } [ loseSequence ]
+        continue (disableMenu { model | levelStatus = Lose }) [ loseSequence ]
 
     else
         continue model []
+
+
+disableMenu : Model -> Model
+disableMenu =
+    updateShared Shared.disableMenu
 
 
 hasLost : Model -> Bool

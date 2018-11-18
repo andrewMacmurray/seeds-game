@@ -1,9 +1,11 @@
 module Shared exposing
     ( Background(..)
     , Data
+    , Menu(..)
     , clearCurrentLevel
     , closeMenu
     , decrementLife
+    , disableMenu
     , generateBackground
     , hideLoadingScreen
     , incrementMessageIndex
@@ -29,7 +31,7 @@ type alias Data =
     , progress : Progress
     , lives : Lives
     , successMessageIndex : Int
-    , menuOpen : Bool
+    , menu : Menu
     }
 
 
@@ -46,16 +48,6 @@ clearCurrentLevel data =
 hideLoadingScreen : Data -> Data
 hideLoadingScreen data =
     { data | loadingScreen = Nothing }
-
-
-openMenu : Data -> Data
-openMenu data =
-    { data | menuOpen = True }
-
-
-closeMenu : Data -> Data
-closeMenu data =
-    { data | menuOpen = False }
 
 
 incrementProgress : Levels.Worlds -> Data -> Data
@@ -81,6 +73,31 @@ decrementLife data =
 setWindow : Int -> Int -> Data -> Data
 setWindow width height data =
     { data | window = Window width height }
+
+
+
+-- Menu
+
+
+type Menu
+    = Open
+    | Closed
+    | Disabled
+
+
+openMenu : Data -> Data
+openMenu data =
+    { data | menu = Open }
+
+
+closeMenu : Data -> Data
+closeMenu data =
+    { data | menu = Closed }
+
+
+disableMenu : Data -> Data
+disableMenu data =
+    { data | menu = Disabled }
 
 
 
