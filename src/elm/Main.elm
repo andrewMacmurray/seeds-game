@@ -323,6 +323,12 @@ exitLevel model levelStatus =
         Level.Restart ->
             ( model, reloadCurrentLevel model )
 
+        Level.Exit ->
+            ( model, goToHubCurrentLevel model )
+
+        Level.NotStarted ->
+            ( model, Cmd.none )
+
         Level.InProgress ->
             ( model, Cmd.none )
 

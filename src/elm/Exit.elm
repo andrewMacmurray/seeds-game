@@ -87,8 +87,8 @@ onExit exitF { modelF, msgF, update } subMsg subModel model =
         Continue ( m, cmd ) ->
             ( modelF m model, Cmd.map msgF cmd )
 
-        Exit payload _ ->
-            exitF model payload
+        Exit payload ( m, _ ) ->
+            exitF (modelF m model) payload
 
 
 ignore :

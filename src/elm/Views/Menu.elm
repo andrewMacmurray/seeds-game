@@ -12,11 +12,15 @@ import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
 import Css.Transition exposing (transition, transitionAll)
 import Helpers.Attribute as Attribute
-import Html exposing (Html, button, div, text)
+import Html exposing (Attribute, Html, button, div, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Shared
 import Views.Icons.Cog exposing (cog)
+
+
+
+-- Message Config
 
 
 type alias Msg msg =
@@ -26,22 +30,30 @@ type alias Msg msg =
     }
 
 
-type alias OptionConfig msg =
-    { msg : msg
-    , text : String
-    , backgroundColor : Color.Color
-    }
+
+-- Menu Options
 
 
 type Option msg
-    = Option (OptionConfig msg)
+    = Option (Config msg)
 
 
-option : msg -> String -> Color.Color -> Option msg
-option msg text color =
-    OptionConfig msg text color |> Option
+type alias Config msg =
+    { msg : msg
+    , text : String
+    }
 
 
+option : msg -> String -> Option msg
+option msg text =
+    Config msg text |> Option
+
+
+
+-- Views
+
+
+fadeOut : Html msg
 fadeOut =
     div
         [ style
@@ -65,40 +77,72 @@ view msg shared sceneMsg sceneSpecificOptions =
             ]
             [ menuDrawerButton msg shared ]
         , div [ class "fixed z-6 top-0", enableWhenOpen shared.menu ]
-            [ div
-                [ style
-                    [ height <| toFloat shared.window.height
-                    , width <| toFloat shared.window.width
-                    , backgroundColor Color.black
-                    , overlayVisibility shared.menu
-                    , transitionAll 300 []
-                    ]
-                , enableWhenOpen shared.menu
-                , onClick msg.close
-                ]
-                []
-            , div
-                [ style
-                    [ Style.background Color.seedPodGradient
-                    , height <| toFloat shared.window.height
-                    , color Color.white
-                    , width 270
-                    , borderRadiusBottomLeft 20
-                    , borderRadiusTopLeft 20
-                    , menuDrawerPosition shared.menu
-                    , transitionAll 300 []
-                    ]
-                , class "absolute right-0 top-0 flex flex-column items-center justify-center"
-                ]
-              <|
-                List.concat
-                    [ List.map (renderOption >> Html.map sceneMsg >> closeMenu msg) sceneSpecificOptions
-                    , [ menuButton msg.resetData Color.lightOrange "Reset Data" ]
-                    ]
+            [ overlay msg shared
+            , drawer msg shared sceneMsg sceneSpecificOptions
             ]
         ]
 
 
+overlay : Msg msg -> Shared.Data -> Html msg
+overlay msg shared =
+    let
+        visibility =
+            case shared.menu of
+                Shared.Open ->
+                    opacity 0.6
+
+                _ ->
+                    opacity 0
+    in
+    div
+        [ style
+            [ height <| toFloat shared.window.height
+            , width <| toFloat shared.window.width
+            , backgroundColor Color.black
+            , visibility
+            , transitionAll 300 []
+            ]
+        , enableWhenOpen shared.menu
+        , onClick msg.close
+        ]
+        []
+
+
+drawer : Msg msg -> Shared.Data -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
+drawer msg shared sceneMsg sceneMenuOptions =
+    let
+        renderSceneButton =
+            renderOption >> Html.map sceneMsg >> onClickCloseMenu msg
+
+        offset =
+            case shared.menu of
+                Shared.Open ->
+                    transform [ translateX 0 ]
+
+                _ ->
+                    transform [ translateX 270 ]
+    in
+    div
+        [ style
+            [ Style.background Color.seedPodGradient
+            , height <| toFloat shared.window.height
+            , color Color.white
+            , width 270
+            , borderRadiusBottomLeft 20
+            , borderRadiusTopLeft 20
+            , offset
+            , transitionAll 300 []
+            ]
+        , class "absolute right-0 top-0 flex flex-column items-center justify-center"
+        ]
+    <|
+        List.concat
+            [ List.map renderSceneButton sceneMenuOptions
+            , [ div [ style [ marginTop 35 ] ] [ menuButton msg.resetData Color.white Color.gold "Reset Data" ] ]
+            ]
+
+
+withDisable : Shared.Menu -> Attribute msg
 withDisable menu =
     case menu of
         Shared.Disabled ->
@@ -108,23 +152,17 @@ withDisable menu =
             Attribute.empty
 
 
-closeMenu msg button =
+onClickCloseMenu : Msg msg -> Html msg -> Html msg
+onClickCloseMenu msg button =
     div [ onClick msg.close ] [ button ]
 
 
-renderOption (Option config) =
-    menuButton config.msg config.backgroundColor config.text
+renderOption : Option msg -> Html msg
+renderOption (Option { msg, text }) =
+    menuButton msg Color.green Color.sunflowerYellow text
 
 
-overlayVisibility menu =
-    case menu of
-        Shared.Open ->
-            opacity 0.6
-
-        _ ->
-            opacity 0
-
-
+enableWhenOpen : Shared.Menu -> Attribute msg
 enableWhenOpen menu =
     case menu of
         Shared.Open ->
@@ -134,13 +172,14 @@ enableWhenOpen menu =
             class "touch-disabled"
 
 
-menuButton msg bgColor content =
+menuButton : msg -> Color.Color -> Color.Color -> String -> Html msg
+menuButton msg textColor bgColor content =
     button
         [ style
             [ borderNone
             , backgroundColor bgColor
             , width 150
-            , color Color.white
+            , color textColor
             ]
         , class "outline-0 br4 pv2 ph3 mv2 f6 ttu pointer sans-serif tracked"
         , onClick msg
@@ -174,12 +213,3 @@ menuDrawerButton { open, close } shared =
                     ]
                 ]
                 [ cog Color.darkYellow ]
-
-
-menuDrawerPosition menu =
-    case menu of
-        Shared.Open ->
-            transform [ translateX 0 ]
-
-        _ ->
-            transform [ translateX 270 ]

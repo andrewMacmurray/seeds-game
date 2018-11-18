@@ -76,8 +76,7 @@ updateShared f model =
 
 menuOptions : List (Menu.Option Msg)
 menuOptions =
-    [ Menu.option GoToHub "Go To Levels" Color.lightGold
-    ]
+    [ Menu.option GoToHub "Levels" ]
 
 
 

@@ -9,7 +9,7 @@ module Scenes.Retry exposing
     )
 
 import Css.Animation exposing (animation, delay, ease, linear)
-import Css.Color exposing (..)
+import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
@@ -89,7 +89,7 @@ view model =
     div
         [ style
             [ height <| toFloat model.window.height
-            , background washedYellow
+            , background Color.washedYellow
             , animation "fade-in" 1000 [ linear ]
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
@@ -99,7 +99,7 @@ view model =
             , class "tc"
             ]
             [ div [] <| renderLivesLeft <| lifeState model
-            , div [ style [ color darkYellow ] ]
+            , div [ style [ color Color.darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
                     [ style [ animation "fade-in" 1000 [ delay 2500, ease ] ]
@@ -130,8 +130,8 @@ tryAgain model =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style
-                [ background lightGreen
-                , color "white"
+                [ background Color.lightGreen
+                , color Color.white
                 , paddingLeft 25
                 , paddingRight 20
                 , paddingTop 15
@@ -144,8 +144,8 @@ tryAgain model =
             [ p [ class "ma0" ] [ text "X" ] ]
         , div
             [ style
-                [ background mediumGreen
-                , color "white"
+                [ background Color.mediumGreen
+                , color Color.white
                 , paddingLeft 25
                 , paddingRight 20
                 , paddingTop 15
