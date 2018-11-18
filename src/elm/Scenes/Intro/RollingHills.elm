@@ -1,4 +1,4 @@
-module Views.Intro.RollingHills exposing
+module Scenes.Intro.RollingHills exposing
     ( State(..)
     , view
     )

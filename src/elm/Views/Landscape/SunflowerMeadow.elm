@@ -8,6 +8,7 @@ import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
 import Data.Window as Window exposing (Window)
+import Helpers.Svg exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -71,11 +72,11 @@ bigHill : Window -> Svg msg
 bigHill window =
     let
         size =
-            Window.smallestDimension window // 2 + 400
+            toFloat <| Window.smallestDimension window // 2 + 400
     in
     Svg.circle
         [ r_ size
-        , cx_ <| window.width // 2
+        , cx_ <| toFloat <| window.width // 2
         , cy_ size
         , fill Color.darkForestGreen
         ]
@@ -86,14 +87,14 @@ hill : Color.Color -> Int -> Window -> Svg msg
 hill color x window =
     let
         w =
-            window.width // 2 + hillOffset window
+            toFloat <| window.width // 2 + hillOffset window
     in
     Svg.circle
-        [ cx_ x
-        , cy_ <| window.height // 2
+        [ cx_ <| toFloat x
+        , cy_ <| toFloat <| window.height // 2
         , r_ w
         , fill color
-        , Style.svgStyles [ Style.transform [ Transform.translateY <| toFloat w ] ]
+        , Style.svgStyles [ Style.transform [ Transform.translateY w ] ]
         ]
         []
 
@@ -109,27 +110,3 @@ hillOffset window =
 
         Window.Large ->
             600
-
-
-
--- Svg Helpers
-
-
-cx_ : Int -> Attribute msg
-cx_ =
-    cx << String.fromInt
-
-
-cy_ : Int -> Attribute msg
-cy_ =
-    cy << String.fromInt
-
-
-r_ : Int -> Attribute msg
-r_ =
-    r << String.fromInt
-
-
-viewBox_ : Int -> Int -> Int -> Int -> Attribute msg
-viewBox_ x y w h =
-    viewBox <| String.join " " <| List.map String.fromInt [ x, y, w, h ]
