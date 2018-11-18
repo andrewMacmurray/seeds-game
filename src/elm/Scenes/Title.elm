@@ -97,7 +97,7 @@ update msg model =
             continue { model | fadeDirection = Disappearing } []
 
         PlayIntro ->
-            continue model [ playIntroMusic () ]
+            continue (updateShared Shared.disableMenu model) [ playIntroMusic () ]
 
         IntroMusicPlaying _ ->
             continue model

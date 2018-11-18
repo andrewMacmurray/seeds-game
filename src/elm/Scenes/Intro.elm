@@ -8,6 +8,7 @@ module Scenes.Intro exposing
     , view
     )
 
+import Css.Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
@@ -17,6 +18,7 @@ import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import Shared
 import Task
 import Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
@@ -196,7 +198,23 @@ view model =
             , class "tc f5 f3-ns relative z-2"
             ]
             [ text model.text ]
+        , skipButton
         , renderScene model
+        ]
+
+
+skipButton : Html Msg
+skipButton =
+    div [ class "fixed bottom-1 w-100 z-6 flex", style [ opacity 0.6 ] ]
+        [ p
+            [ class "ttu dib center pointer tracked-mega f6"
+            , style
+                [ color Color.white
+                , animation "fade-in" 1000 []
+                ]
+            , onClick IntroComplete
+            ]
+            [ text "skip" ]
         ]
 
 
