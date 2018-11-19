@@ -550,34 +550,6 @@ handleRestartPrompt model =
 
 
 
--- Status Messages
-
-
-getSuccessMessage : Int -> String
-getSuccessMessage i =
-    let
-        ii =
-            modBy (Dict.size successMessages) i
-    in
-    Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
-
-
-successMessages : Dict Int String
-successMessages =
-    indexedDictFrom 0
-        [ "Amazing!"
-        , "Awesome!"
-        , "Success!"
-        , "Win!"
-        ]
-
-
-failureMessage : String
-failureMessage =
-    "No more moves!"
-
-
-
 -- VIEW
 
 
@@ -698,10 +670,10 @@ renderInfoContent : Int -> InfoContent -> Html Msg
 renderInfoContent successMessageIndex infoContent =
     case infoContent of
         Success ->
-            div [ class "pv5 f3 tracked-mega" ] [ text <| getSuccessMessage successMessageIndex ]
+            div [ class "pv5 f3 tracked-mega" ] [ text <| successMessage successMessageIndex ]
 
         NoMovesLeft ->
-            div [ class "pv5 f3 tracked" ] [ text failureMessage ]
+            div [ class "pv5 f3 tracked-mega" ] [ text "No more moves!" ]
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife
@@ -710,11 +682,29 @@ renderInfoContent successMessageIndex infoContent =
             areYouSure "Exit" ExitLevelLoseLife
 
 
+successMessage : Int -> String
+successMessage i =
+    let
+        ii =
+            modBy (Dict.size successMessages) i
+    in
+    Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
+
+
+successMessages : Dict Int String
+successMessages =
+    indexedDictFrom 0
+        [ "Level Complete!"
+        , "Success!"
+        , "Win!"
+        ]
+
+
 areYouSure : String -> Msg -> Html Msg
 areYouSure yesText msg =
     div [ class "pv4" ]
-        [ p [ class "f3 ma0 tracked" ] [ text "Are You Sure?" ]
-        , p [ class "f7 tracked", style [ marginTop 15, marginBottom 20 ] ] [ text "You will lose a life" ]
+        [ p [ class "f3 ma0 tracked" ] [ text "Are you sure?" ]
+        , p [ class "f7 tracked", style [ marginTop 15, marginBottom 35 ] ] [ text "You will lose a life" ]
         , yesNoButton yesText msg
         ]
 
@@ -723,11 +713,11 @@ yesNoButton : String -> Msg -> Html Msg
 yesNoButton yesText msg =
     div []
         [ div
-            [ class "dib"
+            [ class "dib ttu tracked-mega f7"
             , onClick HideInfo
             , style
-                [ color Color.green
-                , backgroundColor Color.sunflowerYellow
+                [ color Color.white
+                , backgroundColor Color.firrGreen
                 , paddingLeft 25
                 , paddingRight 15
                 , paddingTop 10
@@ -737,7 +727,7 @@ yesNoButton yesText msg =
             ]
             [ text "X" ]
         , div
-            [ class "dib"
+            [ class "dib ttu tracked-mega f7"
             , onClick msg
             , style
                 [ color Color.white

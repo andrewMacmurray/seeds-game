@@ -3,6 +3,7 @@ module Css.Style exposing
     , background
     , backgroundColor
     , backgroundImage
+    , border
     , borderNone
     , borderRadiusBottomLeft
     , borderRadiusTopLeft
@@ -47,6 +48,7 @@ module Css.Style exposing
     , widthHeight
     )
 
+import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
 import Css.Unit exposing (..)
 import Html exposing (Attribute, Html)
@@ -252,6 +254,11 @@ color c =
 borderNone : Style
 borderNone =
     property "border" "none"
+
+
+border : Float -> Color.Color -> Style
+border n c =
+    property "border" <| String.join " " [ px n, "solid", c ]
 
 
 rightPill : Style

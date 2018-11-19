@@ -3,25 +3,25 @@
 @custom-media --breakpoint-large screen and (min-width: 60em);
 
 :root {
-  --sans-serif: ABeeZee, 'helvetica neue', helvetica, arial;
+  --sans-serif: ABeeZee, "helvetica neue", helvetica, arial;
 
   --font-size-headline: 6rem;
   --font-size-subheadline: 5rem;
   --font-size-1: 2.25rem;
   --font-size-2: 1.9rem;
-  --font-size-3: 1.5rem;
+  --font-size-3: 1.4rem;
   --font-size-4: 1.25rem;
   --font-size-5: 1rem;
-  --font-size-6: .875rem;
-  --font-size-7: .7rem;
+  --font-size-6: 0.875rem;
+  --font-size-7: 0.7rem;
 
-  --letter-spacing-tight:-.05em;
-  --letter-spacing-1:.1em;
-  --letter-spacing-2:.25em;
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-1: 0.1em;
+  --letter-spacing-2: 0.25em;
 
   --spacing-none: 0;
-  --spacing-extra-small: .25rem;
-  --spacing-small: .5rem;
+  --spacing-extra-small: 0.25rem;
+  --spacing-small: 0.5rem;
   --spacing-medium: 1rem;
   --spacing-large: 2rem;
   --spacing-extra-large: 4rem;
@@ -29,9 +29,9 @@
   --spacing-extra-extra-extra-large: 16rem;
 
   --border-radius-none: 0;
-  --border-radius-1: .125rem;
-  --border-radius-2: .25rem;
-  --border-radius-3: .5rem;
+  --border-radius-1: 0.125rem;
+  --border-radius-2: 0.25rem;
+  --border-radius-3: 0.5rem;
   --border-radius-4: 1rem;
   --border-radius-circle: 100%;
   --border-radius-pill: 9999px;

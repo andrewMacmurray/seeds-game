@@ -14,6 +14,7 @@ module Css.Color exposing
     , darkYellow
     , deepPine
     , fadedOrange
+    , firrGreen
     , gold
     , green
     , greyYellow
@@ -238,6 +239,11 @@ meadowGreen =
 lightPine : Color
 lightPine =
     "rgb(86, 180, 102)"
+
+
+firrGreen : Color
+firrGreen =
+    "rgb(93, 136, 61)"
 
 
 pineGreen : Color

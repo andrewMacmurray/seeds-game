@@ -11,9 +11,10 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
 import Css.Transition exposing (transition, transitionAll)
+import Data.Pointer exposing (onPointerMove, onPointerUp)
 import Helpers.Attribute as Attribute
 import Html exposing (Attribute, Html, button, div, text)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
 import Shared
 import Views.Icons.Cog exposing (cog)
@@ -111,34 +112,44 @@ overlay msg shared =
 drawer : Msg msg -> Shared.Data -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
 drawer msg shared sceneMsg sceneMenuOptions =
     let
+        drawerWidth =
+            240
+
         renderSceneButton =
             renderOption >> Html.map sceneMsg >> onClickCloseMenu msg
 
-        offset =
+        drawerOffset =
             case shared.menu of
                 Shared.Open ->
                     transform [ translateX 0 ]
 
                 _ ->
-                    transform [ translateX 270 ]
+                    transform [ translateX drawerWidth ]
+
+        resetButtonMargin =
+            if List.length sceneMenuOptions == 0 then
+                0
+
+            else
+                75
     in
     div
         [ style
             [ Style.background Color.seedPodGradient
             , height <| toFloat shared.window.height
             , color Color.white
-            , width 270
-            , borderRadiusBottomLeft 20
-            , borderRadiusTopLeft 20
-            , offset
+            , width drawerWidth
+            , drawerOffset
             , transitionAll 300 []
             ]
+        , onPointerUp msg.close
+        , attribute "touch-action" "none"
         , class "absolute right-0 top-0 flex flex-column items-center justify-center"
         ]
     <|
         List.concat
             [ List.map renderSceneButton sceneMenuOptions
-            , [ div [ style [ marginTop 35 ] ] [ menuButton msg.resetData Color.white Color.gold "Reset Data" ] ]
+            , [ div [ style [ marginTop resetButtonMargin ] ] [ menuButtonBorder msg.resetData "Reset Data" ] ]
             ]
 
 
@@ -159,7 +170,7 @@ onClickCloseMenu msg button =
 
 renderOption : Option msg -> Html msg
 renderOption (Option { msg, text }) =
-    menuButton msg Color.green Color.sunflowerYellow text
+    menuButtonSolid msg Color.white Color.lightGold text
 
 
 enableWhenOpen : Shared.Menu -> Attribute msg
@@ -172,14 +183,29 @@ enableWhenOpen menu =
             class "touch-disabled"
 
 
-menuButton : msg -> Color.Color -> Color.Color -> String -> Html msg
-menuButton msg textColor bgColor content =
+menuButtonSolid : msg -> Color.Color -> Color.Color -> String -> Html msg
+menuButtonSolid msg textColor bgColor content =
     button
         [ style
             [ borderNone
             , backgroundColor bgColor
             , width 150
             , color textColor
+            ]
+        , class "outline-0 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
+        , onClick msg
+        ]
+        [ text content ]
+
+
+menuButtonBorder : msg -> String -> Html msg
+menuButtonBorder msg content =
+    button
+        [ style
+            [ border 2 Color.white
+            , width 150
+            , backgroundColor Color.transparent
+            , color Color.white
             ]
         , class "outline-0 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
         , onClick msg

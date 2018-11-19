@@ -162,7 +162,7 @@ scrollLevelToView { element, viewport } =
 
 
 
--- VIEW
+-- View
 
 
 view : Model -> Html Msg
@@ -229,7 +229,7 @@ renderSecond n =
 
 
 
--- INFO WINDOW
+-- Info Window
 
 
 renderInfoWindow : Model -> Html Msg
@@ -359,7 +359,7 @@ handleHideInfo model =
 
 
 
--- WORLDS
+-- Worlds
 
 
 renderWorlds : Model -> List (Html Msg)
