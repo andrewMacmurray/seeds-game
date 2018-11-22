@@ -49,6 +49,10 @@ div {
   -webkit-overflow-scrolling: touch;
 }
 
+.no-underline {
+  text-decoration: none;
+}
+
 .z-2 {
   z-index: 2;
 }

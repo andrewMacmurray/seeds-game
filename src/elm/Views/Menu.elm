@@ -13,8 +13,8 @@ import Css.Transform as Transform exposing (translateX)
 import Css.Transition exposing (transition, transitionAll)
 import Data.Pointer exposing (onPointerMove, onPointerUp)
 import Helpers.Attribute as Attribute
-import Html exposing (Attribute, Html, button, div, text)
-import Html.Attributes exposing (attribute, class)
+import Html exposing (Attribute, Html, a, button, div, text)
+import Html.Attributes exposing (attribute, class, href, target)
 import Html.Events exposing (onClick)
 import Shared
 import Views.Icons.Cog exposing (cog)
@@ -146,11 +146,24 @@ drawer msg shared sceneMsg sceneMenuOptions =
         , attribute "touch-action" "none"
         , class "absolute right-0 top-0 flex flex-column items-center justify-center"
         ]
-    <|
-        List.concat
+        (List.concat
             [ List.map renderSceneButton sceneMenuOptions
-            , [ div [ style [ marginTop resetButtonMargin ] ] [ menuButtonBorder msg.resetData "Reset Data" ] ]
+            , [ div [ style [ marginTop resetButtonMargin ] ] [ menuButtonBorder msg.resetData "Reset Data" ]
+              , attributionLink
+              ]
             ]
+        )
+
+
+attributionLink : Html msg
+attributionLink =
+    a
+        [ style [ color Color.white ]
+        , class "absolute db bottom-1 left-1 f7 ma0 no-underline"
+        , href "https://github.com/andrewMacmurray/seeds-game"
+        , target "_blank"
+        ]
+        [ text "A game by Andrew MacMurray" ]
 
 
 withDisable : Shared.Menu -> Attribute msg
