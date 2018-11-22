@@ -1,4 +1,7 @@
-module Data.Wave exposing (Wave, wave)
+module Helpers.Sine exposing
+    ( Wave
+    , wave
+    )
 
 
 type alias Wave a =

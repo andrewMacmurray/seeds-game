@@ -1,4 +1,4 @@
-module Views.Lives exposing (life, renderLivesLeft)
+module Views.Lives exposing (renderLivesLeft)
 
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)

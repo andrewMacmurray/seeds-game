@@ -26,7 +26,7 @@ import Views.Intro.RollingHills as RH
 
 
 
--- MODEL
+-- Model
 
 
 type alias Model =
@@ -77,7 +77,7 @@ updateShared f model =
 
 
 
--- INIT
+-- Init
 
 
 init : Shared.Data -> ( Model, Cmd Msg )
@@ -125,7 +125,7 @@ introSequence =
 
 
 
--- UPDATE
+-- Update
 
 
 update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
@@ -175,7 +175,7 @@ update msg model =
 
 
 
--- VIEW
+-- View
 
 
 view : Model -> Html Msg

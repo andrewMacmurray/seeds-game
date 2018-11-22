@@ -16,7 +16,7 @@ import Css.Transition as Transition exposing (transition, transitionAll)
 import Data.Board.Types exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
-import Data.Wave exposing (wave)
+import Helpers.Sine exposing (wave)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after, sequence, trigger)

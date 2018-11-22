@@ -21,12 +21,12 @@ import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Progress as Progress
 import Data.Transit exposing (Transit(..))
-import Data.Wave exposing (wave)
 import Data.Window exposing (Window)
 import Dict
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence)
+import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
@@ -41,7 +41,7 @@ import Worlds
 
 
 
--- MODEL
+-- Model
 
 
 type alias Model =
@@ -77,7 +77,7 @@ updateShared f model =
 
 
 
--- INIT
+-- Init
 
 
 init : Levels.Key -> Shared.Data -> ( Model, Cmd Msg )
@@ -98,7 +98,7 @@ initialState shared =
 
 
 
--- UPDATE
+-- Update
 
 
 update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )

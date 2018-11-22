@@ -43,7 +43,7 @@ import Views.Level.TopBar exposing (scoreIcon)
 
 
 
--- MODEL
+-- Model
 
 
 type alias Model =
@@ -119,7 +119,7 @@ updateShared f model =
 
 
 
--- INIT
+-- Init
 
 
 init : Config -> Shared.Data -> ( Model, Cmd Msg )
@@ -160,7 +160,7 @@ loadTutorialData config model =
 
 
 
--- UPDATE
+-- Update
 
 
 update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
@@ -249,7 +249,7 @@ update msg model =
 
 
 
--- UPDATE Helpers
+-- Update Helpers
 
 
 skipSequence : Cmd Msg
@@ -284,7 +284,7 @@ handleInsertEnteringTiles tileList =
 
 
 
--- VIEW
+-- View
 
 
 view : Model -> Html Msg
