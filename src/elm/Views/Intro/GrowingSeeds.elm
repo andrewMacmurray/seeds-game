@@ -1,10 +1,6 @@
 module Views.Intro.GrowingSeeds exposing
-    ( growingSeed
-    , growingSeeds
-    , mainSeedStyles
-    , seedsLeft
-    , seedsRight
-    , sideSeedsContainer
+    ( State(..)
+    , view
     )
 
 import Css.Animation exposing (animation, delay, ease, easeOut)
@@ -13,7 +9,6 @@ import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType(..))
-import Data.Visibility exposing (..)
 import Data.Window as Window exposing (Window, size)
 import Helpers.Attribute as Attribute
 import Html exposing (..)
@@ -21,8 +16,13 @@ import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
 
 
-growingSeeds : Window -> Visibility -> Html msg
-growingSeeds window vis =
+type State
+    = Entering
+    | Leaving
+
+
+view : Window -> State -> Html msg
+view window vis =
     let
         size =
             Window.size window
@@ -34,7 +34,7 @@ growingSeeds window vis =
         ]
 
 
-mainSeedStyles : Visibility -> Attribute msg
+mainSeedStyles : State -> Attribute msg
 mainSeedStyles vis =
     case vis of
         Leaving ->
@@ -47,7 +47,7 @@ mainSeedStyles vis =
             Attribute.empty
 
 
-sideSeedsContainer : Visibility -> List (Html msg) -> Html msg
+sideSeedsContainer : State -> List (Html msg) -> Html msg
 sideSeedsContainer vis =
     case vis of
         Leaving ->
@@ -55,12 +55,6 @@ sideSeedsContainer vis =
 
         Entering ->
             div [ class "o-100 flex justify-center", style [ transition "opacity" 1500 [] ] ]
-
-        Visible ->
-            div [ class "o-100 flex justify-center" ]
-
-        Hidden ->
-            div [ class "o-0 flex justify-center" ]
 
 
 growingSeed : Window -> ( Int, SeedType, Float ) -> Html msg

@@ -16,7 +16,6 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress
-import Data.Visibility as Visibility exposing (..)
 import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exitTo, exitWith)
 import Helpers.Delay exposing (sequence)

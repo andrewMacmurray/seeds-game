@@ -1,9 +1,12 @@
-module Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
+module Views.Intro.DyingLandscape exposing
+    ( Environment(..)
+    , State(..)
+    , view
+    )
 
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
 import Css.Transform exposing (translateY)
 import Css.Transition exposing (cubicBezier, delay, easeOut, linear, transition)
-import Data.Visibility exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -13,8 +16,15 @@ type Environment
     | Dead
 
 
-dyingLandscape : Environment -> Visibility -> Svg msg
-dyingLandscape env vis =
+type State
+    = Entering
+    | Visible
+    | Leaving
+    | Hidden
+
+
+view : Environment -> State -> Svg msg
+view env vis =
     Svg.svg [ viewBox "0 -30 1023 448", class "absolute z-1 bottom-0", preserveAspectRatio "none" ]
         [ Svg.g [ fill "none", fillRule "evenodd" ]
             [ Svg.g [ layerOffsetStyle 448 0 vis ]
@@ -53,19 +63,13 @@ dyingLandscape env vis =
         ]
 
 
-layerOffsetStyle : Float -> Int -> Visibility -> Attribute msg
+layerOffsetStyle : Float -> Int -> State -> Attribute msg
 layerOffsetStyle offset delayMs vis =
     case vis of
         Entering ->
             svgStyles
                 [ transition "transform" 3500 [ delay delayMs, easeOut ]
                 , Style.transform [ translateY 0 ]
-                ]
-
-        Hidden ->
-            svgStyles
-                [ transition "transform" 1500 [ delay delayMs, cubicBezier 0.8 -0.2 0.7 1.3 ]
-                , Style.transform [ translateY offset ]
                 ]
 
         Visible ->
@@ -75,6 +79,12 @@ layerOffsetStyle offset delayMs vis =
             svgStyles
                 [ transition "opacity" 400 [ linear, delay delayMs ]
                 , Style.opacity 0
+                ]
+
+        Hidden ->
+            svgStyles
+                [ transition "transform" 1500 [ delay delayMs, cubicBezier 0.8 -0.2 0.7 1.3 ]
+                , Style.transform [ translateY offset ]
                 ]
 
 

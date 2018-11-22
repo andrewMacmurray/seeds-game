@@ -12,7 +12,6 @@ import Css.Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Visibility exposing (..)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
@@ -21,9 +20,9 @@ import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Shared
 import Task
-import Views.Intro.DyingLandscape exposing (Environment(..), dyingLandscape)
-import Views.Intro.GrowingSeeds exposing (growingSeeds)
-import Views.Intro.RollingHills exposing (rollingHills)
+import Views.Intro.DyingLandscape as DL
+import Views.Intro.GrowingSeeds as GS
+import Views.Intro.RollingHills as RH
 
 
 
@@ -41,9 +40,9 @@ type alias Model =
 
 
 type Scene
-    = DyingLandscape Environment Visibility
-    | GrowingSeeds Visibility
-    | RollingHills Visibility
+    = DyingLandscape DL.Environment DL.State
+    | GrowingSeeds GS.State
+    | RollingHills RH.State
 
 
 type Msg
@@ -91,7 +90,7 @@ init shared =
 initialState : Shared.Data -> Model
 initialState shared =
     { shared = shared
-    , scene = DyingLandscape Alive Hidden
+    , scene = DyingLandscape DL.Alive DL.Hidden
     , backdrop = Color.transparent
     , text = "Our world is dying"
     , textColor = Color.brownYellow
@@ -133,25 +132,28 @@ update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
 update msg model =
     case msg of
         ShowDyingLandscape ->
-            continue { model | scene = DyingLandscape Alive Entering } []
+            continue { model | scene = DyingLandscape DL.Alive DL.Entering } []
+
+        KillEnvironment ->
+            continue { model | scene = DyingLandscape DL.Dead DL.Visible } []
 
         HideDyingLandscape ->
-            continue { model | scene = DyingLandscape Dead Leaving } []
+            continue { model | scene = DyingLandscape DL.Dead DL.Leaving } []
 
         ShowGrowingSeeds ->
-            continue { model | scene = GrowingSeeds Entering } []
+            continue { model | scene = GrowingSeeds GS.Entering } []
 
         HideGrowingSeeds ->
-            continue { model | scene = GrowingSeeds Leaving } []
-
-        ShowRollingHills ->
-            continue { model | scene = RollingHills Entering } []
+            continue { model | scene = GrowingSeeds GS.Leaving } []
 
         InitRollingHills ->
-            continue { model | scene = RollingHills Hidden } []
+            continue { model | scene = RollingHills RH.Hidden } []
+
+        ShowRollingHills ->
+            continue { model | scene = RollingHills RH.Entering } []
 
         BloomFlowers ->
-            continue { model | scene = RollingHills Visible } []
+            continue { model | scene = RollingHills RH.Blooming } []
 
         ShowText ->
             continue { model | textVisible = True } []
@@ -167,9 +169,6 @@ update msg model =
 
         SetTextColor color ->
             continue { model | textColor = color } []
-
-        KillEnvironment ->
-            continue { model | scene = DyingLandscape Dead Visible } []
 
         IntroComplete ->
             exit model
@@ -222,13 +221,13 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.scene of
         DyingLandscape environment vis ->
-            dyingLandscape environment vis
+            DL.view environment vis
 
         GrowingSeeds vis ->
-            growingSeeds model.shared.window vis
+            GS.view model.shared.window vis
 
         RollingHills vis ->
-            rollingHills model.shared.window vis
+            RH.view model.shared.window vis
 
 
 textOffset : Window -> Style

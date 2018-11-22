@@ -1,13 +1,6 @@
 module Views.Intro.RollingHills exposing
-    ( flowers
-    , flowersLeft
-    , flowersRight
-    , hillOffset
-    , hills
-    , hillsStyle
-    , originCenter
-    , renderFlowers
-    , rollingHills
+    ( State(..)
+    , view
     )
 
 import Css.Animation as Animation exposing (animation)
@@ -15,7 +8,6 @@ import Css.Color as Color
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
 import Css.Transform as Transform exposing (translate)
 import Css.Transition exposing (cubicBezier, delay, transitionAll)
-import Data.Visibility exposing (..)
 import Data.Window as Window exposing (Window)
 import Html exposing (Html, div)
 import Html.Attributes
@@ -24,15 +16,21 @@ import Svg.Attributes exposing (..)
 import Views.Flowers.Sunflower as Sunflower
 
 
-rollingHills : Window -> Visibility -> Html msg
-rollingHills window vis =
+type State
+    = Blooming
+    | Entering
+    | Hidden
+
+
+view : Window -> State -> Html msg
+view window vis =
     div [ id "rolling-hills" ]
         [ div [ class "relative z-5 center", svgStyle <| Style.width 200 ] [ Sunflower.animated 0 ]
         , div [ class "fixed w-100 bottom-0 left-0 z-1" ] [ hills window vis ]
         ]
 
 
-hills : Window -> Visibility -> Svg msg
+hills : Window -> State -> Svg msg
 hills window vis =
     Svg.svg [ viewBox "0 0 1000 800", width "100%", class "absolute bottom-0", hillsStyle vis ]
         [ Svg.g [ fill "none", fillRule "evenodd", style "transform: translate(-500px)" ]
@@ -63,23 +61,20 @@ hills window vis =
         ]
 
 
-hillsStyle : Visibility -> Attribute msg
+hillsStyle : State -> Attribute msg
 hillsStyle vis =
     case vis of
         Hidden ->
             svgStyle <| Style.opacity 0
 
-        Leaving ->
-            svgStyle <| Style.opacity 0
-
         Entering ->
             svgStyle <| Style.opacity 1
 
-        Visible ->
+        Blooming ->
             svgStyle <| Style.opacity 1
 
 
-hillOffset : Int -> Float -> Visibility -> Attribute msg
+hillOffset : Int -> Float -> State -> Attribute msg
 hillOffset ms offset vis =
     let
         visibleStyles =
@@ -88,23 +83,26 @@ hillOffset ms offset vis =
             ]
     in
     case vis of
+        Blooming ->
+            svgStyles visibleStyles
+
         Entering ->
             svgStyles visibleStyles
 
-        Visible ->
-            svgStyles visibleStyles
-
-        _ ->
+        Hidden ->
             svgStyles [ Style.transform [ translate 0 800 ] ]
 
 
-renderFlowers : Int -> Window -> Visibility -> Svg msg
+renderFlowers : Int -> Window -> State -> Svg msg
 renderFlowers delay window vis =
     case vis of
-        Visible ->
+        Blooming ->
             flowers delay window
 
-        _ ->
+        Entering ->
+            Svg.g [] []
+
+        Hidden ->
             Svg.g [] []
 
 
