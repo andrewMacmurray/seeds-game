@@ -3,14 +3,15 @@ module Scenes.Tutorial exposing
     , Model
     , Msg(..)
     , Sequence
-    , getShared
+    , getContext
     , init
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
 import Browser.Events
+import Context exposing (Context)
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
@@ -34,7 +35,6 @@ import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Shared
 import Task
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
@@ -47,7 +47,7 @@ import Views.Level.TopBar exposing (scoreIcon)
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , board : Board
     , boardVisible : Bool
     , textVisible : Bool
@@ -105,33 +105,33 @@ type Msg
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 
 -- Init
 
 
-init : Config -> Shared.Data -> ( Model, Cmd Msg )
-init config shared =
-    ( loadTutorialData config <| initialState shared
+init : Config -> Context -> ( Model, Cmd Msg )
+init config context =
+    ( loadTutorialData config <| initialState context
     , sequence <| pause 2000 config.sequence
     )
 
 
-initialState : Shared.Data -> Model
-initialState shared =
-    { shared = shared
+initialState : Context -> Model
+initialState context =
+    { context = context
     , board = Dict.empty
     , boardVisible = True
     , textVisible = True
@@ -342,7 +342,7 @@ tutorialBoard : Model -> Html msg
 tutorialBoard model =
     let
         viewModel =
-            ( model.shared.window, model.boardDimensions )
+            ( model.context.window, model.boardDimensions )
     in
     div
         [ class "center relative"
@@ -360,10 +360,10 @@ tutorialBoard model =
 
 
 renderResourceBank : Model -> Html msg
-renderResourceBank ({ shared, resourceBankVisible, resourceBank } as model) =
+renderResourceBank ({ context, resourceBankVisible, resourceBank } as model) =
     let
         window =
-            shared.window
+            context.window
 
         tileScale =
             Tile.scale window
@@ -388,7 +388,7 @@ resourceBankOffsetX : Model -> Float
 resourceBankOffsetX model =
     Tile.baseSizeX
         * toFloat (model.boardDimensions.x - 1)
-        * Tile.scale model.shared.window
+        * Tile.scale model.context.window
         / 2
 
 
@@ -409,14 +409,14 @@ fadeLine model (( _, tile ) as move) =
         [ style [ transitionAll 500 [] ]
         , showIf visible
         ]
-        [ renderLine model.shared.window move ]
+        [ renderLine model.context.window move ]
 
 
 renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\move -> renderTile_ (leavingStyles model move) model.shared.window model.moveShape move)
+        |> List.map (\move -> renderTile_ (leavingStyles model move) model.context.window model.moveShape move)
 
 
 leavingStyles : Model -> Move -> List Style

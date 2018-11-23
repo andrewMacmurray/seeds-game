@@ -1,13 +1,14 @@
 module Scenes.Retry exposing
     ( Model
     , Msg
-    , getShared
+    , getContext
     , init
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
+import Context exposing (Context)
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -20,7 +21,6 @@ import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Shared
 import Views.Lives exposing (renderLivesLeft)
 
 
@@ -29,7 +29,7 @@ import Views.Lives exposing (renderLivesLeft)
 
 
 type alias Model =
-    Shared.Data
+    Context
 
 
 type Msg
@@ -39,16 +39,16 @@ type Msg
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared =
+getContext : Model -> Context
+getContext =
     identity
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared =
+updateContext : (Context -> Context) -> Model -> Model
+updateContext =
     identity
 
 
@@ -56,9 +56,9 @@ updateShared =
 -- Init
 
 
-init : Shared.Data -> ( Model, Cmd Msg )
-init shared =
-    ( shared
+init : Context -> ( Model, Cmd Msg )
+init context =
+    ( context
     , after 1000 DecrementLives
     )
 
@@ -71,7 +71,7 @@ update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
 update msg model =
     case msg of
         DecrementLives ->
-            continue (updateShared Shared.decrementLife model) []
+            continue (updateContext Context.decrementLife model) []
 
         RestartLevel ->
             exitTo Exit.ToLevel model
@@ -118,7 +118,7 @@ view model =
         ]
 
 
-lifeState : Shared.Data -> Transit Int
+lifeState : Context -> Transit Int
 lifeState model =
     model.lives
         |> Lives.remaining

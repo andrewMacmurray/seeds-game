@@ -1,6 +1,6 @@
 module Worlds.Three exposing (world)
 
-import Css.Color as Css
+import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
 import Data.Board.Wall exposing (..)
 import Data.Level.Settings exposing (rain, seed, seedPod, sun)
@@ -12,10 +12,10 @@ world : Levels.World
 world =
     Levels.world
         { seedType = Lupin
-        , backdropColor = Css.softRed
-        , textColor = Css.white
-        , textCompleteColor = Css.white
-        , textBackgroundColor = Css.gold
+        , backdropColor = Color.softRed
+        , textColor = Color.white
+        , textCompleteColor = Color.white
+        , textBackgroundColor = Color.gold
         }
         levels
 

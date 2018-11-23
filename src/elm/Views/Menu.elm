@@ -6,6 +6,7 @@ module Views.Menu exposing
     , view
     )
 
+import Context exposing (Context)
 import Css.Animation as Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -16,7 +17,6 @@ import Helpers.Attribute as Attribute
 import Html exposing (Attribute, Html, a, button, div, text)
 import Html.Attributes exposing (attribute, class, href, target)
 import Html.Events exposing (onClick)
-import Shared
 import Views.Icons.Cog exposing (cog)
 
 
@@ -68,28 +68,28 @@ fadeOut =
         [ cog Color.darkYellow ]
 
 
-view : Msg msg -> Shared.Data -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
-view msg shared sceneMsg sceneSpecificOptions =
+view : Msg msg -> Context -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
+view msg context sceneMsg sceneSpecificOptions =
     div []
         [ div
             [ class "fixed pointer right-1 top-1 z-7"
-            , withDisable shared.menu
+            , withDisable context.menu
             , style [ animation "fade-in" 500 [] ]
             ]
-            [ menuDrawerButton msg shared ]
-        , div [ class "fixed z-6 top-0", enableWhenOpen shared.menu ]
-            [ overlay msg shared
-            , drawer msg shared sceneMsg sceneSpecificOptions
+            [ menuDrawerButton msg context ]
+        , div [ class "fixed z-6 top-0", enableWhenOpen context.menu ]
+            [ overlay msg context
+            , drawer msg context sceneMsg sceneSpecificOptions
             ]
         ]
 
 
-overlay : Msg msg -> Shared.Data -> Html msg
-overlay msg shared =
+overlay : Msg msg -> Context -> Html msg
+overlay msg context =
     let
         visibility =
-            case shared.menu of
-                Shared.Open ->
+            case context.menu of
+                Context.Open ->
                     opacity 0.6
 
                 _ ->
@@ -97,20 +97,20 @@ overlay msg shared =
     in
     div
         [ style
-            [ height <| toFloat shared.window.height
-            , width <| toFloat shared.window.width
+            [ height <| toFloat context.window.height
+            , width <| toFloat context.window.width
             , backgroundColor Color.black
             , visibility
             , transitionAll 300 []
             ]
-        , enableWhenOpen shared.menu
+        , enableWhenOpen context.menu
         , onClick msg.close
         ]
         []
 
 
-drawer : Msg msg -> Shared.Data -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
-drawer msg shared sceneMsg sceneMenuOptions =
+drawer : Msg msg -> Context -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
+drawer msg context sceneMsg sceneMenuOptions =
     let
         drawerWidth =
             240
@@ -119,8 +119,8 @@ drawer msg shared sceneMsg sceneMenuOptions =
             renderOption >> Html.map sceneMsg >> onClickCloseMenu msg
 
         drawerOffset =
-            case shared.menu of
-                Shared.Open ->
+            case context.menu of
+                Context.Open ->
                     transform [ translateX 0 ]
 
                 _ ->
@@ -136,7 +136,7 @@ drawer msg shared sceneMsg sceneMenuOptions =
     div
         [ style
             [ Style.background Color.seedPodGradient
-            , height <| toFloat shared.window.height
+            , height <| toFloat context.window.height
             , color Color.white
             , width drawerWidth
             , drawerOffset
@@ -166,10 +166,10 @@ attributionLink =
         [ text "A game by Andrew MacMurray" ]
 
 
-withDisable : Shared.Menu -> Attribute msg
+withDisable : Context.Menu -> Attribute msg
 withDisable menu =
     case menu of
-        Shared.Disabled ->
+        Context.Disabled ->
             class "touch-disabled"
 
         _ ->
@@ -186,10 +186,10 @@ renderOption (Option { msg, text }) =
     menuButtonSolid msg Color.white Color.lightGold text
 
 
-enableWhenOpen : Shared.Menu -> Attribute msg
+enableWhenOpen : Context.Menu -> Attribute msg
 enableWhenOpen menu =
     case menu of
-        Shared.Open ->
+        Context.Open ->
             Attribute.empty
 
         _ ->
@@ -226,10 +226,10 @@ menuButtonBorder msg content =
         [ text content ]
 
 
-menuDrawerButton : Msg msg -> Shared.Data -> Html msg
-menuDrawerButton { open, close } shared =
-    case shared.menu of
-        Shared.Open ->
+menuDrawerButton : Msg msg -> Context -> Html msg
+menuDrawerButton { open, close } context =
+    case context.menu of
+        Context.Open ->
             div
                 [ onClick close
                 , style

@@ -1,6 +1,6 @@
 module Worlds.Two exposing (world)
 
-import Css.Color as Css
+import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
 import Data.Board.Wall exposing (..)
 import Data.Level.Settings exposing (rain, seed, seedPod, sun)
@@ -12,10 +12,10 @@ world : Levels.World
 world =
     Levels.world
         { seedType = Foxglove
-        , backdropColor = Css.gold
-        , textColor = Css.white
-        , textCompleteColor = Css.yellow
-        , textBackgroundColor = Css.softRed
+        , backdropColor = Color.gold
+        , textColor = Color.white
+        , textCompleteColor = Color.yellow
+        , textBackgroundColor = Color.softRed
         }
         levels
 

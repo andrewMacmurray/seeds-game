@@ -2,15 +2,16 @@ module Scenes.Level exposing
     ( Model
     , Msg
     , Status(..)
-    , getShared
+    , getContext
     , init
     , menuOptions
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
 import Browser.Events
+import Context exposing (Context)
 import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
@@ -40,7 +41,6 @@ import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
-import Shared
 import Task
 import Views.InfoWindow
 import Views.Level.Line exposing (renderLine)
@@ -56,7 +56,7 @@ import Views.Menu as Menu
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , board : Board
     , scores : Scores
     , isDragging : Bool
@@ -119,17 +119,17 @@ type InfoContent
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 menuOptions : List (Menu.Option Msg)
@@ -143,11 +143,11 @@ menuOptions =
 -- Init
 
 
-init : Levels.LevelConfig -> Shared.Data -> ( Model, Cmd Msg )
-init config shared =
+init : Levels.LevelConfig -> Context -> ( Model, Cmd Msg )
+init config context =
     let
         model =
-            shared
+            context
                 |> initialState
                 |> addLevelData config
     in
@@ -167,9 +167,9 @@ addLevelData { tiles, walls, boardDimensions, moves } model =
     }
 
 
-initialState : Shared.Data -> Model
-initialState shared =
-    { shared = shared
+initialState : Context -> Model
+initialState context =
+    { context = context
     , board = Dict.empty
     , scores = Dict.empty
     , isDragging = False
@@ -295,13 +295,13 @@ update msg model =
             exitWith Restart model
 
         RestartLevelLoseLife ->
-            exitWith Restart <| updateShared Shared.decrementLife model
+            exitWith Restart <| updateContext Context.decrementLife model
 
         ExitLevel ->
             exitWith Exit model
 
         ExitLevelLoseLife ->
-            exitWith Exit <| updateShared Shared.decrementLife model
+            exitWith Exit <| updateContext Context.decrementLife model
 
 
 
@@ -478,7 +478,7 @@ coordsFromPosition : Pointer -> Model -> Coord
 coordsFromPosition pointer model =
     let
         vm =
-            ( model.shared.window, model.boardDimensions )
+            ( model.context.window, model.boardDimensions )
 
         positionY =
             toFloat <| pointer.y - boardOffsetTop vm
@@ -487,10 +487,10 @@ coordsFromPosition pointer model =
             toFloat <| pointer.x - boardOffsetLeft vm
 
         scaleFactorY =
-            Tile.scale model.shared.window * Tile.baseSizeY
+            Tile.scale model.context.window * Tile.baseSizeY
 
         scaleFactorX =
-            Tile.scale model.shared.window * Tile.baseSizeX
+            Tile.scale model.context.window * Tile.baseSizeX
     in
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
@@ -509,7 +509,7 @@ handleCheckLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
 handleCheckLevelComplete model =
     let
         disableMenu =
-            updateShared Shared.disableMenu
+            updateContext Context.disableMenu
     in
     if hasWon model then
         continue (disableMenu { model | levelStatus = Win }) [ winSequence model ]
@@ -619,14 +619,14 @@ renderTile model (( ( y, x ) as coord, tile ) as move) =
         , class "pointer"
         , attribute "touch-action" "none"
         ]
-        [ renderTile_ (leavingStyles model move) model.shared.window model.moveShape move ]
+        [ renderTile_ (leavingStyles model move) model.context.window model.moveShape move ]
 
 
 renderLines : Model -> List (Html msg)
 renderLines model =
     model.board
         |> Dict.toList
-        |> List.map (renderLine model.shared.window)
+        |> List.map (renderLine model.context.window)
 
 
 boardLayout : Model -> List (Html msg) -> Html msg
@@ -646,9 +646,9 @@ hanldeMoveEvents model move =
 
 
 renderInfoWindow : Model -> Html Msg
-renderInfoWindow { infoWindow, shared } =
+renderInfoWindow { infoWindow, context } =
     InfoWindow.content infoWindow
-        |> Maybe.map (renderInfoContent shared.successMessageIndex)
+        |> Maybe.map (renderInfoContent context.successMessageIndex)
         |> Maybe.map (infoContainer infoWindow)
         |> Maybe.withDefault (span [] [])
 
@@ -812,7 +812,7 @@ exitXDistance resourceBankIndex model =
             (boardWidth (tileViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| Tile.scale model.shared.window
+            exitOffsetFunction <| Tile.scale model.context.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
@@ -833,14 +833,14 @@ exitYdistance model =
 
 tileViewModel : Model -> TileViewModel
 tileViewModel model =
-    ( model.shared.window
+    ( model.context.window
     , model.boardDimensions
     )
 
 
 topBarViewModel : Model -> TopBarViewModel
 topBarViewModel model =
-    { window = model.shared.window
+    { window = model.context.window
     , tileSettings = model.tileSettings
     , scores = model.scores
     , remainingMoves = model.remainingMoves
@@ -849,7 +849,7 @@ topBarViewModel model =
 
 lineViewModel : Model -> LineViewModel
 lineViewModel model =
-    { window = model.shared.window
+    { window = model.context.window
     , board = model.board
     , boardDimensions = model.boardDimensions
     , isDragging = model.isDragging

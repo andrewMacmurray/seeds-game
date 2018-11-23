@@ -1,6 +1,6 @@
 module Worlds.One exposing (default, world)
 
-import Css.Color as Css
+import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
 import Data.Board.Wall exposing (..)
 import Data.Level.Settings exposing (rain, seed, seedPod, sun)
@@ -12,10 +12,10 @@ world : Levels.World
 world =
     Levels.world
         { seedType = Sunflower
-        , backdropColor = Css.yellow
-        , textColor = Css.darkYellow
-        , textCompleteColor = Css.yellow
-        , textBackgroundColor = Css.lightBrown
+        , backdropColor = Color.yellow
+        , textColor = Color.darkYellow
+        , textCompleteColor = Color.yellow
+        , textBackgroundColor = Color.lightBrown
         }
         levels
 

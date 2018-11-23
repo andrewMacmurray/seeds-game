@@ -1,13 +1,14 @@
 module Scenes.Intro exposing
     ( Model
     , Msg
-    , getShared
+    , getContext
     , init
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
+import Context exposing (Context)
 import Css.Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -18,7 +19,6 @@ import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import Shared
 import Task
 import Views.Intro.DyingLandscape as DL
 import Views.Intro.GrowingSeeds as GS
@@ -30,7 +30,7 @@ import Views.Intro.RollingHills as RH
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , scene : Scene
     , backdrop : String
     , text : String
@@ -63,33 +63,33 @@ type Msg
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 
 -- Init
 
 
-init : Shared.Data -> ( Model, Cmd Msg )
-init shared =
-    ( initialState shared
+init : Context -> ( Model, Cmd Msg )
+init context =
+    ( initialState context
     , introSequence
     )
 
 
-initialState : Shared.Data -> Model
-initialState shared =
-    { shared = shared
+initialState : Context -> Model
+initialState context =
+    { context = context
     , scene = DyingLandscape DL.Alive DL.Hidden
     , backdrop = Color.transparent
     , text = "Our world is dying"
@@ -189,7 +189,7 @@ view model =
         ]
         [ p
             [ style
-                [ textOffset model.shared.window
+                [ textOffset model.context.window
                 , color model.textColor
                 , transitionAll 1000 []
                 ]
@@ -224,10 +224,10 @@ renderScene model =
             DL.view environment vis
 
         GrowingSeeds vis ->
-            GS.view model.shared.window vis
+            GS.view model.context.window vis
 
         RollingHills vis ->
-            RH.view model.shared.window vis
+            RH.view model.context.window vis
 
 
 textOffset : Window -> Style

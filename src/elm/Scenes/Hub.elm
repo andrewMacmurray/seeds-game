@@ -1,14 +1,15 @@
 module Scenes.Hub exposing
     ( Model
     , Msg
-    , getShared
+    , getContext
     , init
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
 import Browser.Dom as Dom
+import Context exposing (Context)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
@@ -31,7 +32,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial as Tutorial
-import Shared
 import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
@@ -45,7 +45,7 @@ import Worlds
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , infoWindow : InfoWindow Levels.Key
     }
 
@@ -63,26 +63,26 @@ type Msg
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 
 -- Init
 
 
-init : Levels.Key -> Shared.Data -> ( Model, Cmd Msg )
-init level shared =
-    ( initialState shared
+init : Levels.Key -> Context -> ( Model, Cmd Msg )
+init level context =
+    ( initialState context
     , sequence
         [ ( 1000, ScrollHubTo level )
         , ( 1500, ClearCurrentLevel )
@@ -90,9 +90,9 @@ init level shared =
     )
 
 
-initialState : Shared.Data -> Model
-initialState shared =
-    { shared = shared
+initialState : Context -> Model
+initialState context =
+    { context = context
     , infoWindow = InfoWindow.hidden
     }
 
@@ -122,10 +122,10 @@ update msg model =
             continue model [ scrollHubToLevel level ]
 
         SetCurrentLevel level ->
-            continue { model | shared = Shared.setCurrentLevel level model.shared } []
+            continue { model | context = Context.setCurrentLevel level model.context } []
 
         ClearCurrentLevel ->
-            continue { model | shared = Shared.clearCurrentLevel model.shared } []
+            continue { model | context = Context.clearCurrentLevel model.context } []
 
         DomNoOp _ ->
             continue model []
@@ -173,7 +173,7 @@ view model =
         , div
             [ id "hub"
             , style
-                [ height <| toFloat model.shared.window.height
+                [ height <| toFloat model.context.window.height
                 , paddingTop 60
                 ]
             , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
@@ -186,7 +186,7 @@ renderTopBar : Model -> Html msg
 renderTopBar model =
     let
         lives =
-            model.shared.lives
+            model.context.lives
                 |> Lives.remaining
                 |> Transitioning
                 |> renderLivesLeft
@@ -197,7 +197,7 @@ renderTopBar model =
         ]
         [ div [ style [ transform [ scale 0.5 ] ] ] lives
         , div [ style [ color darkYellow ], class "f7" ]
-            [ renderCountDown model.shared.lives ]
+            [ renderCountDown model.context.lives ]
         ]
 
 
@@ -380,7 +380,7 @@ renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Key -> Html Msg
 renderLevel model config index level =
     let
         reachedLevel =
-            Progress.reachedLevel model.shared.progress
+            Progress.reachedLevel model.context.progress
 
         levelNumber =
             Worlds.number level |> Maybe.withDefault 1
@@ -457,7 +457,7 @@ renderNumber visibleLevelNumber hasReachedLevel config =
 
 showInfo : Levels.Key -> Model -> Attribute Msg
 showInfo level model =
-    if Levels.reached (Progress.reachedLevel model.shared.progress) level && InfoWindow.state model.infoWindow == Hidden then
+    if Levels.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden then
         onClick <| ShowLevelInfo level
 
     else
@@ -466,7 +466,7 @@ showInfo level model =
 
 handleStartLevel : Levels.Key -> Model -> Attribute Msg
 handleStartLevel level model =
-    if Levels.reached (Progress.reachedLevel model.shared.progress) level then
+    if Levels.reached (Progress.reachedLevel model.context.progress) level then
         onClick <| StartLevel level
 
     else
@@ -475,7 +475,7 @@ handleStartLevel level model =
 
 renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
 renderLevelIcon level seedType model =
-    if Levels.completed (Progress.reachedLevel model.shared.progress) level then
+    if Levels.completed (Progress.reachedLevel model.context.progress) level then
         renderSeed seedType
 
     else

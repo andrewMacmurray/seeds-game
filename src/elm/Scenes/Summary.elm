@@ -1,13 +1,14 @@
 module Scenes.Summary exposing
     ( Model
     , Msg
-    , getShared
+    , getContext
     , init
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
+import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (darkYellow, gold, rainBlue, washedYellow)
 import Css.Style as Style exposing (..)
@@ -16,15 +17,14 @@ import Css.Transition as Transition exposing (transition, transitionAll)
 import Data.Board.Types exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
-import Helpers.Sine exposing (wave)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after, sequence, trigger)
+import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
-import Shared
 import Views.Flowers.Sunflower as Sunflower
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
@@ -39,7 +39,7 @@ import Worlds
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , textState : TextState
     , seedBankState : SeedBankState
     , resourceState : ResourceState
@@ -82,33 +82,33 @@ type alias TextVisible =
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 
 -- Init
 
 
-init : Shared.Data -> ( Model, Cmd Msg )
-init shared =
-    ( initialState shared
+init : Context -> ( Model, Cmd Msg )
+init context =
+    ( initialState context
     , after 1500 IncrementProgress
     )
 
 
-initialState : Shared.Data -> Model
-initialState shared =
-    { shared = shared
+initialState : Context -> Model
+initialState context =
+    { context = context
     , textState = First False
     , seedBankState = Visible
     , resourceState = Waiting
@@ -128,7 +128,7 @@ update msg model =
 
         CacheProgress ->
             continue model
-                [ cacheProgress <| Progress.toCache model.shared.progress
+                [ cacheProgress <| Progress.toCache model.context.progress
                 , handleSuccessMessage model
                 ]
 
@@ -163,8 +163,8 @@ update msg model =
 
 
 handleSuccessMessage : Model -> Cmd Msg
-handleSuccessMessage { shared } =
-    if Progress.currentWorldComplete Worlds.all shared.progress then
+handleSuccessMessage { context } =
+    if Progress.currentWorldComplete Worlds.all context.progress then
         sequence
             [ ( 3000, BeginSeedBankTransformation )
             , ( 4000, BloomWorldFlower )
@@ -186,10 +186,10 @@ incrementProgress : Model -> Model
 incrementProgress model =
     { model
         | resourceState = Filling
-        , shared =
-            model.shared
-                |> Shared.incrementProgress Worlds.all
-                |> Shared.incrementMessageIndex
+        , context =
+            model.context
+                |> Context.incrementProgress Worlds.all
+                |> Context.incrementMessageIndex
     }
 
 
@@ -201,7 +201,7 @@ view : Model -> Html msg
 view model =
     div
         [ style
-            [ height <| toFloat model.shared.window.height
+            [ height <| toFloat model.context.window.height
             , backgroundColor model.seedBankState
             , transition "background" 3000 [ Transition.linear ]
             , animation "fade-in" 1000 [ Animation.linear ]
@@ -234,7 +234,7 @@ renderFlowerLayer model =
                 []
                 [ ( "meadow"
                   , div [ class "w-100 absolute z-1 top-0 left-0" ]
-                        [ SunflowerMeadow.animated model.shared.window SunflowerMeadow.Hidden ]
+                        [ SunflowerMeadow.animated model.context.window SunflowerMeadow.Hidden ]
                   )
                 ]
 
@@ -244,18 +244,18 @@ renderFlowerLayer model =
                 [ ( "flowers"
                   , div []
                         [ div
-                            [ style [ height <| toFloat model.shared.window.height, marginTop -40 ]
+                            [ style [ height <| toFloat model.context.window.height, marginTop -40 ]
                             , class "w-100 absolute z-3 flex flex-column items-center justify-center"
                             ]
                             [ mainFlower
                             , worldCompleteText model.textState
                             ]
-                        , flowerSpriteLayer model.shared.window
+                        , flowerSpriteLayer model.context.window
                         ]
                   )
                 , ( "meadow"
                   , div [ class "w-100 absolute z-1 top-0 left-0" ]
-                        [ SunflowerMeadow.animated model.shared.window SunflowerMeadow.Visible ]
+                        [ SunflowerMeadow.animated model.context.window SunflowerMeadow.Visible ]
                   )
                 ]
 
@@ -386,13 +386,13 @@ textContent textState =
 
 
 renderResourcesLayer : Model -> Html msg
-renderResourcesLayer ({ shared } as model) =
+renderResourcesLayer ({ context } as model) =
     let
         levelSeed =
-            Progress.currentLevelSeedType Worlds.all shared.progress |> Maybe.withDefault Sunflower
+            Progress.currentLevelSeedType Worlds.all context.progress |> Maybe.withDefault Sunflower
     in
     div
-        [ style [ height <| toFloat shared.window.height ]
+        [ style [ height <| toFloat context.window.height ]
         , class "flex justify-center items-center w-100"
         ]
         [ div [ style [ marginTop -100 ] ]
@@ -415,12 +415,12 @@ renderResourcesLayer ({ shared } as model) =
 
 
 renderResources : Model -> Html msg
-renderResources ({ shared } as model) =
+renderResources ({ context } as model) =
     let
         resources =
-            Progress.resources Worlds.all shared.progress
+            Progress.resources Worlds.all context.progress
                 |> Maybe.withDefault []
-                |> List.map (renderResource model.resourceState shared.progress)
+                |> List.map (renderResource model.resourceState context.progress)
     in
     div
         [ style [ height 50, transition "opacity" 1000 [] ]
@@ -433,7 +433,7 @@ renderSeedBank : Model -> SeedType -> Html msg
 renderSeedBank model seedType =
     let
         progress =
-            model.shared.progress
+            model.context.progress
 
         fillLevel =
             Progress.percentComplete Worlds.all (Seed seedType) progress

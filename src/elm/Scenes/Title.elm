@@ -2,15 +2,16 @@ module Scenes.Title exposing
     ( Destination(..)
     , Model
     , Msg
-    , getShared
+    , getContext
     , init
     , menuOptions
     , subscriptions
     , update
-    , updateShared
+    , updateContext
     , view
     )
 
+import Context exposing (Context)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -23,7 +24,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Shared
 import Views.Landscape.SunflowerMeadow as SunflowerMeadow exposing (animated)
 import Views.Menu as Menu
 import Views.Seed.Circle exposing (foxglove)
@@ -36,7 +36,7 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 
 
 type alias Model =
-    { shared : Shared.Data
+    { context : Context
     , fadeDirection : FadeDirection
     }
 
@@ -60,17 +60,17 @@ type Destination
 
 
 
--- Shared
+-- Context
 
 
-getShared : Model -> Shared.Data
-getShared model =
-    model.shared
+getContext : Model -> Context
+getContext model =
+    model.context
 
 
-updateShared : (Shared.Data -> Shared.Data) -> Model -> Model
-updateShared f model =
-    { model | shared = f model.shared }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext f model =
+    { model | context = f model.context }
 
 
 menuOptions : List (Menu.Option Msg)
@@ -82,9 +82,9 @@ menuOptions =
 -- Init
 
 
-init : Shared.Data -> Model
-init shared =
-    { shared = shared
+init : Context -> Model
+init context =
+    { context = context
     , fadeDirection = Appearing
     }
 
@@ -96,7 +96,7 @@ update msg model =
             continue { model | fadeDirection = Disappearing } []
 
         PlayIntro ->
-            continue (updateShared Shared.disableMenu model) [ playIntroMusic () ]
+            continue (updateContext Context.disableMenu model) [ playIntroMusic () ]
 
         IntroMusicPlaying _ ->
             continue model
@@ -123,10 +123,10 @@ subscriptions _ =
 
 
 view : Model -> Html Msg
-view { shared, fadeDirection } =
+view { context, fadeDirection } =
     div
         [ class "absolute left-0 right-0 z-5 tc"
-        , style [ bottom <| toFloat shared.window.height / 2.4 ]
+        , style [ bottom <| toFloat context.window.height / 2.4 ]
         ]
         [ div [] [ seeds fadeDirection ]
         , p
@@ -149,7 +149,7 @@ view { shared, fadeDirection } =
                 , fadeOutStyles fadeDirection 1000 0
                 ]
             , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart <| Progress.reachedLevel shared.progress
+            , handleStart <| Progress.reachedLevel context.progress
             ]
             [ text "PLAY" ]
         ]

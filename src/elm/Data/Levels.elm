@@ -32,7 +32,7 @@ module Data.Levels exposing
     , worldsToList
     )
 
-import Css.Color as Css
+import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
 import Data.Level.Types exposing (Probability, TargetScore, TileSetting)
 import Dict exposing (Dict)
@@ -91,19 +91,19 @@ type World
     = World
         { levels : Levels
         , seedType : SeedType
-        , backdropColor : Css.Color
-        , textColor : Css.Color
-        , textCompleteColor : Css.Color
-        , textBackgroundColor : Css.Color
+        , backdropColor : Color
+        , textColor : Color
+        , textCompleteColor : Color
+        , textBackgroundColor : Color
         }
 
 
 type alias WorldConfig =
     { seedType : SeedType
-    , backdropColor : Css.Color
-    , textColor : Css.Color
-    , textCompleteColor : Css.Color
-    , textBackgroundColor : Css.Color
+    , backdropColor : Color
+    , textColor : Color
+    , textCompleteColor : Color
+    , textBackgroundColor : Color
     }
 
 
@@ -114,7 +114,7 @@ type alias Levels =
 type Level
     = Level
         { tiles : List TileSetting
-        , walls : List ( Css.Color, Coord )
+        , walls : List ( Color, Coord )
         , boardDimensions : BoardDimensions
         , moves : Int
         , tutorial : Maybe Tutorial
@@ -123,7 +123,7 @@ type Level
 
 type alias LevelConfig =
     { tiles : List TileSetting
-    , walls : List ( Css.Color, Coord )
+    , walls : List ( Color, Coord )
     , boardDimensions : BoardDimensions
     , moves : Int
     }

@@ -1,5 +1,6 @@
 module Views.Loading exposing (loadingScreen)
 
+import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
@@ -8,12 +9,11 @@ import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Shared exposing (Background(..))
 import Views.Seed.All exposing (renderSeed)
 import Worlds
 
 
-loadingScreen : Shared.Data -> Html msg
+loadingScreen : Context -> Html msg
 loadingScreen model =
     div
         [ classes
@@ -60,7 +60,7 @@ loadingScreenColor bg =
             gold
 
 
-transitionClasses : Shared.Data -> String
+transitionClasses : Context -> String
 transitionClasses model =
     case model.loadingScreen of
         Just _ ->

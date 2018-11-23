@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
+import Context exposing (..)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, color, style)
 import Data.Board.Tile as Tile
@@ -26,7 +27,6 @@ import Scenes.Retry as Retry
 import Scenes.Summary as Summary
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
-import Shared exposing (..)
 import Time exposing (millisToPosix)
 import Views.Animations exposing (animations)
 import Views.Loading exposing (loadingScreen)
@@ -105,19 +105,19 @@ init flags =
 
 initialState : Flags -> Model
 initialState flags =
-    { scene = Title <| Title.init <| initShared flags
+    { scene = Title <| Title.init <| initialContext flags
     , backdrop = Nothing
     }
 
 
-initShared : Flags -> Shared.Data
-initShared flags =
+initialContext : Flags -> Context
+initialContext flags =
     { window = flags.window
     , loadingScreen = Nothing
     , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
-    , menu = Shared.Closed
+    , menu = Context.Closed
     }
 
 
@@ -174,16 +174,16 @@ update msg ({ scene, backdrop } as model) =
             ( model, generateBackground RandomBackground )
 
         ( RandomBackground bgColor, _, _ ) ->
-            ( updateShared model <| showLoadingScreen bgColor, Cmd.none )
+            ( updateContext model <| showLoadingScreen bgColor, Cmd.none )
 
         ( HideLoadingScreen, _, _ ) ->
-            ( updateShared model hideLoadingScreen, Cmd.none )
+            ( updateContext model hideLoadingScreen, Cmd.none )
 
         ( OpenMenu, _, _ ) ->
-            ( updateShared model openMenu, Cmd.none )
+            ( updateContext model openMenu, Cmd.none )
 
         ( CloseMenu, _, _ ) ->
-            ( updateShared model closeMenu, Cmd.none )
+            ( updateContext model closeMenu, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen <| InitHub level )
@@ -192,7 +192,7 @@ update msg ({ scene, backdrop } as model) =
             ( model, clearCache )
 
         ( WindowSize width height, _, _ ) ->
-            ( updateShared model <| setWindow width height
+            ( updateContext model <| setWindow width height
             , bounceKeyframes <| Window width height
             )
 
@@ -212,8 +212,8 @@ withLoadingScreen msg =
         ]
 
 
-updateShared : Model -> (Shared.Data -> Shared.Data) -> Model
-updateShared model f =
+updateContext : Model -> (Context -> Context) -> Model
+updateContext model f =
     { model | scene = Scene.map f model.scene }
 
 
@@ -335,7 +335,7 @@ exitLevel model levelStatus =
 
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
-    if shouldIncrement <| Scene.getShared model.scene then
+    if shouldIncrement <| Scene.getContext model.scene then
         ( model, trigger InitSummary )
 
     else
@@ -425,7 +425,7 @@ updateBackdrop sceneF =
 
 
 load embedModel embedScene msg initSceneF model =
-    Scene.getShared model.scene
+    Scene.getContext model.scene
         |> closeMenu
         |> initSceneF
         |> Return.map msg (embedScene >> embedModel model)
@@ -460,15 +460,15 @@ copyBackdropToScene : Model -> Model
 copyBackdropToScene model =
     case model.backdrop of
         Just scene ->
-            { model | scene = syncShared model scene }
+            { model | scene = syncContext model scene }
 
         _ ->
             model
 
 
-syncShared : Model -> Scene -> Scene
-syncShared model scene =
-    Scene.map (always <| Scene.getShared model.scene) scene
+syncContext : Model -> Scene -> Scene
+syncContext model scene =
+    Scene.map (always <| Scene.getContext model.scene) scene
 
 
 
@@ -503,7 +503,7 @@ andCmd cmdF model =
 saveCurrentLives : Model -> Cmd Msg
 saveCurrentLives model =
     model.scene
-        |> (Scene.getShared >> .lives)
+        |> (Scene.getContext >> .lives)
         |> (Lives.toCache >> cacheLives)
 
 
@@ -514,7 +514,7 @@ bounceKeyframes window =
 
 reachedLevel : Model -> Levels.Key
 reachedLevel model =
-    Scene.getShared model.scene
+    Scene.getContext model.scene
         |> .progress
         |> Progress.reachedLevel
 
@@ -522,14 +522,14 @@ reachedLevel model =
 currentLevel : Model -> Levels.Key
 currentLevel model =
     model.scene
-        |> (Scene.getShared >> .progress)
+        |> (Scene.getContext >> .progress)
         |> Progress.currentLevel
         |> Maybe.withDefault Levels.empty
 
 
-shouldIncrement : Shared.Data -> Bool
-shouldIncrement shared =
-    not <| Progress.currentLevelComplete shared.progress
+shouldIncrement : Context -> Bool
+shouldIncrement context =
+    not <| Progress.currentLevelComplete context.progress
 
 
 
@@ -573,7 +573,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ animations
-        , loadingScreen <| Scene.getShared model.scene
+        , loadingScreen <| Scene.getContext model.scene
         , menu model.scene
         , renderStage
             [ renderScene model.scene
@@ -634,13 +634,13 @@ menu scene =
     in
     case scene of
         Title model ->
-            renderMenu model.shared TitleMsg Title.menuOptions
+            renderMenu model.context TitleMsg Title.menuOptions
 
         Hub model ->
-            renderMenu model.shared HubMsg []
+            renderMenu model.context HubMsg []
 
         Level model ->
-            renderMenu model.shared LevelMsg Level.menuOptions
+            renderMenu model.context LevelMsg Level.menuOptions
 
         _ ->
             Menu.fadeOut
