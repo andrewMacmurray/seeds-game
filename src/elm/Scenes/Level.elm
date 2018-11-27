@@ -713,7 +713,7 @@ yesNoButton : String -> Msg -> Html Msg
 yesNoButton yesText msg =
     div []
         [ div
-            [ class "dib ttu tracked-mega f7"
+            [ class "dib ttu tracked-mega f6"
             , onClick HideInfo
             , style
                 [ color Color.white
@@ -727,7 +727,7 @@ yesNoButton yesText msg =
             ]
             [ text "X" ]
         , div
-            [ class "dib ttu tracked-mega f7"
+            [ class "dib ttu tracked-mega f6"
             , onClick msg
             , style
                 [ color Color.white

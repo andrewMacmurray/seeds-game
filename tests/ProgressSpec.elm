@@ -1,41 +1,56 @@
-module ProgressSpec exposing (..)
+module ProgressSpec exposing (spec)
 
-import Data.Hub.Progress exposing (incrementProgress)
-import Expect
+import BDD exposing (..)
+import Data.Levels as Levels
+import Data.Progress as Progress
+import Expect exposing (..)
 import Test exposing (..)
 
 
-suite : Test
-suite =
-    describe "The progress module"
-        [ test "it increments level progress when currentLevel is greater than currentProgress" <|
-            \_ ->
-                let
-                    actual =
-                        incrementProgress (Just ( 1, 2 )) ( 1, 1 )
-
-                    expected =
-                        ( 1, 2 )
-                in
-                    Expect.equal actual expected
-        , test "it returns existing current progress if currentLevel is less than currentProgress" <|
-            \_ ->
-                let
-                    actual =
-                        incrementProgress (Just ( 1, 2 )) ( 1, 3 )
-
-                    expected =
-                        ( 1, 3 )
-                in
-                    Expect.equal actual expected
-        , test "it sets the progress to the next world after completing previous world's last level" <|
-            \_ ->
-                let
-                    actual =
-                        incrementProgress (Just ( 1, 5 )) ( 1, 5 )
-
-                    expected =
-                        ( 1, 3 )
-                in
-                    Expect.equal actual expected
+spec : Test
+spec =
+    describe "Progress"
+        [ currentLevelComplete
         ]
+
+
+currentLevelComplete : Test
+currentLevelComplete =
+    describe "currentLevelComplete"
+        [ it "returns true if current level is complete" <|
+            let
+                complete =
+                    progress 1 5
+                        |> Progress.setCurrentLevel (level 1 3)
+                        |> Progress.currentLevelComplete
+            in
+            expect complete toBe True
+        , it "returns false if current level is same as reached" <|
+            let
+                complete =
+                    progress 1 5
+                        |> Progress.setCurrentLevel (level 1 5)
+                        |> Progress.currentLevelComplete
+            in
+            expect complete toBe False
+        , it "returns false if no current level" <|
+            let
+                complete =
+                    progress 1 5 |> Progress.currentLevelComplete
+            in
+            expect complete toBe False
+        ]
+
+
+level : Int -> Int -> Levels.Key
+level =
+    Levels.keyFromRaw_
+
+
+progress : Int -> Int -> Progress.Progress
+progress w l =
+    Progress.fromCache <|
+        Just
+            { worldId = w
+            , levelId = l
+            }
