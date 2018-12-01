@@ -1,4 +1,4 @@
-module ProgressSpec exposing (spec)
+module Progress.Spec exposing (spec)
 
 import BDD exposing (..)
 import Data.Levels as Levels
@@ -24,7 +24,7 @@ currentLevelComplete =
                         |> Progress.setCurrentLevel (level 1 3)
                         |> Progress.currentLevelComplete
             in
-            expect complete toBe True
+            expect complete toEqual True
         , it "returns false if current level is same as reached" <|
             let
                 complete =
@@ -32,13 +32,13 @@ currentLevelComplete =
                         |> Progress.setCurrentLevel (level 1 5)
                         |> Progress.currentLevelComplete
             in
-            expect complete toBe False
+            expect complete toEqual False
         , it "returns false if no current level" <|
             let
                 complete =
                     progress 1 5 |> Progress.currentLevelComplete
             in
-            expect complete toBe False
+            expect complete toEqual False
         ]
 
 

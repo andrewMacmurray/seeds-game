@@ -1,10 +1,10 @@
 const { Elm } = window;
-const animations = require("./bounce.js");
+const bounce = require("./bounce.js");
 const cache = require("./cache.js");
 const util = require("./util");
 const { loadAudio, playTrack, longFade } = require("./audio.js");
 
-// registerServiceWorker()
+// registerServiceWorker();
 init();
 
 util.bumpDebuggerPanel();
@@ -12,7 +12,6 @@ util.bumpDebuggerPanel();
 window.skipToLevel = util.skipToLevel;
 
 function init() {
-  // Init Elm App
   const { ports } = Elm.Main.init({
     node: document.getElementById("app"),
     flags: {
@@ -24,39 +23,42 @@ function init() {
     }
   });
 
-  // Audio
+  const {
+    playIntroMusic,
+    introMusicPlaying,
+    fadeMusic,
+    generateBounceKeyframes,
+    cacheProgress,
+    clearCache_,
+    cacheLives
+  } = ports;
+
   const { introMusic } = loadAudio();
 
-  ports.playIntroMusic.subscribe(() => {
-    const musicPlaying = () => ports.introMusicPlaying.send(true);
+  playIntroMusic.subscribe(() => {
+    const musicPlaying = () => introMusicPlaying.send(true);
     playTrack(introMusic, musicPlaying);
   });
 
-  ports.fadeMusic.subscribe(() => longFade(introMusic));
-
-  ports.generateBounceKeyframes.subscribe(tileSize => {
-    const anims = [
-      animations.elasticBounceIn(),
-      animations.bounceDown(),
-      animations.bounceUp(),
-      animations.bounceDowns(tileSize)
-    ].join(" ");
-
-    const styleNode = document.getElementById("generated-styles");
-    styleNode.textContent = anims;
+  fadeMusic.subscribe(() => {
+    longFade(introMusic);
   });
 
-  // LocalStorgage Cache
-  ports.cacheProgress.subscribe(progress => {
+  generateBounceKeyframes.subscribe(tileSize => {
+    const styleNode = document.getElementById("generated-styles");
+    styleNode.textContent = bounce.generateKeyframes(tileSize);
+  });
+
+  cacheProgress.subscribe(progress => {
     cache.setProgress(progress);
   });
 
-  ports.clearCache_.subscribe(() => {
+  clearCache_.subscribe(() => {
     cache.clear();
     window.location.reload();
   });
 
-  ports.cacheLives.subscribe(times => {
+  cacheLives.subscribe(times => {
     cache.setLives(times);
   });
 }
@@ -64,7 +66,7 @@ function init() {
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js");
+      navigator.serviceWorker.register("./sw.js");
     });
   }
 }
