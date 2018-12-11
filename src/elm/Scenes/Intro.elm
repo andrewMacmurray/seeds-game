@@ -83,7 +83,9 @@ updateContext f model =
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
+      -- |> (\m -> { m | scene = RollingHills RH.Entering, backdrop = Color.meadowGreen })
     , introSequence
+      -- , Cmd.none
     )
 
 

@@ -1,25 +1,56 @@
 module Views.Landscape.SteepHills exposing
     ( Element
-    , Placement
     , behind
-    , element
     , inFront
     , layer
     )
 
 import Axis2d
-import Css.Color as Color
-import Css.Style as Style
+import Css.Color exposing (Color)
+import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Data.Window exposing (Window)
 import Direction2d
 import Geometry.Svg
 import Helpers.Svg exposing (..)
 import Point2d
-import Svg
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
+type alias Hill msg =
+    ( Color, List Style, List (Element msg) )
+
+
+type alias Element msg =
+    { placement : Placement
+    , distanceX : Float
+    , adjustY : Float
+    , element : Svg msg
+    }
+
+
+type Placement
+    = InFront
+    | Behind
+
+
+behind : Float -> Float -> Svg msg -> Element msg
+behind =
+    element Behind
+
+
+inFront : Float -> Float -> Svg msg -> Element msg
+inFront =
+    element InFront
+
+
+element : Placement -> Float -> Float -> Svg msg -> Element msg
+element =
+    Element
+
+
+layer : Window -> Float -> Hill msg -> Hill msg -> Svg msg
 layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightStyles, rightElements ) =
     let
         center =
@@ -37,6 +68,7 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
         ]
 
 
+hillFullScreen : Window -> Float -> Color -> List Style -> List (Element msg) -> Svg msg
 hillFullScreen window slope color hillStyles elements =
     Svg.svg
         [ y_ <| toFloat <| window.height // 2
@@ -49,51 +81,25 @@ hillFullScreen window slope color hillStyles elements =
         renderHill slope elements (hill color hillStyles)
 
 
-renderHill slope elements hl =
+renderHill : Float -> List (Element msg) -> (Float -> Svg msg) -> List (Svg msg)
+renderHill slope elements hill_ =
     elements
-        |> List.partition (\el -> el.placement == Behind)
-        |> (\( a, b ) ->
+        |> List.partition (\{ placement } -> placement == Behind)
+        |> (\( elementsBehind, elementsInFront ) ->
                 List.concat
-                    [ List.map (renderHillElement slope) a
-                    , [ hl slope ]
-                    , List.map (renderHillElement slope) b
+                    [ List.map (renderHillElement slope) elementsBehind
+                    , [ hill_ slope ]
+                    , List.map (renderHillElement slope) elementsInFront
                     ]
            )
 
 
-behind =
-    element Behind
-
-
-inFront =
-    element InFront
-
-
-type alias Element msg =
-    { placement : Placement
-    , distanceX : Float
-    , adjustY : Float
-    , element : Svg.Svg msg
-    }
-
-
-type Placement
-    = InFront
-    | Behind
-
-
-element =
-    Element
-
-
+renderHillElement : Float -> Element msg -> Svg msg
 renderHillElement slope el =
-    withOffset el.distanceX ((el.distanceX * slope) - el.adjustY) [ el.element ]
+    translated el.distanceX ((el.distanceX * slope) - el.adjustY) el.element
 
 
-withOffset x y =
-    Svg.g [ Style.svgStyles [ Style.transform [ Transform.translate x y ] ] ]
-
-
+hill : Color -> List Style -> Float -> Svg msg
 hill color styles slope =
     Svg.polygon
         [ fill color

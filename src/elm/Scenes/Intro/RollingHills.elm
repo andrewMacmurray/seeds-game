@@ -6,14 +6,16 @@ module Scenes.Intro.RollingHills exposing
 import Css.Animation as Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
-import Css.Transform as Transform exposing (translate)
-import Css.Transition exposing (cubicBezier, delay, transitionAll)
+import Css.Transform as Transform
+import Css.Transition as Transition
 import Data.Window as Window exposing (Window)
+import Helpers.Svg exposing (..)
 import Html exposing (Html, div)
 import Html.Attributes
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Views.Flowers.Sunflower as Sunflower
+import Views.Landscape.RollingHills as Hills
 
 
 type State
@@ -23,125 +25,116 @@ type State
 
 
 view : Window -> State -> Html msg
-view window vis =
-    div [ id "rolling-hills" ]
+view window state =
+    div []
         [ div [ class "relative z-5 center", svgStyle <| Style.width 200 ] [ Sunflower.animated 0 ]
-        , div [ class "fixed w-100 bottom-0 left-0 z-1" ] [ hills window vis ]
+        , hills window state
         ]
 
 
-hills : Window -> State -> Svg msg
-hills window vis =
-    Svg.svg [ viewBox "0 0 1000 800", width "100%", class "absolute bottom-0", hillsStyle vis ]
-        [ Svg.g [ fill "none", fillRule "evenodd", style "transform: translate(-500px)" ]
-            [ Svg.g [ hillOffset 1200 300 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill Color.ashGreen, r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill Color.seaGreen, r "650" ] []
-                ]
-            , Svg.g [ hillOffset 900 400 vis ]
-                [ Svg.circle [ cx "650", cy "650", fill Color.meadowGreen, r "650" ] []
-                , Svg.circle [ cx "1325", cy "650", fill Color.pineGreen, r "650" ] []
-                ]
-            , Svg.g [ hillOffset 600 500 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill Color.seaGreen, r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill Color.ashGreen, r "650" ] []
-                , renderFlowers 600 window vis
-                ]
-            , Svg.g [ hillOffset 300 600 vis ]
-                [ Svg.circle [ cx "650", cy "650", fill Color.lightPine, r "650" ] []
-                , Svg.circle [ cx "1325", cy "650", fill Color.meadowGreen, r "650" ] []
-                , renderFlowers 300 window vis
-                ]
-            , Svg.g [ hillOffset 0 700 vis ]
-                [ Svg.circle [ cx "1325", cy "650", fill Color.deepPine, r "650" ] []
-                , Svg.circle [ cx "650", cy "650", fill Color.darkSeaGreen, r "650" ] []
-                , renderFlowers 0 window vis
-                ]
-            ]
+hills window state =
+    Svg.svg [ windowViewBox_ window, class "fixed top-0 z-1" ]
+        [ Hills.doubleLayer window ( "#9ae9af", [] ) ( "#46cda2", [] ) |> offsetBy window state -500 1500
+        , Hills.doubleLayer window ( "#22c37c", [] ) ( "#225941", [] ) |> offsetBy window state -400 1200
+        , Hills.doubleLayer window ( "#27af76", [] ) ( "#339576", [] ) |> offsetBy window state -300 1000
+        , Hills.doubleLayer window ( "#62DE83", [] ) ( "#15674D", [] ) |> offsetBy window state -200 800
+        , Hills.doubleLayer window ( "#22c37c", flowersLeft window state 500 ) ( "#225941", flowersRight window state 500 )
+            |> offsetBy window state -100 600
+        , Hills.doubleLayer window ( "#277854", flowersLeft window state 250 ) ( "#17A667", flowersRight window state 250 )
+            |> offsetBy window state 0 400
+        , Hills.doubleLayer window ( "#2cd99b", flowersLeft window state 0 ) ( "#339576", flowersRight window state 0 )
+            |> offsetBy window state 100 200
+        , Hills.doubleLayer window ( "#169a63", [] ) ( "#15674D", [] ) |> offsetBy window state 200 0
         ]
 
 
-hillsStyle : State -> Attribute msg
-hillsStyle vis =
-    case vis of
-        Hidden ->
-            svgStyle <| Style.opacity 0
-
-        Entering ->
-            svgStyle <| Style.opacity 1
-
-        Blooming ->
-            svgStyle <| Style.opacity 1
+offsetBy window state offset delay el =
+    Svg.g [ offsetStyles window state offset delay ] [ el ]
 
 
-hillOffset : Int -> Float -> State -> Attribute msg
-hillOffset ms offset vis =
+offsetStyles window state offset delay =
     let
+        translateY n =
+            Style.transform [ Transform.translateY n ]
+
         visibleStyles =
-            [ Style.transform [ translate 0 offset ]
-            , transitionAll 2000 [ delay ms, cubicBezier 0 0 0 1 ]
-            ]
+            Style.svgStyles
+                [ translateY offset
+                , Transition.transition "transform" 2000 [ Transition.cubicBezier 0 0 0 1, Transition.delay delay ]
+                ]
     in
-    case vis of
-        Blooming ->
-            svgStyles visibleStyles
+    case state of
+        Hidden ->
+            Style.svgStyles
+                [ translateY <| toFloat <| window.height // 2
+                ]
 
         Entering ->
-            svgStyles visibleStyles
+            visibleStyles
 
-        Hidden ->
-            svgStyles [ Style.transform [ translate 0 800 ] ]
-
-
-renderFlowers : Int -> Window -> State -> Svg msg
-renderFlowers delay window vis =
-    case vis of
         Blooming ->
-            flowers delay window
+            visibleStyles
 
-        Entering ->
+
+flowersLeft window state delay =
+    let
+        range =
+            windowRange window
+    in
+    [ Hills.element (range 14 18 23) 0 <| scaled (range 0.6 1 1.2) <| sunflower window state delay
+    , Hills.element (range 9 13.5 18) 0 <| scaled (range 0.5 0.8 1) <| sunflower window state (delay + 150)
+    , Hills.element (range 5 9.5 13) 0 <| scaled (range 0.4 0.6 0.8) <| sunflower window state (delay + 300)
+    ]
+
+
+flowersRight window state delay =
+    let
+        range =
+            windowRange window
+    in
+    [ Hills.element (range -14 -18 -23) 0 <| scaled (range 0.6 1 1.2) <| sunflower window state delay
+    , Hills.element (range -9 -13.5 -18) 0 <| scaled (range 0.5 0.8 1) <| sunflower window state (delay + 150)
+    , Hills.element (range -5 -9.5 -13) 0 <| scaled (range 0.4 0.6 0.8) <| sunflower window state (delay + 300)
+    ]
+
+
+windowRange window narrow medium wide =
+    case Window.width window of
+        Window.Narrow ->
+            narrow
+
+        Window.MediumWidth ->
+            medium
+
+        Window.Wide ->
+            wide
+
+
+sunflower window state delay =
+    case state of
+        Blooming ->
+            Svg.svg
+                [ viewBox_ 0 0 30 30
+                , width_ 60
+                , height_ 60
+                ]
+                [ animateSunflower window delay ]
+                |> translated -30 -30
+
+        _ ->
             Svg.g [] []
 
-        Hidden ->
-            Svg.g [] []
 
-
-flowers : Int -> Window -> Svg msg
-flowers delay window =
-    Svg.g [ class "db" ] [ flowersLeft delay window, flowersRight delay window ]
-
-
-flowersRight : Int -> Window -> Svg msg
-flowersRight delay window =
-    Svg.g []
-        [ Svg.g
-            [ svgStyles [ originCenter, Style.transform [ translate 600 -360, Transform.scale 0.08 ] ] ]
-            [ sunflower window <| delay + 300 ]
-        , Svg.g
-            [ svgStyles [ originCenter, Style.transform [ translate 700 -390, Transform.scale 0.06 ] ] ]
-            [ sunflower window <| delay + 450 ]
-        , Svg.g
-            [ svgStyles [ originCenter, Style.transform [ translate 800 -400, Transform.scale 0.05 ] ] ]
-            [ sunflower window <| delay + 650 ]
-        ]
-
-
-flowersLeft : Int -> Window -> Svg msg
-flowersLeft delay window =
-    Svg.g []
-        [ Svg.g [ svgStyles [ originCenter, Style.transform [ translate 400 -350, Transform.scale 0.08 ] ] ] [ sunflower window <| delay + 0 ]
-        , Svg.g [ svgStyles [ originCenter, Style.transform [ translate 300 -380, Transform.scale 0.06 ] ] ] [ sunflower window <| delay + 250 ]
-        , Svg.g [ svgStyles [ originCenter, Style.transform [ translate 200 -400, Transform.scale 0.05 ] ] ] [ sunflower window <| delay + 600 ]
-        ]
-
-
-sunflower : Window -> Int -> Svg msg
-sunflower window delay =
+animateSunflower window delay =
     case Window.size window of
         Window.Small ->
             Svg.g
-                [ svgStyles
-                    [ animation "fade-in" 3000 [ Animation.delay <| delay ]
+                [ Style.svgStyles
+                    [ Animation.animation "fade-in"
+                        1000
+                        [ Animation.delay <| (delay * 150) // 100
+                        , Animation.linear
+                        ]
                     , Style.opacity 0
                     ]
                 ]
@@ -149,8 +142,3 @@ sunflower window delay =
 
         _ ->
             Sunflower.animated delay
-
-
-originCenter : Style
-originCenter =
-    transformOrigin "center"

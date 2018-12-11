@@ -117,10 +117,6 @@ subscriptions _ =
     introMusicPlaying IntroMusicPlaying
 
 
-
--- View
-
-
 view : Model -> Html Msg
 view { context, fadeDirection } =
     div

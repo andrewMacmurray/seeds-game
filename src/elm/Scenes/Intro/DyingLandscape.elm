@@ -7,7 +7,7 @@ module Scenes.Intro.DyingLandscape exposing
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
 import Css.Transform as Transform exposing (translateY)
 import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linear, transition)
-import Data.Window exposing (Window)
+import Data.Window as Window exposing (Window)
 import Helpers.Svg exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
@@ -56,7 +56,7 @@ view window env state =
             hillElements4 window env
     in
     Svg.svg
-        [ viewBox_ 0 0 window.width window.height
+        [ windowViewBox_ window
         , width "100%"
         , height "100%"
         , preserveAspectRatio "none"
@@ -89,6 +89,7 @@ view window env state =
         ]
 
 
+ifAlive : Environment -> a -> a -> a
 ifAlive env a b =
     case env of
         Alive ->
@@ -98,41 +99,44 @@ ifAlive env a b =
             b
 
 
+ifNarrow : Window -> a -> a -> a
 ifNarrow window a b =
-    case windowWidth window of
-        Narrow ->
+    case Window.width window of
+        Window.Narrow ->
             a
 
         _ ->
             b
 
 
+getSlope : Window -> Float
 getSlope window =
-    case windowWidth window of
-        Narrow ->
+    case Window.width window of
+        Window.Narrow ->
             0.65
 
         _ ->
             0.5
 
 
+hillElements2 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
 hillElements2 window env =
-    case windowWidth window of
-        Narrow ->
+    case Window.width window of
+        Window.Narrow ->
             ( []
-            , [ Hills.behind 4 4.5 <| scaled 0.8 <| firrTree env 500
-              , Hills.behind 8 4.5 <| scaled 0.8 <| firrTree env 600
+            , [ Hills.behind 6 4.5 <| scaled 0.9 <| firrTree env 500
+              , Hills.behind 9 4.5 <| scaled 0.9 <| firrTree env 600
               ]
             )
 
-        Medium ->
+        Window.MediumWidth ->
             ( []
-            , [ Hills.behind 4 4.5 <| scaled 0.8 <| firrTree env 500
-              , Hills.behind 8 4.5 <| scaled 0.8 <| firrTree env 600
+            , [ Hills.behind 6 6 <| firrTree env 500
+              , Hills.behind 10 6 <| firrTree env 600
               ]
             )
 
-        Wide ->
+        Window.Wide ->
             ( [ Hills.behind 25 6 <| firrTree env 300
               , Hills.behind 30 6 <| firrTree env 400
               ]
@@ -142,19 +146,20 @@ hillElements2 window env =
             )
 
 
+hillElements3 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
 hillElements3 window env =
-    case windowWidth window of
-        Narrow ->
+    case Window.width window of
+        Window.Narrow ->
             ( [ Hills.inFront 4 5 <| scaled 0.8 <| pineTree env 800 ]
-            , [ Hills.inFront 8 4 <| scaled 0.8 <| elmTree env 900 ]
+            , [ Hills.inFront 8 2 <| scaled 0.8 <| elmTree env 900 ]
             )
 
-        Medium ->
+        Window.MediumWidth ->
             ( [ Hills.behind 6 8 <| pineTree env 800 ]
             , [ Hills.inFront 18 5 <| elmTree env 900 ]
             )
 
-        Wide ->
+        Window.Wide ->
             ( [ Hills.behind 6 8 <| pineTree env 800
               , Hills.inFront 30 7 <| elmTree env 900
               ]
@@ -162,26 +167,24 @@ hillElements3 window env =
             )
 
 
+hillElements4 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
 hillElements4 window env =
-    case windowWidth window of
-        Narrow ->
+    case Window.width window of
+        Window.Narrow ->
             ( [], [] )
 
-        Medium ->
-            ( [ Hills.behind 18 4.5 <| scaled 0.8 <| firrTree env 1000
-              , Hills.behind 22 4.5 <| scaled 0.8 <| firrTree env 1000
+        Window.MediumWidth ->
+            ( [ Hills.behind 16 6 <| firrTree env 1000
+              , Hills.behind 20 6 <| firrTree env 1000
               ]
             , []
             )
 
-        Wide ->
+        Window.Wide ->
             ( [], [ Hills.behind 5 6 <| firrTree env 1000 ] )
 
 
-scaled scale be =
-    Svg.g [ Style.svgStyles [ Style.transform [ Transform.scale scale ] ] ] [ be ]
-
-
+hillStyles : Window -> State -> Float -> Int -> Attribute msg
 hillStyles window state offset delay =
     let
         transitionTransform =
@@ -217,6 +220,7 @@ hillStyles window state offset delay =
                 ]
 
 
+firrTree : Environment -> Int -> Svg msg
 firrTree env delay =
     let
         animateFill =
@@ -236,6 +240,7 @@ firrTree env delay =
         ]
 
 
+elmTree : Environment -> Int -> Svg msg
 elmTree env delay =
     let
         animateFill staggerDelay =
@@ -260,6 +265,7 @@ elmTree env delay =
         ]
 
 
+pineTree : Environment -> Int -> Svg msg
 pineTree env delay =
     let
         animateFill staggerDelay =
@@ -301,6 +307,7 @@ pineTree env delay =
         ]
 
 
+transitionFillStyle : Int -> Attribute msg
 transitionFillStyle delayMs =
     Style.svgStyles [ transitionFill delayMs ]
 
@@ -317,25 +324,3 @@ treeColor left right env =
 deadTreeColors : ( String, String )
 deadTreeColors =
     ( "#C09E73", "#FFCD93" )
-
-
-
--- Window
-
-
-windowWidth : Window -> Width
-windowWidth { width } =
-    if width >= 980 then
-        Wide
-
-    else if width >= 580 && width < 980 then
-        Medium
-
-    else
-        Narrow
-
-
-type Width
-    = Narrow
-    | Medium
-    | Wide

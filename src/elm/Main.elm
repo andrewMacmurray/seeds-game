@@ -99,11 +99,7 @@ type Msg
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
-      -- , bounceKeyframes flags.window
-    , Cmd.batch
-        [ bounceKeyframes flags.window
-        , trigger InitIntro
-        ]
+    , bounceKeyframes flags.window
     )
 
 
