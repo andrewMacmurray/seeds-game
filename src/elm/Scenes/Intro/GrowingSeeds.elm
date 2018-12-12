@@ -1,4 +1,4 @@
-module Views.Intro.GrowingSeeds exposing
+module Scenes.Intro.GrowingSeeds exposing
     ( State(..)
     , view
     )

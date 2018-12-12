@@ -1,12 +1,9 @@
 module Exit exposing
-    ( Destination(..)
-    , Handle
+    ( Handle
     , Status
-    , ToScene
     , With
     , continue
     , exit
-    , exitTo
     , exitWith
     , handle
     , ignore
@@ -16,19 +13,6 @@ module Exit exposing
 
 type alias Status state =
     With () state
-
-
-type alias ToScene state =
-    With Destination state
-
-
-type Destination
-    = ToHub
-    | ToIntro
-    | ToLevel
-    | ToRetry
-    | ToSummary
-    | ToTutorial
 
 
 type With payload state
@@ -48,11 +32,6 @@ continue model cmds =
 exit : model -> With () ( model, Cmd msg )
 exit model =
     Exit () ( model, Cmd.none )
-
-
-exitTo : Destination -> model -> ToScene ( model, Cmd msg )
-exitTo destination model =
-    Exit destination ( model, Cmd.none )
 
 
 exitWith : payload -> model -> With payload ( model, Cmd msg )

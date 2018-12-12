@@ -7,13 +7,14 @@ import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color as Color
 import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
 import Css.Transform as Transform
+import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
 static : Svg msg
 static =
-    Svg.svg [ viewBox "-30 -25 237 220", width "100%" ]
+    Svg.svg [ viewBox_ -30 -25 237 220, width "100%" ]
         [ Svg.g [] petals
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
@@ -25,7 +26,7 @@ static =
 
 animated : Int -> Svg msg
 animated delayMs =
-    Svg.svg [ viewBox "-30 -25 237 220", width "100%" ]
+    Svg.svg [ viewBox_ -30 -25 237 220, width "100%" ]
         [ Svg.g [] <| List.indexedMap (fadePetal delayMs) petals
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"

@@ -1,6 +1,5 @@
 module Progress.Spec exposing (spec)
 
-import BDD exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress
 import Expect exposing (..)
@@ -10,35 +9,30 @@ import Test exposing (..)
 spec : Test
 spec =
     describe "Progress"
-        [ currentLevelComplete
+        [ currentLevelCompleteSpec
         ]
 
 
-currentLevelComplete : Test
-currentLevelComplete =
+currentLevelCompleteSpec : Test
+currentLevelCompleteSpec =
     describe "currentLevelComplete"
-        [ it "returns true if current level is complete" <|
-            let
-                complete =
-                    progress 1 5
-                        |> Progress.setCurrentLevel (level 1 3)
-                        |> Progress.currentLevelComplete
-            in
-            expect complete toEqual True
-        , it "returns false if current level is same as reached" <|
-            let
-                complete =
-                    progress 1 5
-                        |> Progress.setCurrentLevel (level 1 5)
-                        |> Progress.currentLevelComplete
-            in
-            expect complete toEqual False
-        , it "returns false if no current level" <|
-            let
-                complete =
-                    progress 1 5 |> Progress.currentLevelComplete
-            in
-            expect complete toEqual False
+        [ test "is True if current level is complete" <|
+            \_ ->
+                progress 1 5
+                    |> Progress.setCurrentLevel (level 1 3)
+                    |> Progress.currentLevelComplete
+                    |> Expect.equal True
+        , test "is False if current level is same as reached" <|
+            \_ ->
+                progress 1 5
+                    |> Progress.setCurrentLevel (level 1 5)
+                    |> Progress.currentLevelComplete
+                    |> Expect.equal False
+        , test "is False if no current level" <|
+            \_ ->
+                progress 1 5
+                    |> Progress.currentLevelComplete
+                    |> Expect.equal False
         ]
 
 

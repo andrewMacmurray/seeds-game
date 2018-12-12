@@ -168,7 +168,7 @@ yellow =
 
 skyYellow : Color
 skyYellow =
-    "rgb(255, 227, 137)"
+    "rgb(253, 227, 142)"
 
 
 blockYellow : Color
@@ -228,7 +228,7 @@ lightGreen =
 
 skyGreen : Color
 skyGreen =
-    "rgb(166, 255, 150)"
+    "rgb(130, 255, 160)"
 
 
 meadowGreen : Color

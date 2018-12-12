@@ -226,17 +226,14 @@ updateTitle =
     updateScene Title TitleMsg Title.update |> Exit.onExit exitTitle
 
 
-exitTitle : Model -> Exit.Destination -> ( Model, Cmd Msg )
+exitTitle : Model -> Title.Destination -> ( Model, Cmd Msg )
 exitTitle model destination =
     case destination of
-        Exit.ToHub ->
+        Title.ToHub ->
             ( model, goToHubReachedLevel model )
 
-        Exit.ToIntro ->
+        Title.ToIntro ->
             ( model, trigger InitIntro )
-
-        _ ->
-            ( model, Cmd.none )
 
 
 
@@ -258,9 +255,7 @@ updateTutorial =
 
 exitTutorial : Model -> () -> ( Model, Cmd Msg )
 exitTutorial model _ =
-    ( model
-        |> copyBackdropToScene
-        |> clearBackdrop
+    ( moveBackdropToScene model
     , Cmd.none
     )
 
@@ -279,17 +274,14 @@ updateRetry =
     updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
 
 
-exitRetry : Model -> Exit.Destination -> ( Model, Cmd Msg )
+exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
 exitRetry model destination =
     case destination of
-        Exit.ToLevel ->
+        Retry.ToLevel ->
             ( clearBackdrop model, reloadCurrentLevel model )
 
-        Exit.ToHub ->
+        Retry.ToHub ->
             ( clearBackdrop model, goToHubCurrentLevel model )
-
-        _ ->
-            ( model, Cmd.none )
 
 
 
@@ -360,10 +352,10 @@ handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
 handleStartLevel model level =
     case Worlds.tutorial level of
         Just tutorialConfig ->
-            ( model, withLoadingScreen <| InitTutorial tutorialConfig (Worlds.levelConfig level) )
+            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
 
         Nothing ->
-            ( model, withLoadingScreen <| InitLevel (Worlds.levelConfig level) )
+            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
 
 
 
@@ -456,11 +448,11 @@ clearBackdrop model =
     { model | backdrop = Nothing }
 
 
-copyBackdropToScene : Model -> Model
-copyBackdropToScene model =
+moveBackdropToScene : Model -> Model
+moveBackdropToScene model =
     case model.backdrop of
         Just scene ->
-            { model | scene = syncContext model scene }
+            { model | scene = syncContext model scene, backdrop = Nothing }
 
         _ ->
             model

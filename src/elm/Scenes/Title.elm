@@ -18,13 +18,12 @@ import Css.Style as Style exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress
 import Data.Window as Window exposing (Window)
-import Exit exposing (continue, exitTo, exitWith)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Views.Landscape.SunflowerMeadow as SunflowerMeadow exposing (animated)
 import Views.Menu as Menu
 import Views.Seed.Circle exposing (foxglove)
 import Views.Seed.Mono exposing (rose)
@@ -55,8 +54,8 @@ type FadeDirection
 
 
 type Destination
-    = Hub
-    | Intro
+    = ToHub
+    | ToIntro
 
 
 
@@ -89,7 +88,7 @@ init context =
     }
 
 
-update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         FadeSeeds ->
@@ -107,19 +106,15 @@ update msg model =
                 ]
 
         GoToIntro ->
-            exitTo Exit.ToIntro model
+            exitWith ToIntro model
 
         GoToHub ->
-            exitTo Exit.ToHub model
+            exitWith ToHub model
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     introMusicPlaying IntroMusicPlaying
-
-
-
--- View
 
 
 view : Model -> Html Msg

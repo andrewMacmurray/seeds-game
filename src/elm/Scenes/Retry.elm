@@ -1,5 +1,6 @@
 module Scenes.Retry exposing
-    ( Model
+    ( Destination(..)
+    , Model
     , Msg
     , getContext
     , init
@@ -16,7 +17,7 @@ import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
 import Data.Lives as Lives
 import Data.Transit exposing (Transit(..))
-import Exit exposing (continue, exitTo)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -36,6 +37,11 @@ type Msg
     = DecrementLives
     | RestartLevel
     | ReturnToHub
+
+
+type Destination
+    = ToLevel
+    | ToHub
 
 
 
@@ -67,17 +73,17 @@ init context =
 -- Update
 
 
-update : Msg -> Model -> Exit.ToScene ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         DecrementLives ->
             continue (updateContext Context.decrementLife model) []
 
         RestartLevel ->
-            exitTo Exit.ToLevel model
+            exitWith ToLevel model
 
         ReturnToHub ->
-            exitTo Exit.ToHub model
+            exitWith ToHub model
 
 
 

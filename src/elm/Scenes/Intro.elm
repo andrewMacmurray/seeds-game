@@ -19,10 +19,10 @@ import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
+import Scenes.Intro.DyingLandscape as DL
+import Scenes.Intro.GrowingSeeds as GS
+import Scenes.Intro.RollingHills as RH
 import Task
-import Views.Intro.DyingLandscape as DL
-import Views.Intro.GrowingSeeds as GS
-import Views.Intro.RollingHills as RH
 
 
 
@@ -83,7 +83,9 @@ updateContext f model =
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
+      -- |> (\m -> { m | scene = RollingHills RH.Entering, backdrop = Color.meadowGreen })
     , introSequence
+      -- , Cmd.none
     )
 
 
@@ -221,7 +223,7 @@ renderScene : Model -> Html Msg
 renderScene model =
     case model.scene of
         DyingLandscape environment vis ->
-            DL.view environment vis
+            DL.view model.context.window environment vis
 
         GrowingSeeds vis ->
             GS.view model.context.window vis
