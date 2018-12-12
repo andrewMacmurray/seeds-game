@@ -1,7 +1,9 @@
 module Views.Landscape.RollingHills exposing
     ( Element
     , doubleLayer
+    , doubleLayerWithCurve
     , element
+    , singleLayerWithCurve
     )
 
 import Css.Color exposing (Color)
@@ -21,18 +23,40 @@ type alias Element msg =
     }
 
 
+singleLayerWithCurve : Float -> Window -> Color -> Svg msg
+singleLayerWithCurve curve window color =
+    hillFullScreen window
+        { color = color
+        , elements = []
+        , side = Center
+        , curve = curve
+        }
+
+
+doubleLayerWithCurve : Float -> Window -> Color -> Color -> Svg msg
+doubleLayerWithCurve curve window left right =
+    doubleLayerWithCurve_ curve window ( left, [] ) ( right, [] )
+
+
 doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
-doubleLayer window ( leftColor, leftElements ) ( rightColor, rightElements ) =
+doubleLayer =
+    doubleLayerWithCurve_ 1
+
+
+doubleLayerWithCurve_ : Float -> Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
+doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =
     Svg.g []
         [ hillFullScreen window
             { color = leftColor
             , elements = leftElements
             , side = Left
+            , curve = curve
             }
         , hillFullScreen window
             { color = rightColor
             , elements = rightElements
             , side = Right
+            , curve = curve
             }
         ]
 
@@ -46,11 +70,13 @@ type alias Hill msg =
     { color : Color
     , elements : List (Element msg)
     , side : Side
+    , curve : Float
     }
 
 
 type Side
     = Left
+    | Center
     | Right
 
 
@@ -70,7 +96,7 @@ hillFullScreen window hillConfig =
             h / 2
 
         r =
-            w
+            w / hillConfig.curve
 
         elements =
             List.map (renderElement cx cy r) hillConfig.elements
@@ -104,8 +130,11 @@ sideToCx window side =
         Left ->
             0
 
+        Center ->
+            toFloat window.width / 2
+
         Right ->
-            toFloat <| window.width
+            toFloat window.width
 
 
 hill : Color -> Float -> Float -> Float -> Svg msg

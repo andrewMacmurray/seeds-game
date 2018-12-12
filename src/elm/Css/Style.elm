@@ -44,6 +44,7 @@ module Css.Style exposing
     , top
     , transform
     , transformOrigin
+    , transformOriginPx
     , width
     , widthHeight
     )
@@ -153,6 +154,11 @@ transform transforms =
 transformOrigin : String -> Style
 transformOrigin =
     property "transform-origin"
+
+
+transformOriginPx : Float -> Float -> Style
+transformOriginPx x y =
+    transformOrigin <| px x ++ " " ++ px y
 
 
 paddingAll : Float -> Style

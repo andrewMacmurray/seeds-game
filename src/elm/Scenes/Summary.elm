@@ -10,10 +10,11 @@ module Scenes.Summary exposing
 
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
-import Css.Color as Color exposing (darkYellow, gold, rainBlue, washedYellow)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (scale, translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
+import Data.Board.Tile exposing (seedName)
 import Data.Board.Types exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
@@ -25,8 +26,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
-import Scenes.Summary.Sunflower as SunflowerSummary
-import Views.Flowers.Sunflower as Sunflower
+import Scenes.Summary.Chrysanthemum as Chrysanthemum
+import Scenes.Summary.Sunflower as Sunflower
+import Svg exposing (Svg)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
@@ -199,58 +201,106 @@ incrementProgress model =
 
 view : Model -> Html msg
 view model =
+    let
+        seedType =
+            currentSeedType model.context.progress
+    in
     div
         [ style
             [ height <| toFloat model.context.window.height
-            , backgroundColor model.seedBankState
+            , backgroundColor seedType model.seedBankState
             , transition "background" 3000 [ Transition.linear ]
             , animation "fade-in" 1000 [ Animation.linear ]
             ]
         , class "fixed z-5 w-100 top-0 left-0"
         ]
-        [ renderFlowerLayer model
-        , worldCompleteText model
+        [ renderFlowerLayer seedType model.context.window model.seedBankState
+        , worldCompleteText seedType model
         , renderResourcesLayer model
         ]
 
 
-backgroundColor : SeedBankState -> Style
-backgroundColor seedBankState =
+currentSeedType : Progress -> SeedType
+currentSeedType progress =
+    progress
+        |> Progress.currentLevelSeedType Worlds.all
+        |> Maybe.withDefault Sunflower
+
+
+backgroundColor : SeedType -> SeedBankState -> Style
+backgroundColor seedType seedBankState =
     case seedBankState of
+        Visible ->
+            background Color.washedYellow
+
         Leaving ->
             background Color.lightGold
 
         Blooming ->
-            background Color.meadowGreen
-
-        Visible ->
-            background Color.washedYellow
+            background <| getBackgroundFor seedType
 
 
-renderFlowerLayer model =
-    case model.seedBankState of
+renderFlowerLayer : SeedType -> Window -> SeedBankState -> Html msg
+renderFlowerLayer seedType window seedBankState =
+    let
+        ( hidden, visible ) =
+            getFlowerLayer seedType window
+    in
+    case seedBankState of
         Leaving ->
-            SunflowerSummary.hidden model.context.window
+            hidden
 
         Blooming ->
-            SunflowerSummary.visible model.context.window
+            visible
 
         _ ->
             span [] []
+
+
+getFlowerLayer : SeedType -> Window -> ( Svg msg, Svg msg )
+getFlowerLayer seedType window =
+    case seedType of
+        Sunflower ->
+            ( Sunflower.hidden window
+            , Sunflower.visible window
+            )
+
+        Chrysanthemum ->
+            ( Chrysanthemum.hidden window
+            , Chrysanthemum.visible window
+            )
+
+        _ ->
+            ( Sunflower.hidden window
+            , Sunflower.visible window
+            )
+
+
+getBackgroundFor : SeedType -> Color
+getBackgroundFor seedType =
+    case seedType of
+        Sunflower ->
+            Color.meadowGreen
+
+        Chrysanthemum ->
+            Color.purple
+
+        _ ->
+            Color.meadowGreen
 
 
 
 -- Complete Text
 
 
-worldCompleteText : Model -> Html msg
-worldCompleteText model =
+worldCompleteText : SeedType -> Model -> Html msg
+worldCompleteText seedType model =
     div
         [ style [ color Color.white, transitionAll 1000 [], top <| toFloat model.context.window.height / 2 + 80 ]
         , class "tc absolute tracked w-100 z-5"
         , textVisibility model.textState
         ]
-        [ text <| textContent model.textState ]
+        [ text <| textContent seedType model.textState ]
 
 
 textVisibility : TextState -> Attribute msg
@@ -263,11 +313,11 @@ textVisibility textState =
             showIf visible
 
 
-textContent : TextState -> String
-textContent textState =
+textContent : SeedType -> TextState -> String
+textContent seedType textState =
     case textState of
         First _ ->
-            "You saved the Sunflower!"
+            "You saved the " ++ seedName seedType ++ "!"
 
         Second _ ->
             "It will bloom again on our new world"
@@ -293,7 +343,7 @@ renderResourcesLayer ({ context } as model) =
             , renderResources model
             , p
                 [ style
-                    [ color darkYellow
+                    [ color Color.darkYellow
                     , marginTop 100
                     , marginBottom -40
                     , transition "opacity" 1000 []
@@ -415,13 +465,13 @@ renderResourceFill resourceState progress tileType =
         Rain ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
-                , fill <| div [ class "relative" ] <| List.map (weatherDrop rainBlue) <| List.range 1 50
+                , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
             div [ style [ height 50 ] ]
                 [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
-                , fill <| div [ class "relative" ] <| List.map (weatherDrop gold) <| List.range 4 54
+                , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.gold) <| List.range 4 54
                 ]
 
         Seed seedType ->

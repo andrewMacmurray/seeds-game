@@ -254,7 +254,7 @@ seedStrokeColors seedType =
         Sunflower ->
             darkBrown
 
-        Foxglove ->
+        Chrysanthemum ->
             purple
 
         Lupin ->
@@ -286,7 +286,7 @@ seedBackgrounds seedType =
         Sunflower ->
             "img/sunflower.svg"
 
-        Foxglove ->
+        Chrysanthemum ->
             "img/foxglove.svg"
 
         Lupin ->

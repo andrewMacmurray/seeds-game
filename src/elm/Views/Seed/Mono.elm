@@ -1,4 +1,4 @@
-module Views.Seed.Mono exposing (greyedOut, mono, rose)
+module Views.Seed.Mono exposing (greyedOutSeed, mono, rose)
 
 import Css.Color exposing (brown, darkBrown, purple, transparentGray)
 import Svg exposing (..)
@@ -10,8 +10,8 @@ rose =
     mono purple
 
 
-greyedOut : Svg msg
-greyedOut =
+greyedOutSeed : Svg msg
+greyedOutSeed =
     mono transparentGray
 
 

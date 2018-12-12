@@ -1,12 +1,12 @@
-module Views.Seed.Circle exposing (circle, foxglove)
+module Views.Seed.Circle exposing (circle, chrysanthemum)
 
 import Css.Color exposing (orange, purple)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-foxglove : Svg msg
-foxglove =
+chrysanthemum : Svg msg
+chrysanthemum =
     circle ( purple, orange )
 
 

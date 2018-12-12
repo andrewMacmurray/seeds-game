@@ -19,12 +19,14 @@ animations =
         , shake
         , bulgeFade
         , bulge
+        , bulgeMini
         , bulgeElastic
         , bulgeElasticBig
         , bulgeSmall
         , heartbeat
         , heartBreakLeft
         , heartBreakRight
+        , scaleIn
         ]
 
 
@@ -179,6 +181,17 @@ bulgeSmall =
         ]
 
 
+bulgeMini =
+    keyframes "bulge-mini"
+        [ frame 0
+            [ opacity 0, toScale 0.5 ]
+        , frame 50
+            [ opacity 1, toScale 1.03 ]
+        , frame 100
+            [ opacity 1, toScale 1 ]
+        ]
+
+
 heartbeat =
     keyframes "heartbeat"
         [ frame 0 [ toScale 1 ]
@@ -202,6 +215,13 @@ heartBreakRight =
             [ transform [ translateX 0, rotateZ 0 ] ]
         , frame 100
             [ transform [ translateX 3, rotateZ 2 ] ]
+        ]
+
+
+scaleIn =
+    keyframes "scale-in"
+        [ frame 0 [ toScale 0 ]
+        , frame 100 [ toScale 1 ]
         ]
 
 

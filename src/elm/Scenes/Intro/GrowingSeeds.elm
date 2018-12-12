@@ -84,14 +84,14 @@ seedsLeft screenSize =
     case screenSize of
         Window.Small ->
             [ ( 3, Marigold, 0.7 )
-            , ( 1, Foxglove, 0.5 )
+            , ( 1, Chrysanthemum, 0.5 )
             , ( 5, Rose, 0.8 )
             , ( 10, Lupin, 0.5 )
             ]
 
         _ ->
             [ ( 3, Marigold, 0.7 )
-            , ( 9, Foxglove, 0.5 )
+            , ( 9, Chrysanthemum, 0.5 )
             , ( 7, Rose, 0.8 )
             , ( 1, Lupin, 1 )
             , ( 5, Marigold, 0.6 )
@@ -102,14 +102,14 @@ seedsRight : Window.Size -> List ( Int, SeedType, Float )
 seedsRight screenSize =
     case screenSize of
         Window.Small ->
-            [ ( 2, Foxglove, 0.6 )
+            [ ( 2, Chrysanthemum, 0.6 )
             , ( 3, Marigold, 0.7 )
             , ( 9, Sunflower, 0.5 )
             , ( 6, Lupin, 0.5 )
             ]
 
         _ ->
-            [ ( 10, Foxglove, 0.6 )
+            [ ( 10, Chrysanthemum, 0.6 )
             , ( 2, Marigold, 0.7 )
             , ( 8, Sunflower, 0.5 )
             , ( 6, Rose, 1 )
