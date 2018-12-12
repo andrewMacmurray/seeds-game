@@ -4,7 +4,7 @@ import Data.Board.Types exposing (..)
 import Svg exposing (Svg)
 import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (greyedOutSeed, rose)
-import Views.Seed.Twin exposing (lupin, marigold, sunflower)
+import Views.Seed.Twin exposing (cornflower, lupin, marigold, sunflower)
 
 
 renderSeed : SeedType -> Svg msg
@@ -15,6 +15,9 @@ renderSeed seedType =
 
         Chrysanthemum ->
             chrysanthemum
+
+        Cornflower ->
+            cornflower
 
         Lupin ->
             lupin

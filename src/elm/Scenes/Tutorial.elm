@@ -39,7 +39,7 @@ import Task
 import Views.Level.Line exposing (renderLine)
 import Views.Level.Styles exposing (boardHeight, boardWidth)
 import Views.Level.Tile exposing (renderTile_)
-import Views.Level.TopBar exposing (scoreIcon)
+import Views.Level.TopBar exposing (renderScoreIcon)
 
 
 
@@ -381,7 +381,7 @@ renderResourceBank ({ context, resourceBankVisible, resourceBank } as model) =
             ]
         , showIf resourceBankVisible
         ]
-        [ scoreIcon resourceBank <| Tile.baseSizeY * tileScale ]
+        [ renderScoreIcon resourceBank <| Tile.baseSizeY * tileScale ]
 
 
 resourceBankOffsetX : Model -> Float

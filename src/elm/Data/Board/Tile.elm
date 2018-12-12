@@ -318,6 +318,9 @@ seedName seedType =
         Chrysanthemum ->
             "Chrysanthemum"
 
+        Cornflower ->
+            "Cornflower"
+
         Lupin ->
             "Lupin"
 
@@ -352,6 +355,9 @@ hashSeedType seedType =
 
         Chrysanthemum ->
             "chrysanthemum"
+
+        Cornflower ->
+            "cornflower"
 
         Lupin ->
             "lupin"

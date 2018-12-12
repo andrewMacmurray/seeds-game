@@ -11,11 +11,11 @@ import Data.Levels as Levels
 world : Levels.World
 world =
     Levels.world
-        { seedType = Lupin
-        , backdropColor = Color.softRed
+        { seedType = Cornflower
+        , backdropColor = "#1f4a77"
         , textColor = Color.white
         , textCompleteColor = Color.white
-        , textBackgroundColor = Color.gold
+        , textBackgroundColor = "rgb(0, 182, 255)"
         }
         levels
 
@@ -31,7 +31,7 @@ levels =
                 (Probability 20)
                 (TargetScore 50)
             , seed
-                Lupin
+                Cornflower
                 (Probability 20)
                 (TargetScore 100)
             , seedPod
@@ -48,7 +48,7 @@ levels =
                 (Probability 25)
                 (TargetScore 30)
             , seed
-                Lupin
+                Cornflower
                 (Probability 25)
                 (TargetScore 30)
             , rain
@@ -68,7 +68,7 @@ levels =
                 (Probability 25)
                 (TargetScore 30)
             , seed
-                Lupin
+                Cornflower
                 (Probability 25)
                 (TargetScore 30)
             , seed

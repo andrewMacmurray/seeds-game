@@ -14,7 +14,6 @@ module Views.Level.Styles exposing
     , growingStyles
     , moveTracerStyles
     , scoreIconSize
-    , seedBackgrounds
     , seedStrokeColors
     , strokeColors
     , tileBackground
@@ -32,7 +31,7 @@ module Views.Level.Styles exposing
     )
 
 import Css.Animation exposing (animation, ease, linear)
-import Css.Color exposing (..)
+import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
@@ -236,13 +235,13 @@ strokeColors : TileType -> String
 strokeColors tile =
     case tile of
         Rain ->
-            lightBlue
+            Color.lightBlue
 
         Sun ->
-            gold
+            Color.gold
 
         SeedPod ->
-            green
+            Color.green
 
         Seed seedType ->
             seedStrokeColors seedType
@@ -252,51 +251,35 @@ seedStrokeColors : SeedType -> String
 seedStrokeColors seedType =
     case seedType of
         Sunflower ->
-            darkBrown
+            Color.darkBrown
 
         Chrysanthemum ->
-            purple
+            Color.purple
+
+        Cornflower ->
+            Color.darkBlue
 
         Lupin ->
-            crimson
+            Color.crimson
 
         _ ->
-            darkBrown
+            Color.darkBrown
 
 
 tileBackground : TileType -> List Style
 tileBackground tile =
     case tile of
         Rain ->
-            [ backgroundColor lightBlue ]
+            [ backgroundColor Color.lightBlue ]
 
         Sun ->
-            [ backgroundColor gold ]
+            [ backgroundColor Color.gold ]
 
         SeedPod ->
-            [ background seedPodGradient ]
+            [ background Color.seedPodGradient ]
 
         Seed _ ->
             []
-
-
-seedBackgrounds : SeedType -> String
-seedBackgrounds seedType =
-    case seedType of
-        Sunflower ->
-            "img/sunflower.svg"
-
-        Chrysanthemum ->
-            "img/foxglove.svg"
-
-        Lupin ->
-            "img/lupin.svg"
-
-        Rose ->
-            "img/rose.svg"
-
-        _ ->
-            ""
 
 
 tileSize : TileType -> Float

@@ -7,6 +7,7 @@ module Css.Color exposing
     , brownYellow
     , chocolate
     , crimson
+    , darkBlue
     , darkBrown
     , darkForestGreen
     , darkRed
@@ -284,6 +285,11 @@ lightBlue =
 rainBlue : Color
 rainBlue =
     "rgb(97, 188, 255)"
+
+
+darkBlue : Color
+darkBlue =
+    "rgb(7, 28, 65)"
 
 
 midnightBlue : Color

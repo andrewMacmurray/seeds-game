@@ -27,6 +27,7 @@ import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
+import Scenes.Summary.Cornflower as Cornflower
 import Scenes.Summary.Sunflower as Sunflower
 import Svg exposing (Svg)
 import Views.Icons.RainBank exposing (..)
@@ -243,15 +244,15 @@ backgroundColor seedType seedBankState =
 renderFlowerLayer : SeedType -> Window -> SeedBankState -> Html msg
 renderFlowerLayer seedType window seedBankState =
     let
-        ( hidden, visible ) =
+        ( flowersHidden, flowersVisible ) =
             getFlowerLayer seedType window
     in
     case seedBankState of
         Leaving ->
-            hidden
+            flowersHidden
 
         Blooming ->
-            visible
+            flowersVisible
 
         _ ->
             span [] []
@@ -270,6 +271,11 @@ getFlowerLayer seedType window =
             , Chrysanthemum.visible window
             )
 
+        Cornflower ->
+            ( Cornflower.hidden window
+            , Cornflower.visible window
+            )
+
         _ ->
             ( Sunflower.hidden window
             , Sunflower.visible window
@@ -284,6 +290,9 @@ getBackgroundFor seedType =
 
         Chrysanthemum ->
             Color.purple
+
+        Cornflower ->
+            "rgb(16, 154, 217)"
 
         _ ->
             Color.meadowGreen

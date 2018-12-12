@@ -23,6 +23,11 @@ type alias Element msg =
     }
 
 
+doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
+doubleLayer =
+    doubleLayerWithCurve_ 1
+
+
 singleLayerWithCurve : Float -> Window -> Color -> Svg msg
 singleLayerWithCurve curve window color =
     hillFullScreen window
@@ -36,11 +41,6 @@ singleLayerWithCurve curve window color =
 doubleLayerWithCurve : Float -> Window -> Color -> Color -> Svg msg
 doubleLayerWithCurve curve window left right =
     doubleLayerWithCurve_ curve window ( left, [] ) ( right, [] )
-
-
-doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
-doubleLayer =
-    doubleLayerWithCurve_ 1
 
 
 doubleLayerWithCurve_ : Float -> Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg

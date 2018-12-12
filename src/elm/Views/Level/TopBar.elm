@@ -1,7 +1,7 @@
 module Views.Level.TopBar exposing
     ( TopBarViewModel
     , remainingMoves
-    , scoreIcon
+    , renderScoreIcon
     , topBar
     )
 
@@ -16,8 +16,12 @@ import Data.Level.Types exposing (TileSetting)
 import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Svg exposing (Svg)
+import Views.Icons.RainBank exposing (rainBankFull)
+import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
-import Views.Level.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, seedBackgrounds, topBarHeight)
+import Views.Level.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, topBarHeight)
+import Views.Seed.All exposing (renderSeed)
 
 
 type alias TopBarViewModel =
@@ -73,7 +77,7 @@ renderScore model tileType =
             , marginLeft <| toFloat scoreMargin
             ]
         ]
-        [ scoreIcon tileType scoreIconSize
+        [ renderScoreIcon tileType scoreIconSize
         , p
             [ class "ma0 absolute left-0 right-0 f6"
             , Html.Attributes.style "bottom" "-1.5em"
@@ -154,35 +158,34 @@ tickFadeIn tileType scores =
         ]
 
 
-scoreIcon : TileType -> Float -> Html msg
-scoreIcon tileType iconSize =
-    case scoreIconUrl tileType of
-        Just url ->
+renderScoreIcon : TileType -> Float -> Html msg
+renderScoreIcon tileType iconSize =
+    case scoreIcon tileType of
+        Just icon ->
             div
                 [ class "bg-center contain"
                 , style
-                    [ backgroundImage url
-                    , width iconSize
+                    [ width iconSize
                     , height iconSize
                     ]
                 ]
-                []
+                [ icon ]
 
         Nothing ->
             span [] []
 
 
-scoreIconUrl : TileType -> Maybe String
-scoreIconUrl tileType =
+scoreIcon : TileType -> Maybe (Svg msg)
+scoreIcon tileType =
     case tileType of
         Sun ->
-            Just "img/sun.svg"
+            Just sunBankFull
 
         Rain ->
-            Just "img/rain.svg"
+            Just rainBankFull
 
         Seed seedType ->
-            Just <| seedBackgrounds seedType
+            Just <| renderSeed seedType
 
         _ ->
             Nothing

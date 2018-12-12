@@ -9,7 +9,7 @@ import Svg.Attributes exposing (..)
 
 static : Svg msg
 static =
-    Svg.svg [ viewBox_ 0 0 433 248 ]
+    Svg.svg [ viewBox_ 0 0 vbWidth vbHeight ]
         [ Svg.g [] corePetals
         , Svg.g [] leftOuterPetals
         , Svg.g [] rightOuterPetals
@@ -18,7 +18,7 @@ static =
 
 animated : Int -> Svg msg
 animated delay =
-    Svg.svg [ viewBox_ 0 0 433 248 ]
+    Svg.svg [ viewBox_ 0 0 vbWidth vbHeight ]
         [ Svg.g [] <| animatedCore delay
         , scaleInFade delay leftOuterPetals
         , scaleInFade delay rightOuterPetals
@@ -36,7 +36,7 @@ scaleInFade delay elements =
         [ Svg.g
             [ Style.svgStyles
                 [ Animation.animation "scale-in" 2000 [ Animation.ease, Animation.delay delay ]
-                , Style.transformOriginPx (433 / 2) 248
+                , Style.transformOriginPx (vbWidth / 2) vbHeight
                 ]
             ]
             elements
@@ -58,7 +58,7 @@ animateCorePetal delay i petal =
         [ Style.svgStyles
             [ Style.opacity 0
             , Animation.animation "bulge-mini" 500 [ Animation.delay <| (i * 38) + 1300 + delay ]
-            , Style.transformOriginPx (433 / 2) 248
+            , Style.transformOriginPx (vbWidth / 2) vbHeight
             ]
         ]
         [ petal ]
@@ -130,3 +130,13 @@ corePetals =
     , Svg.g [] [ Svg.path [ d "M191 243l-16-32c-2-6-2-13-1-18 2-4 5-9 9-10 4-2 9-1 13 0 5 2 10 6 14 10l7 14 2 8 5 29-33-1z", fill "#cb3bbe" ] [], Svg.path [ d "M179 222c-1-6-9-32 9-36 17-4 26 16 28 22l4 8-5-19c-4-7-8-12-15-14-9-3-17-3-24 6-3 3-4 11-2 22 1 4 5 15 5 11z", fill "#ef9dcc" ] [] ]
     , Svg.g [] [ Svg.path [ d "M205 243l39 1s8-21 9-29c2-5 2-13 1-18-1-4-5-8-9-10-4-1-9-1-13 1-5 1-10 5-14 10l-6 14-3 7-4 24z", fill "#cb3bbe" ] [], Svg.path [ d "M250 226c0-5 8-32-10-36-16-3-26 16-28 23l-4 8 6-20c3-6 7-11 15-14 9-3 17-3 24 6 2 4 3 12 1 22l-4 11z", fill "#ef9dcc" ] [] ]
     ]
+
+
+vbWidth : Float
+vbWidth =
+    433
+
+
+vbHeight : Float
+vbHeight =
+    248

@@ -21,7 +21,7 @@ import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Scenes.Intro.DyingLandscape as DL
 import Scenes.Intro.GrowingSeeds as GS
-import Scenes.Intro.RollingHills as RH
+import Scenes.Intro.SunflowerMeadow as SM
 import Task
 
 
@@ -42,7 +42,7 @@ type alias Model =
 type Scene
     = DyingLandscape DL.Environment DL.State
     | GrowingSeeds GS.State
-    | RollingHills RH.State
+    | SunflowerMeadow SM.State
 
 
 type Msg
@@ -83,9 +83,7 @@ updateContext f model =
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-      -- |> (\m -> { m | scene = RollingHills RH.Entering, backdrop = Color.meadowGreen })
     , introSequence
-      -- , Cmd.none
     )
 
 
@@ -149,13 +147,13 @@ update msg model =
             continue { model | scene = GrowingSeeds GS.Leaving } []
 
         InitRollingHills ->
-            continue { model | scene = RollingHills RH.Hidden } []
+            continue { model | scene = SunflowerMeadow SM.Hidden } []
 
         ShowRollingHills ->
-            continue { model | scene = RollingHills RH.Entering } []
+            continue { model | scene = SunflowerMeadow SM.Entering } []
 
         BloomFlowers ->
-            continue { model | scene = RollingHills RH.Blooming } []
+            continue { model | scene = SunflowerMeadow SM.Blooming } []
 
         ShowText ->
             continue { model | textVisible = True } []
@@ -228,8 +226,8 @@ renderScene model =
         GrowingSeeds vis ->
             GS.view model.context.window vis
 
-        RollingHills vis ->
-            RH.view model.context.window vis
+        SunflowerMeadow vis ->
+            SM.view model.context.window vis
 
 
 textOffset : Window -> Style
