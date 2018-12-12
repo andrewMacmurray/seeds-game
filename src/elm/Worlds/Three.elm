@@ -64,7 +64,7 @@ levels =
         , boardDimensions = { x = 8, y = 8 }
         , tiles =
             [ seed
-                Foxglove
+                Chrysanthemum
                 (Probability 25)
                 (TargetScore 30)
             , seed

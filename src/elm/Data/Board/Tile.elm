@@ -19,6 +19,7 @@ module Data.Board.Tile exposing
     , map
     , moveOrder
     , scale
+    , seedName
     , setDraggingToGrowing
     , setEnteringToSatic
     , setFallingToStatic
@@ -308,6 +309,25 @@ getSeedType tileType =
             Nothing
 
 
+seedName : SeedType -> String
+seedName seedType =
+    case seedType of
+        Sunflower ->
+            "Sunflower"
+
+        Chrysanthemum ->
+            "Chrysanthemum"
+
+        Lupin ->
+            "Lupin"
+
+        Marigold ->
+            "Marigold"
+
+        Rose ->
+            "Rose"
+
+
 hash : TileType -> String
 hash tileType =
     case tileType of
@@ -330,8 +350,8 @@ hashSeedType seedType =
         Sunflower ->
             "sunflower"
 
-        Foxglove ->
-            "foxglove"
+        Chrysanthemum ->
+            "chrysanthemum"
 
         Lupin ->
             "lupin"
@@ -341,9 +361,6 @@ hashSeedType seedType =
 
         Rose ->
             "rose"
-
-        GreyedOut ->
-            "greyed-out"
 
 
 scale : Window.Window -> Float

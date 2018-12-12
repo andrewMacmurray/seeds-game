@@ -25,7 +25,7 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Views.Menu as Menu
-import Views.Seed.Circle exposing (foxglove)
+import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 
@@ -177,7 +177,7 @@ seeds fadeDirection =
         (List.map3 (fadeSeeds fadeDirection)
             (seedEntranceDelays 500)
             (seedExitDelays 500)
-            [ foxglove
+            [ chrysanthemum
             , marigold
             , sunflower
             , lupin

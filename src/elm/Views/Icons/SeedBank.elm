@@ -9,6 +9,7 @@ import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)
 import Views.Seed.All exposing (renderSeed)
+import Views.Seed.Mono exposing (greyedOutSeed)
 
 
 seedBank : SeedType -> Float -> Html msg
@@ -49,7 +50,7 @@ seedBank seedType percentFull =
                 []
             ]
         , Svg.g []
-            [ renderSeed GreyedOut
+            [ greyedOutSeed
             , Svg.g []
                 [ Svg.mask
                     [ fill "white"

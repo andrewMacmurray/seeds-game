@@ -2,8 +2,8 @@ module Views.Seed.All exposing (renderSeed)
 
 import Data.Board.Types exposing (..)
 import Svg exposing (Svg)
-import Views.Seed.Circle exposing (foxglove)
-import Views.Seed.Mono exposing (greyedOut, rose)
+import Views.Seed.Circle exposing (chrysanthemum)
+import Views.Seed.Mono exposing (greyedOutSeed, rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 
 
@@ -13,8 +13,8 @@ renderSeed seedType =
         Sunflower ->
             sunflower
 
-        Foxglove ->
-            foxglove
+        Chrysanthemum ->
+            chrysanthemum
 
         Lupin ->
             lupin
@@ -24,6 +24,3 @@ renderSeed seedType =
 
         Marigold ->
             marigold
-
-        GreyedOut ->
-            greyedOut

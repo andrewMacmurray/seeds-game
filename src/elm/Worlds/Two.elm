@@ -11,7 +11,7 @@ import Data.Levels as Levels
 world : Levels.World
 world =
     Levels.world
-        { seedType = Foxglove
+        { seedType = Chrysanthemum
         , backdropColor = Color.gold
         , textColor = Color.white
         , textCompleteColor = Color.yellow
@@ -28,7 +28,7 @@ levels =
         , moves = 10
         , tiles =
             [ seed
-                Foxglove
+                Chrysanthemum
                 (Probability 50)
                 (TargetScore 50)
             , sun
@@ -51,7 +51,7 @@ levels =
                 (Probability 25)
                 (TargetScore 20)
             , seed
-                Foxglove
+                Chrysanthemum
                 (Probability 25)
                 (TargetScore 30)
             , seedPod
@@ -67,7 +67,7 @@ levels =
                 (Probability 20)
                 (TargetScore 20)
             , seed
-                Foxglove
+                Chrysanthemum
                 (Probability 20)
                 (TargetScore 50)
             , sun
@@ -87,7 +87,7 @@ levels =
                 (Probability 25)
                 (TargetScore 50)
             , seed
-                Foxglove
+                Chrysanthemum
                 (Probability 25)
                 (TargetScore 50)
             , seedPod
@@ -110,7 +110,7 @@ levels =
                 (Probability 30)
                 (TargetScore 20)
             , seed
-                Foxglove
+                Chrysanthemum
                 (Probability 25)
                 (TargetScore 20)
             ]

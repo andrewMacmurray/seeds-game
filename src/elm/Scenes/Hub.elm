@@ -37,6 +37,7 @@ import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives exposing (renderLivesLeft)
 import Views.Seed.All exposing (renderSeed)
+import Views.Seed.Mono exposing (greyedOutSeed)
 import Worlds
 
 
@@ -479,4 +480,4 @@ renderLevelIcon level seedType model =
         renderSeed seedType
 
     else
-        renderSeed GreyedOut
+        greyedOutSeed

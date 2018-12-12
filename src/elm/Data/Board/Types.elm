@@ -120,8 +120,7 @@ type TileType
 
 type SeedType
     = Sunflower
-    | Foxglove
+    | Chrysanthemum
     | Lupin
     | Marigold
     | Rose
-    | GreyedOut
