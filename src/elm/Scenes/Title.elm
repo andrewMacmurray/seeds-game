@@ -120,7 +120,7 @@ subscriptions _ =
 view : Model -> Html Msg
 view { context, fadeDirection } =
     div
-        [ class "absolute left-0 right-0 z-5 tc"
+        [ class "absolute left-0 right-0 z-1 tc"
         , style [ bottom <| toFloat context.window.height / 2.4 ]
         ]
         [ div [] [ seeds fadeDirection ]

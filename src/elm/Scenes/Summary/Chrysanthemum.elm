@@ -52,9 +52,9 @@ flowers visibility window =
 
         Visible ->
             Svg.g []
-                [ chrysanthemum window 200 1000
-                , chrysanthemum window 100 1500 |> translated -120 80
-                , chrysanthemum window 100 2000 |> translated 120 80
+                [ chrysanthemum window 150 1000
+                , chrysanthemum window 75 1500 |> translated -100 60
+                , chrysanthemum window 75 2000 |> translated 100 60
                 ]
 
 
