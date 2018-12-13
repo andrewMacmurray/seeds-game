@@ -5,6 +5,7 @@ module Scene exposing
     )
 
 import Context exposing (Context)
+import Scenes.Garden as Garden
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
@@ -26,6 +27,7 @@ type Scene
     | Hub Hub.Model
     | Summary Summary.Model
     | Retry Retry.Model
+    | Garden Garden.Model
 
 
 map : (Context -> Context) -> Scene -> Scene
@@ -52,6 +54,9 @@ map f scene =
         Retry model ->
             Retry <| Retry.updateContext f model
 
+        Garden model ->
+            Garden <| Garden.updateContext f model
+
 
 getContext : Scene -> Context
 getContext scene =
@@ -76,3 +81,6 @@ getContext scene =
 
         Retry model ->
             Retry.getContext model
+
+        Garden model ->
+            Garden.getContext model

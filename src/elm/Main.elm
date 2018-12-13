@@ -20,6 +20,7 @@ import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
 import Ports exposing (..)
 import Scene exposing (Scene(..))
+import Scenes.Garden as Garden
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
@@ -75,12 +76,14 @@ type Msg
     | HubMsg Hub.Msg
     | SummaryMsg Summary.Msg
     | RetryMsg Retry.Msg
+    | GardenMsg Garden.Msg
     | InitTutorial Tutorial.Config Levels.LevelConfig
     | InitLevel Levels.LevelConfig
     | InitIntro
     | InitHub Levels.Key
     | InitSummary
     | InitRetry
+    | InitGarden
     | ShowLoadingScreen
     | HideLoadingScreen
     | OpenMenu
@@ -152,6 +155,9 @@ update msg ({ scene, backdrop } as model) =
         ( SummaryMsg summary, Summary summaryModel, _ ) ->
             updateSummary summary summaryModel model
 
+        ( GardenMsg garden, Garden gardenModel, _ ) ->
+            updateGarden garden gardenModel model
+
         ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
             initTutorial tutorialConfig levelConfig model
 
@@ -169,6 +175,9 @@ update msg ({ scene, backdrop } as model) =
 
         ( InitRetry, _, _ ) ->
             initRetry model
+
+        ( InitGarden, _, _ ) ->
+            initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
             ( model, generateBackground RandomBackground )
@@ -397,6 +406,25 @@ exitIntro model _ =
 
 
 
+-- Garden
+
+
+initGarden : Model -> ( Model, Cmd Msg )
+initGarden =
+    initScene Garden GardenMsg Garden.init
+
+
+updateGarden : Garden.Msg -> Garden.Model -> Model -> ( Model, Cmd Msg )
+updateGarden =
+    updateScene Garden GardenMsg Garden.update |> Exit.onExit exitGarden
+
+
+exitGarden : Model -> () -> ( Model, Cmd Msg )
+exitGarden model _ =
+    ( model, goToHubReachedLevel model )
+
+
+
 -- Util
 
 
@@ -608,6 +636,9 @@ renderScene scene =
 
         Retry model ->
             [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
+
+        Garden model ->
+            [ ( "garden", Garden.view model |> Html.map GardenMsg ) ]
 
 
 
