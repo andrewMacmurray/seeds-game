@@ -46,6 +46,7 @@ type Msg
     | IntroMusicPlaying Bool
     | GoToIntro
     | GoToHub
+    | GoToGarden
 
 
 type FadeDirection
@@ -56,6 +57,7 @@ type FadeDirection
 type Destination
     = ToHub
     | ToIntro
+    | ToGarden
 
 
 
@@ -74,7 +76,9 @@ updateContext f model =
 
 menuOptions : List (Menu.Option Msg)
 menuOptions =
-    [ Menu.option GoToHub "Levels" ]
+    [ Menu.option GoToHub "Levels"
+    , Menu.option GoToGarden "Garden"
+    ]
 
 
 
@@ -110,6 +114,9 @@ update msg model =
 
         GoToHub ->
             exitWith ToHub model
+
+        GoToGarden ->
+            exitWith ToGarden model
 
 
 subscriptions : Model -> Sub Msg

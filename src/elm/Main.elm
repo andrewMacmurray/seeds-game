@@ -102,8 +102,7 @@ type Msg
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
-      -- , bounceKeyframes flags.window
-    , trigger InitGarden
+    , bounceKeyframes flags.window
     )
 
 
@@ -213,20 +212,6 @@ update msg ({ scene, backdrop } as model) =
             ( model, Cmd.none )
 
 
-withLoadingScreen : Msg -> Cmd Msg
-withLoadingScreen msg =
-    Delay.sequence
-        [ ( 0, ShowLoadingScreen )
-        , ( 1000, msg )
-        , ( 2000, HideLoadingScreen )
-        ]
-
-
-updateContext : Model -> (Context -> Context) -> Model
-updateContext model f =
-    { model | scene = Scene.map f model.scene }
-
-
 
 -- Title
 
@@ -244,6 +229,9 @@ exitTitle model destination =
 
         Title.ToIntro ->
             ( model, trigger InitIntro )
+
+        Title.ToGarden ->
+            ( model, goToGarden )
 
 
 
@@ -276,7 +264,17 @@ initHub level =
 
 updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
 updateHub =
-    updateScene Hub HubMsg Hub.update |> Exit.onExit handleStartLevel
+    updateScene Hub HubMsg Hub.update |> Exit.onExit exitHub
+
+
+exitHub : Model -> Hub.Destination -> ( Model, Cmd Msg )
+exitHub model destination =
+    case destination of
+        Hub.ToLevel level ->
+            handleStartLevel model level
+
+        Hub.ToGarden ->
+            ( model, goToGarden )
 
 
 handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
@@ -308,9 +306,7 @@ updateTutorial =
 
 exitTutorial : Model -> () -> ( Model, Cmd Msg )
 exitTutorial model _ =
-    ( moveBackdropToScene model
-    , Cmd.none
-    )
+    ( moveBackdropToScene model, Cmd.none )
 
 
 
@@ -401,9 +397,14 @@ updateSummary =
     updateScene Summary SummaryMsg Summary.update |> Exit.onExit exitSummary
 
 
-exitSummary : Model -> () -> ( Model, Cmd Msg )
-exitSummary model _ =
-    ( clearBackdrop model, goToHubReachedLevel model )
+exitSummary : Model -> Summary.Destination -> ( Model, Cmd Msg )
+exitSummary model destination =
+    case destination of
+        Summary.ToHub ->
+            ( clearBackdrop model, goToHubReachedLevel model )
+
+        Summary.ToGarden ->
+            ( clearBackdrop model, trigger InitGarden )
 
 
 
@@ -492,8 +493,31 @@ syncContext model scene =
     Scene.map (always <| Scene.getContext model.scene) scene
 
 
+updateContext : Model -> (Context -> Context) -> Model
+updateContext model f =
+    { model | scene = Scene.map f model.scene }
+
+
 
 -- Misc
+
+
+withLoadingScreen : Msg -> Cmd Msg
+withLoadingScreen msg =
+    Delay.sequence
+        [ ( 0, ShowLoadingScreen )
+        , ( 1000, msg )
+        , ( 2000, HideLoadingScreen )
+        ]
+
+
+goToGarden : Cmd Msg
+goToGarden =
+    Delay.sequence
+        [ ( 0, ShowLoadingScreen )
+        , ( 3000, HideLoadingScreen )
+        , ( 0, InitGarden )
+        ]
 
 
 reloadCurrentLevel : Model -> Cmd Msg
@@ -661,10 +685,13 @@ menu scene =
             renderMenu model.context TitleMsg Title.menuOptions
 
         Hub model ->
-            renderMenu model.context HubMsg []
+            renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
             renderMenu model.context LevelMsg Level.menuOptions
+
+        Garden model ->
+            renderMenu model.context GardenMsg Garden.menuOptions
 
         _ ->
             Menu.fadeOut

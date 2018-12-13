@@ -1,9 +1,10 @@
 module Scenes.Summary.Sunflower exposing
-    ( hidden
+    ( background
+    , hidden
     , visible
     )
 
-import Css.Color exposing (Color)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linear, transition)
@@ -28,6 +29,11 @@ visible =
 hidden : Window -> Svg msg
 hidden =
     view Hidden
+
+
+background : Color
+background =
+    Color.meadowGreen
 
 
 view : Visibility -> Window -> Svg msg

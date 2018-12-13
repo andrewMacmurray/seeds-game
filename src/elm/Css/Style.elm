@@ -17,6 +17,7 @@ module Css.Style exposing
     , left
     , leftAuto
     , leftPill
+    , lineHeight
     , marginAuto
     , marginBottom
     , marginLeft
@@ -36,6 +37,7 @@ module Css.Style exposing
     , rightAuto
     , rightPill
     , showIf
+    , size
     , stroke
     , style
     , styles
@@ -46,12 +48,13 @@ module Css.Style exposing
     , transformOrigin
     , transformOriginPx
     , width
-    , widthHeight
+    , windowDimensions
     )
 
 import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
 import Css.Unit exposing (..)
+import Data.Window exposing (Window)
 import Html exposing (Attribute, Html)
 import Html.Attributes
 import Svg
@@ -318,8 +321,16 @@ background =
     property "background"
 
 
-widthHeight : Float -> List Style
-widthHeight n =
+windowDimensions : Window -> Style
+windowDimensions window =
+    compose
+        [ width <| toFloat window.width
+        , height <| toFloat window.height
+        ]
+
+
+size : Float -> List Style
+size n =
     [ width n
     , height n
     ]
@@ -353,6 +364,11 @@ opacity o =
 stroke : String -> Style
 stroke =
     property "stroke"
+
+
+lineHeight : Float -> Style
+lineHeight n =
+    property "line-height" <| String.fromFloat n
 
 
 

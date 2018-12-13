@@ -1,6 +1,10 @@
-module Scenes.Summary.Cornflower exposing (hidden, visible)
+module Scenes.Summary.Cornflower exposing
+    ( background
+    , hidden
+    , visible
+    )
 
-import Css.Color exposing (Color)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
@@ -20,6 +24,11 @@ visible =
 hidden : Window -> Svg msg
 hidden =
     view Hidden
+
+
+background : Color
+background =
+    Color.rgb 16 154 217
 
 
 type Visibility
@@ -83,9 +92,9 @@ flowers visibility window =
 
         Visible ->
             Svg.g []
-                [ cornflower window 300 1000 |> translated 0 -35
-                , cornflower window 150 1500 |> translated -130 65
-                , cornflower window 150 2000 |> translated 130 65
+                [ cornflower window 250 1000 |> translated 0 -35
+                , cornflower window 150 1500 |> translated -120 65
+                , cornflower window 150 2000 |> translated 120 65
                 ]
 
 

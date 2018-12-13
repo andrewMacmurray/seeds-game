@@ -1,8 +1,10 @@
 module Scenes.Hub exposing
-    ( Model
+    ( Destination(..)
+    , Model
     , Msg
     , getContext
     , init
+    , menuOptions
     , update
     , updateContext
     , view
@@ -36,6 +38,7 @@ import Task exposing (Task)
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives exposing (renderLivesLeft)
+import Views.Menu as Menu
 import Views.Seed.All exposing (renderSeed)
 import Views.Seed.Mono exposing (greyedOutSeed)
 import Worlds
@@ -60,7 +63,13 @@ type Msg
     | ClearCurrentLevel
     | StartLevel Levels.Key
     | ExitToLevel Levels.Key
+    | ExitToGarden
     | DomNoOp (Result Dom.Error ())
+
+
+type Destination
+    = ToLevel Levels.Key
+    | ToGarden
 
 
 
@@ -75,6 +84,12 @@ getContext model =
 updateContext : (Context -> Context) -> Model -> Model
 updateContext f model =
     { model | context = f model.context }
+
+
+menuOptions : List (Menu.Option Msg)
+menuOptions =
+    [ Menu.option ExitToGarden "Garden"
+    ]
 
 
 
@@ -102,7 +117,7 @@ initialState context =
 -- Update
 
 
-update : Msg -> Model -> Exit.With Levels.Key ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetInfoState infoWindow ->
@@ -142,7 +157,10 @@ update msg model =
                 ]
 
         ExitToLevel level ->
-            exitWith level model
+            exitWith (ToLevel level) model
+
+        ExitToGarden ->
+            exitWith ToGarden model
 
 
 

@@ -35,7 +35,7 @@ scaleInFade delay elements =
         ]
         [ Svg.g
             [ Style.svgStyles
-                [ Animation.animation "scale-in" 2000 [ Animation.ease, Animation.delay delay ]
+                [ Animation.animation "scale-in" 1000 [ Animation.ease, Animation.delay delay ]
                 , Style.transformOriginPx (vbWidth / 2) vbHeight
                 ]
             ]
@@ -57,7 +57,7 @@ animateCorePetal delay i petal =
     Svg.g
         [ Style.svgStyles
             [ Style.opacity 0
-            , Animation.animation "bulge-mini" 500 [ Animation.delay <| (i * 38) + 1300 + delay ]
+            , Animation.animation "fade-in" 200 [ Animation.delay <| (i * 15) + 1300 + delay ]
             , Style.transformOriginPx (vbWidth / 2) vbHeight
             ]
         ]

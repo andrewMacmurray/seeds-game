@@ -55,8 +55,8 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
     let
         center =
             Point2d.fromCoordinates
-                ( toFloat <| window.width // 2
-                , toFloat <| window.height // 2
+                ( toFloat window.width / 2
+                , toFloat window.height / 2
                 )
 
         yAxis =
@@ -71,7 +71,7 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
 hillFullScreen : Window -> Float -> Color -> List Style -> List (Element msg) -> Svg msg
 hillFullScreen window slope color hillStyles elements =
     Svg.svg
-        [ y_ <| toFloat <| window.height // 2
+        [ y_ <| toFloat window.height / 2
         , x_ 0
         , width_ 1000
         , height_ 1200
