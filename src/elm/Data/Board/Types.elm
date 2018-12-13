@@ -121,6 +121,7 @@ type TileType
 type SeedType
     = Sunflower
     | Chrysanthemum
+    | Cornflower
     | Lupin
     | Marigold
     | Rose

@@ -1,26 +1,36 @@
-module Views.Seed.Twin exposing (lupin, marigold, sunflower, twin)
+module Views.Seed.Twin exposing
+    ( cornflower
+    , lupin
+    , marigold
+    , sunflower
+    )
 
-import Css.Color exposing (brown, chocolate, crimson, darkRed, gold, lightBrown)
+import Css.Color as Color exposing (Color)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
 sunflower : Svg msg
 sunflower =
-    twin ( chocolate, lightBrown )
+    twin ( Color.chocolate, Color.lightBrown )
+
+
+cornflower : Svg msg
+cornflower =
+    twin ( "#242741", "#C0C6D8" )
 
 
 marigold : Svg msg
 marigold =
-    twin ( gold, darkRed )
+    twin ( Color.gold, Color.darkRed )
 
 
 lupin : Svg msg
 lupin =
-    twin ( crimson, brown )
+    twin ( Color.crimson, Color.brown )
 
 
-twin : ( String, String ) -> Svg msg
+twin : ( Color, Color ) -> Svg msg
 twin ( left, right ) =
     svg
         [ x "0px"

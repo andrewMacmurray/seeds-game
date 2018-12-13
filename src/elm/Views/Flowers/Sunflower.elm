@@ -14,7 +14,7 @@ import Svg.Attributes exposing (..)
 
 static : Svg msg
 static =
-    Svg.svg [ viewBox_ -30 -25 237 220, width "100%" ]
+    Svg.svg [ viewBox_ vbMinX vbMinY vbWidth vbHeight, width "100%" ]
         [ Svg.g [] petals
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
@@ -26,7 +26,7 @@ static =
 
 animated : Int -> Svg msg
 animated delayMs =
-    Svg.svg [ viewBox_ -30 -25 237 220, width "100%" ]
+    Svg.svg [ viewBox_ vbMinX vbMinY vbWidth vbHeight, width "100%" ]
         [ Svg.g [] <| List.indexedMap (fadePetal delayMs) petals
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
@@ -82,3 +82,23 @@ petals =
     , Svg.path [ d "M88 89s33 7 45 16c13 9 30 36 30 36s-27 3-41-4c-15-8-34-24-37-30-2-7 3-18 3-18", fill Color.petalOrange ]
         []
     ]
+
+
+vbWidth : Float
+vbWidth =
+    237
+
+
+vbHeight : Float
+vbHeight =
+    220
+
+
+vbMinX : Float
+vbMinX =
+    -30
+
+
+vbMinY : Float
+vbMinY =
+    -25

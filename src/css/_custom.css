@@ -3,10 +3,6 @@ body {
   font-family: var(--sans-serif);
 }
 
-img {
-  max-width: 100%;
-}
-
 div {
   user-select: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);

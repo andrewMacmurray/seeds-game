@@ -1,4 +1,4 @@
-module Scenes.Intro.RollingHills exposing
+module Scenes.Intro.SunflowerMeadow exposing
     ( State(..)
     , view
     )
