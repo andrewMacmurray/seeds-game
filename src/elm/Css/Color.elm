@@ -24,6 +24,7 @@ module Css.Color exposing
     , lightGold
     , lightGray
     , lightGreen
+    , lightGreyYellow
     , lightOrange
     , lightPine
     , lightYellow
@@ -40,7 +41,6 @@ module Css.Color exposing
     , seedPodGradient
     , silver
     , skyGreen
-    , skyYellow
     , softRed
     , sunflowerOffYellow
     , sunflowerYellow
@@ -142,6 +142,11 @@ lightGold =
     "rgb(255, 199, 19)"
 
 
+lightGreyYellow : Color
+lightGreyYellow =
+    "rgb(255, 223, 119)"
+
+
 darkYellow : Color
 darkYellow =
     "rgb(201, 153, 6)"
@@ -165,11 +170,6 @@ sunflowerOffYellow =
 yellow : Color
 yellow =
     "rgb(255, 234, 124)"
-
-
-skyYellow : Color
-skyYellow =
-    "rgb(253, 227, 142)"
 
 
 blockYellow : Color
@@ -229,7 +229,7 @@ lightGreen =
 
 skyGreen : Color
 skyGreen =
-    "rgb(130, 255, 160)"
+    "rgb(164, 255, 186)"
 
 
 meadowGreen : Color

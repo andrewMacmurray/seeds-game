@@ -103,7 +103,7 @@ introSequence =
     sequence
         [ ( 100, SetBackdrop Color.skyGreen )
         , ( 1000, ShowDyingLandscape )
-        , ( 4000, SetBackdrop Color.skyYellow )
+        , ( 4000, SetBackdrop Color.lightGreyYellow )
         , ( 1000, ShowText )
         , ( 1000, KillEnvironment )
         , ( 2000, HideDyingLandscape )
