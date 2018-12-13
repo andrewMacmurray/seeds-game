@@ -20,6 +20,10 @@ div {
   height: 100%;
 }
 
+.tracked-ultra {
+  letter-spacing: var(--letter-spacing-3);
+}
+
 .center {
   margin-right: auto;
   margin-left: auto;

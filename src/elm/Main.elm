@@ -70,19 +70,19 @@ type alias Model =
 
 type Msg
     = TitleMsg Title.Msg
-    | LevelMsg Level.Msg
-    | TutorialMsg Tutorial.Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
-    | SummaryMsg Summary.Msg
+    | TutorialMsg Tutorial.Msg
+    | LevelMsg Level.Msg
     | RetryMsg Retry.Msg
+    | SummaryMsg Summary.Msg
     | GardenMsg Garden.Msg
-    | InitTutorial Tutorial.Config Levels.LevelConfig
-    | InitLevel Levels.LevelConfig
     | InitIntro
     | InitHub Levels.Key
-    | InitSummary
+    | InitTutorial Tutorial.Config Levels.LevelConfig
+    | InitLevel Levels.LevelConfig
     | InitRetry
+    | InitSummary
     | InitGarden
     | ShowLoadingScreen
     | HideLoadingScreen
@@ -102,7 +102,8 @@ type Msg
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialState flags
-    , bounceKeyframes flags.window
+      -- , bounceKeyframes flags.window
+    , trigger InitGarden
     )
 
 
@@ -140,14 +141,14 @@ update msg ({ scene, backdrop } as model) =
         ( HubMsg hub, Hub hubModel, _ ) ->
             updateHub hub hubModel model
 
+        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
+            updateTutorial tutorial tutorialModel model
+
         ( LevelMsg level, Level levelModel, _ ) ->
             updateLevel level levelModel model
 
         ( LevelMsg level, _, Just (Level levelModel) ) ->
             updateLevelBackdrop level levelModel model
-
-        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
-            updateTutorial tutorial tutorialModel model
 
         ( RetryMsg retry, Retry retryModel, _ ) ->
             updateRetry retry retryModel model
@@ -158,23 +159,23 @@ update msg ({ scene, backdrop } as model) =
         ( GardenMsg garden, Garden gardenModel, _ ) ->
             updateGarden garden gardenModel model
 
-        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
-            initTutorial tutorialConfig levelConfig model
-
-        ( InitLevel level, _, _ ) ->
-            initLevel level model
-
         ( InitIntro, _, _ ) ->
             initIntro model
 
         ( InitHub level, _, _ ) ->
             initHub level model
 
-        ( InitSummary, _, _ ) ->
-            initSummary model
+        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
+            initTutorial tutorialConfig levelConfig model
+
+        ( InitLevel level, _, _ ) ->
+            initLevel level model
 
         ( InitRetry, _, _ ) ->
             initRetry model
+
+        ( InitSummary, _, _ ) ->
+            initSummary model
 
         ( InitGarden, _, _ ) ->
             initGarden model
@@ -246,6 +247,49 @@ exitTitle model destination =
 
 
 
+-- Intro
+
+
+initIntro : Model -> ( Model, Cmd Msg )
+initIntro =
+    initScene Intro IntroMsg Intro.init
+
+
+updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
+updateIntro =
+    updateScene Intro IntroMsg Intro.update |> Exit.onExit exitIntro
+
+
+exitIntro : Model -> () -> ( Model, Cmd Msg )
+exitIntro model _ =
+    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
+
+
+
+-- Hub
+
+
+initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+initHub level =
+    initScene Hub HubMsg <| Hub.init level
+
+
+updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
+updateHub =
+    updateScene Hub HubMsg Hub.update |> Exit.onExit handleStartLevel
+
+
+handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
+handleStartLevel model level =
+    case Worlds.tutorial level of
+        Just tutorialConfig ->
+            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
+
+        Nothing ->
+            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
+
+
+
 -- Tutorial
 
 
@@ -267,30 +311,6 @@ exitTutorial model _ =
     ( moveBackdropToScene model
     , Cmd.none
     )
-
-
-
--- Retry
-
-
-initRetry : Model -> ( Model, Cmd Msg )
-initRetry =
-    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
-
-
-updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
-updateRetry =
-    updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
-
-
-exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
-exitRetry model destination =
-    case destination of
-        Retry.ToLevel ->
-            ( clearBackdrop model, reloadCurrentLevel model )
-
-        Retry.ToHub ->
-            ( clearBackdrop model, goToHubCurrentLevel model )
 
 
 
@@ -344,27 +364,27 @@ levelWin model =
 
 
 
--- Hub
+-- Retry
 
 
-initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
-initHub level =
-    initScene Hub HubMsg <| Hub.init level
+initRetry : Model -> ( Model, Cmd Msg )
+initRetry =
+    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
 
 
-updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
-updateHub =
-    updateScene Hub HubMsg Hub.update |> Exit.onExit handleStartLevel
+updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
+updateRetry =
+    updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
 
 
-handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
-handleStartLevel model level =
-    case Worlds.tutorial level of
-        Just tutorialConfig ->
-            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
+exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
+exitRetry model destination =
+    case destination of
+        Retry.ToLevel ->
+            ( clearBackdrop model, reloadCurrentLevel model )
 
-        Nothing ->
-            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
+        Retry.ToHub ->
+            ( clearBackdrop model, goToHubCurrentLevel model )
 
 
 
@@ -384,25 +404,6 @@ updateSummary =
 exitSummary : Model -> () -> ( Model, Cmd Msg )
 exitSummary model _ =
     ( clearBackdrop model, goToHubReachedLevel model )
-
-
-
--- Intro
-
-
-initIntro : Model -> ( Model, Cmd Msg )
-initIntro =
-    initScene Intro IntroMsg Intro.init
-
-
-updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
-updateIntro =
-    updateScene Intro IntroMsg Intro.update |> Exit.onExit exitIntro
-
-
-exitIntro : Model -> () -> ( Model, Cmd Msg )
-exitIntro model _ =
-    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
 
 
 

@@ -21,12 +21,12 @@ import Scenes.Tutorial as Tutorial
 
 type Scene
     = Title Title.Model
-    | Level Level.Model
-    | Tutorial Tutorial.Model
     | Intro Intro.Model
     | Hub Hub.Model
-    | Summary Summary.Model
+    | Tutorial Tutorial.Model
+    | Level Level.Model
     | Retry Retry.Model
+    | Summary Summary.Model
     | Garden Garden.Model
 
 
@@ -36,23 +36,23 @@ map f scene =
         Title model ->
             Title <| Title.updateContext f model
 
-        Level model ->
-            Level <| Level.updateContext f model
-
-        Tutorial model ->
-            Tutorial <| Tutorial.updateContext f model
-
         Intro model ->
             Intro <| Intro.updateContext f model
 
         Hub model ->
             Hub <| Hub.updateContext f model
 
-        Summary model ->
-            Summary <| Summary.updateContext f model
+        Tutorial model ->
+            Tutorial <| Tutorial.updateContext f model
+
+        Level model ->
+            Level <| Level.updateContext f model
 
         Retry model ->
             Retry <| Retry.updateContext f model
+
+        Summary model ->
+            Summary <| Summary.updateContext f model
 
         Garden model ->
             Garden <| Garden.updateContext f model
@@ -64,23 +64,23 @@ getContext scene =
         Title model ->
             Title.getContext model
 
-        Level model ->
-            Level.getContext model
-
-        Tutorial model ->
-            Tutorial.getContext model
-
         Intro model ->
             Intro.getContext model
 
         Hub model ->
             Hub.getContext model
 
-        Summary model ->
-            Summary.getContext model
+        Tutorial model ->
+            Tutorial.getContext model
+
+        Level model ->
+            Level.getContext model
 
         Retry model ->
             Retry.getContext model
+
+        Summary model ->
+            Summary.getContext model
 
         Garden model ->
             Garden.getContext model

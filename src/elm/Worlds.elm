@@ -75,7 +75,7 @@ number =
 
 list : List ( WorldConfig, List Key )
 list =
-    Levels.worldsToList all
+    Levels.worldsList all
 
 
 next : Key -> Key
