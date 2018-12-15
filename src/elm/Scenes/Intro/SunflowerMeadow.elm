@@ -5,7 +5,7 @@ module Scenes.Intro.SunflowerMeadow exposing
 
 import Css.Animation as Animation exposing (animation)
 import Css.Color as Color
-import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles, transformOrigin)
+import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Transition as Transition
 import Data.Window as Window exposing (Window)
@@ -27,7 +27,11 @@ type State
 view : Window -> State -> Html msg
 view window state =
     div []
-        [ div [ class "relative z-5 center", svgStyle <| Style.width 200 ] [ Sunflower.animated 0 ]
+        [ div
+            [ class "z-5 center relative"
+            , Style.style [ Style.width 200 ]
+            ]
+            [ Sunflower.animated 0 ]
         , hills window state
         ]
 

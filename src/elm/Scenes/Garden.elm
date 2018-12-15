@@ -326,19 +326,22 @@ renderSelectedFlower model =
 
         flowerLayer =
             getFlowerLayer model.selectedFlower window
+
+        visibility =
+            model.flowerVisibility
     in
-    case model.flowerVisibility of
+    case visibility of
         Entering ->
             Keyed.node "div"
-                [ style [ backgroundColor Color.transparent ] ]
-                [ ( "flowers", flowerLayer.hidden ) ]
+                []
+                [ ( "flowers", flowerLayer.hidden )
+                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
+                ]
 
         Visible ->
             Keyed.node "div"
                 [ style
                     [ windowDimensions window
-                    , backgroundColor flowerLayer.background
-                    , Transition.transition "background-color" 1000 [ Transition.linear, Transition.delay 500 ]
                     ]
                 , class "relative flex items-center justify-center"
                 ]
@@ -350,39 +353,63 @@ renderSelectedFlower model =
                         ]
                         [ cross ]
                   )
-                , ( "flowers"
-                  , flowerLayer.visible
-                  )
-                , ( "text"
-                  , p
-                        [ style
-                            [ color Color.white
-                            , lineHeight 2
-                            , marginTop 150
-                            , maxWidth 350
-                            , paddingHorizontal 10
-                            , opacity 0
-                            , Animation.animation "fade-in" 1000 [ Animation.delay 1500 ]
-                            ]
-                        , class "f7 tracked absolute z-7"
-                        ]
-                        [ text flowerLayer.description ]
-                  )
+                , ( "flowers", flowerLayer.visible )
+                , ( "text", renderFlowerLayerText flowerLayer )
+                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
                 ]
 
         Leaving ->
             Keyed.node "div"
-                [ style
-                    [ Animation.animation "fade-out" 1000 [ Animation.linear ]
-                    , windowDimensions window
-                    , backgroundColor flowerLayer.background
-                    ]
+                [ style [ Animation.animation "fade-out" 800 [ Animation.linear ] ]
                 , class "touch-disabled"
                 ]
-                [ ( "flowers", flowerLayer.visible ) ]
+                [ ( "flowers", flowerLayer.visible )
+                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
+                ]
 
         Hidden ->
             span [] []
+
+
+renderFlowerLayerText flowerLayer =
+    p
+        [ style
+            [ color Color.white
+            , lineHeight 2
+            , marginTop 150
+            , maxWidth 350
+            , paddingHorizontal 10
+            , opacity 0
+            , Animation.animation "fade-in" 1000 [ Animation.delay 1500 ]
+            ]
+        , class "f6 tracked absolute z-7"
+        ]
+        [ text flowerLayer.description ]
+
+
+renderFlowerBackdrop window flowerLayer visibility =
+    case visibility of
+        Entering ->
+            div
+                [ style
+                    [ windowDimensions window
+                    , opacity 0
+                    , Transition.transition "opacity" 1000 [ Transition.linear, Transition.delay 500 ]
+                    , backgroundColor flowerLayer.background
+                    ]
+                ]
+                []
+
+        _ ->
+            div
+                [ style
+                    [ backgroundColor flowerLayer.background
+                    , windowDimensions window
+                    , opacity 1
+                    , Transition.transition "opacity" 1000 [ Transition.linear, Transition.delay 500 ]
+                    ]
+                ]
+                []
 
 
 getFlowerLayer seedType window =
@@ -468,10 +495,10 @@ flowerDescription : SeedType -> String
 flowerDescription seedType =
     case seedType of
         Sunflower ->
-            "Sunflowers are native to North America but are found across the world. During growth their bright yellow flowers turn to face the sun. The flowers attract bees and their seeds are a food source for animals and humans."
+            "Sunflowers are native to North America but bloom across the world. During growth their bright yellow flowers turn to face the sun. Their seeds are an important food source for both humans and animals."
 
         Chrysanthemum ->
-            "Chrysanthemums are native to Aisa and northeastern Europe, with a huge variety in China. They bloom in early Autumn in many colours and shapes. In Acient China their roots were used as pain relief medicine."
+            "Chrysanthemums are native to Aisa and northeastern Europe, with the largest variety in China. They bloom early in Autumn, in many different colours and shapes. The Ancient Chinese used Chrysanthemum roots in pain relief medicine."
 
         Cornflower ->
             "Cornflowers are a wildflower native to Europe. In the past their bright blue heads could be seen amongst fields of corn. They are now endangered in their natural habitat from Agricultural intensification."

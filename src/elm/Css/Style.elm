@@ -371,6 +371,15 @@ lineHeight n =
     property "line-height" <| String.fromFloat n
 
 
+showIf : Bool -> Style
+showIf predicate =
+    if predicate then
+        opacity 1
+
+    else
+        opacity 0
+
+
 
 -- Class Helpers
 
@@ -378,11 +387,3 @@ lineHeight n =
 classes : List String -> Html.Attribute msg
 classes =
     Html.Attributes.class << String.join " "
-
-
-showIf : Bool -> Html.Attribute msg
-showIf predicate =
-    Html.Attributes.classList
-        [ ( "o-0", not predicate )
-        , ( "o-100", predicate )
-        ]

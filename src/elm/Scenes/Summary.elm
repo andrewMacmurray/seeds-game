@@ -350,14 +350,18 @@ fadeOverlay window =
 worldCompleteText : SeedType -> Model -> Html msg
 worldCompleteText seedType model =
     div
-        [ style [ color Color.white, transitionAll 1000 [], top <| toFloat model.context.window.height / 2 + 80 ]
+        [ style
+            [ color Color.white
+            , transitionAll 1000 []
+            , top <| toFloat model.context.window.height / 2 + 80
+            , textVisibility model.text
+            ]
         , class "tc absolute tracked w-100 z-5"
-        , textVisibility model.text
         ]
         [ text <| textContent seedType model.text ]
 
 
-textVisibility : TextState -> Attribute msg
+textVisibility : TextState -> Style
 textVisibility text =
     case text of
         First visible ->
@@ -401,9 +405,9 @@ renderResourcesLayer ({ context } as model) =
                     , marginTop 100
                     , marginBottom -40
                     , transition "opacity" 1000 []
+                    , showIf model.levelSuccessMessageVisible
                     ]
                 , class "tc"
-                , showIf model.levelSuccessMessageVisible
                 ]
                 [ text "We're one step closer..." ]
             ]
@@ -419,8 +423,11 @@ renderResources ({ context } as model) =
                 |> List.map (renderResource model.resourceState context.progress)
     in
     div
-        [ style [ height 50, transition "opacity" 1000 [] ]
-        , resourceVisibility model.resourceState
+        [ style
+            [ height 50
+            , resourceVisibility model.resourceState
+            , transition "opacity" 1000 []
+            ]
         ]
         resources
 
@@ -437,8 +444,10 @@ renderSeedBank model seedType =
     in
     div []
         [ div
-            [ style [ transition "opacity" 1000 [ Transition.delay 500 ] ]
-            , resourceVisibility model.resourceState
+            [ style
+                [ transition "opacity" 1000 [ Transition.delay 500 ]
+                , resourceVisibility model.resourceState
+                ]
             ]
             [ renderResourceFill model.resourceState progress (Seed seedType) ]
         , innerSeedBank model.seedBankState seedType fillLevel
@@ -474,7 +483,7 @@ innerSeedBank seedBankState seedType fillLevel =
                 ]
 
 
-resourceVisibility : ResourceState -> Attribute msg
+resourceVisibility : ResourceState -> Style
 resourceVisibility resourceState =
     showIf <| resourceState == Waiting || resourceState == Filling
 

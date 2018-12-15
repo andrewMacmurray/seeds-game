@@ -93,8 +93,8 @@ flowers visibility window =
         Visible ->
             Svg.g []
                 [ cornflower window 250 1000 |> translated 0 -35
-                , cornflower window 150 1500 |> translated -120 65
-                , cornflower window 150 2000 |> translated 120 65
+                , cornflower window 150 1500 |> translated -120 45
+                , cornflower window 150 2000 |> translated 120 45
                 ]
 
 

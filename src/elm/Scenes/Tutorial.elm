@@ -294,15 +294,15 @@ view model =
         , style
             [ backgroundColor "rgba(255, 252, 227, 0.98)"
             , transitionAll 1200 [ linear ]
+            , showIf model.canvasVisible
             ]
-        , showIf model.canvasVisible
         ]
         [ div
             [ style
                 [ Style.property "margin-top" (pc -3)
                 , transitionAll 800 [ linear ]
+                , showIf model.containerVisible
                 ]
-            , showIf model.containerVisible
             , class "tc"
             ]
             [ tutorialBoard model
@@ -310,8 +310,8 @@ view model =
                 [ style
                     [ color darkYellow
                     , transitionAll 500 []
+                    , showIf model.textVisible
                     ]
-                , showIf model.textVisible
                 ]
                 [ text <| getText model.text model.currentText ]
             ]
@@ -321,8 +321,8 @@ view model =
                 [ color greyYellow
                 , bottom 30
                 , transitionAll 800 [ linear, delay 800 ]
+                , showIf model.containerVisible
                 ]
-            , showIf model.containerVisible
             , class "absolute left-0 right-0 pointer tc ttu tracked-mega f6"
             ]
             [ text "skip" ]
@@ -346,10 +346,10 @@ tutorialBoard model =
     in
     div
         [ class "center relative"
-        , showIf model.boardVisible
         , style
             [ width <| toFloat <| boardWidth viewModel
             , height <| toFloat <| boardHeight viewModel
+            , showIf model.boardVisible
             , transitionAll 500 []
             ]
         ]
@@ -378,8 +378,8 @@ renderResourceBank ({ context, resourceBankVisible, resourceBank } as model) =
         [ style
             [ transitionAll 800 []
             , transform [ translate offsetX offsetY ]
+            , showIf resourceBankVisible
             ]
-        , showIf resourceBankVisible
         ]
         [ renderScoreIcon resourceBank <| Tile.baseSizeY * tileScale ]
 
@@ -406,9 +406,7 @@ fadeLine model (( _, tile ) as move) =
             hasLine tile
     in
     div
-        [ style [ transitionAll 500 [] ]
-        , showIf visible
-        ]
+        [ style [ transitionAll 500 [], showIf visible ] ]
         [ renderLine model.context.window move ]
 
 

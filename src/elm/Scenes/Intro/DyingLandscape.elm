@@ -4,7 +4,7 @@ module Scenes.Intro.DyingLandscape exposing
     , view
     )
 
-import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
+import Css.Style as Style exposing (Style)
 import Css.Transform as Transform exposing (translateY)
 import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linear, transition)
 import Data.Window as Window exposing (Window)
@@ -57,30 +57,28 @@ view window env state =
     in
     Svg.svg
         [ windowViewBox_ window
-        , width "100%"
-        , height "100%"
         , preserveAspectRatio "none"
         , class "fixed z-1 top-0"
         ]
-        [ Svg.g [ hillStyles window state (hillOffset -375 -400) 0 ]
+        [ Svg.g [ hillStyles window state (hillOffset -250 -400) 0 ]
             [ Hills.layer window
                 slope
                 ( hillColor "#1D4E34" "#898755", [ transitionFill 0 ], [] )
                 ( hillColor "#19B562" "#866942", [ transitionFill 300 ], [] )
             ]
-        , Svg.g [ hillStyles window state (hillOffset -200 -250) 500 ]
+        , Svg.g [ hillStyles window state (hillOffset -125 -250) 500 ]
             [ Hills.layer window
                 slope
                 ( hillColor "#1D7145" "#7D7E7D", [ transitionFill 600 ], elements2Left )
                 ( hillColor "#1F8D52" "#978A49", [ transitionFill 900 ], elements2Right )
             ]
-        , Svg.g [ hillStyles window state (hillOffset -50 -100) 1000 ]
+        , Svg.g [ hillStyles window state (hillOffset 0 -100) 1000 ]
             [ Hills.layer window
                 slope
                 ( hillColor "#2BA765" "#484848", [ transitionFill 1200 ], elements3Left )
                 ( hillColor "#185F39" "#372c1f", [ transitionFill 1500 ], elements3Right )
             ]
-        , Svg.g [ hillStyles window state (hillOffset 100 50) 1000 ]
+        , Svg.g [ hillStyles window state (hillOffset 125 50) 1000 ]
             [ Hills.layer window
                 slope
                 ( hillColor "#1F8D52" "#6e6e4e", [ transitionFill 1200 ], elements4Left )
