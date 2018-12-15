@@ -74,7 +74,7 @@ baseTileStyles window (( _, tile ) as move) =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , widthHeight <| toFloat <| round <| tileSizeMap tile * Tile.scale window
+        , size <| toFloat <| round <| tileSizeMap tile * Tile.scale window
         , tileBackgroundMap tile
         ]
 

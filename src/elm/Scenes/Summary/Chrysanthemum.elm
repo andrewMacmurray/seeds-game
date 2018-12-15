@@ -1,9 +1,10 @@
 module Scenes.Summary.Chrysanthemum exposing
-    ( hidden
+    ( background
+    , hidden
     , visible
     )
 
-import Css.Color exposing (Color)
+import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
@@ -25,6 +26,11 @@ hidden =
     view Hidden
 
 
+background : Color
+background =
+    Color.purple
+
+
 type Visibility
     = Visible
     | Hidden
@@ -36,10 +42,12 @@ view visibility window =
         [ windowViewBox_ window
         , class "fixed z-1 top-0"
         ]
-        [ hills "#FFA538" "#9665B4" "#DB4D73" -600 900 visibility window
-        , hills "#E268C4" "#F09AEF" "#F08D42" -400 600 visibility window
-        , hills "#E65D8F" "#623D79" "#BC65D8" -200 300 visibility window
-        , hills "#FFA538" "#9665B4" "#DB4D73" 0 0 visibility window
+        [ hills "#E268C4" "#F09AEF" "#F08D42" -550 1500 visibility window
+        , hills "#E65D8F" "#9665B4" "#BC65D8" -440 1200 visibility window
+        , hills "#FFA538" "#623D79" "#DB4D73" -330 900 visibility window
+        , hills "#E268C4" "#F09AEF" "#F08D42" -220 600 visibility window
+        , hills "#E65D8F" "#9665B4" "#BC65D8" -110 300 visibility window
+        , hills "#FFA538" "#623D79" "#DB4D73" 0 0 visibility window
         , flowers visibility window
         ]
 
@@ -73,7 +81,7 @@ hills left center right offset delay visibility window =
                     toFloat <| window.height // 2
 
                 Visible ->
-                    offset + 100
+                    offset + 150
 
         translateStyles d el =
             Svg.g

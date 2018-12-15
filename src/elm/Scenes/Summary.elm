@@ -1,5 +1,6 @@
 module Scenes.Summary exposing
-    ( Model
+    ( Destination(..)
+    , Model
     , Msg
     , getContext
     , init
@@ -19,7 +20,7 @@ import Data.Board.Types exposing (..)
 import Data.Levels as Levels
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
-import Exit exposing (continue, exit)
+import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after, sequence, trigger)
 import Helpers.Sine exposing (wave)
 import Html exposing (..)
@@ -43,10 +44,11 @@ import Worlds
 
 type alias Model =
     { context : Context
-    , textState : TextState
+    , text : TextState
     , seedBankState : SeedBankState
     , resourceState : ResourceState
-    , levelSuccessVisible : Bool
+    , levelSuccessMessageVisible : Bool
+    , fadeOut : Bool
     }
 
 
@@ -56,11 +58,13 @@ type Msg
     | ShowLevelSuccess
     | BeginSeedBankTransformation
     | BloomWorldFlower
-    | BackToHub
     | ShowFirstText
     | HideFirstText
     | ShowSecondText
     | HidenSecondText
+    | FadeOut
+    | ExitToHub
+    | ExitToGarden
 
 
 type SeedBankState
@@ -82,6 +86,11 @@ type TextState
 
 type alias TextVisible =
     Bool
+
+
+type Destination
+    = ToHub
+    | ToGarden
 
 
 
@@ -112,10 +121,11 @@ init context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , textState = First False
+    , text = First False
     , seedBankState = Visible
     , resourceState = Waiting
-    , levelSuccessVisible = False
+    , levelSuccessMessageVisible = False
+    , fadeOut = False
     }
 
 
@@ -123,7 +133,7 @@ initialState context =
 -- Update
 
 
-update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
+update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
@@ -136,7 +146,7 @@ update msg model =
                 ]
 
         ShowLevelSuccess ->
-            continue { model | levelSuccessVisible = True } []
+            continue { model | levelSuccessMessageVisible = True } []
 
         BeginSeedBankTransformation ->
             continue
@@ -150,19 +160,25 @@ update msg model =
             continue { model | seedBankState = Blooming } []
 
         ShowFirstText ->
-            continue { model | textState = First True } []
+            continue { model | text = First True } []
 
         HideFirstText ->
-            continue { model | textState = First False } []
+            continue { model | text = First False } []
 
         ShowSecondText ->
-            continue { model | textState = Second True } []
+            continue { model | text = Second True } []
 
         HidenSecondText ->
-            continue { model | textState = Second False } []
+            continue { model | text = Second False } []
 
-        BackToHub ->
-            exit model
+        FadeOut ->
+            continue { model | fadeOut = True } []
+
+        ExitToHub ->
+            exitWith ToHub model
+
+        ExitToGarden ->
+            exitWith ToGarden model
 
 
 handleSuccessMessage : Model -> Cmd Msg
@@ -175,13 +191,14 @@ handleSuccessMessage { context } =
             , ( 3000, HideFirstText )
             , ( 1000, ShowSecondText )
             , ( 3000, HidenSecondText )
-            , ( 2000, BackToHub )
+            , ( 2000, FadeOut )
+            , ( 2000, ExitToGarden )
             ]
 
     else
         sequence
             [ ( 2000, ShowLevelSuccess )
-            , ( 2500, BackToHub )
+            , ( 2500, ExitToHub )
             ]
 
 
@@ -218,6 +235,7 @@ view model =
         [ renderFlowerLayer seedType model.context.window model.seedBankState
         , worldCompleteText seedType model
         , renderResourcesLayer model
+        , renderFadeOut model
         ]
 
 
@@ -286,16 +304,43 @@ getBackgroundFor : SeedType -> Color
 getBackgroundFor seedType =
     case seedType of
         Sunflower ->
-            Color.meadowGreen
+            Sunflower.background
 
         Chrysanthemum ->
-            Color.purple
+            Chrysanthemum.background
 
         Cornflower ->
-            "rgb(16, 154, 217)"
+            Cornflower.background
 
         _ ->
-            Color.meadowGreen
+            Sunflower.background
+
+
+
+-- Fadeout
+
+
+renderFadeOut : Model -> Html msg
+renderFadeOut model =
+    if model.fadeOut then
+        fadeOverlay model.context.window
+
+    else
+        span [] []
+
+
+fadeOverlay : Window -> Html msg
+fadeOverlay window =
+    div
+        [ style
+            [ height <| toFloat window.height
+            , opacity 0
+            , Animation.animation "fade-in" 2000 [ Animation.linear ]
+            , Style.backgroundColor Color.lightYellow
+            ]
+        , class "fixed top-0 w-100 z-7"
+        ]
+        []
 
 
 
@@ -305,16 +350,20 @@ getBackgroundFor seedType =
 worldCompleteText : SeedType -> Model -> Html msg
 worldCompleteText seedType model =
     div
-        [ style [ color Color.white, transitionAll 1000 [], top <| toFloat model.context.window.height / 2 + 80 ]
+        [ style
+            [ color Color.white
+            , transitionAll 1000 []
+            , top <| toFloat model.context.window.height / 2 + 80
+            , textVisibility model.text
+            ]
         , class "tc absolute tracked w-100 z-5"
-        , textVisibility model.textState
         ]
-        [ text <| textContent seedType model.textState ]
+        [ text <| textContent seedType model.text ]
 
 
-textVisibility : TextState -> Attribute msg
-textVisibility textState =
-    case textState of
+textVisibility : TextState -> Style
+textVisibility text =
+    case text of
         First visible ->
             showIf visible
 
@@ -323,8 +372,8 @@ textVisibility textState =
 
 
 textContent : SeedType -> TextState -> String
-textContent seedType textState =
-    case textState of
+textContent seedType text =
+    case text of
         First _ ->
             "You saved the " ++ seedName seedType ++ "!"
 
@@ -356,9 +405,9 @@ renderResourcesLayer ({ context } as model) =
                     , marginTop 100
                     , marginBottom -40
                     , transition "opacity" 1000 []
+                    , showIf model.levelSuccessMessageVisible
                     ]
                 , class "tc"
-                , showIf model.levelSuccessVisible
                 ]
                 [ text "We're one step closer..." ]
             ]
@@ -374,8 +423,11 @@ renderResources ({ context } as model) =
                 |> List.map (renderResource model.resourceState context.progress)
     in
     div
-        [ style [ height 50, transition "opacity" 1000 [] ]
-        , resourceVisibility model.resourceState
+        [ style
+            [ height 50
+            , resourceVisibility model.resourceState
+            , transition "opacity" 1000 []
+            ]
         ]
         resources
 
@@ -392,8 +444,10 @@ renderSeedBank model seedType =
     in
     div []
         [ div
-            [ style [ transition "opacity" 1000 [ Transition.delay 500 ] ]
-            , resourceVisibility model.resourceState
+            [ style
+                [ transition "opacity" 1000 [ Transition.delay 500 ]
+                , resourceVisibility model.resourceState
+                ]
             ]
             [ renderResourceFill model.resourceState progress (Seed seedType) ]
         , innerSeedBank model.seedBankState seedType fillLevel
@@ -429,7 +483,7 @@ innerSeedBank seedBankState seedType fillLevel =
                 ]
 
 
-resourceVisibility : ResourceState -> Attribute msg
+resourceVisibility : ResourceState -> Style
 resourceVisibility resourceState =
     showIf <| resourceState == Waiting || resourceState == Filling
 

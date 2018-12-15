@@ -13,7 +13,7 @@ import Css.Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Window exposing (Window)
+import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
@@ -114,7 +114,7 @@ introSequence =
         , ( 1500, HideText )
         , ( 500, HideGrowingSeeds )
         , ( 0, SetTextColor Color.white )
-        , ( 500, SetText "So they may bloom again on a new world" )
+        , ( 500, SetText "To bloom again on a new world" )
         , ( 1500, InitRollingHills )
         , ( 100, ShowRollingHills )
         , ( 500, SetBackdrop Color.meadowGreen )
@@ -189,12 +189,13 @@ view model =
         ]
         [ p
             [ style
-                [ textOffset model.context.window
+                [ textOffsetTop model.context.window
+                , textOffsetBottom model.context.window
                 , color model.textColor
                 , transitionAll 1000 []
+                , showIf model.textVisible
                 ]
-            , showIf model.textVisible
-            , class "tc f5 f3-ns relative z-2"
+            , class "tc f3 relative z-2"
             ]
             [ text model.text ]
         , skipButton
@@ -230,6 +231,16 @@ renderScene model =
             SM.view model.context.window vis
 
 
-textOffset : Window -> Style
-textOffset window =
-    marginTop <| toFloat <| (window.height // 2) - 120
+textOffsetTop : Window -> Style
+textOffsetTop window =
+    marginTop <| toFloat window.height / 5
+
+
+textOffsetBottom : Window -> Style
+textOffsetBottom window =
+    case Window.width window of
+        Window.Narrow ->
+            marginBottom 50
+
+        _ ->
+            marginBottom 60

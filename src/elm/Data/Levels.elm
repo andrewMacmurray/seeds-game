@@ -29,7 +29,7 @@ module Data.Levels exposing
     , withTutorial
     , world
     , worlds
-    , worldsToList
+    , worldsList
     )
 
 import Css.Color exposing (Color)
@@ -327,8 +327,8 @@ getWorldSizeFromIndex_ worlds_ i =
     getWorld_ (keyFromRaw_ i 1) worlds_ |> Maybe.map worldSize
 
 
-worldsToList : Worlds -> List ( WorldConfig, List Key )
-worldsToList worlds_ =
+worldsList : Worlds -> List ( WorldConfig, List Key )
+worldsList worlds_ =
     worlds_
         |> unboxWorlds_
         |> Dict.toList

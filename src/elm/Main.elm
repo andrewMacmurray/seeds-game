@@ -20,6 +20,7 @@ import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
 import Ports exposing (..)
 import Scene exposing (Scene(..))
+import Scenes.Garden as Garden
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
 import Scenes.Level as Level
@@ -69,18 +70,20 @@ type alias Model =
 
 type Msg
     = TitleMsg Title.Msg
-    | LevelMsg Level.Msg
-    | TutorialMsg Tutorial.Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
-    | SummaryMsg Summary.Msg
+    | TutorialMsg Tutorial.Msg
+    | LevelMsg Level.Msg
     | RetryMsg Retry.Msg
-    | InitTutorial Tutorial.Config Levels.LevelConfig
-    | InitLevel Levels.LevelConfig
+    | SummaryMsg Summary.Msg
+    | GardenMsg Garden.Msg
     | InitIntro
     | InitHub Levels.Key
-    | InitSummary
+    | InitTutorial Tutorial.Config Levels.LevelConfig
+    | InitLevel Levels.LevelConfig
     | InitRetry
+    | InitSummary
+    | InitGarden
     | ShowLoadingScreen
     | HideLoadingScreen
     | OpenMenu
@@ -137,14 +140,14 @@ update msg ({ scene, backdrop } as model) =
         ( HubMsg hub, Hub hubModel, _ ) ->
             updateHub hub hubModel model
 
+        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
+            updateTutorial tutorial tutorialModel model
+
         ( LevelMsg level, Level levelModel, _ ) ->
             updateLevel level levelModel model
 
         ( LevelMsg level, _, Just (Level levelModel) ) ->
             updateLevelBackdrop level levelModel model
-
-        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
-            updateTutorial tutorial tutorialModel model
 
         ( RetryMsg retry, Retry retryModel, _ ) ->
             updateRetry retry retryModel model
@@ -152,11 +155,8 @@ update msg ({ scene, backdrop } as model) =
         ( SummaryMsg summary, Summary summaryModel, _ ) ->
             updateSummary summary summaryModel model
 
-        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
-            initTutorial tutorialConfig levelConfig model
-
-        ( InitLevel level, _, _ ) ->
-            initLevel level model
+        ( GardenMsg garden, Garden gardenModel, _ ) ->
+            updateGarden garden gardenModel model
 
         ( InitIntro, _, _ ) ->
             initIntro model
@@ -164,11 +164,20 @@ update msg ({ scene, backdrop } as model) =
         ( InitHub level, _, _ ) ->
             initHub level model
 
-        ( InitSummary, _, _ ) ->
-            initSummary model
+        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
+            initTutorial tutorialConfig levelConfig model
+
+        ( InitLevel level, _, _ ) ->
+            initLevel level model
 
         ( InitRetry, _, _ ) ->
             initRetry model
+
+        ( InitSummary, _, _ ) ->
+            initSummary model
+
+        ( InitGarden, _, _ ) ->
+            initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
             ( model, generateBackground RandomBackground )
@@ -203,20 +212,6 @@ update msg ({ scene, backdrop } as model) =
             ( model, Cmd.none )
 
 
-withLoadingScreen : Msg -> Cmd Msg
-withLoadingScreen msg =
-    Delay.sequence
-        [ ( 0, ShowLoadingScreen )
-        , ( 1000, msg )
-        , ( 2000, HideLoadingScreen )
-        ]
-
-
-updateContext : Model -> (Context -> Context) -> Model
-updateContext model f =
-    { model | scene = Scene.map f model.scene }
-
-
 
 -- Title
 
@@ -234,6 +229,62 @@ exitTitle model destination =
 
         Title.ToIntro ->
             ( model, trigger InitIntro )
+
+        Title.ToGarden ->
+            ( model, goToGarden )
+
+
+
+-- Intro
+
+
+initIntro : Model -> ( Model, Cmd Msg )
+initIntro =
+    initScene Intro IntroMsg Intro.init
+
+
+updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
+updateIntro =
+    updateScene Intro IntroMsg Intro.update |> Exit.onExit exitIntro
+
+
+exitIntro : Model -> () -> ( Model, Cmd Msg )
+exitIntro model _ =
+    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
+
+
+
+-- Hub
+
+
+initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+initHub level =
+    initScene Hub HubMsg <| Hub.init level
+
+
+updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
+updateHub =
+    updateScene Hub HubMsg Hub.update |> Exit.onExit exitHub
+
+
+exitHub : Model -> Hub.Destination -> ( Model, Cmd Msg )
+exitHub model destination =
+    case destination of
+        Hub.ToLevel level ->
+            handleStartLevel model level
+
+        Hub.ToGarden ->
+            ( model, goToGarden )
+
+
+handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
+handleStartLevel model level =
+    case Worlds.tutorial level of
+        Just tutorialConfig ->
+            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
+
+        Nothing ->
+            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
 
 
 
@@ -255,33 +306,7 @@ updateTutorial =
 
 exitTutorial : Model -> () -> ( Model, Cmd Msg )
 exitTutorial model _ =
-    ( moveBackdropToScene model
-    , Cmd.none
-    )
-
-
-
--- Retry
-
-
-initRetry : Model -> ( Model, Cmd Msg )
-initRetry =
-    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
-
-
-updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
-updateRetry =
-    updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
-
-
-exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
-exitRetry model destination =
-    case destination of
-        Retry.ToLevel ->
-            ( clearBackdrop model, reloadCurrentLevel model )
-
-        Retry.ToHub ->
-            ( clearBackdrop model, goToHubCurrentLevel model )
+    ( moveBackdropToScene model, Cmd.none )
 
 
 
@@ -335,27 +360,27 @@ levelWin model =
 
 
 
--- Hub
+-- Retry
 
 
-initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
-initHub level =
-    initScene Hub HubMsg <| Hub.init level
+initRetry : Model -> ( Model, Cmd Msg )
+initRetry =
+    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
 
 
-updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
-updateHub =
-    updateScene Hub HubMsg Hub.update |> Exit.onExit handleStartLevel
+updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
+updateRetry =
+    updateScene Retry RetryMsg Retry.update |> Exit.onExit exitRetry
 
 
-handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
-handleStartLevel model level =
-    case Worlds.tutorial level of
-        Just tutorialConfig ->
-            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
+exitRetry : Model -> Retry.Destination -> ( Model, Cmd Msg )
+exitRetry model destination =
+    case destination of
+        Retry.ToLevel ->
+            ( clearBackdrop model, reloadCurrentLevel model )
 
-        Nothing ->
-            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
+        Retry.ToHub ->
+            ( clearBackdrop model, goToHubCurrentLevel model )
 
 
 
@@ -372,28 +397,33 @@ updateSummary =
     updateScene Summary SummaryMsg Summary.update |> Exit.onExit exitSummary
 
 
-exitSummary : Model -> () -> ( Model, Cmd Msg )
-exitSummary model _ =
-    ( clearBackdrop model, goToHubReachedLevel model )
+exitSummary : Model -> Summary.Destination -> ( Model, Cmd Msg )
+exitSummary model destination =
+    case destination of
+        Summary.ToHub ->
+            ( clearBackdrop model, goToHubReachedLevel model )
+
+        Summary.ToGarden ->
+            ( clearBackdrop model, trigger InitGarden )
 
 
 
--- Intro
+-- Garden
 
 
-initIntro : Model -> ( Model, Cmd Msg )
-initIntro =
-    initScene Intro IntroMsg Intro.init
+initGarden : Model -> ( Model, Cmd Msg )
+initGarden =
+    initScene Garden GardenMsg Garden.init
 
 
-updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
-updateIntro =
-    updateScene Intro IntroMsg Intro.update |> Exit.onExit exitIntro
+updateGarden : Garden.Msg -> Garden.Model -> Model -> ( Model, Cmd Msg )
+updateGarden =
+    updateScene Garden GardenMsg Garden.update |> Exit.onExit exitGarden
 
 
-exitIntro : Model -> () -> ( Model, Cmd Msg )
-exitIntro model _ =
-    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
+exitGarden : Model -> () -> ( Model, Cmd Msg )
+exitGarden model _ =
+    ( model, goToHubReachedLevel model )
 
 
 
@@ -463,8 +493,31 @@ syncContext model scene =
     Scene.map (always <| Scene.getContext model.scene) scene
 
 
+updateContext : Model -> (Context -> Context) -> Model
+updateContext model f =
+    { model | scene = Scene.map f model.scene }
+
+
 
 -- Misc
+
+
+withLoadingScreen : Msg -> Cmd Msg
+withLoadingScreen msg =
+    Delay.sequence
+        [ ( 0, ShowLoadingScreen )
+        , ( 1000, msg )
+        , ( 2000, HideLoadingScreen )
+        ]
+
+
+goToGarden : Cmd Msg
+goToGarden =
+    Delay.sequence
+        [ ( 0, ShowLoadingScreen )
+        , ( 3000, HideLoadingScreen )
+        , ( 0, InitGarden )
+        ]
 
 
 reloadCurrentLevel : Model -> Cmd Msg
@@ -609,6 +662,9 @@ renderScene scene =
         Retry model ->
             [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
 
+        Garden model ->
+            [ ( "garden", Garden.view model |> Html.map GardenMsg ) ]
+
 
 
 -- Menu
@@ -629,10 +685,13 @@ menu scene =
             renderMenu model.context TitleMsg Title.menuOptions
 
         Hub model ->
-            renderMenu model.context HubMsg []
+            renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
             renderMenu model.context LevelMsg Level.menuOptions
+
+        Garden model ->
+            renderMenu model.context GardenMsg Garden.menuOptions
 
         _ ->
             Menu.fadeOut

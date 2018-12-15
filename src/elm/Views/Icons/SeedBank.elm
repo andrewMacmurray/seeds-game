@@ -22,13 +22,13 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> Tile.hashSeedType |> String.toLower
+            seedType |> Tile.seedTypeHash |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType
 
-        seedLevelId =
-            "seed-level-" ++ stringSeedType
+        fillLevelId =
+            "fill-level-" ++ stringSeedType
 
         offsetLevelStyles =
             svgStyles
@@ -44,7 +44,7 @@ seedBank seedType percentFull =
         [ Svg.defs []
             [ Svg.rect
                 [ height <| String.fromFloat fullHeight
-                , id <| seedLevelId
+                , id <| fillLevelId
                 , width "100%"
                 ]
                 []
@@ -57,7 +57,7 @@ seedBank seedType percentFull =
                     , id seedBankId
                     ]
                     [ Svg.use
-                        [ xlinkHref <| "#" ++ seedLevelId
+                        [ xlinkHref <| "#" ++ fillLevelId
                         , offsetLevelStyles
                         ]
                         []

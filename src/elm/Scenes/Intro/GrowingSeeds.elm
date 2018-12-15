@@ -4,7 +4,7 @@ module Scenes.Intro.GrowingSeeds exposing
     )
 
 import Css.Animation exposing (animation, delay, ease, easeOut)
-import Css.Style exposing (Style, empty, marginLeft, marginRight, opacity, style, styles, transform, transformOrigin, width)
+import Css.Style exposing (..)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (transition)
 import Data.Board.Tile as Tile
@@ -27,7 +27,7 @@ view window vis =
         size =
             Window.size window
     in
-    div [ class "flex justify-center" ] <|
+    div [ class "flex justify-center" ]
         [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) (seedsLeft size)
         , div [ mainSeedStyles vis ] [ growingSeed window ( 0, Sunflower, 1.1 ) ]
         , sideSeedsContainer vis <| List.map (growingSeed window) (seedsRight size)
@@ -84,9 +84,9 @@ seedsLeft screenSize =
     case screenSize of
         Window.Small ->
             [ ( 3, Marigold, 0.7 )
-            , ( 1, Chrysanthemum, 0.5 )
-            , ( 5, Rose, 0.8 )
-            , ( 10, Lupin, 0.5 )
+            , ( 5, Chrysanthemum, 0.5 )
+            , ( 1, Rose, 0.8 )
+            , ( 7, Lupin, 0.5 )
             ]
 
         _ ->
@@ -102,10 +102,10 @@ seedsRight : Window.Size -> List ( Int, SeedType, Float )
 seedsRight screenSize =
     case screenSize of
         Window.Small ->
-            [ ( 2, Chrysanthemum, 0.6 )
-            , ( 3, Marigold, 0.7 )
-            , ( 9, Sunflower, 0.5 )
-            , ( 6, Lupin, 0.5 )
+            [ ( 4, Chrysanthemum, 0.6 )
+            , ( 6, Marigold, 0.7 )
+            , ( 2, Sunflower, 0.5 )
+            , ( 8, Lupin, 0.5 )
             ]
 
         _ ->

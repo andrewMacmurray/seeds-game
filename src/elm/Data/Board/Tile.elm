@@ -8,7 +8,7 @@ module Data.Board.Tile exposing
     , growingOrder
     , hasLine
     , hash
-    , hashSeedType
+    , seedTypeHash
     , isCurrentMove
     , isDragging
     , isFalling
@@ -344,11 +344,11 @@ hash tileType =
             "seed-pod"
 
         Seed seedType ->
-            hashSeedType seedType
+            seedTypeHash seedType
 
 
-hashSeedType : SeedType -> String
-hashSeedType seedType =
+seedTypeHash : SeedType -> String
+seedTypeHash seedType =
     case seedType of
         Sunflower ->
             "sunflower"
