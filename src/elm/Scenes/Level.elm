@@ -41,18 +41,18 @@ import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
+import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
+import Scenes.Level.TopBar exposing (TopBarViewModel, remainingMoves, topBar)
 import Task
+import Views.Board.Line exposing (renderLine)
+import Views.Board.Styles exposing (..)
+import Views.Board.Tile exposing (renderTile_)
 import Views.InfoWindow
-import Views.Level.Line exposing (renderLine)
-import Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
-import Views.Level.Styles exposing (..)
-import Views.Level.Tile exposing (renderTile_)
-import Views.Level.TopBar exposing (TopBarViewModel, remainingMoves, topBar)
 import Views.Menu as Menu
 
 
 
--- MODEL
+-- Model
 
 
 type alias Model =
@@ -411,10 +411,7 @@ handleAddScore model =
 
 handleResetMove : Model -> Model
 handleResetMove model =
-    { model
-        | isDragging = False
-        , moveShape = Nothing
-    }
+    { model | isDragging = False, moveShape = Nothing }
 
 
 handleDecrementRemainingMoves : Model -> Model
@@ -450,7 +447,7 @@ checkMoveWithSquareTrigger : Move -> Model -> Exit.With Status ( Model, Cmd Msg 
 checkMoveWithSquareTrigger move model =
     let
         newModel =
-            model |> handleCheckMove move
+            handleCheckMove move model
     in
     continue newModel [ triggerMoveIfSquare SquareMove newModel.board ]
 
@@ -477,14 +474,14 @@ moveFromCoord board coord =
 coordsFromPosition : Pointer -> Model -> Coord
 coordsFromPosition pointer model =
     let
-        vm =
+        tileViewModel_ =
             ( model.context.window, model.boardDimensions )
 
         positionY =
-            toFloat <| pointer.y - boardOffsetTop vm
+            toFloat <| pointer.y - boardOffsetTop tileViewModel_
 
         positionX =
-            toFloat <| pointer.x - boardOffsetLeft vm
+            toFloat <| pointer.x - boardOffsetLeft tileViewModel_
 
         scaleFactorY =
             Tile.scale model.context.window * Tile.baseSizeY
@@ -562,7 +559,7 @@ view model =
         ]
         [ topBar <| topBarViewModel model
         , renderInfoWindow model
-        , currentMoveOverlay model
+        , currentMoveOverlay model <| currentMoveLayer model
         , handleLineDrag <| lineViewModel model
         , renderBoard model
         , moveCaptureArea
@@ -598,6 +595,10 @@ moveCaptureArea =
     div [ class "w-100 h-100 fixed z-1 top-0" ] []
 
 
+
+-- Board
+
+
 renderBoard : Model -> Html Msg
 renderBoard model =
     boardLayout model
@@ -608,9 +609,7 @@ renderBoard model =
 
 renderTiles : Model -> List (Html Msg)
 renderTiles model =
-    model.board
-        |> Dict.toList
-        |> List.map (renderTile model)
+    mapTiles (renderTile model) model.board
 
 
 renderTile : Model -> Move -> Html Msg
@@ -624,23 +623,24 @@ renderTile model (( _, block ) as move) =
         ]
 
 
-currentMoveOverlay : Model -> Html msg
+currentMoveOverlay : Model -> List (Html msg) -> Html msg
 currentMoveOverlay model =
+    let
+        vm =
+            tileViewModel model
+    in
     div
         [ style
-            [ width <| toFloat <| boardWidth <| tileViewModel model
-            , top <| toFloat <| boardOffsetTop <| tileViewModel model
+            [ width <| toFloat <| boardWidth vm
+            , top <| toFloat <| boardOffsetTop vm
             ]
         , class "z-6 touch-disabled absolute left-0 right-0 flex center"
         ]
-    <|
-        currentMove model
 
 
-currentMove model =
-    model.board
-        |> Dict.toList
-        |> List.map (renderCurrentMove model)
+currentMoveLayer : Model -> List (Html msg)
+currentMoveLayer model =
+    mapTiles (renderCurrentMove model) model.board
 
 
 renderCurrentMove : Model -> Move -> Html msg
@@ -654,9 +654,7 @@ renderCurrentMove model (( _, block ) as move) =
 
 renderLines : Model -> List (Html msg)
 renderLines model =
-    model.board
-        |> Dict.toList
-        |> List.map (renderLine model.context.window)
+    mapTiles (renderLine model.context.window) model.board
 
 
 boardLayout : Model -> List (Html msg) -> Html msg
@@ -673,6 +671,103 @@ boardLayout model =
 hanldeMoveEvents : Model -> Move -> Attribute Msg
 hanldeMoveEvents model move =
     applyIf (not model.isDragging) <| onPointerDown <| StartMove move
+
+
+mapTiles : (Move -> a) -> Board -> List a
+mapTiles f =
+    Dict.toList >> List.map f
+
+
+
+-- Leaving Styles
+
+
+leavingStyles : Model -> Move -> List Style
+leavingStyles model (( _, tile ) as move) =
+    if isLeaving tile then
+        [ transitionAll 800 [ delay <| modBy 5 (leavingOrder tile) * 80 ]
+        , opacity 0.2
+        , handleExitDirection move model
+        ]
+
+    else
+        []
+
+
+handleExitDirection : Move -> Model -> Style
+handleExitDirection ( coord, block ) model =
+    case getTileState block of
+        Leaving Rain _ ->
+            getLeavingStyle Rain model
+
+        Leaving Sun _ ->
+            getLeavingStyle Sun model
+
+        Leaving (Seed seedType) _ ->
+            getLeavingStyle (Seed seedType) model
+
+        _ ->
+            Style.empty
+
+
+getLeavingStyle : TileType -> Model -> Style
+getLeavingStyle tileType model =
+    newLeavingStyles model
+        |> Dict.get (Tile.hash tileType)
+        |> Maybe.withDefault Style.empty
+
+
+newLeavingStyles : Model -> Dict.Dict String Style
+newLeavingStyles model =
+    model.tileSettings
+        |> scoreTileTypes
+        |> List.indexedMap (prepareLeavingStyle model)
+        |> Dict.fromList
+
+
+prepareLeavingStyle : Model -> Int -> TileType -> ( String, Style )
+prepareLeavingStyle model resourceBankIndex tileType =
+    ( Tile.hash tileType
+    , transform
+        [ translate (exitXDistance resourceBankIndex model) -(exitYdistance (tileViewModel model))
+        , scale 0.5
+        ]
+    )
+
+
+exitXDistance : Int -> Model -> Float
+exitXDistance resourceBankIndex model =
+    let
+        scoreWidth =
+            scoreIconSize * 2
+
+        scoreBarWidth =
+            model.tileSettings
+                |> List.filter Score.collectable
+                |> List.length
+                |> (*) scoreWidth
+
+        baseOffset =
+            (boardWidth (tileViewModel model) - scoreBarWidth) // 2
+
+        offset =
+            exitOffsetFunction <| Tile.scale model.context.window
+    in
+    toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
+
+
+exitOffsetFunction : Float -> Float
+exitOffsetFunction x =
+    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
+
+
+exitYdistance : TileViewModel -> Float
+exitYdistance model =
+    toFloat (boardOffsetTop model) - 9
+
+
+
+-- Info Window
 
 
 renderInfoWindow : Model -> Html Msg
@@ -771,90 +866,6 @@ yesNoButton yesText msg =
             ]
             [ text yesText ]
         ]
-
-
-leavingStyles : Model -> Move -> List Style
-leavingStyles model (( _, tile ) as move) =
-    if isLeaving tile then
-        [ transitionAll 800 [ delay <| modBy 5 (leavingOrder tile) * 80 ]
-        , opacity 0.2
-        , handleExitDirection move model
-        ]
-
-    else
-        []
-
-
-handleExitDirection : Move -> Model -> Style
-handleExitDirection ( coord, block ) model =
-    case getTileState block of
-        Leaving Rain _ ->
-            getLeavingStyle Rain model
-
-        Leaving Sun _ ->
-            getLeavingStyle Sun model
-
-        Leaving (Seed seedType) _ ->
-            getLeavingStyle (Seed seedType) model
-
-        _ ->
-            Style.empty
-
-
-getLeavingStyle : TileType -> Model -> Style
-getLeavingStyle tileType model =
-    newLeavingStyles model
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault Style.empty
-
-
-newLeavingStyles : Model -> Dict.Dict String Style
-newLeavingStyles model =
-    model.tileSettings
-        |> scoreTileTypes
-        |> List.indexedMap (prepareLeavingStyle model)
-        |> Dict.fromList
-
-
-prepareLeavingStyle : Model -> Int -> TileType -> ( String, Style )
-prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.hash tileType
-    , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYdistance (tileViewModel model))
-        , scale 0.5
-        ]
-    )
-
-
-exitXDistance : Int -> Model -> Float
-exitXDistance resourceBankIndex model =
-    let
-        scoreWidth =
-            scoreIconSize * 2
-
-        scoreBarWidth =
-            model.tileSettings
-                |> List.filter Score.collectable
-                |> List.length
-                |> (*) scoreWidth
-
-        baseOffset =
-            (boardWidth (tileViewModel model) - scoreBarWidth) // 2
-
-        offset =
-            exitOffsetFunction <| Tile.scale model.context.window
-    in
-    toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
-
-
-exitOffsetFunction : Float -> Float
-exitOffsetFunction x =
-    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
-
-
-exitYdistance : TileViewModel -> Float
-exitYdistance model =
-    toFloat (boardOffsetTop model) - 9
 
 
 

@@ -1,6 +1,6 @@
-module Views.Level.Line exposing (renderLine)
+module Views.Board.Line exposing (renderLine)
 
-import Css.Style as Style exposing (Style, marginAuto, styles, svgStyle, svgStyles)
+import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform as Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Tile as Tile
@@ -9,7 +9,7 @@ import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Level.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Views.Board.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
 
 
 renderLine : Window -> Move -> Html msg
@@ -56,7 +56,7 @@ innerLine window tileType bearing =
     svg
         [ width <| String.fromFloat <| 50 * tileScale
         , height <| String.fromFloat <| 9 * tileScale
-        , svgStyles
+        , Style.svgStyle
             [ marginAuto
             , lineTransforms window bearing
             ]
@@ -68,7 +68,7 @@ innerLine window tileType bearing =
             , y1 "0"
             , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , svgStyle <| Style.stroke <| strokeColors tileType
+            , Style.svgStyle [ Style.stroke <| strokeColors tileType ]
             ]
             []
         ]

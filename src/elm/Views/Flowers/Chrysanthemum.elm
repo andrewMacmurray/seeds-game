@@ -28,13 +28,13 @@ animated delay =
 scaleInFade : Int -> List (Svg msg) -> Svg msg
 scaleInFade delay elements =
     Svg.g
-        [ Style.svgStyles
+        [ Style.svgStyle
             [ Animation.animation "fade-in" 500 [ Animation.linear, Animation.delay delay ]
             , Style.opacity 0
             ]
         ]
         [ Svg.g
-            [ Style.svgStyles
+            [ Style.svgStyle
                 [ Animation.animation "scale-in" 1000 [ Animation.ease, Animation.delay delay ]
                 , Style.transformOriginPx (vbWidth / 2) vbHeight
                 ]
@@ -55,7 +55,7 @@ animatedCore delay =
 animateCorePetal : Int -> Int -> Svg msg -> Svg msg
 animateCorePetal delay i petal =
     Svg.g
-        [ Style.svgStyles
+        [ Style.svgStyle
             [ Style.opacity 0
             , Animation.animation "fade-in" 200 [ Animation.delay <| (i * 15) + 1300 + delay ]
             , Style.transformOriginPx (vbWidth / 2) vbHeight

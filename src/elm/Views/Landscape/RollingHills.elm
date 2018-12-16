@@ -144,6 +144,6 @@ hill color r cx cy =
         , cy_ cy
         , r_ r
         , fill color
-        , Style.svgStyles [ Style.transform [ Transform.translateY r ] ]
+        , Style.svgStyle [ Style.transform [ Transform.translateY r ] ]
         ]
         []

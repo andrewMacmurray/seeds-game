@@ -1,6 +1,6 @@
-module Views.Level.LineDrag exposing (LineViewModel, handleLineDrag)
+module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
-import Css.Style as Style exposing (svgStyle)
+import Css.Style as Style
 import Css.Unit exposing (px)
 import Data.Board.Move.Square exposing (hasSquareTile)
 import Data.Board.Moves exposing (currentMoveTileType, lastMove)
@@ -8,10 +8,11 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (Board, BoardDimensions)
 import Data.Pointer exposing (Pointer)
 import Data.Window exposing (Window)
+import Helpers.Svg exposing (height_, width_, windowViewBox_)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Level.Styles exposing (..)
+import Views.Board.Styles exposing (..)
 
 
 type alias LineViewModel =
@@ -38,9 +39,6 @@ lineDrag model =
         window =
             model.window
 
-        vb =
-            "0 0 " ++ String.fromInt window.width ++ " " ++ String.fromInt window.height
-
         ( oY, oX ) =
             lastMoveOrigin model
 
@@ -53,13 +51,13 @@ lineDrag model =
             Tile.scale window
     in
     svg
-        [ width <| px <| toFloat window.width
-        , height <| px <| toFloat window.height
-        , viewBox vb
+        [ width_ <| toFloat window.width
+        , height_ <| toFloat window.height
+        , windowViewBox_ window
         , class "fixed top-0 right-0 z-4 touch-disabled"
         ]
         [ line
-            [ svgStyle <| Style.stroke strokeColor
+            [ Style.svgStyle [ Style.stroke strokeColor ]
             , strokeWidth <| String.fromFloat <| 6 * tileScale
             , strokeLinecap "round"
             , x1 <| String.fromFloat oX
@@ -95,14 +93,14 @@ lastMoveOrigin model =
         sX =
             Tile.baseSizeX * tileScale
 
-        vm =
+        tileViewModel =
             ( model.window, model.boardDimensions )
 
         offsetY =
-            boardOffsetTop vm |> toFloat
+            boardOffsetTop tileViewModel |> toFloat
 
         offsetX =
-            (window.width - boardWidth vm) // 2 |> toFloat
+            (window.width - boardWidth tileViewModel) // 2 |> toFloat
     in
     ( ((y1 + 1) * sY) + offsetY - (sY / 2)
     , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1

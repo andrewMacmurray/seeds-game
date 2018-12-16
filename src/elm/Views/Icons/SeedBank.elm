@@ -1,6 +1,6 @@
 module Views.Icons.SeedBank exposing (seedBank)
 
-import Css.Style as Style exposing (svgStyles)
+import Css.Style as Style exposing (svgStyle)
 import Css.Transform as Css exposing (translateY)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Tile as Tile
@@ -31,7 +31,7 @@ seedBank seedType percentFull =
             "fill-level-" ++ stringSeedType
 
         offsetLevelStyles =
-            svgStyles
+            svgStyle
                 [ transitionAll 1500 []
                 , Style.transform [ translateY seedLevelOffset ]
                 ]

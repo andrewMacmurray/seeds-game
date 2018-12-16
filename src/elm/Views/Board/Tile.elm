@@ -1,4 +1,4 @@
-module Views.Level.Tile exposing
+module Views.Board.Tile exposing
     ( baseTileStyles
     , innerSeed
     , innerSeed_
@@ -17,7 +17,7 @@ import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
-import Views.Level.Styles exposing (..)
+import Views.Board.Styles exposing (..)
 import Views.Seed.All exposing (renderSeed)
 
 

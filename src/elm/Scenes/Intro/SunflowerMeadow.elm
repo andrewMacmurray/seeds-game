@@ -62,14 +62,14 @@ offsetStyles window state offset delay =
             Style.transform [ Transform.translateY n ]
 
         visibleStyles =
-            Style.svgStyles
+            Style.svgStyle
                 [ translateY offset
                 , Transition.transition "transform" 2000 [ Transition.cubicBezier 0 0 0 1, Transition.delay delay ]
                 ]
     in
     case state of
         Hidden ->
-            Style.svgStyles
+            Style.svgStyle
                 [ translateY <| toFloat <| window.height // 2
                 ]
 
@@ -133,7 +133,7 @@ animateSunflower window delay =
     case Window.size window of
         Window.Small ->
             Svg.g
-                [ Style.svgStyles
+                [ Style.svgStyle
                     [ Animation.animation "fade-in"
                         1000
                         [ Animation.delay <| (delay * 150) // 100
