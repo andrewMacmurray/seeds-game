@@ -56,7 +56,7 @@ lineDrag model =
         [ width <| px <| toFloat window.width
         , height <| px <| toFloat window.height
         , viewBox vb
-        , class "fixed top-0 right-0 z-2 touch-disabled"
+        , class "fixed top-0 right-0 z-4 touch-disabled"
         ]
         [ line
             [ svgStyle <| Style.stroke strokeColor

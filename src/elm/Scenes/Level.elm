@@ -562,8 +562,9 @@ view model =
         ]
         [ topBar <| topBarViewModel model
         , renderInfoWindow model
-        , renderBoard model
+        , currentMoveOverlay model
         , handleLineDrag <| lineViewModel model
+        , renderBoard model
         , moveCaptureArea
         ]
 
@@ -613,13 +614,42 @@ renderTiles model =
 
 
 renderTile : Model -> Move -> Html Msg
-renderTile model (( ( y, x ) as coord, tile ) as move) =
+renderTile model (( _, block ) as move) =
     div
         [ hanldeMoveEvents model move
         , class "pointer"
         , attribute "touch-action" "none"
         ]
-        [ renderTile_ (leavingStyles model move) model.context.window model.moveShape move ]
+        [ renderTile_ (leavingStyles model move) model.context.window model.moveShape move
+        ]
+
+
+currentMoveOverlay : Model -> Html msg
+currentMoveOverlay model =
+    div
+        [ style
+            [ width <| toFloat <| boardWidth <| tileViewModel model
+            , top <| toFloat <| boardOffsetTop <| tileViewModel model
+            ]
+        , class "z-6 touch-disabled absolute left-0 right-0 flex center"
+        ]
+    <|
+        currentMove model
+
+
+currentMove model =
+    model.board
+        |> Dict.toList
+        |> List.map (renderCurrentMove model)
+
+
+renderCurrentMove : Model -> Move -> Html msg
+renderCurrentMove model (( _, block ) as move) =
+    if isCurrentMove block && model.isDragging then
+        renderTile_ [] model.context.window model.moveShape move
+
+    else
+        span [] []
 
 
 renderLines : Model -> List (Html msg)
