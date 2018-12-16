@@ -22,7 +22,7 @@ import Data.Board.Generate exposing (..)
 import Data.Board.Map exposing (..)
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
-import Data.Board.Moves exposing (currentMoveTileType)
+import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Score as Score exposing (addScoreFromMoves, initialScores, levelComplete, scoreTileTypes)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
@@ -76,6 +76,8 @@ type Msg
     | StopMove
     | StartMove Move Pointer
     | CheckMove Pointer
+    | ReleaseTile
+    | ResetReleasingTile
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -199,18 +201,21 @@ update msg model =
                 []
 
         StopMove ->
-            case currentMoveTileType model.board of
-                Just SeedPod ->
-                    continue model [ growSeedPodsSequence model.moveShape ]
-
-                _ ->
-                    continue model [ removeTilesSequence model.moveShape ]
+            continue model [ stopMoveSequence model ]
 
         SetLeavingTiles ->
             continue
                 (model
                     |> handleAddScore
                     |> mapBlocks setToLeaving
+                )
+                []
+
+        ReleaseTile ->
+            continue
+                (model
+                    |> handleResetMove
+                    |> mapBlocks setDraggingToReleasing
                 )
                 []
 
@@ -254,6 +259,9 @@ update msg model =
                     |> handleDecrementRemainingMoves
                 )
                 []
+
+        ResetReleasingTile ->
+            continue (mapBlocks setReleasingToStatic model) []
 
         StartMove move pointer ->
             continue (handleStartMove move pointer model) []
@@ -308,6 +316,18 @@ update msg model =
 -- Sequences
 
 
+stopMoveSequence : Model -> Cmd Msg
+stopMoveSequence model =
+    if List.length (currentMoves model.board) == 1 then
+        releaseTileSequence
+
+    else if currentMoveTileType model.board == Just SeedPod then
+        growSeedPodsSequence model.moveShape
+
+    else
+        removeTilesSequence model.moveShape
+
+
 growSeedPodsSequence : Maybe MoveShape -> Cmd Msg
 growSeedPodsSequence moveShape =
     sequence
@@ -329,6 +349,13 @@ removeTilesSequence moveShape =
         , ( 0, CheckLevelComplete )
         , ( 0, GenerateEnteringTiles )
         , ( 500, ResetEntering )
+        ]
+
+
+releaseTileSequence =
+    sequence
+        [ ( 0, ReleaseTile )
+        , ( 200, ResetReleasingTile )
         ]
 
 
@@ -424,13 +451,17 @@ handleDecrementRemainingMoves model =
 
 
 handleStartMove : Move -> Pointer -> Model -> Model
-handleStartMove move pointer model =
-    { model
-        | isDragging = True
-        , board = startMove move model.board
-        , moveShape = Just Line
-        , pointer = pointer
-    }
+handleStartMove (( _, block ) as move) pointer model =
+    if isReleasing block then
+        model
+
+    else
+        { model
+            | isDragging = True
+            , board = startMove move model.board
+            , moveShape = Just Line
+            , pointer = pointer
+        }
 
 
 checkMoveFromPosition : Pointer -> Model -> Exit.With Status ( Model, Cmd Msg )

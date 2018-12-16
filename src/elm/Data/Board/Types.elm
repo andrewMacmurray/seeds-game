@@ -75,6 +75,7 @@ type Block
 type TileState
     = Static TileType
     | Dragging TileType MoveOrder MoveBearing MoveShape
+    | Releasing TileType
     | Leaving TileType LeavingOrder
     | Falling TileType FallingDistance
     | Entering TileType

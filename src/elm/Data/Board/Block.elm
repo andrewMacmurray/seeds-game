@@ -11,15 +11,18 @@ module Data.Board.Block exposing
     , isFalling
     , isGrowing
     , isLeaving
+    , isReleasing
     , isWall
     , leavingOrder
     , map
     , moveOrder
     , setDraggingToGrowing
+    , setDraggingToReleasing
     , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
+    , setReleasingToStatic
     , setStaticToFirstMove
     , setToDragging
     , setToFalling
@@ -58,6 +61,11 @@ isGrowing =
 isFalling : Block -> Bool
 isFalling =
     fold Tile.isFalling False
+
+
+isReleasing : Block -> Bool
+isReleasing =
+    fold Tile.isReleasing False
 
 
 hasLine : Block -> Bool
@@ -115,6 +123,11 @@ setFallingToStatic =
     map Tile.setFallingToStatic
 
 
+setReleasingToStatic : Block -> Block
+setReleasingToStatic =
+    map Tile.setReleasingToStatic
+
+
 setLeavingToEmpty : Block -> Block
 setLeavingToEmpty =
     map Tile.setLeavingToEmpty
@@ -123,6 +136,11 @@ setLeavingToEmpty =
 setDraggingToGrowing : Block -> Block
 setDraggingToGrowing =
     map Tile.setDraggingToGrowing
+
+
+setDraggingToReleasing : Block -> Block
+setDraggingToReleasing =
+    map Tile.setDraggingToReleasing
 
 
 setToLeaving : Block -> Block

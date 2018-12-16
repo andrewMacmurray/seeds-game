@@ -170,6 +170,18 @@ fallingStyles ( _, block ) =
             []
 
 
+releasingStyles : Move -> List Style
+releasingStyles ( _, block ) =
+    case getTileState block of
+        Releasing _ ->
+            [ transitionAll 200 []
+            , transform [ scale 1 ]
+            ]
+
+        _ ->
+            []
+
+
 moveTracerStyles : Move -> List Style
 moveTracerStyles (( coord, tile ) as move) =
     if isDragging tile then

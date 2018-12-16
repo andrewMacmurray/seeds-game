@@ -8,23 +8,26 @@ module Data.Board.Tile exposing
     , growingOrder
     , hasLine
     , hash
-    , seedTypeHash
     , isCurrentMove
     , isDragging
     , isFalling
     , isGrowing
     , isLeaving
+    , isReleasing
     , isSeed
     , leavingOrder
     , map
     , moveOrder
     , scale
     , seedName
+    , seedTypeHash
     , setDraggingToGrowing
+    , setDraggingToReleasing
     , setEnteringToSatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
+    , setReleasingToStatic
     , setStaticToFirstMove
     , setToDragging
     , setToFalling
@@ -77,6 +80,16 @@ isDragging : TileState -> Bool
 isDragging tileState =
     case tileState of
         Dragging _ _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isReleasing : TileState -> Bool
+isReleasing tileState =
+    case tileState of
+        Releasing _ ->
             True
 
         _ ->
@@ -228,6 +241,16 @@ setFallingToStatic tileState =
             x
 
 
+setReleasingToStatic : TileState -> TileState
+setReleasingToStatic tileState =
+    case tileState of
+        Releasing tile ->
+            Static tile
+
+        x ->
+            x
+
+
 setLeavingToEmpty : TileState -> TileState
 setLeavingToEmpty tileState =
     case tileState of
@@ -248,17 +271,21 @@ setDraggingToGrowing tileState =
             x
 
 
+setDraggingToReleasing : TileState -> TileState
+setDraggingToReleasing tileState =
+    case tileState of
+        Dragging tile _ _ _ ->
+            Releasing tile
+
+        x ->
+            x
+
+
 setToLeaving : TileState -> TileState
 setToLeaving tileState =
     case tileState of
-        Dragging Rain order _ _ ->
-            Leaving Rain order
-
-        Dragging Sun order _ _ ->
-            Leaving Sun order
-
-        Dragging (Seed seedType) order _ _ ->
-            Leaving (Seed seedType) order
+        Dragging tile order _ _ ->
+            Leaving tile order
 
         x ->
             x
@@ -271,6 +298,9 @@ getTileType tileState =
             Just tile
 
         Dragging tile _ _ _ ->
+            Just tile
+
+        Releasing tile ->
             Just tile
 
         Leaving tile _ ->
