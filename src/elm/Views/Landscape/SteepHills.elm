@@ -103,7 +103,7 @@ hill : Color -> List Style -> Float -> Svg msg
 hill color styles slope =
     Svg.polygon
         [ fill color
-        , Style.svgStyles styles
+        , Style.svgStyle styles
         , points_
             [ point 0 0
             , point 0 100

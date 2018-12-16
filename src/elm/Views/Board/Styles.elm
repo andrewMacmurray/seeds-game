@@ -1,4 +1,4 @@
-module Views.Level.Styles exposing
+module Views.Board.Styles exposing
     ( TileViewModel
     , baseTileClasses
     , boardFullWidth

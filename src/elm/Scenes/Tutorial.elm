@@ -36,10 +36,10 @@ import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Task
-import Views.Level.Line exposing (renderLine)
-import Views.Level.Styles exposing (boardHeight, boardWidth)
-import Views.Level.Tile exposing (renderTile_)
-import Views.Level.TopBar exposing (renderScoreIcon)
+import Views.Board.Line exposing (renderLine)
+import Views.Board.Styles exposing (boardHeight, boardWidth)
+import Views.Board.Tile exposing (renderTile_)
+import Scenes.Level.TopBar exposing (renderScoreIcon)
 
 
 

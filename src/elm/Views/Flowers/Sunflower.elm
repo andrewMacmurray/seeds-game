@@ -5,7 +5,7 @@ module Views.Flowers.Sunflower exposing
 
 import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color as Color
-import Css.Style as Style exposing (opacity, svgStyles, transformOrigin)
+import Css.Style as Style exposing (opacity, svgStyle, transformOrigin)
 import Css.Transform as Transform
 import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
@@ -31,7 +31,7 @@ animated delayMs =
         , Svg.path
             [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
             , fill "#8A5D3B"
-            , svgStyles
+            , svgStyle
                 [ animation "bulge-elastic-big" 1000 [ linear, delay delayMs ]
                 , transformOrigin "40% 45%"
                 , Style.opacity 0
@@ -48,7 +48,7 @@ fadePetal delayMs index petal =
             delayMs + 1100 + index * 60
     in
     Svg.g
-        [ svgStyles
+        [ svgStyle
             [ Style.transform [ Transform.scale 0 ]
             , transformOrigin "center"
             , Style.opacity 0

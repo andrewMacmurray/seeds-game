@@ -1,4 +1,4 @@
-module Views.Level.TopBar exposing
+module Scenes.Level.TopBar exposing
     ( TopBarViewModel
     , remainingMoves
     , renderScoreIcon
@@ -17,10 +17,10 @@ import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Svg exposing (Svg)
+import Views.Board.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, topBarHeight)
 import Views.Icons.RainBank exposing (rainBankFull)
 import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
-import Views.Level.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, topBarHeight)
 import Views.Seed.All exposing (renderSeed)
 
 

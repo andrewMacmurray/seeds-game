@@ -32,7 +32,7 @@ animatePetals delay =
 animatePetal : Int -> Int -> Svg msg -> Svg msg
 animatePetal delay i petal =
     Svg.g
-        [ Style.svgStyles
+        [ Style.svgStyle
             [ Animation.animation "bulge-elastic-big"
                 1000
                 [ Animation.delay <| i * 30 + delay

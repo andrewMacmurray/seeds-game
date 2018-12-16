@@ -26,11 +26,11 @@ windowViewBox_ window =
 
 
 translated x y el =
-    Svg.g [ Style.svgStyles [ Style.transform [ Transform.translate x y ] ] ] [ el ]
+    Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate x y ] ] ] [ el ]
 
 
 scaled n el =
-    Svg.g [ Style.svgStyles [ Style.transform [ Transform.scale n ] ] ] [ el ]
+    Svg.g [ Style.svgStyle [ Style.transform [ Transform.scale n ] ] ] [ el ]
 
 
 points_ =

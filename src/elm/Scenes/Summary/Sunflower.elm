@@ -5,7 +5,7 @@ module Scenes.Summary.Sunflower exposing
     )
 
 import Css.Color as Color exposing (Color)
-import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyles)
+import Css.Style as Style exposing (Style, opacity, svgStyle, svgStyle)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linear, transition)
 import Data.Window as Window exposing (Window)
@@ -120,7 +120,7 @@ hills leftColor rightColor offset window visibility =
             Style.transform [ Transform.translateY y ]
     in
     Svg.g
-        [ Style.svgStyles
+        [ Style.svgStyle
             [ translateY
             , Transition.transition "transform"
                 3000
