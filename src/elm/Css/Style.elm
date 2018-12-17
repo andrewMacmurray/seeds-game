@@ -1,5 +1,6 @@
 module Css.Style exposing
     ( Style
+    , applyIf
     , background
     , backgroundColor
     , backgroundImage
@@ -32,6 +33,7 @@ module Css.Style exposing
     , paddingRight
     , paddingTop
     , paddingVertical
+    , pointer
     , property
     , renderStyles_
     , rightAuto
@@ -365,6 +367,11 @@ lineHeight n =
     property "line-height" <| String.fromFloat n
 
 
+pointer : Style
+pointer =
+    property "cursor" "pointer"
+
+
 showIf : Bool -> Style
 showIf predicate =
     if predicate then
@@ -372,6 +379,15 @@ showIf predicate =
 
     else
         opacity 0
+
+
+applyIf : Bool -> Style -> Style
+applyIf predicate s =
+    if predicate then
+        s
+
+    else
+        empty
 
 
 

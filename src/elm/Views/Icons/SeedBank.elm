@@ -22,7 +22,7 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> Tile.seedTypeHash |> String.toLower
+            seedType |> Tile.seedName |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType

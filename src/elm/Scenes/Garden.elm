@@ -15,7 +15,7 @@ import Css.Animation as Animation
 import Css.Color as Color exposing (rgb)
 import Css.Style as Style exposing (..)
 import Css.Transition as Transition
-import Data.Board.Tile exposing (seedName, seedTypeHash)
+import Data.Board.Tile exposing (seedName)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Levels as Levels exposing (WorldConfig)
 import Data.Progress as Progress exposing (Progress)
@@ -135,7 +135,7 @@ update msg model =
 scrollToCurrentCompletedWorld : Progress -> Cmd Msg
 scrollToCurrentCompletedWorld progress =
     progress
-        |> (currentCompletedWorldSeedType >> seedTypeHash)
+        |> (currentCompletedWorldSeedType >> seedName)
         |> Dom.getElement
         |> Task.andThen scrollWorldToView
         |> Task.attempt DomNoOp
@@ -240,7 +240,7 @@ worldFlowers : Progress -> ( WorldConfig, List Levels.Key ) -> Html Msg
 worldFlowers progress ( { seedType }, levelKeys ) =
     if worldComplete progress levelKeys then
         div
-            [ id <| seedTypeHash seedType
+            [ id <| seedName seedType
             , style
                 [ marginTop 50
                 , marginBottom 50
@@ -255,7 +255,7 @@ worldFlowers progress ( { seedType }, levelKeys ) =
 
     else
         div
-            [ id <| seedTypeHash seedType
+            [ id <| seedName seedType
             , style [ marginTop 75, marginBottom 75 ]
             ]
             [ unfinishedWorldSeeds

@@ -2,6 +2,7 @@ module Context exposing
     ( Background(..)
     , Context
     , Menu(..)
+    , cacheCurrentLives
     , clearCurrentLevel
     , closeMenu
     , decrementLife
@@ -21,6 +22,7 @@ import Data.Levels as Levels
 import Data.Lives as Lives exposing (Lives)
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
+import Ports exposing (cacheLives)
 import Random
 import Time
 
@@ -60,6 +62,15 @@ incrementMessageIndex context =
     { context | successMessageIndex = context.successMessageIndex + 1 }
 
 
+setWindow : Int -> Int -> Context -> Context
+setWindow width height context =
+    { context | window = Window width height }
+
+
+
+-- Lives
+
+
 updateLives : Time.Posix -> Context -> Context
 updateLives now context =
     { context | lives = Lives.update now context.lives }
@@ -70,9 +81,11 @@ decrementLife context =
     { context | lives = Lives.decrement context.lives }
 
 
-setWindow : Int -> Int -> Context -> Context
-setWindow width height context =
-    { context | window = Window width height }
+cacheCurrentLives : Context -> Cmd msg
+cacheCurrentLives context =
+    context.lives
+        |> Lives.toCache
+        |> cacheLives
 
 
 

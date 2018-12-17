@@ -91,8 +91,22 @@ type Msg
     | RandomBackground Background
     | ResetData
     | WindowSize Int Int
-    | UpdateTimes Time.Posix
+    | UpdateLives Time.Posix
     | GoToHub Levels.Key
+
+
+
+-- Context
+
+
+getContext : Model -> Context
+getContext model =
+    Scene.getContext model.scene
+
+
+updateContext : Model -> (Context -> Context) -> Model
+updateContext model f =
+    { model | scene = Scene.map f model.scene }
 
 
 
@@ -205,8 +219,8 @@ update msg ({ scene, backdrop } as model) =
             , bounceKeyframes <| Window width height
             )
 
-        ( UpdateTimes now, _, _ ) ->
-            updateTimes now model
+        ( UpdateLives now, _, _ ) ->
+            updateLives now model
 
         _ ->
             ( model, Cmd.none )
@@ -335,7 +349,7 @@ exitLevel model levelStatus =
             levelWin model
 
         Level.Lose ->
-            ( model, trigger InitRetry )
+            levelLose model
 
         Level.Restart ->
             ( model, reloadCurrentLevel model )
@@ -357,6 +371,15 @@ levelWin model =
 
     else
         ( model, goToHubCurrentLevel model )
+
+
+levelLose : Model -> ( Model, Cmd Msg )
+levelLose model =
+    if livesRemaining model == 1 then
+        ( updateContext model Context.decrementLife, goToHubCurrentLevel model )
+
+    else
+        ( model, trigger InitRetry )
 
 
 
@@ -493,11 +516,6 @@ syncContext model scene =
     Scene.map (always <| Scene.getContext model.scene) scene
 
 
-updateContext : Model -> (Context -> Context) -> Model
-updateContext model f =
-    { model | scene = Scene.map f model.scene }
-
-
 
 -- Misc
 
@@ -535,9 +553,9 @@ goToHubReachedLevel =
     trigger << GoToHub << reachedLevel
 
 
-updateTimes : Time.Posix -> Model -> ( Model, Cmd Msg )
-updateTimes now model =
-    { model | scene = Scene.map (updateLives now) model.scene } |> andCmd saveCurrentLives
+updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )
+updateLives now model =
+    { model | scene = Scene.map (Context.updateLives now) model.scene } |> andCmd saveCurrentLives
 
 
 andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
@@ -546,10 +564,13 @@ andCmd cmdF model =
 
 
 saveCurrentLives : Model -> Cmd Msg
-saveCurrentLives model =
-    model.scene
-        |> (Scene.getContext >> .lives)
-        |> (Lives.toCache >> cacheLives)
+saveCurrentLives =
+    getContext >> Context.cacheCurrentLives
+
+
+livesRemaining : Model -> Int
+livesRemaining =
+    getContext >> .lives >> Lives.remaining
 
 
 bounceKeyframes : Window -> Cmd msg
@@ -558,18 +579,13 @@ bounceKeyframes window =
 
 
 reachedLevel : Model -> Levels.Key
-reachedLevel model =
-    Scene.getContext model.scene
-        |> .progress
-        |> Progress.reachedLevel
+reachedLevel =
+    getContext >> .progress >> Progress.reachedLevel
 
 
 currentLevel : Model -> Levels.Key
-currentLevel model =
-    model.scene
-        |> (Scene.getContext >> .progress)
-        |> Progress.currentLevel
-        |> Maybe.withDefault Levels.empty
+currentLevel =
+    getContext >> .progress >> Progress.currentLevel >> Maybe.withDefault Levels.empty
 
 
 shouldIncrement : Context -> Bool
@@ -585,19 +601,19 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ onResize WindowSize
-        , subscribeDecrement model
+        , updateLivesSubscription model
         , sceneSubscriptions model
         ]
 
 
-subscribeDecrement : Model -> Sub Msg
-subscribeDecrement model =
+updateLivesSubscription : Model -> Sub Msg
+updateLivesSubscription model =
     case model.scene of
         Hub _ ->
-            Time.every 100 UpdateTimes
+            Time.every 100 UpdateLives
 
         _ ->
-            Time.every 5000 UpdateTimes
+            Time.every 5000 UpdateLives
 
 
 sceneSubscriptions : Model -> Sub Msg
@@ -688,7 +704,7 @@ menu scene =
             renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg Level.menuOptions
+            renderMenu model.context LevelMsg <| Level.menuOptions model.context
 
         Garden model ->
             renderMenu model.context GardenMsg Garden.menuOptions

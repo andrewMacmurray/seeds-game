@@ -1,15 +1,16 @@
-module Views.Icons.Heart exposing (HeartState(..), breakAnimation, breakingHeart, brokenHeart, heart, heartBreak)
+module Views.Icons.Heart exposing (alive, beating, beatingAnimation, breaking, broken)
 
-import Css.Animation exposing (animation, cubicBezier, delay)
+import Css.Animation as Animation
 import Css.Color exposing (..)
 import Css.Style as Style exposing (Style, svgStyle, transformOrigin)
 import Css.Unit exposing (ms)
+import Html exposing (Html)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
-heart : Svg msg
-heart =
+alive : Svg msg
+alive =
     Svg.svg
         [ viewBox "0 0 57 50"
         , height "100%"
@@ -30,22 +31,35 @@ heart =
         ]
 
 
-type HeartState
+beating : Html msg
+beating =
+    Html.div [ Style.style [ beatingAnimation ] ] [ alive ]
+
+
+beatingAnimation =
+    Animation.animation "heartbeat"
+        1000
+        [ Animation.ease
+        , Animation.infinite
+        ]
+
+
+breaking : Svg msg
+breaking =
+    heartBreak Breaking
+
+
+broken : Svg msg
+broken =
+    heartBreak Broken
+
+
+type HeartBreak
     = Breaking
     | Broken
 
 
-breakingHeart : Svg msg
-breakingHeart =
-    heartBreak Breaking
-
-
-brokenHeart : Svg msg
-brokenHeart =
-    heartBreak Broken
-
-
-heartBreak : HeartState -> Svg msg
+heartBreak : HeartBreak -> Svg msg
 heartBreak heartState =
     let
         ( breakLeft, breakRight ) =
@@ -90,4 +104,8 @@ heartBreak heartState =
 
 breakAnimation : String -> Int -> Int -> Style
 breakAnimation name delayMs duration =
-    animation name duration [ delay delayMs, cubicBezier 0 -2.85 0.67 2.83 ]
+    Animation.animation name
+        duration
+        [ Animation.delay delayMs
+        , Animation.cubicBezier 0 -2.85 0.67 2.83
+        ]

@@ -20,7 +20,6 @@ module Data.Board.Tile exposing
     , moveOrder
     , scale
     , seedName
-    , seedTypeHash
     , setDraggingToGrowing
     , setDraggingToReleasing
     , setEnteringToSatic
@@ -339,6 +338,22 @@ getSeedType tileType =
             Nothing
 
 
+hash : TileType -> String
+hash tileType =
+    case tileType of
+        Rain ->
+            "Rain"
+
+        Sun ->
+            "Sun"
+
+        SeedPod ->
+            "SeedPod"
+
+        Seed seedType ->
+            seedName seedType
+
+
 seedName : SeedType -> String
 seedName seedType =
     case seedType of
@@ -359,44 +374,6 @@ seedName seedType =
 
         Rose ->
             "Rose"
-
-
-hash : TileType -> String
-hash tileType =
-    case tileType of
-        Rain ->
-            "rain"
-
-        Sun ->
-            "sun"
-
-        SeedPod ->
-            "seed-pod"
-
-        Seed seedType ->
-            seedTypeHash seedType
-
-
-seedTypeHash : SeedType -> String
-seedTypeHash seedType =
-    case seedType of
-        Sunflower ->
-            "sunflower"
-
-        Chrysanthemum ->
-            "chrysanthemum"
-
-        Cornflower ->
-            "cornflower"
-
-        Lupin ->
-            "lupin"
-
-        Marigold ->
-            "marigold"
-
-        Rose ->
-            "rose"
 
 
 scale : Window.Window -> Float

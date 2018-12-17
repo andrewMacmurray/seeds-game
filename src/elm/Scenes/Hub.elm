@@ -35,6 +35,7 @@ import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Scenes.Tutorial as Tutorial
 import Task exposing (Task)
+import Views.Icons.Heart as Heart
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives exposing (renderLivesLeft)
@@ -252,7 +253,7 @@ renderSecond n =
 
 
 renderInfoWindow : Model -> Html Msg
-renderInfoWindow { infoWindow } =
+renderInfoWindow { infoWindow, context } =
     let
         level =
             InfoWindow.content infoWindow |> Maybe.withDefault Levels.empty
@@ -262,37 +263,63 @@ renderInfoWindow { infoWindow } =
             span [] []
 
         InfoWindow.Visible ->
-            infoContainer infoWindow <| div [ onClick <| StartLevel level ] <| infoContent level
+            infoContainer infoWindow <| div [ handleStartLevel context level ] <| infoContent context level
 
         InfoWindow.Leaving ->
-            infoContainer infoWindow <| div [] <| infoContent level
+            infoContainer infoWindow <| div [] <| infoContent context level
 
 
-infoContent : Levels.Key -> List (Html msg)
-infoContent level =
-    let
-        levelText =
-            Worlds.number level
-                |> Maybe.map String.fromInt
-                |> Maybe.map ((++) "Level ")
-                |> Maybe.withDefault ""
+handleStartLevel context level =
+    Attribute.applyIf (Lives.remaining context.lives > 0) <| onClick <| StartLevel level
 
-        icons =
-            Worlds.getLevel level
-                |> Maybe.map infoIcons
-                |> Maybe.withDefault (span [] [])
-    in
-    [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
-    , icons
-    , p
-        [ style
-            [ backgroundColor gold
-            , marginBottom 20
-            , marginTop 15
+
+infoContent : Context -> Levels.Key -> List (Html msg)
+infoContent context level =
+    if Lives.remaining context.lives > 0 then
+        let
+            levelText =
+                Worlds.number level
+                    |> Maybe.map String.fromInt
+                    |> Maybe.map ((++) "Level ")
+                    |> Maybe.withDefault ""
+
+            icons =
+                Worlds.getLevel level
+                    |> Maybe.map infoIcons
+                    |> Maybe.withDefault (span [] [])
+        in
+        [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
+        , icons
+        , p
+            [ style
+                [ backgroundColor gold
+                , marginBottom 20
+                , marginTop 15
+                ]
+            , class "tracked-mega pv2 ph3 dib br4"
             ]
-        , class "tracked-mega pv2 ph3 dib br4"
+            [ text "PLAY" ]
         ]
-        [ text "PLAY" ]
+
+    else
+        renderWaitForNextLife context
+
+
+renderWaitForNextLife : Context -> List (Html msg)
+renderWaitForNextLife context =
+    let
+        timeTillNextLife =
+            Lives.timeTillNextLife context.lives
+                |> Maybe.map renderTime
+                |> Maybe.withDefault ""
+    in
+    [ div [ style [ paddingTop 50, paddingBottom 40 ], class "tracked f4 flex flex-column items-center" ]
+        [ p [ class "ma0" ] [ text "Next life in" ]
+        , p [ style [ color <| rgb 255 226 92, marginTop 25, marginBottom 30 ] ]
+            [ text timeTillNextLife
+            ]
+        , div [ style [ width 40, height 40 ] ] [ Heart.beating ]
+        ]
     ]
 
 
@@ -416,11 +443,12 @@ renderLevel model config index level =
               , marginTop 50
               , marginBottom 50
               , color config.textColor
+              , Style.applyIf hasReachedLevel Style.pointer
               ]
             , offsetStyles <| index + 1
             ]
         , showInfo level model
-        , class "tc pointer relative"
+        , class "tc relative"
         , id <| Levels.toId level
         ]
         [ currentLevelPointer isCurrentLevel
@@ -476,20 +504,11 @@ renderNumber visibleLevelNumber hasReachedLevel config =
 
 showInfo : Levels.Key -> Model -> Attribute Msg
 showInfo level model =
-    if Levels.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden then
-        onClick <| ShowLevelInfo level
-
-    else
-        Attribute.empty
-
-
-handleStartLevel : Levels.Key -> Model -> Attribute Msg
-handleStartLevel level model =
-    if Levels.reached (Progress.reachedLevel model.context.progress) level then
-        onClick <| StartLevel level
-
-    else
-        Attribute.empty
+    let
+        shouldShowInfo =
+            Levels.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden
+    in
+    Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
 
 
 renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg

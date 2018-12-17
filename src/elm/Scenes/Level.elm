@@ -31,6 +31,7 @@ import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Types exposing (TileSetting)
 import Data.Levels as Levels
+import Data.Lives as Lives
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Data.Window exposing (Window)
 import Dict exposing (Dict)
@@ -134,11 +135,16 @@ updateContext f model =
     { model | context = f model.context }
 
 
-menuOptions : List (Menu.Option Msg)
-menuOptions =
-    [ Menu.option PromptRestart "Restart"
-    , Menu.option PromptExit "Exit"
-    ]
+menuOptions : Context -> List (Menu.Option Msg)
+menuOptions context =
+    if Lives.remaining context.lives > 1 then
+        [ Menu.option PromptRestart "Restart"
+        , Menu.option PromptExit "Exit"
+        ]
+
+    else
+        [ Menu.option PromptExit "Exit"
+        ]
 
 
 
@@ -599,26 +605,17 @@ view model =
 
 handleStop : Model -> Attribute Msg
 handleStop model =
-    applyIf model.isDragging <| onPointerUp StopMove
+    Attribute.applyIf model.isDragging <| onPointerUp StopMove
 
 
 handleCheck : Model -> Attribute Msg
 handleCheck model =
-    applyIf model.isDragging <| onPointerMove CheckMove
+    Attribute.applyIf model.isDragging <| onPointerMove CheckMove
 
 
 disableIfComplete : Model -> Attribute msg
 disableIfComplete model =
-    applyIf (not <| model.levelStatus == InProgress || model.levelStatus == NotStarted) <| class "touch-disabled"
-
-
-applyIf : Bool -> Attribute msg -> Attribute msg
-applyIf predicate attr =
-    if predicate then
-        attr
-
-    else
-        Attribute.empty
+    Attribute.applyIf (not <| model.levelStatus == InProgress || model.levelStatus == NotStarted) <| class "touch-disabled"
 
 
 moveCaptureArea : Html msg
@@ -701,7 +698,7 @@ boardLayout model =
 
 hanldeMoveEvents : Model -> Move -> Attribute Msg
 hanldeMoveEvents model move =
-    applyIf (not model.isDragging) <| onPointerDown <| StartMove move
+    Attribute.applyIf (not model.isDragging) <| onPointerDown <| StartMove move
 
 
 mapTiles : (Move -> a) -> Board -> List a
