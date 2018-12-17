@@ -19,7 +19,7 @@ module Data.Progress exposing
 import Data.Board.Score as Score
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType, TileType)
-import Data.Level.Types exposing (TargetScore(..), TileSetting)
+import Data.Level.Setting exposing (TargetScore(..), TileSetting)
 import Data.Levels as Levels
 import Dict exposing (Dict)
 import Helpers.Dict

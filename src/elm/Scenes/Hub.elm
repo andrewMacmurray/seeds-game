@@ -19,7 +19,7 @@ import Css.Transform exposing (..)
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
-import Data.Level.Types exposing (..)
+import Data.Level.Setting exposing (TargetScore(..), TileSetting)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Progress as Progress

@@ -1,13 +1,29 @@
-module Data.Level.Settings exposing
-    ( rain
+module Data.Level.Setting exposing
+    ( Probability(..)
+    , TargetScore(..)
+    , TileSetting
+    , rain
     , seed
     , seedPod
     , sun
     )
 
-import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (..)
-import Helpers.Dict exposing (indexedDictFrom)
+import Data.Board.Types exposing (SeedType, TileType(..))
+
+
+type alias TileSetting =
+    { tileType : TileType
+    , probability : Probability
+    , targetScore : Maybe TargetScore
+    }
+
+
+type TargetScore
+    = TargetScore Int
+
+
+type Probability
+    = Probability Int
 
 
 rain : Probability -> TargetScore -> TileSetting

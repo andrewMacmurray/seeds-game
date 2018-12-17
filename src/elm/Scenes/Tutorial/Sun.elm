@@ -1,7 +1,7 @@
 module Scenes.Tutorial.Sun exposing (config)
 
+import Data.Board.Generate as Board
 import Data.Board.Types exposing (..)
-import Data.Tutorial exposing (addBlock, sunBoard)
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
 
@@ -9,7 +9,7 @@ import Scenes.Tutorial as Tutorial exposing (..)
 config : Tutorial.Config
 config =
     { text = text
-    , boardDimensions = boardDimensions
+    , boardDimensions = dimensions
     , board = initialBoard
     , sequence = sequence
     , resourceBank = Sun
@@ -18,15 +18,15 @@ config =
 
 initialBoard : Board
 initialBoard =
-    sunBoard boardDimensions
-        |> addBlock ( 0, 2 ) (Seed Sunflower)
-        |> addBlock ( 1, 2 ) (Seed Sunflower)
-        |> addBlock ( 2, 2 ) Rain
-        |> addBlock ( 2, 0 ) (Seed Sunflower)
+    Board.mono Sun dimensions
+        |> Board.addBlock ( 0, 2 ) (Seed Sunflower)
+        |> Board.addBlock ( 1, 2 ) (Seed Sunflower)
+        |> Board.addBlock ( 2, 2 ) Rain
+        |> Board.addBlock ( 2, 0 ) (Seed Sunflower)
 
 
-boardDimensions : BoardDimensions
-boardDimensions =
+dimensions : BoardDimensions
+dimensions =
     { x = 3, y = 3 }
 
 

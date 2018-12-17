@@ -26,7 +26,6 @@ import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Tutorial exposing (getText)
 import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
@@ -35,11 +34,11 @@ import Helpers.Delay exposing (pause, sequence, trigger)
 import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
+import Scenes.Level.TopBar exposing (renderScoreIcon)
 import Task
 import Views.Board.Line exposing (renderLine)
 import Views.Board.Styles exposing (boardHeight, boardWidth)
 import Views.Board.Tile exposing (renderTile_)
-import Scenes.Level.TopBar exposing (renderScoreIcon)
 
 
 
@@ -327,6 +326,11 @@ view model =
             ]
             [ text "skip" ]
         ]
+
+
+getText : Dict Int String -> Int -> String
+getText textDict n =
+    Dict.get n textDict |> Maybe.withDefault ""
 
 
 handleSkip : Model -> Attribute Msg

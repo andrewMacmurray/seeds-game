@@ -1,7 +1,7 @@
 module Scenes.Tutorial.SeedPod exposing (config)
 
+import Data.Board.Generate as Board
 import Data.Board.Types exposing (..)
-import Data.Tutorial exposing (addBlock, seedPodBoard)
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
 
@@ -9,7 +9,7 @@ import Scenes.Tutorial as Tutorial exposing (..)
 config : Tutorial.Config
 config =
     { text = text
-    , boardDimensions = boardDimensions
+    , boardDimensions = dimensions
     , board = initialBoard
     , sequence = sequence
     , resourceBank = Seed Sunflower
@@ -18,11 +18,11 @@ config =
 
 initialBoard : Board
 initialBoard =
-    seedPodBoard boardDimensions
+    Board.mono SeedPod dimensions
 
 
-boardDimensions : BoardDimensions
-boardDimensions =
+dimensions : BoardDimensions
+dimensions =
     { x = 3, y = 3 }
 
 

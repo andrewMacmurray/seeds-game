@@ -11,7 +11,7 @@ module Data.Board.Score exposing
 import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (..)
+import Data.Level.Setting exposing (..)
 import Dict exposing (Dict)
 
 

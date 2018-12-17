@@ -1,16 +1,18 @@
 module Data.Board.Generate exposing
-    ( generateEnteringTiles
+    ( addBlock
+    , generateEnteringTiles
     , generateInitialTiles
     , generateRandomSeedType
     , insertNewEnteringTiles
     , insertNewSeeds
     , makeBoard
+    , mono
     )
 
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Level.Types exposing (..)
+import Data.Level.Setting exposing (Probability(..), TileSetting)
 import Dict
 import Random exposing (Generator)
 
@@ -106,13 +108,31 @@ filterEmpties board =
 
 
 
+-- Non Random Board
+
+
+addBlock : Coord -> TileType -> Board -> Board
+addBlock coord tileType =
+    let
+        addStatic =
+            always <| Block.static tileType
+    in
+    Dict.update coord <| Maybe.map addStatic
+
+
+mono : TileType -> BoardDimensions -> Board
+mono tileType ({ x, y } as scale) =
+    makeBoard scale <| List.repeat (x * y) tileType
+
+
+
 -- Generate Board
 
 
 makeBoard : BoardDimensions -> List TileType -> Board
 makeBoard scale tiles =
     tiles
-        |> List.map (Static >> Space)
+        |> List.map Block.static
         |> List.map2 (\a b -> ( a, b )) (makeCoords scale)
         |> Dict.fromList
 

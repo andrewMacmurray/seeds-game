@@ -29,7 +29,7 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Board.Wall exposing (addWalls)
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
-import Data.Level.Types exposing (TileSetting)
+import Data.Level.Setting exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
@@ -423,13 +423,13 @@ handleGenerateTiles config { boardDimensions } =
 
 
 handleMakeBoard : List TileType -> HasBoard model -> HasBoard model
-handleMakeBoard tileList ({ boardDimensions } as model) =
-    { model | board = makeBoard boardDimensions tileList }
+handleMakeBoard tiles ({ boardDimensions } as model) =
+    { model | board = makeBoard boardDimensions tiles }
 
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
-handleInsertEnteringTiles tileList =
-    mapBoard <| insertNewEnteringTiles tileList
+handleInsertEnteringTiles tiles =
+    mapBoard <| insertNewEnteringTiles tiles
 
 
 handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
@@ -897,7 +897,7 @@ yesNoButton yesText msg =
 
 
 
--- VIEW MODELS
+-- View Models
 
 
 tileViewModel : Model -> TileViewModel

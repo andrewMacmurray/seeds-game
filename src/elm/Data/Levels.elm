@@ -34,7 +34,7 @@ module Data.Levels exposing
 
 import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
-import Data.Level.Types exposing (Probability, TargetScore, TileSetting)
+import Data.Level.Setting exposing (Probability, TargetScore, TileSetting)
 import Dict exposing (Dict)
 
 

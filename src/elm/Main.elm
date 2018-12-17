@@ -6,7 +6,6 @@ import Context exposing (..)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, color, style)
 import Data.Board.Tile as Tile
-import Data.Level.Types exposing (..)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Progress as Progress exposing (Progress)

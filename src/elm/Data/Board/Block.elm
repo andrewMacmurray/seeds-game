@@ -27,6 +27,7 @@ module Data.Board.Block exposing
     , setToDragging
     , setToFalling
     , setToLeaving
+    , static
     )
 
 import Data.Board.Tile as Tile
@@ -166,6 +167,11 @@ isWall block =
 
         _ ->
             False
+
+
+static : TileType -> Block
+static =
+    Static >> Space
 
 
 map : (TileState -> TileState) -> Block -> Block

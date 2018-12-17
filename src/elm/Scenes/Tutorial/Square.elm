@@ -1,7 +1,7 @@
 module Scenes.Tutorial.Square exposing (config)
 
+import Data.Board.Generate as Board
 import Data.Board.Types exposing (..)
-import Data.Tutorial exposing (addBlock, seedBoard)
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
 
@@ -9,7 +9,7 @@ import Scenes.Tutorial as Tutorial exposing (..)
 config : Tutorial.Config
 config =
     { text = text
-    , boardDimensions = boardDimensions
+    , boardDimensions = dimensions
     , board = initialBoard
     , sequence = sequence
     , resourceBank = Seed Sunflower
@@ -18,14 +18,14 @@ config =
 
 initialBoard : Board
 initialBoard =
-    seedBoard boardDimensions
-        |> addBlock ( 3, 3 ) Rain
-        |> addBlock ( 3, 2 ) Rain
-        |> addBlock ( 1, 3 ) Rain
+    Board.mono (Seed Sunflower) dimensions
+        |> Board.addBlock ( 3, 3 ) Rain
+        |> Board.addBlock ( 3, 2 ) Rain
+        |> Board.addBlock ( 1, 3 ) Rain
 
 
-boardDimensions : BoardDimensions
-boardDimensions =
+dimensions : BoardDimensions
+dimensions =
     { x = 4, y = 4 }
 
 
