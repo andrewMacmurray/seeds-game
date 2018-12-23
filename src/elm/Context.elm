@@ -37,6 +37,20 @@ type alias Context =
     }
 
 
+incrementMessageIndex : Context -> Context
+incrementMessageIndex context =
+    { context | successMessageIndex = context.successMessageIndex + 1 }
+
+
+setWindow : Int -> Int -> Context -> Context
+setWindow width height context =
+    { context | window = Window width height }
+
+
+
+-- Progress
+
+
 setCurrentLevel : Levels.Key -> Context -> Context
 setCurrentLevel level context =
     { context | progress = Progress.setCurrentLevel level context.progress }
@@ -47,24 +61,9 @@ clearCurrentLevel context =
     { context | progress = Progress.clearCurrentLevel context.progress }
 
 
-hideLoadingScreen : Context -> Context
-hideLoadingScreen context =
-    { context | loadingScreen = Nothing }
-
-
 incrementProgress : Levels.Worlds -> Context -> Context
 incrementProgress allLevels context =
     { context | progress = Progress.handleIncrement allLevels context.progress }
-
-
-incrementMessageIndex : Context -> Context
-incrementMessageIndex context =
-    { context | successMessageIndex = context.successMessageIndex + 1 }
-
-
-setWindow : Int -> Int -> Context -> Context
-setWindow width height context =
-    { context | window = Window width height }
 
 
 
@@ -125,6 +124,11 @@ type Background
 showLoadingScreen : Background -> Context -> Context
 showLoadingScreen background context =
     { context | loadingScreen = Just background }
+
+
+hideLoadingScreen : Context -> Context
+hideLoadingScreen context =
+    { context | loadingScreen = Nothing }
 
 
 generateBackground : (Background -> msg) -> Cmd msg

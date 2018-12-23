@@ -335,11 +335,7 @@ getText textDict n =
 
 handleSkip : Model -> Attribute Msg
 handleSkip model =
-    if not model.skipped then
-        onClick SkipTutorial
-
-    else
-        Attribute.empty
+    Attribute.applyIf (not model.skipped) <| onClick SkipTutorial
 
 
 tutorialBoard : Model -> Html msg

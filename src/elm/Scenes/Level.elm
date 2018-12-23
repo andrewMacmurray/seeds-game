@@ -615,7 +615,7 @@ handleCheck model =
 
 disableIfComplete : Model -> Attribute msg
 disableIfComplete model =
-    Attribute.applyIf (not <| model.levelStatus == InProgress || model.levelStatus == NotStarted) <| class "touch-disabled"
+    Attribute.applyIf (levelComplete model.scores) <| class "touch-disabled"
 
 
 moveCaptureArea : Html msg
