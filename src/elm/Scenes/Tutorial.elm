@@ -21,8 +21,7 @@ import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Map exposing (..)
-import Data.Board.Move.Bearing exposing (addBearings)
-import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
+import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
@@ -54,7 +53,6 @@ type alias Model =
     , containerVisible : Bool
     , canvasVisible : Bool
     , skipped : Bool
-    , moveShape : Maybe MoveShape
     , resourceBank : TileType
     , boardDimensions : BoardDimensions
     , currentText : Int
@@ -83,7 +81,6 @@ type Msg
     | GrowPods SeedType
     | ResetGrowingPods
     | EnteringTiles (List TileType)
-    | TriggerSquare
     | FallTiles
     | ShiftBoard
     | SetBoardDimensions BoardDimensions
@@ -138,7 +135,6 @@ initialState context =
     , containerVisible = False
     , canvasVisible = True
     , skipped = False
-    , moveShape = Just Line
     , resourceBank = Seed Sunflower
     , boardDimensions = { y = 2, x = 2 }
     , currentText = 1
@@ -185,9 +181,6 @@ update msg model =
 
         EnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
-
-        TriggerSquare ->
-            continue (handleSquareMove model) []
 
         FallTiles ->
             continue (mapBoard setFallingTiles model) []
@@ -260,11 +253,6 @@ skipSequence =
         ]
 
 
-handleSquareMove : Model -> Model
-handleSquareMove model =
-    { model | board = setAllTilesOfTypeToDragging model.board }
-
-
 handleDragTile : Coord -> Model -> Model
 handleDragTile coord model =
     let
@@ -274,7 +262,7 @@ handleDragTile coord model =
         tile =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
-    { model | board = addBearings ( coord, tile ) model.board }
+    { model | board = Bearing.add ( coord, tile ) model.board }
 
 
 handleInsertEnteringTiles : List TileType -> Model -> Model
@@ -414,7 +402,16 @@ renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\move -> renderTile_ (leavingStyles model move) model.context.window model.moveShape move)
+        |> List.map
+            (\move ->
+                renderTile_
+                    { extraStyles = leavingStyles model move
+                    , externalDragTriggered = False
+                    , burstMagnitude = 1
+                    }
+                    model.context.window
+                    move
+            )
 
 
 leavingStyles : Model -> Move -> List Style

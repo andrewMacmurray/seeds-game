@@ -8,7 +8,8 @@ module Data.Board.Score exposing
     , scoreToString
     )
 
-import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
+import Data.Board.Block as Block
+import Data.Board.Move exposing (currentMoveTileType, currentMoves)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Setting exposing (..)
@@ -22,7 +23,9 @@ addScoreFromMoves board scores =
             currentMoveTileType board |> Maybe.withDefault SeedPod
 
         scoreToAdd =
-            currentMoves board |> List.length
+            currentMoves board
+                |> List.filter (Tuple.second >> Block.isBurst >> not)
+                |> List.length
     in
     addToScore scoreToAdd tileType scores
 

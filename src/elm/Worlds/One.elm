@@ -63,7 +63,7 @@ levels =
                 (TargetScore 10)
             ]
         }
-    , Levels.withTutorial Levels.Square
+    , Levels.level
         { walls = yellowWalls fourthLevelWalls
         , boardDimensions = { x = 7, y = 7 }
         , moves = 10
@@ -115,17 +115,17 @@ levels =
         , boardDimensions = { x = 8, y = 8 }
         , tiles =
             [ rain
-                (Probability 25)
+                (Probability 31)
                 (TargetScore 30)
             , seed
                 Sunflower
-                (Probability 25)
+                (Probability 31)
                 (TargetScore 50)
             , sun
-                (Probability 25)
+                (Probability 31)
                 (TargetScore 30)
-            , seedPod
-                (Probability 25)
+            , burst
+                (Probability 5)
             ]
         }
     ]

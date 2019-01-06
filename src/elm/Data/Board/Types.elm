@@ -9,7 +9,6 @@ module Data.Board.Types exposing
     , Move
     , MoveBearing(..)
     , MoveOrder
-    , MoveShape(..)
     , Score
     , Scores
     , SeedType(..)
@@ -74,7 +73,7 @@ type Block
 
 type TileState
     = Static TileType
-    | Dragging TileType MoveOrder MoveBearing MoveShape
+    | Dragging TileType MoveOrder MoveBearing
     | Releasing TileType
     | Leaving TileType LeavingOrder
     | Falling TileType FallingDistance
@@ -89,11 +88,6 @@ type MoveBearing
     | Right
     | Up
     | Down
-
-
-type MoveShape
-    = Square
-    | Line
 
 
 type alias MoveOrder =
@@ -117,6 +111,7 @@ type TileType
     | Sun
     | SeedPod
     | Seed SeedType
+    | Burst (Maybe TileType)
 
 
 type SeedType

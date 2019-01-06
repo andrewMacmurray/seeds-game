@@ -12,17 +12,17 @@ module Scenes.Level exposing
 
 import Browser.Events
 import Context exposing (Context)
+import Css.Animation as Animation
 import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
-import Data.Board.Block exposing (..)
+import Data.Board.Block as Block
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
 import Data.Board.Map exposing (..)
+import Data.Board.Move as Move
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
-import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging, triggerMoveIfSquare)
-import Data.Board.Moves exposing (currentMoveTileType, currentMoves)
 import Data.Board.Score as Score exposing (addScoreFromMoves, initialScores, levelComplete, scoreTileTypes)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
@@ -38,7 +38,7 @@ import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Dict exposing (indexedDictFrom)
+import Helpers.Dict exposing (filterValues, indexedDictFrom, mapValues)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
@@ -62,7 +62,6 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , remainingMoves : Int
-    , moveShape : Maybe MoveShape
     , tileSettings : List TileSetting
     , boardDimensions : BoardDimensions
     , levelStatus : Status
@@ -73,7 +72,6 @@ type alias Model =
 
 type Msg
     = InitTiles (List ( Color, Coord )) (List TileType)
-    | SquareMove
     | StopMove
     | StartMove Move Pointer
     | CheckMove Pointer
@@ -85,6 +83,7 @@ type Msg
     | GrowPodsToSeeds
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
+    | BurstTiles
     | GenerateEnteringTiles
     | InsertEnteringTiles (List TileType)
     | ResetEntering
@@ -135,9 +134,9 @@ updateContext f model =
     { model | context = f model.context }
 
 
-menuOptions : Context -> List (Menu.Option Msg)
-menuOptions context =
-    if Lives.remaining context.lives > 1 then
+menuOptions : Model -> List (Menu.Option Msg)
+menuOptions model =
+    if canRestartLevel model then
         [ Menu.option PromptRestart "Restart"
         , Menu.option PromptExit "Exit"
         ]
@@ -145,6 +144,11 @@ menuOptions context =
     else
         [ Menu.option PromptExit "Exit"
         ]
+
+
+canRestartLevel : Model -> Bool
+canRestartLevel model =
+    Lives.remaining model.context.lives > 1 || model.levelStatus == NotStarted
 
 
 
@@ -182,7 +186,6 @@ initialState context =
     , scores = Dict.empty
     , isDragging = False
     , remainingMoves = 10
-    , moveShape = Nothing
     , tileSettings = []
     , boardDimensions = { y = 8, x = 8 }
     , levelStatus = NotStarted
@@ -213,15 +216,15 @@ update msg model =
             continue
                 (model
                     |> handleAddScore
-                    |> mapBlocks setToLeaving
+                    |> mapBlocks Block.setToLeaving
                 )
                 []
 
         ReleaseTile ->
             continue
                 (model
-                    |> handleResetMove
-                    |> mapBlocks setDraggingToReleasing
+                    |> stopDrag
+                    |> mapBlocks Block.setDraggingToReleasing
                 )
                 []
 
@@ -232,13 +235,13 @@ update msg model =
             continue
                 (model
                     |> mapBoard shiftBoard
-                    |> mapBlocks setFallingToStatic
-                    |> mapBlocks setLeavingToEmpty
+                    |> mapBlocks Block.setFallingToStatic
+                    |> mapBlocks Block.setLeavingToEmpty
                 )
                 []
 
         SetGrowingSeedPods ->
-            continue (mapBlocks setDraggingToGrowing model) []
+            continue (mapBlocks Block.setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
             continue model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
@@ -247,36 +250,36 @@ update msg model =
             continue (handleInsertNewSeeds seedType model) []
 
         ResetGrowingSeeds ->
-            continue (mapBlocks setGrowingToStatic model) []
+            continue (mapBlocks Block.setGrowingToStatic model) []
 
         GenerateEnteringTiles ->
             continue model [ generateEnteringTiles InsertEnteringTiles model.tileSettings model.board ]
+
+        BurstTiles ->
+            continue (mapBoard (setBurstingTiles model.boardDimensions) model) []
 
         InsertEnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
 
         ResetEntering ->
-            continue (mapBlocks setEnteringToStatic model) []
+            continue (mapBlocks Block.setEnteringToStatic model) []
 
         ResetMove ->
             continue
                 (model
-                    |> handleResetMove
+                    |> stopDrag
                     |> handleDecrementRemainingMoves
                 )
                 []
 
         ResetReleasingTile ->
-            continue (mapBlocks setReleasingToStatic model) []
+            continue (mapBlocks Block.setReleasingToStatic model) []
 
         StartMove move pointer ->
             continue (handleStartMove move pointer model) []
 
         CheckMove pointer ->
-            checkMoveFromPosition pointer model
-
-        SquareMove ->
-            continue (handleSquareMove model) []
+            continue (checkMoveFromPosition pointer model) []
 
         CheckLevelComplete ->
             handleCheckLevelComplete model
@@ -324,33 +327,50 @@ update msg model =
 
 stopMoveSequence : Model -> Cmd Msg
 stopMoveSequence model =
-    if List.length (currentMoves model.board) == 1 then
+    if List.length (Move.currentMoves model.board) == 1 then
         releaseTileSequence
 
-    else if currentMoveTileType model.board == Just SeedPod then
-        growSeedPodsSequence model.moveShape
+    else if shouldBurst model.board then
+        burstTilesSequence
+
+    else if Move.currentMoveTileType model.board == Just SeedPod then
+        growSeedPodsSequence
 
     else
-        removeTilesSequence model.moveShape
+        removeTilesSequence
 
 
-growSeedPodsSequence : Maybe MoveShape -> Cmd Msg
-growSeedPodsSequence moveShape =
+growSeedPodsSequence : Cmd Msg
+growSeedPodsSequence =
     sequence
-        [ ( initialDelay moveShape, SetGrowingSeedPods )
-        , ( 0, ResetMove )
+        [ ( 0, ResetMove )
+        , ( 0, SetGrowingSeedPods )
         , ( 800, GrowPodsToSeeds )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         ]
 
 
-removeTilesSequence : Maybe MoveShape -> Cmd Msg
-removeTilesSequence moveShape =
+removeTilesSequence : Cmd Msg
+removeTilesSequence =
     sequence
-        [ ( initialDelay moveShape, SetLeavingTiles )
-        , ( 0, ResetMove )
-        , ( fallDelay moveShape, SetFallingTiles )
+        [ ( 0, ResetMove )
+        , ( 0, SetLeavingTiles )
+        , ( 350, SetFallingTiles )
+        , ( 500, ShiftBoard )
+        , ( 0, CheckLevelComplete )
+        , ( 0, GenerateEnteringTiles )
+        , ( 500, ResetEntering )
+        ]
+
+
+burstTilesSequence : Cmd Msg
+burstTilesSequence =
+    sequence
+        [ ( 0, ResetMove )
+        , ( 0, BurstTiles )
+        , ( 700, SetLeavingTiles )
+        , ( 550, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
         , ( 0, GenerateEnteringTiles )
@@ -391,24 +411,6 @@ hideInfoSequence =
         ]
 
 
-initialDelay : Maybe MoveShape -> Float
-initialDelay moveShape =
-    if moveShape == Just Square then
-        200
-
-    else
-        0
-
-
-fallDelay : Maybe MoveShape -> Float
-fallDelay moveShape =
-    if moveShape == Just Square then
-        500
-
-    else
-        350
-
-
 
 -- Update Helpers
 
@@ -442,9 +444,9 @@ handleAddScore model =
     { model | scores = addScoreFromMoves model.board model.scores }
 
 
-handleResetMove : Model -> Model
-handleResetMove model =
-    { model | isDragging = False, moveShape = Nothing }
+stopDrag : Model -> Model
+stopDrag model =
+    { model | isDragging = False }
 
 
 handleDecrementRemainingMoves : Model -> Model
@@ -458,44 +460,103 @@ handleDecrementRemainingMoves model =
 
 handleStartMove : Move -> Pointer -> Model -> Model
 handleStartMove (( _, block ) as move) pointer model =
-    if isReleasing block then
+    if Block.isReleasing block then
         model
 
     else
         { model
             | isDragging = True
             , board = startMove move model.board
-            , moveShape = Just Line
             , pointer = pointer
         }
 
 
-checkMoveFromPosition : Pointer -> Model -> Exit.With Status ( Model, Cmd Msg )
+checkMoveFromPosition : Pointer -> Model -> Model
 checkMoveFromPosition pointer model =
     case moveFromPosition pointer model of
         Just move ->
-            checkMoveWithSquareTrigger move { model | pointer = pointer }
+            handleCheckMove move { model | pointer = pointer }
 
         Nothing ->
-            continue { model | pointer = pointer } []
-
-
-checkMoveWithSquareTrigger : Move -> Model -> Exit.With Status ( Model, Cmd Msg )
-checkMoveWithSquareTrigger move model =
-    let
-        newModel =
-            handleCheckMove move model
-    in
-    continue newModel [ triggerMoveIfSquare SquareMove newModel.board ]
+            { model | pointer = pointer }
 
 
 handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
-        { model | board = addMoveToBoard move model.board }
+        handleAddBurstType { model | board = addMoveToBoard move model.board }
 
     else
         model
+
+
+handleAddBurstType : Model -> Model
+handleAddBurstType model =
+    case Move.currentMoveTileType model.board of
+        Just moveType ->
+            mapBlocks (Block.setDraggingBurstType moveType) model
+
+        Nothing ->
+            model
+
+
+shouldBurst : Board -> Bool
+shouldBurst board =
+    board
+        |> Move.currentMoves
+        |> List.any (Move.block >> Block.isBurst)
+
+
+setBurstingTiles : BoardDimensions -> Board -> Board
+setBurstingTiles dimensions board =
+    let
+        currMoves =
+            Move.currentMoves board
+
+        burstRadius =
+            burstMagnitude board
+
+        burstCoords =
+            currMoves
+                |> List.filter (Move.block >> Block.isBurst)
+                |> List.map Move.coord
+
+        burstArea =
+            burstCoords
+                |> List.map (Move.surroundingCoordinates dimensions burstRadius)
+                |> List.concat
+
+        moveType =
+            Move.currentMoveTileType board
+
+        updateBlockToDragging b =
+            if moveType == Block.getTileType b then
+                Block.setToDragging 1 b
+
+            else
+                b
+
+        updateToDragging mv acc =
+            Dict.update mv (Maybe.map updateBlockToDragging) acc
+
+        updateBurstsToLeaving mv =
+            Dict.update mv (Maybe.map Block.setToLeaving)
+    in
+    List.foldl updateBurstsToLeaving (List.foldl updateToDragging board burstArea) burstCoords
+        |> mapValues Block.removeBearings
+
+
+burstMagnitude board =
+    let
+        currMoves =
+            Move.currentMoves board
+
+        burstCoords =
+            currMoves
+                |> List.filter (Move.block >> Block.isBurst)
+                |> List.map Move.coord
+    in
+    List.length currMoves // 2 + List.length burstCoords
 
 
 moveFromPosition : Pointer -> Model -> Maybe Move
@@ -529,14 +590,6 @@ coordsFromPosition pointer model =
     ( floor <| positionY / scaleFactorY
     , floor <| positionX / scaleFactorX
     )
-
-
-handleSquareMove : Model -> Model
-handleSquareMove model =
-    { model
-        | moveShape = Just Square
-        , board = setAllTilesOfTypeToDragging model.board
-    }
 
 
 handleCheckLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
@@ -647,8 +700,24 @@ renderTile model (( _, block ) as move) =
         , class "pointer"
         , attribute "touch-action" "none"
         ]
-        [ renderTile_ (leavingStyles model move) model.context.window model.moveShape move
+        [ renderTile_
+            { externalDragTriggered = isBursting model
+            , burstMagnitude = burstMagnitude model.board
+            , extraStyles = leavingStyles model move
+            }
+            model.context.window
+            move
         ]
+
+
+isBursting model =
+    let
+        bursting =
+            model.board
+                |> Dict.values
+                |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
+    in
+    not model.isDragging && bursting
 
 
 currentMoveOverlay : Model -> List (Html msg) -> Html msg
@@ -673,8 +742,14 @@ currentMoveLayer model =
 
 renderCurrentMove : Model -> Move -> Html msg
 renderCurrentMove model (( _, block ) as move) =
-    if isCurrentMove block && model.isDragging then
-        renderTile_ [] model.context.window model.moveShape move
+    if Block.isCurrentMove block && model.isDragging then
+        renderTile_
+            { extraStyles = []
+            , externalDragTriggered = isBursting model
+            , burstMagnitude = 1
+            }
+            model.context.window
+            move
 
     else
         span [] []
@@ -711,9 +786,9 @@ mapTiles f =
 
 
 leavingStyles : Model -> Move -> List Style
-leavingStyles model (( _, tile ) as move) =
-    if isLeaving tile then
-        [ transitionAll 800 [ delay <| modBy 5 (leavingOrder tile) * 80 ]
+leavingStyles model (( _, block ) as move) =
+    if Block.isLeaving block && not (Block.isBurst block) then
+        [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
         , opacity 0.2
         , handleExitDirection move model
         ]
@@ -724,7 +799,7 @@ leavingStyles model (( _, tile ) as move) =
 
 handleExitDirection : Move -> Model -> Style
 handleExitDirection ( coord, block ) model =
-    case getTileState block of
+    case Block.getTileState block of
         Leaving Rain _ ->
             getLeavingStyle Rain model
 

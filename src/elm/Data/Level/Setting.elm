@@ -2,6 +2,7 @@ module Data.Level.Setting exposing
     ( Probability(..)
     , TargetScore(..)
     , TileSetting
+    , burst
     , rain
     , seed
     , seedPod
@@ -44,3 +45,8 @@ seed seedType prob targetScore =
 seedPod : Probability -> TileSetting
 seedPod prob =
     TileSetting SeedPod prob Nothing
+
+
+burst : Probability -> TileSetting
+burst prob =
+    TileSetting (Burst Nothing) prob Nothing

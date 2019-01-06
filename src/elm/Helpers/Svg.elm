@@ -7,6 +7,7 @@ module Helpers.Svg exposing
     , points_
     , r_
     , scaled
+    , strokeWidth_
     , translated
     , viewBox_
     , width_
@@ -80,6 +81,11 @@ y_ =
 r_ : Float -> Attribute msg
 r_ =
     r << String.fromFloat
+
+
+strokeWidth_ : Float -> Attribute msg
+strokeWidth_ =
+    strokeWidth << String.fromFloat
 
 
 viewBox_ : Float -> Float -> Float -> Float -> Attribute msg

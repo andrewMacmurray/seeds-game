@@ -31,16 +31,16 @@ lineFromMove window ( coord, block ) =
             getTileState block
     in
     case tileState of
-        Dragging tileType _ Left _ ->
+        Dragging tileType _ Left ->
             innerLine window tileType Left
 
-        Dragging tileType _ Right _ ->
+        Dragging tileType _ Right ->
             innerLine window tileType Right
 
-        Dragging tileType _ Up _ ->
+        Dragging tileType _ Up ->
             innerLine window tileType Up
 
-        Dragging tileType _ Down _ ->
+        Dragging tileType _ Down ->
             innerLine window tileType Down
 
         _ ->

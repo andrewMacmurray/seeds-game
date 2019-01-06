@@ -7,11 +7,14 @@ module Views.Board.Styles exposing
     , boardOffsetLeft
     , boardOffsetTop
     , boardWidth
+    , burstStyles
+    , burstTracerStyles
     , centerBlock
     , draggingStyles
     , enteringStyles
     , fallingStyles
     , growingStyles
+    , lighterStrokeColor
     , moveTracerStyles
     , scoreIconSize
     , seedStrokeColors
@@ -30,12 +33,13 @@ module Views.Board.Styles exposing
     , wallStyles
     )
 
-import Css.Animation exposing (animation, ease, linear)
+import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
 import Data.Board.Block as Block exposing (..)
+import Data.Board.Move as Move
 import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
@@ -117,12 +121,12 @@ tilePosition window ( y, x ) =
 
 
 wallStyles : Window -> Move -> List Style
-wallStyles window ( _, block ) =
+wallStyles window move =
     let
         wallSize =
             Tile.scale window * 45
     in
-    case block of
+    case Move.block move of
         Wall color ->
             [ backgroundColor color
             , width wallSize
@@ -134,45 +138,45 @@ wallStyles window ( _, block ) =
 
 
 enteringStyles : Move -> List Style
-enteringStyles ( _, block ) =
-    case getTileState block of
+enteringStyles move =
+    case getTileState <| Move.block move of
         Entering tile ->
-            [ animation "bounce-down" 1000 [ ease ] ]
+            [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
 
         _ ->
             []
 
 
 growingStyles : Move -> List Style
-growingStyles ( coord, block ) =
-    case getTileState block of
+growingStyles move =
+    case getTileState <| Move.block move of
         Growing SeedPod _ ->
             [ transform [ scale 4 ]
-            , transitionAll 400 [ delay <| modBy 5 (growingOrder block) * 70 ]
+            , transitionAll 400 [ delay <| modBy 5 (growingOrder <| Move.block move) * 70 ]
             , opacity 0
             , property "pointer-events" "none"
             ]
 
         Growing (Seed _) _ ->
-            [ animation "bulge" 500 [ ease ] ]
+            [ Animation.animation "bulge" 500 [ Animation.ease ] ]
 
         _ ->
             []
 
 
 fallingStyles : Move -> List Style
-fallingStyles ( _, block ) =
-    case getTileState block of
+fallingStyles move =
+    case getTileState <| Move.block move of
         Falling tile distance ->
-            [ animation ("bounce-down-" ++ String.fromInt distance) 900 [ linear ] ]
+            [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
 
         _ ->
             []
 
 
 releasingStyles : Move -> List Style
-releasingStyles ( _, block ) =
-    case getTileState block of
+releasingStyles move =
+    case getTileState <| Move.block move of
         Releasing _ ->
             [ transitionAll 200 []
             , transform [ scale 1 ]
@@ -183,28 +187,65 @@ releasingStyles ( _, block ) =
 
 
 moveTracerStyles : Move -> List Style
-moveTracerStyles (( coord, tile ) as move) =
-    if isDragging tile then
-        [ animation "bulge-fade" 800 [ ease ] ]
-
-    else
-        [ displayStyle "none" ]
-
-
-draggingStyles : Maybe MoveShape -> Move -> List Style
-draggingStyles moveShape ( _, tileState ) =
-    if moveShape == Just Square then
-        [ transitionAll 500 []
+moveTracerStyles move =
+    if isDragging (Move.block move) then
+        [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
         ]
 
-    else if isLeaving tileState then
+    else
+        [ displayStyle "none"
+        ]
+
+
+draggingStyles : Bool -> Move -> List Style
+draggingStyles externalDragTriggered move =
+    let
+        block =
+            Move.block move
+    in
+    if isLeaving block then
         [ transitionAll 100 []
         ]
 
-    else if isDragging tileState then
+    else if externalDragTriggered then
+        [ transitionAll 500 []
+        ]
+
+    else if Block.isDragging block && not (Block.isBurst block) then
         [ transform [ scale 0.8 ]
         , transitionAll 300 []
         ]
+
+    else
+        []
+
+
+burstStyles : Block -> List Style
+burstStyles block =
+    if Block.isLeaving block && Block.isBurst block then
+        [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
+        ]
+
+    else if Block.isDragging block && Block.isBurst block then
+        [ transform [ scale 1.3 ]
+        , transitionAll 300 []
+        ]
+
+    else
+        []
+
+
+burstTracerStyles : Int -> Move -> List Style
+burstTracerStyles burstMagnitude move =
+    let
+        block =
+            Move.block move
+
+        pulseSpeed =
+            clamp 500 1000 <| 2000 - burstMagnitude * 200
+    in
+    if Block.isDragging block && Block.isBurst block then
+        [ Animation.animation "bulge-fade" pulseSpeed [ Animation.infinite, Animation.cubicBezier 0 0 0 1 ] ]
 
     else
         []
@@ -243,7 +284,7 @@ tileSizeMap =
     Block.fold (Tile.map 0 tileSize) 0
 
 
-strokeColors : TileType -> String
+strokeColors : TileType -> Color.Color
 strokeColors tile =
     case tile of
         Rain ->
@@ -258,8 +299,42 @@ strokeColors tile =
         Seed seedType ->
             seedStrokeColors seedType
 
+        Burst t ->
+            burstColor t
 
-seedStrokeColors : SeedType -> String
+
+lighterStrokeColor : TileType -> Color.Color
+lighterStrokeColor tile =
+    case tile of
+        Rain ->
+            Color.rgb 171 238 237
+
+        Sun ->
+            Color.rgb 249 221 79
+
+        SeedPod ->
+            Color.rgb 157 229 106
+
+        Seed seedType ->
+            lighterSeedStrokeColor seedType
+
+        Burst t ->
+            lighterBurstColor t
+
+
+burstColor t =
+    t
+        |> Maybe.map strokeColors
+        |> Maybe.withDefault Color.greyYellow
+
+
+lighterBurstColor t =
+    t
+        |> Maybe.map lighterStrokeColor
+        |> Maybe.withDefault Color.transparent
+
+
+seedStrokeColors : SeedType -> Color.Color
 seedStrokeColors seedType =
     case seedType of
         Sunflower ->
@@ -278,6 +353,24 @@ seedStrokeColors seedType =
             Color.darkBrown
 
 
+lighterSeedStrokeColor seedType =
+    case seedType of
+        Sunflower ->
+            Color.lightBrown
+
+        Chrysanthemum ->
+            Color.orange
+
+        Cornflower ->
+            Color.lightBlue
+
+        Lupin ->
+            Color.brown
+
+        _ ->
+            Color.lightBrown
+
+
 tileBackground : TileType -> List Style
 tileBackground tile =
     case tile of
@@ -291,6 +384,9 @@ tileBackground tile =
             [ background Color.seedPodGradient ]
 
         Seed _ ->
+            []
+
+        Burst _ ->
             []
 
 
@@ -307,6 +403,9 @@ tileSize tile =
             26
 
         Seed _ ->
+            35
+
+        Burst _ ->
             35
 
 

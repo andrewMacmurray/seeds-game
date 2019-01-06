@@ -19,7 +19,6 @@ import Scenes.Tutorial as Tutorial
 import Scenes.Tutorial.Rain as Rain
 import Scenes.Tutorial.Seed as Seed
 import Scenes.Tutorial.SeedPod as SeedPod
-import Scenes.Tutorial.Square as Square
 import Scenes.Tutorial.Sun as Sun
 import Worlds.One as One
 import Worlds.Three as Three
@@ -118,6 +117,3 @@ tutorialConfig_ tutorial_ =
 
         SeedPod ->
             SeedPod.config
-
-        Square ->
-            Square.config

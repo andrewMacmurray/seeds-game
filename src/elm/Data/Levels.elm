@@ -134,7 +134,6 @@ type Tutorial
     | Rain
     | Seed
     | SeedPod
-    | Square
 
 
 

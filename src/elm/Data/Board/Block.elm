@@ -6,6 +6,7 @@ module Data.Board.Block exposing
     , growSeedPod
     , growingOrder
     , hasLine
+    , isBurst
     , isCurrentMove
     , isDragging
     , isFalling
@@ -16,6 +17,8 @@ module Data.Board.Block exposing
     , leavingOrder
     , map
     , moveOrder
+    , removeBearings
+    , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToReleasing
     , setEnteringToStatic
@@ -85,8 +88,13 @@ isCurrentMove =
 
 
 setToDragging : MoveOrder -> Block -> Block
-setToDragging moveOrder_ =
-    map <| Tile.setToDragging moveOrder_
+setToDragging =
+    map << Tile.setToDragging
+
+
+removeBearings : Block -> Block
+removeBearings =
+    map Tile.removeBearings
 
 
 setStaticToFirstMove : Block -> Block
@@ -95,8 +103,13 @@ setStaticToFirstMove =
 
 
 addBearing : MoveBearing -> Block -> Block
-addBearing moveBearing =
-    map <| Tile.addBearing moveBearing
+addBearing =
+    map << Tile.addBearing
+
+
+setDraggingBurstType : TileType -> Block -> Block
+setDraggingBurstType =
+    map << Tile.setDraggingBurstType
 
 
 setGrowingToStatic : Block -> Block
@@ -105,13 +118,13 @@ setGrowingToStatic =
 
 
 growSeedPod : SeedType -> Block -> Block
-growSeedPod seedType =
-    map (Tile.growSeedPod seedType)
+growSeedPod =
+    map << Tile.growSeedPod
 
 
 setToFalling : Int -> Block -> Block
-setToFalling fallingDistance =
-    map <| Tile.setToFalling fallingDistance
+setToFalling =
+    map << Tile.setToFalling
 
 
 setEnteringToStatic : Block -> Block
@@ -167,6 +180,15 @@ isWall block =
 
         _ ->
             False
+
+
+isBurst : Block -> Bool
+isBurst =
+    let
+        burst =
+            Tile.getTileType >> Maybe.map Tile.isBurst >> Maybe.withDefault False
+    in
+    fold burst False
 
 
 static : TileType -> Block

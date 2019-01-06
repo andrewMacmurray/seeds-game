@@ -1,15 +1,6 @@
-module Views.Board.Tile exposing
-    ( baseTileStyles
-    , innerSeed
-    , innerSeed_
-    , innerTile
-    , makeInnerTile
-    , renderTile_
-    , tileElementMap
-    , tracer
-    , wall
-    )
+module Views.Board.Tile exposing (renderTile_)
 
+import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
@@ -18,11 +9,19 @@ import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class)
 import Views.Board.Styles exposing (..)
+import Views.Icons.Burst as Burst
 import Views.Seed.All exposing (renderSeed)
 
 
-renderTile_ : List Style -> Window -> Maybe MoveShape -> Move -> Html msg
-renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
+type alias Settings =
+    { extraStyles : List Style
+    , externalDragTriggered : Bool
+    , burstMagnitude : Int
+    }
+
+
+renderTile_ : Settings -> Window -> Move -> Html msg
+renderTile_ { extraStyles, externalDragTriggered, burstMagnitude } window (( coord, _ ) as move) =
     div
         [ styles
             [ tileWidthheights window
@@ -31,15 +30,15 @@ renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
             ]
         , class "dib absolute"
         ]
-        [ innerTile window moveShape move
-        , tracer window move
+        [ innerTile externalDragTriggered window move
+        , tracer burstMagnitude window move
         , wall window move
         ]
 
 
-tracer : Window -> Move -> Html msg
-tracer window move =
-    makeInnerTile (moveTracerStyles move) window move
+tracer : Int -> Window -> Move -> Html msg
+tracer burstMagnitude window move =
+    innerTileWithStyles (moveTracerStyles move ++ burstTracerStyles burstMagnitude move) window move
 
 
 wall : Window -> Move -> Html msg
@@ -51,13 +50,13 @@ wall window move =
         []
 
 
-innerTile : Window -> Maybe MoveShape -> Move -> Html msg
-innerTile window moveShape move =
-    makeInnerTile (draggingStyles moveShape move) window move
+innerTile : Bool -> Window -> Move -> Html msg
+innerTile externalDragTriggered window move =
+    innerTileWithStyles (draggingStyles externalDragTriggered move) window move
 
 
-makeInnerTile : List Style -> Window -> Move -> Html msg
-makeInnerTile extraStyles window (( _, tile ) as move) =
+innerTileWithStyles : List Style -> Window -> Move -> Html msg
+innerTileWithStyles extraStyles window (( _, block ) as move) =
     div
         [ styles
             [ extraStyles
@@ -65,35 +64,42 @@ makeInnerTile extraStyles window (( _, tile ) as move) =
             ]
         , classes baseTileClasses
         ]
-        [ innerSeed tile ]
+        [ innerTileElement block ]
 
 
 baseTileStyles : Window -> Move -> List Style
-baseTileStyles window (( _, tile ) as move) =
+baseTileStyles window (( _, block ) as move) =
     List.concat
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , size <| toFloat <| round <| tileSizeMap tile * Tile.scale window
-        , tileBackgroundMap tile
+        , size <| toFloat <| round <| tileSizeMap block * Tile.scale window
+        , tileBackgroundMap block
         ]
 
 
-innerSeed : Block -> Html msg
-innerSeed =
-    Block.fold (tileElementMap innerSeed_) <| span [] []
-
-
-innerSeed_ : TileType -> Html msg
-innerSeed_ tileType =
-    case tileType of
-        Seed seedType ->
+innerTileElement : Block -> Html msg
+innerTileElement block =
+    case Block.getTileType block of
+        Just (Seed seedType) ->
             renderSeed seedType
+
+        Just (Burst tile) ->
+            div [ Style.style <| burstStyles block ]
+                [ renderBurst tile <| Block.isLeaving block ]
 
         _ ->
             span [] []
 
 
-tileElementMap : (TileType -> Html msg) -> TileState -> Html msg
-tileElementMap =
-    Tile.map <| span [] []
+renderBurst tile shouldDisperse =
+    case tile of
+        Just t ->
+            if shouldDisperse then
+                Burst.active (strokeColors t) (strokeColors t)
+
+            else
+                Burst.active (strokeColors t) (lighterStrokeColor t)
+
+        Nothing ->
+            Burst.inactive

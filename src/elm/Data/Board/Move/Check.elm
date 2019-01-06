@@ -3,34 +3,61 @@ module Data.Board.Move.Check exposing
     , startMove
     )
 
-import Data.Board.Block exposing (setStaticToFirstMove)
-import Data.Board.Move.Bearing exposing (addBearings, validDirection)
-import Data.Board.Move.Square exposing (isValidSquare)
-import Data.Board.Moves exposing (isUniqueMove, lastMove, sameTileType)
+import Data.Board.Block as Block
+import Data.Board.Move as Move
+import Data.Board.Move.Bearing as Bearing
 import Data.Board.Types exposing (..)
 import Dict
 
 
+startMove : Move -> Board -> Board
+startMove ( c1, t1 ) board =
+    board |> Dict.update c1 (Maybe.map (\_ -> Block.setStaticToFirstMove t1))
+
+
 addMoveToBoard : Move -> Board -> Board
 addMoveToBoard curr board =
-    if isValidMove curr board || isValidSquare curr board then
-        addBearings curr board
+    if isValidMove curr board || isValidBurst curr board then
+        Bearing.add curr board
 
     else
         board
 
 
-startMove : Move -> Board -> Board
-startMove ( c1, t1 ) board =
-    board |> Dict.update c1 (Maybe.map (\_ -> setStaticToFirstMove t1))
+isValidBurst : Move -> Board -> Bool
+isValidBurst curr board =
+    let
+        last =
+            Move.last board
+
+        burstTypeNotSet =
+            Move.currentMoveTileType board == Nothing
+
+        isValidMoveAfterBurst =
+            isBurst last && Move.currentMoveTileType board == Move.tileType curr
+
+        inCurrentMoves =
+            Move.inCurrentMoves curr board
+    in
+    (isBurst curr || isValidMoveAfterBurst || burstTypeNotSet)
+        && Move.areNeighbours curr last
+        && not inCurrentMoves
 
 
 isValidMove : Move -> Board -> Bool
 isValidMove curr board =
     let
         last =
-            lastMove board
+            Move.last board
+
+        inCurrentMoves =
+            Move.inCurrentMoves curr board
     in
-    validDirection curr last
-        && sameTileType curr last
-        && isUniqueMove curr board
+    Move.areNeighbours curr last
+        && Move.sameTileType curr last
+        && not inCurrentMoves
+
+
+isBurst : Move -> Bool
+isBurst ( _, block ) =
+    Block.isBurst block
