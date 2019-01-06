@@ -20,13 +20,15 @@ module Data.Board.Tile exposing
     , leavingOrder
     , map
     , moveOrder
-    , removeBearings
+    , removeBearing
+    , resetDraggingBurstType
     , scale
     , seedName
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToReleasing
-    , setEnteringToSatic
+    , setDraggingToStatic
+    , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
@@ -168,8 +170,8 @@ setToDragging moveOrder_ tileState =
             x
 
 
-removeBearings : TileState -> TileState
-removeBearings tileState =
+removeBearing : TileState -> TileState
+removeBearing tileState =
     case tileState of
         Dragging tileType moveOrder_ _ ->
             Dragging tileType moveOrder_ Head
@@ -228,6 +230,16 @@ setDraggingBurstType tileType tileState =
             x
 
 
+resetDraggingBurstType : TileState -> TileState
+resetDraggingBurstType tileState =
+    case tileState of
+        Dragging (Burst _) moveOrder_ moveBearing_ ->
+            Dragging (Burst Nothing) moveOrder_ moveBearing_
+
+        x ->
+            x
+
+
 setToFalling : Int -> TileState -> TileState
 setToFalling fallingDistance tileState =
     case tileState of
@@ -241,8 +253,8 @@ setToFalling fallingDistance tileState =
             x
 
 
-setEnteringToSatic : TileState -> TileState
-setEnteringToSatic tileState =
+setEnteringToStatic : TileState -> TileState
+setEnteringToStatic tileState =
     case tileState of
         Entering tile ->
             Static tile
@@ -276,6 +288,16 @@ setLeavingToEmpty tileState =
     case tileState of
         Leaving _ _ ->
             Empty
+
+        x ->
+            x
+
+
+setDraggingToStatic : TileState -> TileState
+setDraggingToStatic tileState =
+    case tileState of
+        Dragging tile _ _ ->
+            Static <| resetBurstType tile
 
         x ->
             x
@@ -370,6 +392,16 @@ burstType tileType =
 
         _ ->
             Nothing
+
+
+resetBurstType : TileType -> TileType
+resetBurstType tileType =
+    case tileType of
+        Burst _ ->
+            Burst Nothing
+
+        x ->
+            x
 
 
 getSeedType : TileType -> Maybe SeedType

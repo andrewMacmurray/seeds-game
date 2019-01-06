@@ -408,6 +408,7 @@ renderTiles model =
                     { extraStyles = leavingStyles model move
                     , externalDragTriggered = False
                     , burstMagnitude = 1
+                    , withTracer = True
                     }
                     model.context.window
                     move

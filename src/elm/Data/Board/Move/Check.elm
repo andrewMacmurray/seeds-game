@@ -3,6 +3,7 @@ module Data.Board.Move.Check exposing
     , startMove
     )
 
+import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
@@ -11,8 +12,8 @@ import Dict
 
 
 startMove : Move -> Board -> Board
-startMove ( c1, t1 ) board =
-    board |> Dict.update c1 (Maybe.map (\_ -> Block.setStaticToFirstMove t1))
+startMove move =
+    Board.update (Move.coord move) Block.setStaticToFirstMove
 
 
 addMoveToBoard : Move -> Board -> Board
@@ -20,8 +21,31 @@ addMoveToBoard curr board =
     if isValidMove curr board || isValidBurst curr board then
         Bearing.add curr board
 
+    else if shouldRemoveMove curr board then
+        removeLastMove board
+
     else
         board
+
+
+removeLastMove : Board -> Board
+removeLastMove board =
+    let
+        lastCoord =
+            Move.coord <| Move.last board
+
+        newBoard =
+            Board.update lastCoord Block.setDraggingToStatic board
+    in
+    board
+        |> Move.secondLast
+        |> Maybe.map (\m -> Board.update (Move.coord m) Block.removeBearing newBoard)
+        |> Maybe.withDefault newBoard
+
+
+shouldRemoveMove : Move -> Board -> Bool
+shouldRemoveMove curr board =
+    Just curr == Move.secondLast board
 
 
 isValidBurst : Move -> Board -> Bool
@@ -59,5 +83,5 @@ isValidMove curr board =
 
 
 isBurst : Move -> Bool
-isBurst ( _, block ) =
-    Block.isBurst block
+isBurst =
+    Move.block >> Block.isBurst

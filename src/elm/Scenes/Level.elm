@@ -497,7 +497,7 @@ handleAddBurstType model =
             mapBlocks (Block.setDraggingBurstType moveType) model
 
         Nothing ->
-            model
+            mapBlocks Block.resetDraggingBurstType model
 
 
 shouldBurst : Board -> Bool
@@ -543,9 +543,10 @@ setBurstingTiles dimensions board =
             Dict.update mv (Maybe.map Block.setToLeaving)
     in
     List.foldl updateBurstsToLeaving (List.foldl updateToDragging board burstArea) burstCoords
-        |> mapValues Block.removeBearings
+        |> mapValues Block.removeBearing
 
 
+burstMagnitude : Board -> Int
 burstMagnitude board =
     let
         currMoves =
@@ -704,6 +705,7 @@ renderTile model (( _, block ) as move) =
             { externalDragTriggered = isBursting model
             , burstMagnitude = burstMagnitude model.board
             , extraStyles = leavingStyles model move
+            , withTracer = True
             }
             model.context.window
             move
@@ -747,6 +749,7 @@ renderCurrentMove model (( _, block ) as move) =
             { extraStyles = []
             , externalDragTriggered = isBursting model
             , burstMagnitude = 1
+            , withTracer = False
             }
             model.context.window
             move

@@ -17,11 +17,12 @@ type alias Settings =
     { extraStyles : List Style
     , externalDragTriggered : Bool
     , burstMagnitude : Int
+    , withTracer : Bool
     }
 
 
 renderTile_ : Settings -> Window -> Move -> Html msg
-renderTile_ { extraStyles, externalDragTriggered, burstMagnitude } window (( coord, _ ) as move) =
+renderTile_ { extraStyles, externalDragTriggered, burstMagnitude, withTracer } window (( coord, _ ) as move) =
     div
         [ styles
             [ tileWidthheights window
@@ -31,9 +32,17 @@ renderTile_ { extraStyles, externalDragTriggered, burstMagnitude } window (( coo
         , class "dib absolute"
         ]
         [ innerTile externalDragTriggered window move
-        , tracer burstMagnitude window move
+        , renderIf withTracer <| tracer burstMagnitude window move
         , wall window move
         ]
+
+
+renderIf predicate element =
+    if predicate then
+        element
+
+    else
+        span [] []
 
 
 tracer : Int -> Window -> Move -> Html msg

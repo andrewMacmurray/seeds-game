@@ -17,10 +17,12 @@ module Data.Board.Block exposing
     , leavingOrder
     , map
     , moveOrder
-    , removeBearings
+    , removeBearing
+    , resetDraggingBurstType
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToReleasing
+    , setDraggingToStatic
     , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
@@ -92,9 +94,9 @@ setToDragging =
     map << Tile.setToDragging
 
 
-removeBearings : Block -> Block
-removeBearings =
-    map Tile.removeBearings
+removeBearing : Block -> Block
+removeBearing =
+    map Tile.removeBearing
 
 
 setStaticToFirstMove : Block -> Block
@@ -110,6 +112,11 @@ addBearing =
 setDraggingBurstType : TileType -> Block -> Block
 setDraggingBurstType =
     map << Tile.setDraggingBurstType
+
+
+resetDraggingBurstType : Block -> Block
+resetDraggingBurstType =
+    map Tile.resetDraggingBurstType
 
 
 setGrowingToStatic : Block -> Block
@@ -129,7 +136,7 @@ setToFalling =
 
 setEnteringToStatic : Block -> Block
 setEnteringToStatic =
-    map Tile.setEnteringToSatic
+    map Tile.setEnteringToStatic
 
 
 setFallingToStatic : Block -> Block
@@ -145,6 +152,11 @@ setReleasingToStatic =
 setLeavingToEmpty : Block -> Block
 setLeavingToEmpty =
     map Tile.setLeavingToEmpty
+
+
+setDraggingToStatic : Block -> Block
+setDraggingToStatic =
+    map Tile.setDraggingToStatic
 
 
 setDraggingToGrowing : Block -> Block

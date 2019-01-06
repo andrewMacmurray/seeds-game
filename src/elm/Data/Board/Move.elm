@@ -11,6 +11,7 @@ module Data.Board.Move exposing
     , isRight
     , last
     , sameTileType
+    , secondLast
     , surroundingCoordinates
     , tileType
     )
@@ -77,6 +78,15 @@ last board =
     board
         |> findValue Block.isCurrentMove
         |> Maybe.withDefault empty
+
+
+secondLast : Board -> Maybe Move
+secondLast board =
+    board
+        |> currentMoves
+        |> List.reverse
+        |> List.drop 1
+        |> List.head
 
 
 coord : Move -> Coord
