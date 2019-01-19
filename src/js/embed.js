@@ -1,18 +1,9 @@
-const { Elm } = window;
 const bounce = require("./bounce.js");
 const cache = require("./cache.js");
-const util = require("./util");
 const { loadAudio, playTrack, longFade } = require("./audio.js");
 
-// registerServiceWorker();
-init();
-
-util.bumpDebuggerPanel();
-
-window.skipToLevel = util.skipToLevel;
-
-function init() {
-  const { ports } = Elm.Main.init({
+function Embed(Program) {
+  const { ports } = Program.init({
     node: document.getElementById("app"),
     flags: {
       now: Date.now(),
@@ -63,10 +54,4 @@ function init() {
   });
 }
 
-function registerServiceWorker() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js");
-    });
-  }
-}
+module.exports = { Embed };
