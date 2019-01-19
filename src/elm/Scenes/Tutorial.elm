@@ -17,10 +17,10 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
+import Data.Board as Board
 import Data.Board.Block exposing (..)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
-import Data.Board.Map exposing (..)
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
@@ -242,6 +242,16 @@ update msg model =
 
 
 -- Update Helpers
+
+
+mapBlocks : (Block -> Block) -> Model -> Model
+mapBlocks f model =
+    { model | board = Board.mapBlocks f model.board }
+
+
+mapBoard : (Board -> Board) -> Model -> Model
+mapBoard f model =
+    { model | board = f model.board }
 
 
 skipSequence : Cmd Msg

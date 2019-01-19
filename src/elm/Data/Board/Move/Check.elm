@@ -13,7 +13,7 @@ import Dict
 
 startMove : Move -> Board -> Board
 startMove move =
-    Board.update (Move.coord move) Block.setStaticToFirstMove
+    Board.updateAt (Move.coord move) Block.setStaticToFirstMove
 
 
 addMoveToBoard : Move -> Board -> Board
@@ -35,11 +35,11 @@ removeLastMove board =
             Move.coord <| Move.last board
 
         newBoard =
-            Board.update lastCoord Block.setDraggingToStatic board
+            Board.updateAt lastCoord Block.setDraggingToStatic board
     in
     board
         |> Move.secondLast
-        |> Maybe.map (\m -> Board.update (Move.coord m) Block.removeBearing newBoard)
+        |> Maybe.map (\m -> Board.updateAt (Move.coord m) Block.removeBearing newBoard)
         |> Maybe.withDefault newBoard
 
 

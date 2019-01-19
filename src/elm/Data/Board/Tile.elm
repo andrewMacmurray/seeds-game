@@ -12,6 +12,7 @@ module Data.Board.Tile exposing
     , isBurst
     , isCurrentMove
     , isDragging
+    , isEmpty
     , isFalling
     , isGrowing
     , isLeaving
@@ -69,6 +70,16 @@ leavingOrder tileState =
 
         _ ->
             0
+
+
+isEmpty : TileState -> Bool
+isEmpty tileState =
+    case tileState of
+        Empty ->
+            True
+
+        _ ->
+            False
 
 
 isLeaving : TileState -> Bool

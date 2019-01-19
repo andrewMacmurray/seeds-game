@@ -31,16 +31,15 @@ addScoreFromMoves board scores =
 
 
 levelComplete : Scores -> Bool
-levelComplete scores =
-    scores |> Dict.foldl (\_ v b -> b && v.current == v.target) True
+levelComplete =
+    Dict.foldl (\_ v b -> b && v.current == v.target) True
 
 
 targetReached : TileType -> Scores -> Bool
-targetReached tileType scores =
-    scores
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.map (\s -> s.current == s.target)
-        |> Maybe.withDefault False
+targetReached tileType =
+    getScore tileType
+        >> Maybe.map (\s -> s.current == s.target)
+        >> Maybe.withDefault False
 
 
 scoreToString : TileType -> Scores -> String
@@ -51,15 +50,18 @@ scoreToString tileType scores =
 
 
 getScoreFor : TileType -> Scores -> Maybe Int
-getScoreFor tileType scores =
-    scores
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.map (\{ target, current } -> target - current)
+getScoreFor tileType =
+    getScore tileType >> Maybe.map (\{ target, current } -> target - current)
 
 
 addToScore : Int -> TileType -> Scores -> Scores
-addToScore score tileType scores =
-    scores |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+addToScore score tileType =
+    Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+
+
+getScore : TileType -> Scores -> Maybe Score
+getScore tileType =
+    Dict.get <| Tile.hash tileType
 
 
 updateScore : Int -> Score -> Score
@@ -72,18 +74,15 @@ updateScore n score =
 
 
 scoreTileTypes : List TileSetting -> List TileType
-scoreTileTypes tileSettings =
-    tileSettings
-        |> List.filter collectable
-        |> List.map .tileType
+scoreTileTypes =
+    List.filter collectable >> List.map .tileType
 
 
 initialScores : List TileSetting -> Scores
-initialScores tileSettings =
-    tileSettings
-        |> List.filter collectable
-        |> List.map initScore
-        |> Dict.fromList
+initialScores =
+    List.filter collectable
+        >> List.map initScore
+        >> Dict.fromList
 
 
 collectable : TileSetting -> Bool

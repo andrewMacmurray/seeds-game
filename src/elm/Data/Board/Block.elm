@@ -9,6 +9,7 @@ module Data.Board.Block exposing
     , isBurst
     , isCurrentMove
     , isDragging
+    , isEmpty
     , isFalling
     , isGrowing
     , isLeaving
@@ -47,6 +48,11 @@ growingOrder =
 leavingOrder : Block -> Int
 leavingOrder =
     fold Tile.leavingOrder 0
+
+
+isEmpty : Block -> Bool
+isEmpty =
+    fold Tile.isEmpty False
 
 
 isLeaving : Block -> Bool

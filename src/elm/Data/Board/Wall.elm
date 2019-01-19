@@ -13,8 +13,8 @@ module Data.Board.Wall exposing
     )
 
 import Css.Color as Color exposing (Color)
+import Data.Board as Board
 import Data.Board.Types exposing (Block(..), Board, Coord)
-import Dict
 
 
 
@@ -123,17 +123,13 @@ toCoord i j x =
 
 
 addWalls : List ( Color, Coord ) -> Board -> Board
-addWalls coords board =
-    List.foldl addWall_ board coords
+addWalls walls board =
+    List.foldl addWall_ board walls
 
 
 addWall_ : ( Color, Coord ) -> Board -> Board
-addWall_ ( wallColor, coord ) currentBoard =
-    Dict.update coord (Maybe.map (always <| Wall wallColor)) currentBoard
-
-
-
--- Construct Walls
+addWall_ ( wallColor, coord ) =
+    Board.placeAt coord <| Wall wallColor
 
 
 yellowWalls : List Coord -> List ( Color, Coord )
@@ -143,4 +139,4 @@ yellowWalls =
 
 withColor : Color -> List Coord -> List ( Color, Coord )
 withColor color =
-    List.map (\b -> ( color, b ))
+    List.map (\coord -> ( color, coord ))

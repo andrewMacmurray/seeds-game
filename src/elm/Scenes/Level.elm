@@ -17,10 +17,10 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
+import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
-import Data.Board.Map exposing (..)
 import Data.Board.Move as Move
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Score as Score exposing (addScoreFromMoves, initialScores, levelComplete, scoreTileTypes)
@@ -84,7 +84,7 @@ type Msg
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | BurstTiles
-    | GenerateEnteringTiles
+    | GenerateEnteringTiles (Maybe TileType)
     | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard
@@ -164,7 +164,7 @@ init config context =
                 |> addLevelData config
     in
     ( model
-    , handleGenerateTiles config model
+    , handleGenerateInitialTiles config model
     )
 
 
@@ -252,8 +252,8 @@ update msg model =
         ResetGrowingSeeds ->
             continue (mapBlocks Block.setGrowingToStatic model) []
 
-        GenerateEnteringTiles ->
-            continue model [ generateEnteringTiles InsertEnteringTiles model.tileSettings model.board ]
+        GenerateEnteringTiles moveType ->
+            continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
 
         BurstTiles ->
             continue (mapBoard (setBurstingTiles model.boardDimensions) model) []
@@ -327,17 +327,21 @@ update msg model =
 
 stopMoveSequence : Model -> Cmd Msg
 stopMoveSequence model =
+    let
+        moveTileType =
+            Move.currentMoveTileType model.board
+    in
     if List.length (Move.currentMoves model.board) == 1 then
         releaseTileSequence
 
     else if shouldBurst model.board then
-        burstTilesSequence
+        burstTilesSequence moveTileType
 
-    else if Move.currentMoveTileType model.board == Just SeedPod then
+    else if moveTileType == Just SeedPod then
         growSeedPodsSequence
 
     else
-        removeTilesSequence
+        removeTilesSequence moveTileType
 
 
 growSeedPodsSequence : Cmd Msg
@@ -351,21 +355,21 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : Cmd Msg
-removeTilesSequence =
+removeTilesSequence : Maybe TileType -> Cmd Msg
+removeTilesSequence moveTileType =
     sequence
         [ ( 0, ResetMove )
         , ( 0, SetLeavingTiles )
         , ( 350, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
-        , ( 0, GenerateEnteringTiles )
+        , ( 0, GenerateEnteringTiles moveTileType )
         , ( 500, ResetEntering )
         ]
 
 
-burstTilesSequence : Cmd Msg
-burstTilesSequence =
+burstTilesSequence : Maybe TileType -> Cmd Msg
+burstTilesSequence moveTileType =
     sequence
         [ ( 0, ResetMove )
         , ( 0, BurstTiles )
@@ -373,7 +377,7 @@ burstTilesSequence =
         , ( 550, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
-        , ( 0, GenerateEnteringTiles )
+        , ( 0, GenerateEnteringTiles moveTileType )
         , ( 500, ResetEntering )
         ]
 
@@ -419,14 +423,36 @@ type alias HasBoard model =
     { model | board : Board, boardDimensions : BoardDimensions }
 
 
-handleGenerateTiles : Levels.LevelConfig -> Model -> Cmd Msg
-handleGenerateTiles config { boardDimensions } =
+mapBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
+mapBlocks f model =
+    { model | board = Board.mapBlocks f model.board }
+
+
+mapBoard : (Board -> Board) -> HasBoard model -> HasBoard model
+mapBoard f model =
+    { model | board = f model.board }
+
+
+handleGenerateInitialTiles : Levels.LevelConfig -> Model -> Cmd Msg
+handleGenerateInitialTiles config { boardDimensions } =
     generateInitialTiles (InitTiles config.walls) config.tiles boardDimensions
+
+
+handleGenerateEnteringTiles : Maybe TileType -> Board -> List TileSetting -> Cmd Msg
+handleGenerateEnteringTiles moveType board tileSettings =
+    if List.length tileSettings == 1 then
+        generateEnteringTiles InsertEnteringTiles board tileSettings
+
+    else
+        moveType
+            |> Maybe.map (\t -> List.filter (\setting -> setting.tileType /= t) tileSettings)
+            |> Maybe.withDefault tileSettings
+            |> generateEnteringTiles InsertEnteringTiles board
 
 
 handleMakeBoard : List TileType -> HasBoard model -> HasBoard model
 handleMakeBoard tiles ({ boardDimensions } as model) =
-    { model | board = makeBoard boardDimensions tiles }
+    { model | board = Board.fromTiles boardDimensions tiles }
 
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
@@ -536,13 +562,17 @@ setBurstingTiles dimensions board =
             else
                 b
 
-        updateToDragging mv acc =
-            Dict.update mv (Maybe.map updateBlockToDragging) acc
+        updateToDragging coord =
+            Board.updateAt coord updateBlockToDragging
 
-        updateBurstsToLeaving mv =
-            Dict.update mv (Maybe.map Block.setToLeaving)
+        updateBurstsToLeaving coord =
+            Board.updateAt coord Block.setToLeaving
+
+        updatedDraggingBoard =
+            List.foldl updateToDragging board burstArea
     in
-    List.foldl updateBurstsToLeaving (List.foldl updateToDragging board burstArea) burstCoords
+    burstCoords
+        |> List.foldl updateBurstsToLeaving updatedDraggingBoard
         |> mapValues Block.removeBearing
 
 
@@ -557,7 +587,7 @@ burstMagnitude board =
                 |> List.filter (Move.block >> Block.isBurst)
                 |> List.map Move.coord
     in
-    List.length currMoves // 2 + List.length burstCoords
+    List.length currMoves // 4 + List.length burstCoords
 
 
 moveFromPosition : Pointer -> Model -> Maybe Move
@@ -567,7 +597,9 @@ moveFromPosition pointer model =
 
 moveFromCoord : Board -> Coord -> Maybe Move
 moveFromCoord board coord =
-    board |> Dict.get coord |> Maybe.map (\b -> ( coord, b ))
+    board
+        |> Board.findBlockAt coord
+        |> Maybe.map (\block -> ( coord, block ))
 
 
 coordsFromPosition : Pointer -> Model -> Coord
@@ -716,7 +748,7 @@ isBursting model =
     let
         bursting =
             model.board
-                |> Dict.values
+                |> Board.blocks
                 |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
     in
     not model.isDragging && bursting
@@ -781,7 +813,7 @@ hanldeMoveEvents model move =
 
 mapTiles : (Move -> a) -> Board -> List a
 mapTiles f =
-    Dict.toList >> List.map f
+    Board.moves >> List.map f
 
 
 

@@ -10,37 +10,45 @@ module Data.Board.Move exposing
     , isLeft
     , isRight
     , last
+    , move
     , sameTileType
     , secondLast
     , surroundingCoordinates
     , tileType
+    , x
+    , y
     )
 
 import Data.Board.Block as Block
+import Data.Board.Coord as Coord
 import Data.Board.Types exposing (..)
 import Dict
 import Helpers.Dict exposing (filterValues, find, findValue)
 
 
 currentMoves : Board -> List Move
-currentMoves board =
-    board
-        |> filterValues Block.isDragging
-        |> Dict.toList
-        |> List.sortBy (Tuple.second >> Block.moveOrder)
+currentMoves =
+    filterValues Block.isDragging
+        >> Dict.toList
+        >> List.sortBy (Tuple.second >> Block.moveOrder)
 
 
 currentMoveTileType : Board -> Maybe TileType
-currentMoveTileType board =
-    board
-        |> filterValues (not << Block.isBurst)
-        |> findValue Block.isDragging
-        |> Maybe.andThen tileType
+currentMoveTileType =
+    filterValues (not << Block.isBurst)
+        >> findValue Block.isDragging
+        >> Maybe.andThen tileType
 
 
 surroundingCoordinates : BoardDimensions -> Int -> Coord -> List Coord
-surroundingCoordinates dimensions radius (( centerY, centerX ) as center) =
+surroundingCoordinates dimensions radius center =
     let
+        centerX =
+            Coord.x center
+
+        centerY =
+            Coord.y center
+
         xs =
             List.range (centerX - radius) (centerX + radius)
 
@@ -48,12 +56,11 @@ surroundingCoordinates dimensions radius (( centerY, centerX ) as center) =
             List.range (centerY - radius) (centerY + radius)
 
         combined =
-            List.map (\x -> List.map (\y -> ( y, x )) ys) xs
+            Coord.fromRangesXY xs ys
     in
     combined
-        |> List.concat
         |> List.filter (\c -> c /= center)
-        |> List.filter (\( x_, y_ ) -> x_ < dimensions.x && y_ < dimensions.y)
+        |> List.filter (\c -> Coord.x c < dimensions.x && Coord.y c < dimensions.y)
 
 
 sameTileType : Move -> Move -> Bool
@@ -67,26 +74,36 @@ tileType =
 
 
 inCurrentMoves : Move -> Board -> Bool
-inCurrentMoves move board =
-    board
-        |> currentMoves
-        |> List.member move
+inCurrentMoves move_ =
+    currentMoves >> List.member move_
 
 
 last : Board -> Move
-last board =
-    board
-        |> findValue Block.isCurrentMove
-        |> Maybe.withDefault empty
+last =
+    findValue Block.isCurrentMove >> Maybe.withDefault empty
 
 
 secondLast : Board -> Maybe Move
-secondLast board =
-    board
-        |> currentMoves
-        |> List.reverse
-        |> List.drop 1
-        |> List.head
+secondLast =
+    currentMoves
+        >> List.reverse
+        >> List.drop 1
+        >> List.head
+
+
+move : Coord -> Block -> Move
+move c b =
+    ( c, b )
+
+
+x : Move -> Int
+x =
+    coord >> Coord.x
+
+
+y : Move -> Int
+y =
+    coord >> Coord.y
 
 
 coord : Move -> Coord
@@ -99,25 +116,20 @@ block =
     Tuple.second
 
 
-coordsList : Board -> List Coord
-coordsList board =
-    board
-        |> filterValues Block.isDragging
-        |> Dict.keys
-
-
 empty : Move
 empty =
-    ( ( 0, 0 ), Space Empty )
+    ( Coord.fromXY 0 0
+    , Space Empty
+    )
 
 
 areNeighbours : Move -> Move -> Bool
-areNeighbours ( c2, _ ) ( c1, _ ) =
+areNeighbours m1 m2 =
     let
-        check a b f =
-            f a b
+        checkCoords f =
+            f (coord m2) (coord m1)
     in
-    List.map (check c2 c1)
+    List.map checkCoords
         [ isLeft
         , isRight
         , isAbove
@@ -127,20 +139,20 @@ areNeighbours ( c2, _ ) ( c1, _ ) =
 
 
 isLeft : Coord -> Coord -> Bool
-isLeft ( y1, x1 ) ( y2, x2 ) =
-    x2 == x1 - 1 && y2 == y1
+isLeft c1 c2 =
+    Coord.x c2 == Coord.x c1 - 1 && Coord.y c2 == Coord.y c1
 
 
 isRight : Coord -> Coord -> Bool
-isRight ( y1, x1 ) ( y2, x2 ) =
-    x2 == x1 + 1 && y2 == y1
+isRight c1 c2 =
+    Coord.x c2 == Coord.x c1 + 1 && Coord.y c2 == Coord.y c1
 
 
 isAbove : Coord -> Coord -> Bool
-isAbove ( y1, x1 ) ( y2, x2 ) =
-    x2 == x1 && y2 == y1 - 1
+isAbove c1 c2 =
+    Coord.x c2 == Coord.x c1 && Coord.y c2 == Coord.y c1 - 1
 
 
 isBelow : Coord -> Coord -> Bool
-isBelow ( y1, x1 ) ( y2, x2 ) =
-    x2 == x1 && y2 == y1 + 1
+isBelow c1 c2 =
+    Coord.x c2 == Coord.x c1 && Coord.y c2 == Coord.y c1 + 1

@@ -18,7 +18,7 @@ active =
 
 inactive : Svg.Svg msg
 inactive =
-    burst (Color.rgb 145 144 125) Color.lightYellow
+    burst "#918f45" Color.lightYellow
 
 
 burst : Color.Color -> Color.Color -> Svg.Svg msg

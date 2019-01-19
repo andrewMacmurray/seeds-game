@@ -1,9 +1,11 @@
 module Data.Board.Falling exposing (setFallingTiles)
 
+import Data.Board as Board
 import Data.Board.Block as Block
+import Data.Board.Coord as Coord
+import Data.Board.Move as Move
 import Data.Board.Shift as Shift
 import Data.Board.Types exposing (..)
-import Dict
 import Helpers.Dict exposing (filterValues)
 
 
@@ -11,44 +13,42 @@ setFallingTiles : Board -> Board
 setFallingTiles board =
     let
         beforeBoard =
-            board |> Dict.map (temporaryMarkFalling board)
+            Board.map (temporaryMarkFalling board) board
 
         shiftedBoard =
-            beforeBoard |> Shift.shiftBoard
+            Shift.shiftBoard beforeBoard
 
         fallingTilesToUpdate =
             newFallingTiles beforeBoard shiftedBoard
     in
-    List.foldl (\( coord, block ) b -> Dict.insert coord block b) beforeBoard fallingTilesToUpdate
+    List.foldl Board.place beforeBoard fallingTilesToUpdate
 
 
 newFallingTiles : Board -> Board -> List Move
 newFallingTiles beforeBoard shiftedBoard =
     let
         beforeTiles =
-            listsOfFallingTiles beforeBoard
+            fallingTiles beforeBoard
 
         shiftedTiles =
-            listsOfFallingTiles shiftedBoard
+            fallingTiles shiftedBoard
     in
     List.map2 addFallingDistance beforeTiles shiftedTiles
-        |> List.concat
 
 
-addFallingDistance : List Move -> List Move -> List Move
-addFallingDistance before shifted =
-    List.map2
-        (\( ( y1, x1 ), b ) ( ( y2, x2 ), _ ) -> ( ( y1, x1 ), Block.setToFalling (y2 - y1) b ))
-        before
-        shifted
+addFallingDistance : Move -> Move -> Move
+addFallingDistance ( c1, b ) ( c2, _ ) =
+    ( c1
+    , Block.setToFalling (Coord.y c2 - Coord.y c1) b
+    )
 
 
-listsOfFallingTiles : Board -> List (List Move)
-listsOfFallingTiles board =
-    board
-        |> filterValues Block.isFalling
-        |> Shift.groupBoardByColumn
-        |> List.map (List.sortBy Shift.yCoord)
+fallingTiles : Board -> List Move
+fallingTiles =
+    filterValues Block.isFalling
+        >> Shift.groupBoardByColumn
+        >> List.map (List.sortBy Move.y)
+        >> List.concat
 
 
 temporaryMarkFalling : Board -> Coord -> Block -> Block
@@ -61,7 +61,11 @@ temporaryMarkFalling board coord block =
 
 
 shouldMarkFalling : Board -> Coord -> Bool
-shouldMarkFalling board ( y2, x2 ) =
+shouldMarkFalling board c2 =
+    let
+        shouldFall c1 block =
+            Coord.x c1 == Coord.x c2 && Block.isLeaving block && Coord.y c1 > Coord.y c2
+    in
     board
-        |> Dict.filter (\( y1, x1 ) b -> x1 == x2 && Block.isLeaving b && y1 > y2)
-        |> (not << Dict.isEmpty)
+        |> Board.filter shouldFall
+        |> (not << Board.isEmpty)

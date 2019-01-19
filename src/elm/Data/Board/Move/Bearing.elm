@@ -1,9 +1,9 @@
 module Data.Board.Move.Bearing exposing (add)
 
+import Data.Board as Board
 import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
 import Data.Board.Move as Move
 import Data.Board.Types exposing (..)
-import Dict
 
 
 add : Move -> Board -> Board
@@ -12,10 +12,10 @@ add current board =
 
 
 updateMoves : Board -> ( Move, Move ) -> Board
-updateMoves board ( ( c2, t2 ), ( c1, t1 ) ) =
+updateMoves board ( ( c2, b2 ), ( c1, b1 ) ) =
     board
-        |> Dict.insert c1 t1
-        |> Dict.insert c2 t2
+        |> Board.placeAt c1 b1
+        |> Board.placeAt c2 b2
 
 
 changeBearings : Move -> Move -> ( Move, Move )
