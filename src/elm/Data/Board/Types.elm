@@ -76,7 +76,6 @@ type TileState
     | Falling TileType Distance
     | Entering TileType
     | Growing TileType MoveOrder
-    | Bursting TileType MoveOrder
     | Empty
 
 

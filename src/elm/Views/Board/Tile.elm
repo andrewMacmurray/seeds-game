@@ -98,7 +98,6 @@ baseTileStyles window move magnitude =
     in
     List.concat
         [ growingStyles move
-        , burstingStyles magnitude move
         , enteringStyles move
         , fallingStyles move
         , size <| roundFloat <| tileSize block * Tile.scale window
@@ -118,7 +117,7 @@ innerTileElement burstMagnitude block =
             renderSeed seedType
 
         Just (Burst tile) ->
-            div []
+            div [ Style.style <| burstStyles burstMagnitude block ]
                 [ renderBurst tile <| Block.isLeaving block ]
 
         _ ->

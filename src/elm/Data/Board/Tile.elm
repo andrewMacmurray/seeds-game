@@ -10,7 +10,6 @@ module Data.Board.Tile exposing
     , hasLine
     , hash
     , isBurst
-    , isBursting
     , isCurrentMove
     , isDragging
     , isEmpty
@@ -25,9 +24,7 @@ module Data.Board.Tile exposing
     , resetDraggingBurstType
     , scale
     , seedName
-    , setBurstingToLeaving
     , setDraggingBurstType
-    , setDraggingToBursting
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -36,7 +33,6 @@ module Data.Board.Tile exposing
     , setGrowingToStatic
     , setLeavingToEmpty
     , setStaticToFirstMove
-    , setToBursting
     , setToDragging
     , setToFalling
     )
@@ -112,16 +108,6 @@ isGrowing tileState =
             False
 
 
-isBursting : TileState -> Bool
-isBursting tileState =
-    case tileState of
-        Bursting _ _ ->
-            True
-
-        _ ->
-            False
-
-
 isFalling : TileState -> Bool
 isFalling tileState =
     case tileState of
@@ -176,29 +162,6 @@ setToDragging moveOrder_ tileState =
     case tileState of
         Static tileType ->
             Dragging tileType moveOrder_ Head
-
-        x ->
-            x
-
-
-setToBursting : MoveOrder -> TileState -> TileState
-setToBursting moveOrder_ tileState =
-    case tileState of
-        Dragging tileType moveOrder__ _ ->
-            Bursting tileType moveOrder__
-
-        Static tileType ->
-            Bursting tileType moveOrder_
-
-        x ->
-            x
-
-
-setBurstingToLeaving : TileState -> TileState
-setBurstingToLeaving tileState =
-    case tileState of
-        Bursting tileType moveOrder_ ->
-            Leaving tileType moveOrder_
 
         x ->
             x
@@ -337,16 +300,6 @@ setDraggingToGrowing tileState =
             x
 
 
-setDraggingToBursting : TileState -> TileState
-setDraggingToBursting tileState =
-    case tileState of
-        Dragging tileType order _ ->
-            Bursting tileType order
-
-        x ->
-            x
-
-
 setDraggingToLeaving : TileState -> TileState
 setDraggingToLeaving tileState =
     case tileState of
@@ -376,9 +329,6 @@ getTileType tileState =
             Just tile
 
         Growing tile _ ->
-            Just tile
-
-        Bursting tile _ ->
             Just tile
 
         Empty ->

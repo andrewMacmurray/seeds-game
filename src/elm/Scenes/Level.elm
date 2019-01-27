@@ -230,7 +230,6 @@ update msg model =
                 (model
                     |> handleAddScore
                     |> updateBlocks Block.setDraggingToLeaving
-                    |> updateBlocks Block.setBurstingToLeaving
                 )
                 []
 
@@ -578,23 +577,25 @@ setBurstingTiles dimensions board =
         withMoveOrder coord =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
-        updateBlockToBursting coord b =
+        updateBlockToDragging coord b =
             if moveType == Block.getTileType b then
-                Block.setToBursting (withMoveOrder coord) b
+                Block.setToDragging (withMoveOrder coord) b
 
             else
                 b
 
-        updateToBursting coord =
-            Board.updateAt coord (updateBlockToBursting coord)
+        updateToDragging coord =
+            Board.updateAt coord (updateBlockToDragging coord)
 
-        updateBurstsToBursting coord =
-            Board.updateAt coord Block.setDraggingToBursting
+        updateBurstsToLeaving coord =
+            Board.updateAt coord Block.setDraggingToLeaving
 
-        updatedBurstingBoard =
-            List.foldl updateToBursting board burstArea
+        updatedDraggingBoard =
+            List.foldl updateToDragging board burstArea
     in
-    List.foldl updateBurstsToBursting updatedBurstingBoard burstCoords
+    burstCoords
+        |> List.foldl updateBurstsToLeaving updatedDraggingBoard
+        |> mapValues Block.removeBearing
 
 
 burstMagnitude : Board -> Int

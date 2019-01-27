@@ -7,8 +7,8 @@ module Views.Board.Styles exposing
     , boardOffsetLeft
     , boardOffsetTop
     , boardWidth
+    , burstStyles
     , burstTracerStyles
-    , burstingStyles
     , centerBlock
     , draggingStyles
     , enteringStyles
@@ -191,10 +191,6 @@ moveTracerStyles move =
         [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
         ]
 
-    else if Block.isBursting <| Move.block move then
-        [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
-        ]
-
     else
         [ displayStyle "none"
         ]
@@ -210,12 +206,11 @@ draggingStyles isBursting move =
         [ transitionAll 100 []
         ]
 
-    else if Block.isDragging block && Block.isBurst block then
-        [ transform [ scale 1.3 ]
-        , transitionAll 300 []
+    else if isBursting then
+        [ transitionAll 500 []
         ]
 
-    else if Block.isDragging block then
+    else if Block.isDragging block && not (Block.isBurst block) then
         [ transform [ scale 0.8 ]
         , transitionAll 300 []
         ]
@@ -249,18 +244,19 @@ growingStyles move =
 -- Burst
 
 
-burstingStyles : Int -> Move -> List Style
-burstingStyles burstMagnitude move =
-    case Block.getTileState <| Move.block move of
-        Bursting (Burst _) _ ->
-            [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
-            ]
+burstStyles : Int -> Block -> List Style
+burstStyles burstMagnitude block =
+    if Block.isLeaving block && Block.isBurst block then
+        [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
+        ]
 
-        Bursting _ _ ->
-            [ transitionAll 300 [] ]
+    else if Block.isDragging block && Block.isBurst block then
+        [ transform [ scale 1.3 ]
+        , transitionAll 300 []
+        ]
 
-        _ ->
-            []
+    else
+        []
 
 
 burstTracerStyles : Int -> Move -> List Style

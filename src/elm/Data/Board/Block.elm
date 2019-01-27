@@ -8,7 +8,6 @@ module Data.Board.Block exposing
     , growingOrder
     , hasLine
     , isBurst
-    , isBursting
     , isCurrentMove
     , isDragging
     , isEmpty
@@ -21,9 +20,7 @@ module Data.Board.Block exposing
     , moveOrder
     , removeBearing
     , resetDraggingBurstType
-    , setBurstingToLeaving
     , setDraggingBurstType
-    , setDraggingToBursting
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -32,7 +29,6 @@ module Data.Board.Block exposing
     , setGrowingToStatic
     , setLeavingToEmpty
     , setStaticToFirstMove
-    , setToBursting
     , setToDragging
     , setToFalling
     , static
@@ -77,11 +73,6 @@ isGrowing =
     fold Tile.isGrowing False
 
 
-isBursting : Block -> Bool
-isBursting =
-    fold Tile.isBursting False
-
-
 hasLine : Block -> Bool
 hasLine =
     fold Tile.hasLine False
@@ -100,16 +91,6 @@ isCurrentMove =
 setToDragging : MoveOrder -> Block -> Block
 setToDragging =
     map << Tile.setToDragging
-
-
-setToBursting : MoveOrder -> Block -> Block
-setToBursting =
-    map << Tile.setToBursting
-
-
-setBurstingToLeaving : Block -> Block
-setBurstingToLeaving =
-    map Tile.setBurstingToLeaving
 
 
 removeBearing : Block -> Block
@@ -175,11 +156,6 @@ setDraggingToStatic =
 setDraggingToGrowing : Block -> Block
 setDraggingToGrowing =
     map Tile.setDraggingToGrowing
-
-
-setDraggingToBursting : Block -> Block
-setDraggingToBursting =
-    map Tile.setDraggingToBursting
 
 
 setDraggingToLeaving : Block -> Block
