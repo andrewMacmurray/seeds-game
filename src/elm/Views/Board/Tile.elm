@@ -3,6 +3,7 @@ module Views.Board.Tile exposing (renderTile_)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
@@ -15,14 +16,18 @@ import Views.Seed.All exposing (renderSeed)
 
 type alias Settings =
     { extraStyles : List Style
-    , externalDragTriggered : Bool
+    , isBursting : Bool
     , burstMagnitude : Int
     , withTracer : Bool
     }
 
 
 renderTile_ : Settings -> Window -> Move -> Html msg
-renderTile_ { extraStyles, externalDragTriggered, burstMagnitude, withTracer } window (( coord, _ ) as move) =
+renderTile_ { extraStyles, isBursting, burstMagnitude, withTracer } window move =
+    let
+        coord =
+            Move.coord move
+    in
     div
         [ styles
             [ tileWidthheights window
@@ -31,12 +36,13 @@ renderTile_ { extraStyles, externalDragTriggered, burstMagnitude, withTracer } w
             ]
         , class "dib absolute"
         ]
-        [ innerTile externalDragTriggered window move
+        [ innerTile isBursting burstMagnitude window move
         , renderIf withTracer <| tracer burstMagnitude window move
         , wall window move
         ]
 
 
+renderIf : Bool -> Html msg -> Html msg
 renderIf predicate element =
     if predicate then
         element
@@ -47,7 +53,11 @@ renderIf predicate element =
 
 tracer : Int -> Window -> Move -> Html msg
 tracer burstMagnitude window move =
-    innerTileWithStyles (moveTracerStyles move ++ burstTracerStyles burstMagnitude move) window move
+    innerTileWithStyles
+        (moveTracerStyles move ++ burstTracerStyles burstMagnitude move)
+        burstMagnitude
+        window
+        move
 
 
 wall : Window -> Move -> Html msg
@@ -59,13 +69,17 @@ wall window move =
         []
 
 
-innerTile : Bool -> Window -> Move -> Html msg
-innerTile externalDragTriggered window move =
-    innerTileWithStyles (draggingStyles externalDragTriggered move) window move
+innerTile : Bool -> Int -> Window -> Move -> Html msg
+innerTile isBursting burstMagnitude window move =
+    innerTileWithStyles
+        (draggingStyles isBursting move)
+        burstMagnitude
+        window
+        move
 
 
-innerTileWithStyles : List Style -> Window -> Move -> Html msg
-innerTileWithStyles extraStyles window (( _, block ) as move) =
+innerTileWithStyles : List Style -> Int -> Window -> Move -> Html msg
+innerTileWithStyles extraStyles burstMagnitude window move =
     div
         [ styles
             [ extraStyles
@@ -73,42 +87,47 @@ innerTileWithStyles extraStyles window (( _, block ) as move) =
             ]
         , classes baseTileClasses
         ]
-        [ innerTileElement block ]
+        [ innerTileElement burstMagnitude <| Move.block move ]
 
 
 baseTileStyles : Window -> Move -> List Style
-baseTileStyles window (( _, block ) as move) =
+baseTileStyles window move =
+    let
+        block =
+            Move.block move
+    in
     List.concat
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , size <| toFloat <| round <| tileSizeMap block * Tile.scale window
-        , tileBackgroundMap block
+        , size <| tileSize block * Tile.scale window
+        , tileBackground block
         ]
 
 
-innerTileElement : Block -> Html msg
-innerTileElement block =
+innerTileElement : Int -> Block -> Html msg
+innerTileElement burstMagnitude block =
     case Block.getTileType block of
         Just (Seed seedType) ->
             renderSeed seedType
 
         Just (Burst tile) ->
-            div [ Style.style <| burstStyles block ]
+            div [ Style.style <| burstStyles burstMagnitude block ]
                 [ renderBurst tile <| Block.isLeaving block ]
 
         _ ->
             span [] []
 
 
-renderBurst tile shouldDisperse =
+renderBurst : Maybe TileType -> Bool -> Html msg
+renderBurst tile isBursting =
     case tile of
-        Just t ->
-            if shouldDisperse then
-                Burst.active (strokeColors t) (strokeColors t)
+        Just tile_ ->
+            if isBursting then
+                Burst.active (strokeColors tile_) (strokeColors tile_)
 
             else
-                Burst.active (strokeColors t) (lighterStrokeColor t)
+                Burst.active (strokeColors tile_) (lighterStrokeColor tile_)
 
         Nothing ->
             Burst.inactive

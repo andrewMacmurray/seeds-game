@@ -592,12 +592,19 @@ reachedLevel =
 
 currentLevel : Model -> Levels.Key
 currentLevel =
-    getContext >> .progress >> Progress.currentLevel >> Maybe.withDefault Levels.empty
+    getContext >> .progress >> currentLevelWithDefault
+
+
+currentLevelWithDefault : Progress -> Levels.Key
+currentLevelWithDefault progress =
+    progress
+        |> Progress.currentLevel
+        |> Maybe.withDefault (Progress.reachedLevel progress)
 
 
 shouldIncrement : Context -> Bool
 shouldIncrement context =
-    not <| Progress.currentLevelComplete context.progress
+    Progress.currentLevelComplete context.progress == Just False
 
 
 

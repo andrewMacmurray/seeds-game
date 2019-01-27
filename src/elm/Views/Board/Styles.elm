@@ -20,13 +20,9 @@ module Views.Board.Styles exposing
     , seedStrokeColors
     , strokeColors
     , tileBackground
-    , tileBackgroundMap
-    , tileClassMap
     , tileCoordsStyles
     , tilePosition
     , tileSize
-    , tileSizeMap
-    , tileStyleMap
     , tileWidth
     , tileWidthheights
     , topBarHeight
@@ -45,6 +41,24 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Dict exposing (Dict)
+
+
+
+-- Score Bar
+
+
+scoreIconSize : number
+scoreIconSize =
+    32
+
+
+topBarHeight : number
+topBarHeight =
+    80
+
+
+
+-- Board
 
 
 type alias TileViewModel =
@@ -81,19 +95,8 @@ boardFullWidth window =
     tileWidth window * 8
 
 
-tileWidth : Window -> Int
-tileWidth window =
-    round <| Tile.baseSizeX * Tile.scale window
 
-
-scoreIconSize : number
-scoreIconSize =
-    32
-
-
-topBarHeight : number
-topBarHeight =
-    80
+-- Tile Position
 
 
 tileCoordsStyles : Window -> Coord -> List Style
@@ -120,6 +123,39 @@ tilePosition window ( y, x ) =
     )
 
 
+tileWidthheights : Window -> List Style
+tileWidthheights window =
+    [ width <| toFloat <| tileWidth window
+    , height <| toFloat <| tileHeight window
+    ]
+
+
+baseTileClasses : List String
+baseTileClasses =
+    [ "br-100"
+    , centerBlock
+    ]
+
+
+centerBlock : String
+centerBlock =
+    "ma absolute top-0 left-0 right-0 bottom-0"
+
+
+tileWidth : Window -> Int
+tileWidth window =
+    round <| Tile.baseSizeX * Tile.scale window
+
+
+tileHeight : Window -> Int
+tileHeight window =
+    round <| Tile.baseSizeY * Tile.scale window
+
+
+
+-- Block Styles
+
+
 wallStyles : Window -> Move -> List Style
 wallStyles window move =
     let
@@ -142,23 +178,6 @@ enteringStyles move =
     case getTileState <| Move.block move of
         Entering tile ->
             [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
-
-        _ ->
-            []
-
-
-growingStyles : Move -> List Style
-growingStyles move =
-    case getTileState <| Move.block move of
-        Growing SeedPod _ ->
-            [ transform [ scale 4 ]
-            , transitionAll 400 [ delay <| modBy 5 (growingOrder <| Move.block move) * 70 ]
-            , opacity 0
-            , property "pointer-events" "none"
-            ]
-
-        Growing (Seed _) _ ->
-            [ Animation.animation "bulge" 500 [ Animation.ease ] ]
 
         _ ->
             []
@@ -220,8 +239,33 @@ draggingStyles externalDragTriggered move =
         []
 
 
-burstStyles : Block -> List Style
-burstStyles block =
+
+-- SeedPod
+
+
+growingStyles : Move -> List Style
+growingStyles move =
+    case getTileState <| Move.block move of
+        Growing SeedPod _ ->
+            [ transform [ scale 4 ]
+            , transitionAll 400 [ delay <| modBy 5 (Block.growingOrder <| Move.block move) * 70 ]
+            , opacity 0
+            , property "pointer-events" "none"
+            ]
+
+        Growing (Seed _) _ ->
+            [ Animation.animation "bulge" 500 [ Animation.ease ] ]
+
+        _ ->
+            []
+
+
+
+-- Burst
+
+
+burstStyles : Int -> Block -> List Style
+burstStyles burstMagnitude block =
     if Block.isLeaving block && Block.isBurst block then
         [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
         ]
@@ -251,37 +295,23 @@ burstTracerStyles burstMagnitude move =
         []
 
 
-tileWidthheights : Window -> List Style
-tileWidthheights window =
-    let
-        tileScale =
-            Tile.scale window
-    in
-    [ width <| Tile.baseSizeX * tileScale
-    , height <| Tile.baseSizeY * tileScale
-    ]
+
+-- Tile Type Styles
 
 
-baseTileClasses : List String
-baseTileClasses =
-    [ "br-100"
-    , centerBlock
-    ]
+tileBackground : Block -> List Style
+tileBackground =
+    fromBlock tileBackground_ []
 
 
-centerBlock : String
-centerBlock =
-    "ma absolute top-0 left-0 right-0 bottom-0"
+tileSize : Block -> Float
+tileSize =
+    fromBlock tileSize_ 0
 
 
-tileBackgroundMap : Block -> List Style
-tileBackgroundMap =
-    Block.fold (tileStyleMap tileBackground) []
-
-
-tileSizeMap : Block -> Float
-tileSizeMap =
-    Block.fold (Tile.map 0 tileSize) 0
+fromBlock : (TileType -> a) -> a -> Block -> a
+fromBlock f default =
+    Block.fold (Tile.map default f) default
 
 
 strokeColors : TileType -> Color.Color
@@ -299,8 +329,8 @@ strokeColors tile =
         Seed seedType ->
             seedStrokeColors seedType
 
-        Burst t ->
-            burstColor t
+        Burst tile_ ->
+            burstColor tile_
 
 
 lighterStrokeColor : TileType -> Color.Color
@@ -318,20 +348,18 @@ lighterStrokeColor tile =
         Seed seedType ->
             lighterSeedStrokeColor seedType
 
-        Burst t ->
-            lighterBurstColor t
+        Burst tile_ ->
+            lighterBurstColor tile_
 
 
-burstColor t =
-    t
-        |> Maybe.map strokeColors
-        |> Maybe.withDefault Color.greyYellow
+burstColor : Maybe TileType -> Color.Color
+burstColor =
+    Maybe.map strokeColors >> Maybe.withDefault Color.greyYellow
 
 
-lighterBurstColor t =
-    t
-        |> Maybe.map lighterStrokeColor
-        |> Maybe.withDefault Color.transparent
+lighterBurstColor : Maybe TileType -> Color.Color
+lighterBurstColor =
+    Maybe.map lighterStrokeColor >> Maybe.withDefault Color.transparent
 
 
 seedStrokeColors : SeedType -> Color.Color
@@ -371,8 +399,8 @@ lighterSeedStrokeColor seedType =
             Color.lightBrown
 
 
-tileBackground : TileType -> List Style
-tileBackground tile =
+tileBackground_ : TileType -> List Style
+tileBackground_ tile =
     case tile of
         Rain ->
             [ backgroundColor Color.lightBlue ]
@@ -390,8 +418,8 @@ tileBackground tile =
             []
 
 
-tileSize : TileType -> Float
-tileSize tile =
+tileSize_ : TileType -> Float
+tileSize_ tile =
     case tile of
         Rain ->
             18
@@ -407,13 +435,3 @@ tileSize tile =
 
         Burst _ ->
             35
-
-
-tileClassMap : (TileType -> String) -> TileState -> String
-tileClassMap =
-    Tile.map ""
-
-
-tileStyleMap : (TileType -> List Style) -> TileState -> List Style
-tileStyleMap =
-    Tile.map []

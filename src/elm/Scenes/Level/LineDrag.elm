@@ -3,6 +3,7 @@ module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Css.Color as Color
 import Css.Style as Style
 import Css.Unit exposing (px)
+import Data.Board as Board
 import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (Board, BoardDimensions)
@@ -43,7 +44,7 @@ lineDrag model =
             lastMoveOrigin model
 
         strokeColor =
-            Move.currentMoveTileType model.board
+            Board.currentMoveType model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault Color.greyYellow
 
@@ -78,14 +79,14 @@ lastMoveOrigin model =
         tileScale =
             Tile.scale window
 
-        ( ( y, x ), _ ) =
-            Move.last model.board
+        lastMove =
+            Board.lastMove model.board
 
         y1 =
-            toFloat y
+            toFloat <| Move.y lastMove
 
         x1 =
-            toFloat x
+            toFloat <| Move.x lastMove
 
         sY =
             Tile.baseSizeY * tileScale

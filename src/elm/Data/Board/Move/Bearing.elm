@@ -8,7 +8,9 @@ import Data.Board.Types exposing (..)
 
 add : Move -> Board -> Board
 add current board =
-    changeBearings current (Move.last board) |> updateMoves board
+    Board.lastMove board
+        |> changeBearings current
+        |> updateMoves board
 
 
 updateMoves : Board -> ( Move, Move ) -> Board

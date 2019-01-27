@@ -1,5 +1,6 @@
 module Data.Board.Block exposing
     ( addBearing
+    , empty
     , fold
     , getTileState
     , getTileType
@@ -212,6 +213,11 @@ isBurst =
 static : TileType -> Block
 static =
     Static >> Space
+
+
+empty : Block
+empty =
+    Space Empty
 
 
 map : (TileState -> TileState) -> Block -> Block

@@ -21,18 +21,18 @@ currentLevelCompleteSpec =
                 progress 1 5
                     |> Progress.setCurrentLevel (level 1 3)
                     |> Progress.currentLevelComplete
-                    |> Expect.equal True
+                    |> Expect.equal (Just True)
         , test "is False if current level is same as reached" <|
             \_ ->
                 progress 1 5
                     |> Progress.setCurrentLevel (level 1 5)
                     |> Progress.currentLevelComplete
-                    |> Expect.equal False
-        , test "is False if no current level" <|
+                    |> Expect.equal (Just False)
+        , test "is Nothing if no current level" <|
             \_ ->
                 progress 1 5
                     |> Progress.currentLevelComplete
-                    |> Expect.equal False
+                    |> Expect.equal Nothing
         ]
 
 

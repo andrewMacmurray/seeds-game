@@ -32,36 +32,36 @@ removeLastMove : Board -> Board
 removeLastMove board =
     let
         lastCoord =
-            Move.coord <| Move.last board
+            Move.coord <| Board.lastMove board
 
         newBoard =
             Board.updateAt lastCoord Block.setDraggingToStatic board
     in
     board
-        |> Move.secondLast
+        |> Board.secondLastMove
         |> Maybe.map (\m -> Board.updateAt (Move.coord m) Block.removeBearing newBoard)
         |> Maybe.withDefault newBoard
 
 
 shouldRemoveMove : Move -> Board -> Bool
 shouldRemoveMove curr board =
-    Just curr == Move.secondLast board
+    Just curr == Board.secondLastMove board
 
 
 isValidBurst : Move -> Board -> Bool
 isValidBurst curr board =
     let
         last =
-            Move.last board
+            Board.lastMove board
 
         burstTypeNotSet =
-            Move.currentMoveTileType board == Nothing
+            Board.currentMoveType board == Nothing
 
         isValidMoveAfterBurst =
-            isBurst last && Move.currentMoveTileType board == Move.tileType curr
+            isBurst last && Board.currentMoveType board == Move.tileType curr
 
         inCurrentMoves =
-            Move.inCurrentMoves curr board
+            Board.inCurrentMoves curr board
     in
     (isBurst curr || isValidMoveAfterBurst || burstTypeNotSet)
         && Move.areNeighbours curr last
@@ -72,10 +72,10 @@ isValidMove : Move -> Board -> Bool
 isValidMove curr board =
     let
         last =
-            Move.last board
+            Board.lastMove board
 
         inCurrentMoves =
-            Move.inCurrentMoves curr board
+            Board.inCurrentMoves curr board
     in
     Move.areNeighbours curr last
         && Move.sameTileType curr last

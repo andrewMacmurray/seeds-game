@@ -19,6 +19,7 @@ import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
 import Data.Board as Board
 import Data.Board.Block as Block
+import Data.Board.Coord as Coord
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
 import Data.Board.Move as Move
@@ -84,7 +85,7 @@ type Msg
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | BurstTiles
-    | GenerateEnteringTiles (Maybe TileType)
+    | GenerateEnteringTiles EnteringConfig
     | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard
@@ -118,6 +119,11 @@ type InfoContent
     | NoMovesLeft
     | RestartAreYouSure
     | ExitAreYouSure
+
+
+type EnteringConfig
+    = AllTileTypes
+    | WithoutTileType (Maybe TileType)
 
 
 
@@ -216,7 +222,7 @@ update msg model =
             continue
                 (model
                     |> handleAddScore
-                    |> mapBlocks Block.setToLeaving
+                    |> updateBlocks Block.setToLeaving
                 )
                 []
 
@@ -224,7 +230,7 @@ update msg model =
             continue
                 (model
                     |> stopDrag
-                    |> mapBlocks Block.setDraggingToReleasing
+                    |> updateBlocks Block.setDraggingToReleasing
                 )
                 []
 
@@ -235,13 +241,13 @@ update msg model =
             continue
                 (model
                     |> mapBoard shiftBoard
-                    |> mapBlocks Block.setFallingToStatic
-                    |> mapBlocks Block.setLeavingToEmpty
+                    |> updateBlocks Block.setFallingToStatic
+                    |> updateBlocks Block.setLeavingToEmpty
                 )
                 []
 
         SetGrowingSeedPods ->
-            continue (mapBlocks Block.setDraggingToGrowing model) []
+            continue (updateBlocks Block.setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
             continue model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
@@ -250,7 +256,7 @@ update msg model =
             continue (handleInsertNewSeeds seedType model) []
 
         ResetGrowingSeeds ->
-            continue (mapBlocks Block.setGrowingToStatic model) []
+            continue (updateBlocks Block.setGrowingToStatic model) []
 
         GenerateEnteringTiles moveType ->
             continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
@@ -262,7 +268,7 @@ update msg model =
             continue (handleInsertEnteringTiles tiles model) []
 
         ResetEntering ->
-            continue (mapBlocks Block.setEnteringToStatic model) []
+            continue (updateBlocks Block.setEnteringToStatic model) []
 
         ResetMove ->
             continue
@@ -273,7 +279,7 @@ update msg model =
                 []
 
         ResetReleasingTile ->
-            continue (mapBlocks Block.setReleasingToStatic model) []
+            continue (updateBlocks Block.setReleasingToStatic model) []
 
         StartMove move pointer ->
             continue (handleStartMove move pointer model) []
@@ -329,19 +335,19 @@ stopMoveSequence : Model -> Cmd Msg
 stopMoveSequence model =
     let
         moveTileType =
-            Move.currentMoveTileType model.board
+            Board.currentMoveType model.board
     in
-    if List.length (Move.currentMoves model.board) == 1 then
+    if List.length (Board.currentMoves model.board) == 1 then
         releaseTileSequence
 
     else if shouldBurst model.board then
-        burstTilesSequence moveTileType
+        burstTilesSequence <| WithoutTileType moveTileType
 
     else if moveTileType == Just SeedPod then
         growSeedPodsSequence
 
     else
-        removeTilesSequence moveTileType
+        removeTilesSequence AllTileTypes
 
 
 growSeedPodsSequence : Cmd Msg
@@ -355,21 +361,21 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : Maybe TileType -> Cmd Msg
-removeTilesSequence moveTileType =
+removeTilesSequence : EnteringConfig -> Cmd Msg
+removeTilesSequence enteringTiles =
     sequence
         [ ( 0, ResetMove )
         , ( 0, SetLeavingTiles )
         , ( 350, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
-        , ( 0, GenerateEnteringTiles moveTileType )
+        , ( 0, GenerateEnteringTiles enteringTiles )
         , ( 500, ResetEntering )
         ]
 
 
-burstTilesSequence : Maybe TileType -> Cmd Msg
-burstTilesSequence moveTileType =
+burstTilesSequence : EnteringConfig -> Cmd Msg
+burstTilesSequence enteringTiles =
     sequence
         [ ( 0, ResetMove )
         , ( 0, BurstTiles )
@@ -377,7 +383,7 @@ burstTilesSequence moveTileType =
         , ( 550, SetFallingTiles )
         , ( 500, ShiftBoard )
         , ( 0, CheckLevelComplete )
-        , ( 0, GenerateEnteringTiles moveTileType )
+        , ( 0, GenerateEnteringTiles enteringTiles )
         , ( 500, ResetEntering )
         ]
 
@@ -423,9 +429,9 @@ type alias HasBoard model =
     { model | board : Board, boardDimensions : BoardDimensions }
 
 
-mapBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
-mapBlocks f model =
-    { model | board = Board.mapBlocks f model.board }
+updateBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
+updateBlocks f model =
+    { model | board = Board.updateBlocks f model.board }
 
 
 mapBoard : (Board -> Board) -> HasBoard model -> HasBoard model
@@ -438,16 +444,36 @@ handleGenerateInitialTiles config { boardDimensions } =
     generateInitialTiles (InitTiles config.walls) config.tiles boardDimensions
 
 
-handleGenerateEnteringTiles : Maybe TileType -> Board -> List TileSetting -> Cmd Msg
-handleGenerateEnteringTiles moveType board tileSettings =
+handleGenerateEnteringTiles : EnteringConfig -> Board -> List TileSetting -> Cmd Msg
+handleGenerateEnteringTiles enteringTiles board tileSettings =
+    case enteringTiles of
+        AllTileTypes ->
+            generateEntering board tileSettings
+
+        WithoutTileType tileType ->
+            generateEnteringTilesWithoutTileType tileType board tileSettings
+
+
+generateEnteringTilesWithoutTileType : Maybe TileType -> Board -> List TileSetting -> Cmd Msg
+generateEnteringTilesWithoutTileType tileType board tileSettings =
     if List.length tileSettings == 1 then
-        generateEnteringTiles InsertEnteringTiles board tileSettings
+        generateEntering board tileSettings
 
     else
-        moveType
-            |> Maybe.map (\t -> List.filter (\setting -> setting.tileType /= t) tileSettings)
+        tileType
+            |> Maybe.map (filterSettings tileSettings)
             |> Maybe.withDefault tileSettings
-            |> generateEnteringTiles InsertEnteringTiles board
+            |> generateEntering board
+
+
+filterSettings : List TileSetting -> TileType -> List TileSetting
+filterSettings settings tile =
+    List.filter (\setting -> setting.tileType /= tile) settings
+
+
+generateEntering : Board -> List TileSetting -> Cmd Msg
+generateEntering =
+    generateEnteringTiles InsertEnteringTiles
 
 
 handleMakeBoard : List TileType -> HasBoard model -> HasBoard model
@@ -518,26 +544,24 @@ handleCheckMove move model =
 
 handleAddBurstType : Model -> Model
 handleAddBurstType model =
-    case Move.currentMoveTileType model.board of
+    case Board.currentMoveType model.board of
         Just moveType ->
-            mapBlocks (Block.setDraggingBurstType moveType) model
+            updateBlocks (Block.setDraggingBurstType moveType) model
 
         Nothing ->
-            mapBlocks Block.resetDraggingBurstType model
+            updateBlocks Block.resetDraggingBurstType model
 
 
 shouldBurst : Board -> Bool
-shouldBurst board =
-    board
-        |> Move.currentMoves
-        |> List.any (Move.block >> Block.isBurst)
+shouldBurst =
+    Board.currentMoves >> List.any (Move.block >> Block.isBurst)
 
 
 setBurstingTiles : BoardDimensions -> Board -> Board
 setBurstingTiles dimensions board =
     let
         currMoves =
-            Move.currentMoves board
+            Board.currentMoves board
 
         burstRadius =
             burstMagnitude board
@@ -553,17 +577,20 @@ setBurstingTiles dimensions board =
                 |> List.concat
 
         moveType =
-            Move.currentMoveTileType board
+            Board.currentMoveType board
 
-        updateBlockToDragging b =
+        withMoveOrder coord =
+            Coord.x coord + 1 * (Coord.y coord * 8)
+
+        updateBlockToDragging coord b =
             if moveType == Block.getTileType b then
-                Block.setToDragging 1 b
+                Block.setToDragging (withMoveOrder coord) b
 
             else
                 b
 
         updateToDragging coord =
-            Board.updateAt coord updateBlockToDragging
+            Board.updateAt coord (updateBlockToDragging coord)
 
         updateBurstsToLeaving coord =
             Board.updateAt coord Block.setToLeaving
@@ -580,7 +607,7 @@ burstMagnitude : Board -> Int
 burstMagnitude board =
     let
         currMoves =
-            Move.currentMoves board
+            Board.currentMoves board
 
         burstCoords =
             currMoves
@@ -734,7 +761,7 @@ renderTile model (( _, block ) as move) =
         , attribute "touch-action" "none"
         ]
         [ renderTile_
-            { externalDragTriggered = isBursting model
+            { isBursting = isBursting model
             , burstMagnitude = burstMagnitude model.board
             , extraStyles = leavingStyles model move
             , withTracer = True
@@ -744,6 +771,7 @@ renderTile model (( _, block ) as move) =
         ]
 
 
+isBursting : Model -> Bool
 isBursting model =
     let
         bursting =
@@ -779,7 +807,7 @@ renderCurrentMove model (( _, block ) as move) =
     if Block.isCurrentMove block && model.isDragging then
         renderTile_
             { extraStyles = []
-            , externalDragTriggered = isBursting model
+            , isBursting = isBursting model
             , burstMagnitude = 1
             , withTracer = False
             }
@@ -951,7 +979,7 @@ successMessage i =
         ii =
             modBy (Dict.size successMessages) i
     in
-    Dict.get ii successMessages |> Maybe.withDefault "Amazing!"
+    Dict.get ii successMessages |> Maybe.withDefault "Win!"
 
 
 successMessages : Dict Int String

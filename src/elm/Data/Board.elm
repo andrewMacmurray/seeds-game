@@ -1,20 +1,25 @@
 module Data.Board exposing
     ( blocks
     , coords
+    , currentMoveType
+    , currentMoves
     , filter
     , filterBlocks
     , findBlockAt
     , fromMoves
     , fromTiles
+    , inCurrentMoves
     , isEmpty
-    , map
-    , mapBlocks
+    , lastMove
     , moves
     , place
     , placeAt
     , placeMoves
+    , secondLastMove
     , size
+    , update
     , updateAt
+    , updateBlocks
     )
 
 import Data.Board.Block as Block
@@ -22,6 +27,7 @@ import Data.Board.Coord as Coord
 import Data.Board.Move as Move
 import Data.Board.Types exposing (Block, Board, BoardDimensions, Coord, Move, TileType)
 import Dict
+import Helpers.Dict
 
 
 
@@ -48,13 +54,13 @@ place move =
     Dict.update (Move.coord move) <| Maybe.map (always <| Move.block move)
 
 
-mapBlocks : (Block -> Block) -> Board -> Board
-mapBlocks f =
-    map <| always f
+updateBlocks : (Block -> Block) -> Board -> Board
+updateBlocks f =
+    update <| always f
 
 
-map : (Coord -> Block -> Block) -> Board -> Board
-map =
+update : (Coord -> Block -> Block) -> Board -> Board
+update =
     Dict.map
 
 
@@ -102,6 +108,52 @@ findBlockAt =
     Dict.get
 
 
+matchBlock : (Block -> Bool) -> Board -> Maybe Move
+matchBlock =
+    Helpers.Dict.findValue
+
+
+
+-- Moves
+
+
+currentMoves : Board -> List Move
+currentMoves =
+    filterBlocks Block.isDragging
+        >> moves
+        >> List.sortBy (Move.block >> Block.moveOrder)
+
+
+currentMoveType : Board -> Maybe TileType
+currentMoveType =
+    filterBursts
+        >> matchBlock Block.isDragging
+        >> Maybe.andThen Move.tileType
+
+
+filterBursts : Board -> Board
+filterBursts =
+    filterBlocks (not << Block.isBurst)
+
+
+inCurrentMoves : Move -> Board -> Bool
+inCurrentMoves move =
+    currentMoves >> List.member move
+
+
+lastMove : Board -> Move
+lastMove =
+    matchBlock Block.isCurrentMove >> Maybe.withDefault Move.empty
+
+
+secondLastMove : Board -> Maybe Move
+secondLastMove =
+    currentMoves
+        >> List.reverse
+        >> List.drop 1
+        >> List.head
+
+
 
 -- Create
 
@@ -116,7 +168,7 @@ fromTiles boardDimensions tiles =
 
 makeCoords : BoardDimensions -> List Coord
 makeCoords { x, y } =
-    Coord.fromRangesXY (range x) (range y)
+    Coord.rangeXY (range x) (range y)
 
 
 range : Int -> List Int

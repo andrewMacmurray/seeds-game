@@ -8,8 +8,9 @@ module Data.Board.Score exposing
     , scoreToString
     )
 
+import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Move exposing (currentMoveTileType, currentMoves)
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Setting exposing (..)
@@ -20,11 +21,14 @@ addScoreFromMoves : Board -> Scores -> Scores
 addScoreFromMoves board scores =
     let
         tileType =
-            currentMoveTileType board |> Maybe.withDefault SeedPod
+            Board.currentMoveType board |> Maybe.withDefault SeedPod
+
+        notBurst =
+            Move.block >> Block.isBurst >> not
 
         scoreToAdd =
-            currentMoves board
-                |> List.filter (Tuple.second >> Block.isBurst >> not)
+            Board.currentMoves board
+                |> List.filter notBurst
                 |> List.length
     in
     addToScore scoreToAdd tileType scores

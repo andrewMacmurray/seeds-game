@@ -165,19 +165,19 @@ update msg model =
             continue (handleDragTile coord model) []
 
         SetGrowingPods ->
-            continue (mapBlocks setDraggingToGrowing model) []
+            continue (updateBlocks setDraggingToGrowing model) []
 
         SetLeaving ->
-            continue (mapBlocks setToLeaving model) []
+            continue (updateBlocks setToLeaving model) []
 
         ResetLeaving ->
-            continue (mapBlocks setLeavingToEmpty model) []
+            continue (updateBlocks setLeavingToEmpty model) []
 
         GrowPods seedType ->
-            continue (mapBlocks (growSeedPod seedType) model) []
+            continue (updateBlocks (growSeedPod seedType) model) []
 
         ResetGrowingPods ->
-            continue (mapBlocks setGrowingToStatic model) []
+            continue (updateBlocks setGrowingToStatic model) []
 
         EnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
@@ -189,8 +189,8 @@ update msg model =
             continue
                 (model
                     |> mapBoard shiftBoard
-                    |> mapBlocks setFallingToStatic
-                    |> mapBlocks setLeavingToEmpty
+                    |> updateBlocks setFallingToStatic
+                    |> updateBlocks setLeavingToEmpty
                 )
                 []
 
@@ -244,9 +244,9 @@ update msg model =
 -- Update Helpers
 
 
-mapBlocks : (Block -> Block) -> Model -> Model
-mapBlocks f model =
-    { model | board = Board.mapBlocks f model.board }
+updateBlocks : (Block -> Block) -> Model -> Model
+updateBlocks f model =
+    { model | board = Board.updateBlocks f model.board }
 
 
 mapBoard : (Board -> Board) -> Model -> Model
@@ -416,7 +416,7 @@ renderTiles model =
             (\move ->
                 renderTile_
                     { extraStyles = leavingStyles model move
-                    , externalDragTriggered = False
+                    , isBursting = False
                     , burstMagnitude = 1
                     , withTracer = True
                     }

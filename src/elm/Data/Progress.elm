@@ -112,11 +112,9 @@ currentWorldComplete worlds (Progress { current, reached }) =
         |> Maybe.withDefault False
 
 
-currentLevelComplete : Progress -> Bool
+currentLevelComplete : Progress -> Maybe Bool
 currentLevelComplete (Progress { current, reached }) =
-    current
-        |> Maybe.map (\level -> Levels.completed reached level)
-        |> Maybe.withDefault False
+    Maybe.map (\level -> Levels.completed reached level) current
 
 
 reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType

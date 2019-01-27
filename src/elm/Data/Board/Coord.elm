@@ -1,6 +1,6 @@
 module Data.Board.Coord exposing
-    ( fromRangesXY
-    , fromXY
+    ( fromXY
+    , rangeXY
     , x
     , y
     )
@@ -8,8 +8,8 @@ module Data.Board.Coord exposing
 import Data.Board.Types exposing (Coord)
 
 
-fromRangesXY : List Int -> List Int -> List Coord
-fromRangesXY xs =
+rangeXY : List Int -> List Int -> List Coord
+rangeXY xs =
     List.map (\y_ -> List.map (\x_ -> fromXY x_ y_) xs) >> List.concat
 
 

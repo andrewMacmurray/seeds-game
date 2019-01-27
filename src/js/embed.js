@@ -3,15 +3,17 @@ const cache = require("./cache.js");
 const { loadAudio, playTrack, longFade } = require("./audio.js");
 
 function Embed(Program) {
+  const flags = {
+    now: Date.now(),
+    lives: cache.getLives(),
+    level: cache.getProgress(),
+    randomMessageIndex: Math.round(Math.random() * 10),
+    window: { height: window.innerHeight, width: window.innerWidth }
+  };
+
   const { ports } = Program.init({
     node: document.getElementById("app"),
-    flags: {
-      now: Date.now(),
-      lives: cache.getLives(),
-      level: cache.getProgress(),
-      randomMessageIndex: Math.round(Math.random() * 10),
-      window: { height: window.innerHeight, width: window.innerWidth }
-    }
+    flags
   });
 
   const {

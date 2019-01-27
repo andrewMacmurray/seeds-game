@@ -13,7 +13,7 @@ setFallingTiles : Board -> Board
 setFallingTiles board =
     let
         beforeBoard =
-            Board.map (temporaryMarkFalling board) board
+            Board.update (temporaryMarkFalling board) board
 
         shiftedBoard =
             Shift.shiftBoard beforeBoard

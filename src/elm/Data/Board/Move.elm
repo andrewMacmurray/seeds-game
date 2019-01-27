@@ -2,17 +2,13 @@ module Data.Board.Move exposing
     ( areNeighbours
     , block
     , coord
-    , currentMoveTileType
-    , currentMoves
-    , inCurrentMoves
+    , empty
     , isAbove
     , isBelow
     , isLeft
     , isRight
-    , last
     , move
     , sameTileType
-    , secondLast
     , surroundingCoordinates
     , tileType
     , x
@@ -21,23 +17,49 @@ module Data.Board.Move exposing
 
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
-import Data.Board.Types exposing (..)
-import Dict
-import Helpers.Dict exposing (filterValues, find, findValue)
+import Data.Board.Types exposing (Block, BoardDimensions, Coord, Move, TileType)
 
 
-currentMoves : Board -> List Move
-currentMoves =
-    filterValues Block.isDragging
-        >> Dict.toList
-        >> List.sortBy (Tuple.second >> Block.moveOrder)
+move : Coord -> Block -> Move
+move c b =
+    ( c, b )
 
 
-currentMoveTileType : Board -> Maybe TileType
-currentMoveTileType =
-    filterValues (not << Block.isBurst)
-        >> findValue Block.isDragging
-        >> Maybe.andThen tileType
+coord : Move -> Coord
+coord =
+    Tuple.first
+
+
+block : Move -> Block
+block =
+    Tuple.second
+
+
+x : Move -> Int
+x =
+    coord >> Coord.x
+
+
+y : Move -> Int
+y =
+    coord >> Coord.y
+
+
+tileType : Move -> Maybe TileType
+tileType =
+    block >> Block.getTileType
+
+
+sameTileType : Move -> Move -> Bool
+sameTileType m1 m2 =
+    tileType m1 == tileType m2
+
+
+empty : Move
+empty =
+    ( Coord.fromXY 0 0
+    , Block.empty
+    )
 
 
 surroundingCoordinates : BoardDimensions -> Int -> Coord -> List Coord
@@ -56,71 +78,11 @@ surroundingCoordinates dimensions radius center =
             List.range (centerY - radius) (centerY + radius)
 
         combined =
-            Coord.fromRangesXY xs ys
+            Coord.rangeXY xs ys
     in
     combined
         |> List.filter (\c -> c /= center)
         |> List.filter (\c -> Coord.x c < dimensions.x && Coord.y c < dimensions.y)
-
-
-sameTileType : Move -> Move -> Bool
-sameTileType m1 m2 =
-    tileType m1 == tileType m2
-
-
-tileType : Move -> Maybe TileType
-tileType =
-    block >> Block.getTileType
-
-
-inCurrentMoves : Move -> Board -> Bool
-inCurrentMoves move_ =
-    currentMoves >> List.member move_
-
-
-last : Board -> Move
-last =
-    findValue Block.isCurrentMove >> Maybe.withDefault empty
-
-
-secondLast : Board -> Maybe Move
-secondLast =
-    currentMoves
-        >> List.reverse
-        >> List.drop 1
-        >> List.head
-
-
-move : Coord -> Block -> Move
-move c b =
-    ( c, b )
-
-
-x : Move -> Int
-x =
-    coord >> Coord.x
-
-
-y : Move -> Int
-y =
-    coord >> Coord.y
-
-
-coord : Move -> Coord
-coord =
-    Tuple.first
-
-
-block : Move -> Block
-block =
-    Tuple.second
-
-
-empty : Move
-empty =
-    ( Coord.fromXY 0 0
-    , Space Empty
-    )
 
 
 areNeighbours : Move -> Move -> Bool
@@ -129,12 +91,12 @@ areNeighbours m1 m2 =
         checkCoords f =
             f (coord m2) (coord m1)
     in
-    List.map checkCoords
-        [ isLeft
-        , isRight
-        , isAbove
-        , isBelow
-        ]
+    [ isLeft
+    , isRight
+    , isAbove
+    , isBelow
+    ]
+        |> List.map checkCoords
         |> List.any identity
 
 
