@@ -47,7 +47,7 @@ lineFromMove window ( coord, block ) =
             span [] []
 
 
-innerLine : Window -> TileType -> MoveBearing -> Html msg
+innerLine : Window -> TileType -> Bearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =
@@ -74,7 +74,7 @@ innerLine window tileType bearing =
         ]
 
 
-lineTransforms : Window -> MoveBearing -> Style
+lineTransforms : Window -> Bearing -> Style
 lineTransforms window bearing =
     let
         xOffset =

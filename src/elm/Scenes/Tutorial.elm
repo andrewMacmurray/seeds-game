@@ -18,7 +18,7 @@ import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
 import Data.Board as Board
-import Data.Board.Block exposing (..)
+import Data.Board.Block as Block
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move.Bearing as Bearing
@@ -165,19 +165,19 @@ update msg model =
             continue (handleDragTile coord model) []
 
         SetGrowingPods ->
-            continue (updateBlocks setDraggingToGrowing model) []
+            continue (updateBlocks Block.setDraggingToGrowing model) []
 
         SetLeaving ->
-            continue (updateBlocks setToLeaving model) []
+            continue (updateBlocks Block.setDraggingToLeaving model) []
 
         ResetLeaving ->
-            continue (updateBlocks setLeavingToEmpty model) []
+            continue (updateBlocks Block.setLeavingToEmpty model) []
 
         GrowPods seedType ->
-            continue (updateBlocks (growSeedPod seedType) model) []
+            continue (updateBlocks (Block.growSeedPod seedType) model) []
 
         ResetGrowingPods ->
-            continue (updateBlocks setGrowingToStatic model) []
+            continue (updateBlocks Block.setGrowingToStatic model) []
 
         EnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
@@ -189,8 +189,8 @@ update msg model =
             continue
                 (model
                     |> mapBoard shiftBoard
-                    |> updateBlocks setFallingToStatic
-                    |> updateBlocks setLeavingToEmpty
+                    |> updateBlocks Block.setFallingToStatic
+                    |> updateBlocks Block.setLeavingToEmpty
                 )
                 []
 
@@ -401,7 +401,7 @@ fadeLine : Model -> Move -> Html msg
 fadeLine model (( _, tile ) as move) =
     let
         visible =
-            hasLine tile
+            Block.hasLine tile
     in
     div
         [ style [ transitionAll 500 [], showIf visible ] ]
@@ -427,7 +427,7 @@ renderTiles model =
 
 leavingStyles : Model -> Move -> List Style
 leavingStyles model (( _, block ) as move) =
-    case getTileState block of
+    case Block.getTileState block of
         Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionAll 500 [ delay <| modBy 5 order * 80 ]

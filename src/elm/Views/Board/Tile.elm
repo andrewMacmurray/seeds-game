@@ -83,26 +83,32 @@ innerTileWithStyles extraStyles burstMagnitude window move =
     div
         [ styles
             [ extraStyles
-            , baseTileStyles window move
+            , baseTileStyles window move burstMagnitude
             ]
         , classes baseTileClasses
         ]
         [ innerTileElement burstMagnitude <| Move.block move ]
 
 
-baseTileStyles : Window -> Move -> List Style
-baseTileStyles window move =
+baseTileStyles : Window -> Move -> Int -> List Style
+baseTileStyles window move magnitude =
     let
         block =
             Move.block move
     in
     List.concat
         [ growingStyles move
+        , burstingStyles magnitude move
         , enteringStyles move
         , fallingStyles move
-        , size <| tileSize block * Tile.scale window
+        , size <| roundFloat <| tileSize block * Tile.scale window
         , tileBackground block
         ]
+
+
+roundFloat : Float -> Float
+roundFloat =
+    round >> toFloat
 
 
 innerTileElement : Int -> Block -> Html msg
@@ -112,7 +118,7 @@ innerTileElement burstMagnitude block =
             renderSeed seedType
 
         Just (Burst tile) ->
-            div [ Style.style <| burstStyles burstMagnitude block ]
+            div []
                 [ renderBurst tile <| Block.isLeaving block ]
 
         _ ->

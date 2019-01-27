@@ -1,13 +1,11 @@
 module Data.Board.Types exposing
-    ( Block(..)
+    ( Bearing(..)
+    , Block(..)
     , Board
     , BoardDimensions
     , Coord
-    , FallingDistance
-    , GrowingOrder
-    , LeavingOrder
+    , Distance
     , Move
-    , MoveBearing(..)
     , MoveOrder
     , Score
     , Scores
@@ -73,16 +71,16 @@ type Block
 
 type TileState
     = Static TileType
-    | Dragging TileType MoveOrder MoveBearing
-    | Releasing TileType
-    | Leaving TileType LeavingOrder
-    | Falling TileType FallingDistance
+    | Dragging TileType MoveOrder Bearing
+    | Leaving TileType MoveOrder
+    | Falling TileType Distance
     | Entering TileType
-    | Growing TileType GrowingOrder
+    | Growing TileType MoveOrder
+    | Bursting TileType MoveOrder
     | Empty
 
 
-type MoveBearing
+type Bearing
     = Head
     | Left
     | Right
@@ -90,19 +88,11 @@ type MoveBearing
     | Down
 
 
+type alias Distance =
+    Int
+
+
 type alias MoveOrder =
-    Int
-
-
-type alias LeavingOrder =
-    Int
-
-
-type alias FallingDistance =
-    Int
-
-
-type alias GrowingOrder =
     Int
 
 

@@ -8,32 +8,33 @@ module Data.Board.Block exposing
     , growingOrder
     , hasLine
     , isBurst
+    , isBursting
     , isCurrentMove
     , isDragging
     , isEmpty
     , isFalling
     , isGrowing
     , isLeaving
-    , isReleasing
     , isWall
     , leavingOrder
     , map
     , moveOrder
     , removeBearing
     , resetDraggingBurstType
+    , setBurstingToLeaving
     , setDraggingBurstType
+    , setDraggingToBursting
     , setDraggingToGrowing
-    , setDraggingToReleasing
+    , setDraggingToLeaving
     , setDraggingToStatic
     , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
-    , setReleasingToStatic
     , setStaticToFirstMove
+    , setToBursting
     , setToDragging
     , setToFalling
-    , setToLeaving
     , static
     )
 
@@ -66,19 +67,19 @@ isDragging =
     fold Tile.isDragging False
 
 
-isGrowing : Block -> Bool
-isGrowing =
-    fold Tile.isGrowing False
-
-
 isFalling : Block -> Bool
 isFalling =
     fold Tile.isFalling False
 
 
-isReleasing : Block -> Bool
-isReleasing =
-    fold Tile.isReleasing False
+isGrowing : Block -> Bool
+isGrowing =
+    fold Tile.isGrowing False
+
+
+isBursting : Block -> Bool
+isBursting =
+    fold Tile.isBursting False
 
 
 hasLine : Block -> Bool
@@ -101,6 +102,16 @@ setToDragging =
     map << Tile.setToDragging
 
 
+setToBursting : MoveOrder -> Block -> Block
+setToBursting =
+    map << Tile.setToBursting
+
+
+setBurstingToLeaving : Block -> Block
+setBurstingToLeaving =
+    map Tile.setBurstingToLeaving
+
+
 removeBearing : Block -> Block
 removeBearing =
     map Tile.removeBearing
@@ -111,7 +122,7 @@ setStaticToFirstMove =
     map Tile.setStaticToFirstMove
 
 
-addBearing : MoveBearing -> Block -> Block
+addBearing : Bearing -> Block -> Block
 addBearing =
     map << Tile.addBearing
 
@@ -151,11 +162,6 @@ setFallingToStatic =
     map Tile.setFallingToStatic
 
 
-setReleasingToStatic : Block -> Block
-setReleasingToStatic =
-    map Tile.setReleasingToStatic
-
-
 setLeavingToEmpty : Block -> Block
 setLeavingToEmpty =
     map Tile.setLeavingToEmpty
@@ -171,14 +177,14 @@ setDraggingToGrowing =
     map Tile.setDraggingToGrowing
 
 
-setDraggingToReleasing : Block -> Block
-setDraggingToReleasing =
-    map Tile.setDraggingToReleasing
+setDraggingToBursting : Block -> Block
+setDraggingToBursting =
+    map Tile.setDraggingToBursting
 
 
-setToLeaving : Block -> Block
-setToLeaving =
-    map Tile.setToLeaving
+setDraggingToLeaving : Block -> Block
+setDraggingToLeaving =
+    map Tile.setDraggingToLeaving
 
 
 getTileType : Block -> Maybe TileType
@@ -205,7 +211,9 @@ isBurst : Block -> Bool
 isBurst =
     let
         burst =
-            Tile.getTileType >> Maybe.map Tile.isBurst >> Maybe.withDefault False
+            Tile.getTileType
+                >> Maybe.map Tile.isBurst
+                >> Maybe.withDefault False
     in
     fold burst False
 
@@ -221,20 +229,20 @@ empty =
 
 
 map : (TileState -> TileState) -> Block -> Block
-map fn block =
+map f block =
     case block of
         Space tileState ->
-            Space <| fn tileState
+            Space <| f tileState
 
         wall ->
             wall
 
 
 fold : (TileState -> a) -> a -> Block -> a
-fold fn default block =
+fold f default block =
     case block of
         Wall _ ->
             default
 
         Space tileState ->
-            fn tileState
+            f tileState

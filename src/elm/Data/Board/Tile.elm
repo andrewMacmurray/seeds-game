@@ -10,13 +10,13 @@ module Data.Board.Tile exposing
     , hasLine
     , hash
     , isBurst
+    , isBursting
     , isCurrentMove
     , isDragging
     , isEmpty
     , isFalling
     , isGrowing
     , isLeaving
-    , isReleasing
     , isSeed
     , leavingOrder
     , map
@@ -25,19 +25,20 @@ module Data.Board.Tile exposing
     , resetDraggingBurstType
     , scale
     , seedName
+    , setBurstingToLeaving
     , setDraggingBurstType
+    , setDraggingToBursting
     , setDraggingToGrowing
-    , setDraggingToReleasing
+    , setDraggingToLeaving
     , setDraggingToStatic
     , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
-    , setReleasingToStatic
     , setStaticToFirstMove
+    , setToBursting
     , setToDragging
     , setToFalling
-    , setToLeaving
     )
 
 import Data.Board.Types exposing (..)
@@ -45,11 +46,10 @@ import Data.Window as Window
 
 
 map : a -> (TileType -> a) -> TileState -> a
-map default fn tileState =
-    tileState
-        |> getTileType
-        |> Maybe.map fn
-        |> Maybe.withDefault default
+map default fn =
+    getTileType
+        >> Maybe.map fn
+        >> Maybe.withDefault default
 
 
 growingOrder : TileState -> Int
@@ -102,20 +102,20 @@ isDragging tileState =
             False
 
 
-isReleasing : TileState -> Bool
-isReleasing tileState =
+isGrowing : TileState -> Bool
+isGrowing tileState =
     case tileState of
-        Releasing _ ->
+        Growing _ _ ->
             True
 
         _ ->
             False
 
 
-isGrowing : TileState -> Bool
-isGrowing tileState =
+isBursting : TileState -> Bool
+isBursting tileState =
     case tileState of
-        Growing _ _ ->
+        Bursting _ _ ->
             True
 
         _ ->
@@ -181,6 +181,29 @@ setToDragging moveOrder_ tileState =
             x
 
 
+setToBursting : MoveOrder -> TileState -> TileState
+setToBursting moveOrder_ tileState =
+    case tileState of
+        Dragging tileType moveOrder__ _ ->
+            Bursting tileType moveOrder__
+
+        Static tileType ->
+            Bursting tileType moveOrder_
+
+        x ->
+            x
+
+
+setBurstingToLeaving : TileState -> TileState
+setBurstingToLeaving tileState =
+    case tileState of
+        Bursting tileType moveOrder_ ->
+            Leaving tileType moveOrder_
+
+        x ->
+            x
+
+
 removeBearing : TileState -> TileState
 removeBearing tileState =
     case tileState of
@@ -201,11 +224,11 @@ setStaticToFirstMove tileState =
             x
 
 
-addBearing : MoveBearing -> TileState -> TileState
-addBearing moveBearing tileState =
+addBearing : Bearing -> TileState -> TileState
+addBearing bearing tileState =
     case tileState of
         Dragging tileType moveOrder_ _ ->
-            Dragging tileType moveOrder_ moveBearing
+            Dragging tileType moveOrder_ bearing
 
         x ->
             x
@@ -234,8 +257,8 @@ growSeedPod seedType tileState =
 setDraggingBurstType : TileType -> TileState -> TileState
 setDraggingBurstType tileType tileState =
     case tileState of
-        Dragging (Burst _) moveOrder_ moveBearing_ ->
-            Dragging (Burst <| Just tileType) moveOrder_ moveBearing_
+        Dragging (Burst _) moveOrder_ bearing ->
+            Dragging (Burst <| Just tileType) moveOrder_ bearing
 
         x ->
             x
@@ -244,8 +267,8 @@ setDraggingBurstType tileType tileState =
 resetDraggingBurstType : TileState -> TileState
 resetDraggingBurstType tileState =
     case tileState of
-        Dragging (Burst _) moveOrder_ moveBearing_ ->
-            Dragging (Burst Nothing) moveOrder_ moveBearing_
+        Dragging (Burst _) moveOrder_ bearing ->
+            Dragging (Burst Nothing) moveOrder_ bearing
 
         x ->
             x
@@ -284,16 +307,6 @@ setFallingToStatic tileState =
             x
 
 
-setReleasingToStatic : TileState -> TileState
-setReleasingToStatic tileState =
-    case tileState of
-        Releasing tile ->
-            Static tile
-
-        x ->
-            x
-
-
 setLeavingToEmpty : TileState -> TileState
 setLeavingToEmpty tileState =
     case tileState of
@@ -324,18 +337,18 @@ setDraggingToGrowing tileState =
             x
 
 
-setDraggingToReleasing : TileState -> TileState
-setDraggingToReleasing tileState =
+setDraggingToBursting : TileState -> TileState
+setDraggingToBursting tileState =
     case tileState of
-        Dragging tile _ _ ->
-            Releasing tile
+        Dragging tileType order _ ->
+            Bursting tileType order
 
         x ->
             x
 
 
-setToLeaving : TileState -> TileState
-setToLeaving tileState =
+setDraggingToLeaving : TileState -> TileState
+setDraggingToLeaving tileState =
     case tileState of
         Dragging tile order _ ->
             Leaving tile order
@@ -353,9 +366,6 @@ getTileType tileState =
         Dragging tile _ _ ->
             Just tile
 
-        Releasing tile ->
-            Just tile
-
         Leaving tile _ ->
             Just tile
 
@@ -368,7 +378,10 @@ getTileType tileState =
         Growing tile _ ->
             Just tile
 
-        _ ->
+        Bursting tile _ ->
+            Just tile
+
+        Empty ->
             Nothing
 
 
@@ -445,10 +458,8 @@ hash tileType =
 
 
 hashBurst : Maybe TileType -> String
-hashBurst tile =
-    tile
-        |> Maybe.map (\t -> "Burst" ++ hash t)
-        |> Maybe.withDefault "BurstEmpty"
+hashBurst =
+    Maybe.map (\tile -> "Burst" ++ hash tile) >> Maybe.withDefault "BurstEmpty"
 
 
 seedName : SeedType -> String

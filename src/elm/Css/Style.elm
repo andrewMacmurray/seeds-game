@@ -12,6 +12,7 @@ module Css.Style exposing
     , classes
     , color
     , compose
+    , disablePointer
     , displayStyle
     , empty
     , height
@@ -370,6 +371,11 @@ lineHeight n =
 pointer : Style
 pointer =
     property "cursor" "pointer"
+
+
+disablePointer : Style
+disablePointer =
+    property "pointer-events" "none"
 
 
 showIf : Bool -> Style

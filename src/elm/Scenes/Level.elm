@@ -77,7 +77,6 @@ type Msg
     | StartMove Move Pointer
     | CheckMove Pointer
     | ReleaseTile
-    | ResetReleasingTile
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
@@ -218,19 +217,20 @@ update msg model =
         StopMove ->
             continue model [ stopMoveSequence model ]
 
-        SetLeavingTiles ->
-            continue
-                (model
-                    |> handleAddScore
-                    |> updateBlocks Block.setToLeaving
-                )
-                []
-
         ReleaseTile ->
             continue
                 (model
                     |> stopDrag
-                    |> updateBlocks Block.setDraggingToReleasing
+                    |> updateBlocks Block.setDraggingToStatic
+                )
+                []
+
+        SetLeavingTiles ->
+            continue
+                (model
+                    |> handleAddScore
+                    |> updateBlocks Block.setDraggingToLeaving
+                    |> updateBlocks Block.setBurstingToLeaving
                 )
                 []
 
@@ -277,9 +277,6 @@ update msg model =
                     |> handleDecrementRemainingMoves
                 )
                 []
-
-        ResetReleasingTile ->
-            continue (updateBlocks Block.setReleasingToStatic model) []
 
         StartMove move pointer ->
             continue (handleStartMove move pointer model) []
@@ -337,17 +334,32 @@ stopMoveSequence model =
         moveTileType =
             Board.currentMoveType model.board
     in
-    if List.length (Board.currentMoves model.board) == 1 then
-        releaseTileSequence
+    if shouldRelease model.board then
+        trigger ReleaseTile
 
     else if shouldBurst model.board then
         burstTilesSequence <| WithoutTileType moveTileType
 
-    else if moveTileType == Just SeedPod then
+    else if shouldGrowSeedPods moveTileType then
         growSeedPodsSequence
 
     else
         removeTilesSequence AllTileTypes
+
+
+shouldRelease : Board -> Bool
+shouldRelease board =
+    List.length (Board.currentMoves board) == 1
+
+
+shouldGrowSeedPods : Maybe TileType -> Bool
+shouldGrowSeedPods moveTileType =
+    moveTileType == Just SeedPod
+
+
+shouldBurst : Board -> Bool
+shouldBurst =
+    Board.currentMoves >> List.any (Move.block >> Block.isBurst)
 
 
 growSeedPodsSequence : Cmd Msg
@@ -385,13 +397,6 @@ burstTilesSequence enteringTiles =
         , ( 0, CheckLevelComplete )
         , ( 0, GenerateEnteringTiles enteringTiles )
         , ( 500, ResetEntering )
-        ]
-
-
-releaseTileSequence =
-    sequence
-        [ ( 0, ReleaseTile )
-        , ( 200, ResetReleasingTile )
         ]
 
 
@@ -512,15 +517,11 @@ handleDecrementRemainingMoves model =
 
 handleStartMove : Move -> Pointer -> Model -> Model
 handleStartMove (( _, block ) as move) pointer model =
-    if Block.isReleasing block then
-        model
-
-    else
-        { model
-            | isDragging = True
-            , board = startMove move model.board
-            , pointer = pointer
-        }
+    { model
+        | isDragging = True
+        , board = startMove move model.board
+        , pointer = pointer
+    }
 
 
 checkMoveFromPosition : Pointer -> Model -> Model
@@ -552,11 +553,6 @@ handleAddBurstType model =
             updateBlocks Block.resetDraggingBurstType model
 
 
-shouldBurst : Board -> Bool
-shouldBurst =
-    Board.currentMoves >> List.any (Move.block >> Block.isBurst)
-
-
 setBurstingTiles : BoardDimensions -> Board -> Board
 setBurstingTiles dimensions board =
     let
@@ -582,25 +578,23 @@ setBurstingTiles dimensions board =
         withMoveOrder coord =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
-        updateBlockToDragging coord b =
+        updateBlockToBursting coord b =
             if moveType == Block.getTileType b then
-                Block.setToDragging (withMoveOrder coord) b
+                Block.setToBursting (withMoveOrder coord) b
 
             else
                 b
 
-        updateToDragging coord =
-            Board.updateAt coord (updateBlockToDragging coord)
+        updateToBursting coord =
+            Board.updateAt coord (updateBlockToBursting coord)
 
-        updateBurstsToLeaving coord =
-            Board.updateAt coord Block.setToLeaving
+        updateBurstsToBursting coord =
+            Board.updateAt coord Block.setDraggingToBursting
 
-        updatedDraggingBoard =
-            List.foldl updateToDragging board burstArea
+        updatedBurstingBoard =
+            List.foldl updateToBursting board burstArea
     in
-    burstCoords
-        |> List.foldl updateBurstsToLeaving updatedDraggingBoard
-        |> mapValues Block.removeBearing
+    List.foldl updateBurstsToBursting updatedBurstingBoard burstCoords
 
 
 burstMagnitude : Board -> Int
@@ -609,12 +603,10 @@ burstMagnitude board =
         currMoves =
             Board.currentMoves board
 
-        burstCoords =
-            currMoves
-                |> List.filter (Move.block >> Block.isBurst)
-                |> List.map Move.coord
+        burstTiles =
+            currMoves |> List.filter (Move.block >> Block.isBurst)
     in
-    List.length currMoves // 4 + List.length burstCoords
+    List.length currMoves // 4 + List.length burstTiles
 
 
 moveFromPosition : Pointer -> Model -> Maybe Move
