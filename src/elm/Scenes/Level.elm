@@ -24,11 +24,11 @@ import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
 import Data.Board.Move as Move
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
-import Data.Board.Score as Score exposing (addScoreFromMoves, initialScores, levelComplete, scoreTileTypes)
+import Data.Board.Scores as Scores exposing (Scores)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Board.Wall exposing (addWalls)
+import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Setting exposing (TileSetting)
 import Data.Levels as Levels
@@ -72,7 +72,7 @@ type alias Model =
 
 
 type Msg
-    = InitTiles (List ( Color, Coord )) (List TileType)
+    = InitTiles (List Wall.Config) (List TileType)
     | StopMove
     | StartMove Move Pointer
     | CheckMove Pointer
@@ -164,35 +164,22 @@ init : Levels.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
     let
         model =
-            context
-                |> initialState
-                |> addLevelData config
+            initialState config context
     in
     ( model
     , handleGenerateInitialTiles config model
     )
 
 
-addLevelData : Levels.LevelConfig -> Model -> Model
-addLevelData { tiles, walls, boardDimensions, moves } model =
-    { model
-        | scores = initialScores tiles
-        , board = addWalls walls model.board
-        , boardDimensions = boardDimensions
-        , tileSettings = tiles
-        , remainingMoves = moves
-    }
-
-
-initialState : Context -> Model
-initialState context =
+initialState : Levels.LevelConfig -> Context -> Model
+initialState { tiles, boardDimensions, moves } context =
     { context = context
-    , board = Dict.empty
-    , scores = Dict.empty
+    , board = Board.fromMoves []
+    , scores = Scores.init tiles
     , isDragging = False
-    , remainingMoves = 10
-    , tileSettings = []
-    , boardDimensions = { y = 8, x = 8 }
+    , remainingMoves = moves
+    , tileSettings = tiles
+    , boardDimensions = boardDimensions
     , levelStatus = NotStarted
     , infoWindow = InfoWindow.hidden
     , pointer = { y = 0, x = 0 }
@@ -210,7 +197,7 @@ update msg model =
             continue
                 (model
                     |> handleMakeBoard tiles
-                    |> mapBoard (addWalls walls)
+                    |> mapBoard (Wall.addToBoard walls)
                 )
                 []
 
@@ -497,7 +484,7 @@ handleInsertNewSeeds seedType =
 
 handleAddScore : Model -> Model
 handleAddScore model =
-    { model | scores = addScoreFromMoves model.board model.scores }
+    { model | scores = Scores.addScoreFromMoves model.board model.scores }
 
 
 stopDrag : Model -> Model
@@ -668,7 +655,7 @@ hasLost { remainingMoves, levelStatus } =
 
 hasWon : Model -> Bool
 hasWon { scores, levelStatus } =
-    levelComplete scores && levelStatus == InProgress
+    Scores.allComplete scores && levelStatus == InProgress
 
 
 handleExitPrompt : Model -> Cmd Msg
@@ -721,7 +708,7 @@ handleCheck model =
 
 disableIfComplete : Model -> Attribute msg
 disableIfComplete model =
-    Attribute.applyIf (levelComplete model.scores) <| class "touch-disabled"
+    Attribute.applyIf (Scores.allComplete model.scores) <| class "touch-disabled"
 
 
 moveCaptureArea : Html msg
@@ -879,7 +866,7 @@ getLeavingStyle tileType model =
 newLeavingStyles : Model -> Dict.Dict String Style
 newLeavingStyles model =
     model.tileSettings
-        |> scoreTileTypes
+        |> Scores.tileTypes
         |> List.indexedMap (prepareLeavingStyle model)
         |> Dict.fromList
 
@@ -902,7 +889,7 @@ exitXDistance resourceBankIndex model =
 
         scoreBarWidth =
             model.tileSettings
-                |> List.filter Score.collectable
+                |> List.filter Scores.collectable
                 |> List.length
                 |> (*) scoreWidth
 

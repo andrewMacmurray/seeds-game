@@ -1,5 +1,6 @@
 module Data.Board.Wall exposing
-    ( addWalls
+    ( Config
+    , addToBoard
     , borders
     , centerColumns
     , corners
@@ -19,6 +20,10 @@ import Data.Board.Types exposing (Block(..), Board, Coord)
 
 
 -- Visually Construct wall coordinates
+
+
+type Config
+    = Config ( Color, Coord )
 
 
 centerColumns : List Coord
@@ -122,21 +127,21 @@ toCoord i j x =
 -- Add Walls to board
 
 
-addWalls : List ( Color, Coord ) -> Board -> Board
-addWalls walls board =
-    List.foldl addWall_ board walls
+addToBoard : List Config -> Board -> Board
+addToBoard walls board =
+    List.foldl addWall board walls
 
 
-addWall_ : ( Color, Coord ) -> Board -> Board
-addWall_ ( wallColor, coord ) =
+addWall : Config -> Board -> Board
+addWall (Config ( wallColor, coord )) =
     Board.placeAt coord <| Wall wallColor
 
 
-yellowWalls : List Coord -> List ( Color, Coord )
+yellowWalls : List Coord -> List Config
 yellowWalls =
     withColor Color.blockYellow
 
 
-withColor : Color -> List Coord -> List ( Color, Coord )
+withColor : Color -> List Coord -> List Config
 withColor color =
-    List.map (\coord -> ( color, coord ))
+    List.map (\coord -> Config ( color, coord ))

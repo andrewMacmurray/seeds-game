@@ -16,7 +16,7 @@ module Data.Progress exposing
     , toCache
     )
 
-import Data.Board.Score as Score
+import Data.Board.Scores as Score
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType, TileType)
 import Data.Level.Setting exposing (TargetScore(..), TileSetting)

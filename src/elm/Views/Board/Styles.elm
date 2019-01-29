@@ -36,7 +36,6 @@ import Css.Transition exposing (delay, transitionAll)
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
-import Data.Board.Score exposing (collectable, scoreTileTypes)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)

@@ -1,11 +1,13 @@
-module Data.Board.Score exposing
-    ( addScoreFromMoves
+module Data.Board.Scores exposing
+    ( Score
+    , Scores
+    , addScoreFromMoves
+    , allComplete
     , collectable
     , getScoreFor
-    , initialScores
-    , levelComplete
-    , scoreTileTypes
-    , scoreToString
+    , init
+    , tileTypes
+    , toString
     )
 
 import Data.Board as Board
@@ -15,6 +17,24 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Setting exposing (..)
 import Dict exposing (Dict)
+
+
+type Scores
+    = Scores (Dict String Score)
+
+
+type alias Score =
+    { target : Int
+    , current : Int
+    }
+
+
+init : List TileSetting -> Scores
+init =
+    List.filter collectable
+        >> List.map initScore
+        >> Dict.fromList
+        >> Scores
 
 
 addScoreFromMoves : Board -> Scores -> Scores
@@ -34,9 +54,9 @@ addScoreFromMoves board scores =
     addToScore scoreToAdd tileType scores
 
 
-levelComplete : Scores -> Bool
-levelComplete =
-    Dict.foldl (\_ v b -> b && v.current == v.target) True
+allComplete : Scores -> Bool
+allComplete (Scores scores) =
+    Dict.foldl (\_ v b -> b && v.current == v.target) True scores
 
 
 targetReached : TileType -> Scores -> Bool
@@ -46,8 +66,8 @@ targetReached tileType =
         >> Maybe.withDefault False
 
 
-scoreToString : TileType -> Scores -> String
-scoreToString tileType scores =
+toString : TileType -> Scores -> String
+toString tileType scores =
     getScoreFor tileType scores
         |> Maybe.map String.fromInt
         |> Maybe.withDefault ""
@@ -59,13 +79,15 @@ getScoreFor tileType =
 
 
 addToScore : Int -> TileType -> Scores -> Scores
-addToScore score tileType =
-    Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+addToScore score tileType (Scores scores) =
+    scores
+        |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+        |> Scores
 
 
 getScore : TileType -> Scores -> Maybe Score
-getScore tileType =
-    Dict.get <| Tile.hash tileType
+getScore tileType (Scores scores) =
+    Dict.get (Tile.hash tileType) scores
 
 
 updateScore : Int -> Score -> Score
@@ -77,16 +99,9 @@ updateScore n score =
         { score | current = score.current + n }
 
 
-scoreTileTypes : List TileSetting -> List TileType
-scoreTileTypes =
+tileTypes : List TileSetting -> List TileType
+tileTypes =
     List.filter collectable >> List.map .tileType
-
-
-initialScores : List TileSetting -> Scores
-initialScores =
-    List.filter collectable
-        >> List.map initScore
-        >> Dict.fromList
 
 
 collectable : TileSetting -> Bool

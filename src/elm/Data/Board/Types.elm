@@ -7,8 +7,6 @@ module Data.Board.Types exposing
     , Distance
     , Move
     , MoveOrder
-    , Score
-    , Scores
     , SeedType(..)
     , TileState(..)
     , TileType(..)
@@ -18,20 +16,6 @@ module Data.Board.Types exposing
 
 import Css.Color exposing (Color)
 import Dict exposing (Dict)
-
-
-
--- Keeps Track of current Scores for each resource
-
-
-type alias Scores =
-    Dict String Score
-
-
-type alias Score =
-    { target : Int
-    , current : Int
-    }
 
 
 

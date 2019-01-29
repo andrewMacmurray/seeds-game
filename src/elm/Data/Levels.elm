@@ -34,6 +34,7 @@ module Data.Levels exposing
 
 import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
+import Data.Board.Wall as Wall
 import Data.Level.Setting exposing (Probability, TargetScore, TileSetting)
 import Dict exposing (Dict)
 
@@ -114,7 +115,7 @@ type alias Levels =
 type Level
     = Level
         { tiles : List TileSetting
-        , walls : List ( Color, Coord )
+        , walls : List Wall.Config
         , boardDimensions : BoardDimensions
         , moves : Int
         , tutorial : Maybe Tutorial
@@ -123,7 +124,7 @@ type Level
 
 type alias LevelConfig =
     { tiles : List TileSetting
-    , walls : List ( Color, Coord )
+    , walls : List Wall.Config
     , boardDimensions : BoardDimensions
     , moves : Int
     }

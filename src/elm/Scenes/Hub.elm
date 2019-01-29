@@ -16,7 +16,7 @@ import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
-import Data.Board.Score exposing (collectable, scoreTileTypes)
+import Data.Board.Scores as Scores
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Setting exposing (TargetScore(..), TileSetting)
@@ -327,7 +327,7 @@ infoIcons : Levels.Level -> Html msg
 infoIcons level =
     Levels.config level
         |> .tiles
-        |> List.filter collectable
+        |> List.filter Scores.collectable
         |> List.map renderIcon
         |> infoIconsContainer
 

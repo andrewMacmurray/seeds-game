@@ -10,7 +10,7 @@ import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Board.Score exposing (getScoreFor, scoreTileTypes, scoreToString)
+import Data.Board.Scores as Scores
 import Data.Board.Types exposing (..)
 import Data.Level.Setting exposing (TileSetting)
 import Data.Window exposing (Window)
@@ -28,7 +28,7 @@ type alias TopBarViewModel =
     { window : Window
     , remainingMoves : Int
     , tileSettings : List TileSetting
-    , scores : Scores
+    , scores : Scores.Scores
     }
 
 
@@ -59,7 +59,7 @@ topBar model =
                 , class "flex justify-center"
                 ]
               <|
-                List.map (renderScore model) (scoreTileTypes model.tileSettings)
+                List.map (renderScore model) (Scores.tileTypes model.tileSettings)
             ]
         ]
 
@@ -127,16 +127,16 @@ moveCounterColor moves =
         pinkRed
 
 
-scoreContent : TileType -> Scores -> Html msg
+scoreContent : TileType -> Scores.Scores -> Html msg
 scoreContent tileType scores =
-    if getScoreFor tileType scores == Just 0 then
+    if Scores.getScoreFor tileType scores == Just 0 then
         tickFadeIn tileType scores
 
     else
-        text <| scoreToString tileType scores
+        text <| Scores.toString tileType scores
 
 
-tickFadeIn : TileType -> Scores -> Html msg
+tickFadeIn : TileType -> Scores.Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
@@ -154,7 +154,7 @@ tickFadeIn tileType scores =
                 , animation "fade-out" 500 [ ease ]
                 ]
             ]
-            [ text <| scoreToString tileType scores ]
+            [ text <| Scores.toString tileType scores ]
         ]
 
 
