@@ -114,14 +114,21 @@ updateContext model f =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( initialState flags
-    , bounceKeyframes flags.window
+    let
+        ( titleModel, titleCmd ) =
+            Title.init <| initialContext flags
+    in
+    ( initialState titleModel
+    , Cmd.batch
+        [ bounceKeyframes flags.window
+        , Cmd.map TitleMsg titleCmd
+        ]
     )
 
 
-initialState : Flags -> Model
-initialState flags =
-    { scene = Title <| Title.init <| initialContext flags
+initialState : Title.Model -> Model
+initialState titleModel =
+    { scene = Title titleModel
     , backdrop = Nothing
     }
 

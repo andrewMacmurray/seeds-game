@@ -11,6 +11,8 @@ module Scenes.Title exposing
     , view
     )
 
+import Browser.Dom as Dom
+import Browser.Events
 import Context exposing (Context)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color as Color
@@ -21,9 +23,10 @@ import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (sequence)
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Ports exposing (introMusicPlaying, playIntroMusic)
+import Task
 import Views.Menu as Menu
 import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (rose)
@@ -37,12 +40,15 @@ import Views.Seed.Twin exposing (lupin, marigold, sunflower)
 type alias Model =
     { context : Context
     , fadeDirection : FadeDirection
+    , bannerHeight : Float
     }
 
 
 type Msg
     = FadeSeeds
     | PlayIntro
+    | GetBannerHeight
+    | ReceiveBannerHeight (Result Dom.Error Float)
     | IntroMusicPlaying Bool
     | GoToIntro
     | GoToHub
@@ -85,11 +91,23 @@ menuOptions =
 -- Init
 
 
-init : Context -> Model
+init : Context -> ( Model, Cmd Msg )
 init context =
+    ( initialState context
+    , getBannerHeight
+    )
+
+
+initialState : Context -> Model
+initialState context =
     { context = context
     , fadeDirection = Appearing
+    , bannerHeight = 0
     }
+
+
+
+-- Update
 
 
 update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
@@ -109,6 +127,15 @@ update msg model =
                     ]
                 ]
 
+        GetBannerHeight ->
+            continue model [ getBannerHeight ]
+
+        ReceiveBannerHeight (Ok height) ->
+            continue { model | bannerHeight = height } []
+
+        ReceiveBannerHeight (Err _) ->
+            continue model []
+
         GoToIntro ->
             exitWith ToIntro model
 
@@ -119,16 +146,40 @@ update msg model =
             exitWith ToGarden model
 
 
+getBannerHeight : Cmd Msg
+getBannerHeight =
+    Dom.getElement bannerId
+        |> Task.map (.element >> .height)
+        |> Task.attempt ReceiveBannerHeight
+
+
+bannerId : String
+bannerId =
+    "banner"
+
+
+
+-- Subscriptions
+
+
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    introMusicPlaying IntroMusicPlaying
+    Sub.batch
+        [ introMusicPlaying IntroMusicPlaying
+        , Browser.Events.onResize (\_ _ -> GetBannerHeight)
+        ]
+
+
+
+-- View
 
 
 view : Model -> Html Msg
-view { context, fadeDirection } =
+view { context, fadeDirection, bannerHeight } =
     div
         [ class "absolute left-0 right-0 z-1 tc"
-        , style [ bottom <| toFloat context.window.height / 2.4 ]
+        , id bannerId
+        , style [ bottom <| (toFloat context.window.height - bannerHeight) / 2 + 50 ]
         ]
         [ div [] [ seeds fadeDirection ]
         , p
@@ -195,12 +246,12 @@ seeds fadeDirection =
 
 seedEntranceDelays : Int -> List Int
 seedEntranceDelays interval =
-    [ 3, 2, 1, 2, 3 ] |> List.map ((*) interval)
+    List.map ((*) interval) [ 3, 2, 1, 2, 3 ]
 
 
 seedExitDelays : Int -> List Int
 seedExitDelays interval =
-    [ 0, 1, 2, 1, 0 ] |> List.map ((*) interval)
+    List.map ((*) interval) [ 0, 1, 2, 1, 0 ]
 
 
 fadeSeeds : FadeDirection -> Int -> Int -> Html msg -> Html msg
