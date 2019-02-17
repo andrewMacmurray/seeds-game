@@ -84,7 +84,7 @@ type Msg
     | InsertGrowingSeeds SeedType
     | ResetGrowingSeeds
     | BurstTiles
-    | GenerateEnteringTiles EnteringConfig
+    | GenerateEnteringTiles RandomSetting
     | InsertEnteringTiles (List TileType)
     | ResetEntering
     | ShiftBoard
@@ -120,9 +120,9 @@ type InfoContent
     | ExitAreYouSure
 
 
-type EnteringConfig
-    = AllTileTypes
-    | WithoutTileType (Maybe TileType)
+type RandomSetting
+    = AllTiles
+    | WithoutTile TileType
 
 
 
@@ -324,13 +324,21 @@ stopMoveSequence model =
         trigger ReleaseTile
 
     else if shouldBurst model.board then
-        burstTilesSequence <| WithoutTileType moveTileType
+        burstSequence moveTileType
 
     else if shouldGrowSeedPods moveTileType then
         growSeedPodsSequence
 
     else
-        removeTilesSequence AllTileTypes
+        removeTilesSequence AllTiles
+
+
+burstSequence : Maybe TileType -> Cmd Msg
+burstSequence moveType =
+    moveType
+        |> Maybe.map WithoutTile
+        |> Maybe.withDefault AllTiles
+        |> burstTilesSequence
 
 
 shouldRelease : Board -> Bool
@@ -359,7 +367,7 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : EnteringConfig -> Cmd Msg
+removeTilesSequence : RandomSetting -> Cmd Msg
 removeTilesSequence enteringTiles =
     sequence
         [ ( 0, ResetMove )
@@ -372,7 +380,7 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : EnteringConfig -> Cmd Msg
+burstTilesSequence : RandomSetting -> Cmd Msg
 burstTilesSequence enteringTiles =
     sequence
         [ ( 0, ResetMove )
@@ -435,25 +443,24 @@ handleGenerateInitialTiles config { boardDimensions } =
     generateInitialTiles (InitTiles config.walls) config.tiles boardDimensions
 
 
-handleGenerateEnteringTiles : EnteringConfig -> Board -> List TileSetting -> Cmd Msg
+handleGenerateEnteringTiles : RandomSetting -> Board -> List TileSetting -> Cmd Msg
 handleGenerateEnteringTiles enteringTiles board tileSettings =
     case enteringTiles of
-        AllTileTypes ->
+        AllTiles ->
             generateEntering board tileSettings
 
-        WithoutTileType tileType ->
+        WithoutTile tileType ->
             generateEnteringTilesWithoutTileType tileType board tileSettings
 
 
-generateEnteringTilesWithoutTileType : Maybe TileType -> Board -> List TileSetting -> Cmd Msg
+generateEnteringTilesWithoutTileType : TileType -> Board -> List TileSetting -> Cmd Msg
 generateEnteringTilesWithoutTileType tileType board tileSettings =
     if List.length tileSettings == 1 then
         generateEntering board tileSettings
 
     else
         tileType
-            |> Maybe.map (filterSettings tileSettings)
-            |> Maybe.withDefault tileSettings
+            |> filterSettings tileSettings
             |> generateEntering board
 
 
