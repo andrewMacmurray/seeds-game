@@ -1,6 +1,6 @@
-const Bounce = require("bounce.js/bounce.min.js");
+import Bounce from "bounce.js/bounce.min.js"
 
-function generateKeyframes(tileSize) {
+export function generateKeyframes(tileSize) {
   return [
     elasticBounceIn(),
     bounceDown(),
@@ -64,5 +64,3 @@ function bounceDowns(tileSize) {
   }
   return anims.join(" ");
 }
-
-module.exports = { generateKeyframes };

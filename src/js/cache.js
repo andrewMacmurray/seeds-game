@@ -1,22 +1,22 @@
 const { localStorage } = window;
 
-function getLives() {
+export function getLives() {
   return safeParse(localStorage.getItem("lives"));
 }
 
-function setLives(lives) {
+export function setLives(lives) {
   return localStorage.setItem("lives", JSON.stringify(lives));
 }
 
-function getProgress() {
+export function getProgress() {
   return safeParse(localStorage.getItem("progress"));
 }
 
-function setProgress(progress) {
+export function setProgress(progress) {
   return localStorage.setItem("progress", JSON.stringify(progress));
 }
 
-function clear() {
+export function clear() {
   localStorage.clear();
 }
 
@@ -27,11 +27,3 @@ function safeParse(JSONstring) {
     return null;
   }
 }
-
-module.exports = {
-  getLives,
-  setLives,
-  getProgress,
-  setProgress,
-  clear
-};

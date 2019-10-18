@@ -1,12 +1,12 @@
-const bounce = require("./bounce.js");
-const cache = require("./cache.js");
-const { loadAudio, playTrack, longFade } = require("./audio.js");
+import * as Bounce from "./bounce.js"
+import * as Cache from "./cache.js"
+import * as Audio from "./audio.js"
 
-function Embed(Program) {
+export function Embed(Program) {
   const flags = {
     now: Date.now(),
-    lives: cache.getLives(),
-    level: cache.getProgress(),
+    lives: Cache.getLives(),
+    level: Cache.getProgress(),
     randomMessageIndex: Math.round(Math.random() * 10),
     window: { height: window.innerHeight, width: window.innerWidth }
   };
@@ -26,34 +26,32 @@ function Embed(Program) {
     cacheLives
   } = ports;
 
-  const { introMusic } = loadAudio();
+  const { introMusic } = Audio.load();
 
   playIntroMusic.subscribe(() => {
     const musicPlaying = () => introMusicPlaying.send(true);
-    playTrack(introMusic, musicPlaying);
+    Audio.playTrack(introMusic, musicPlaying);
   });
 
   fadeMusic.subscribe(() => {
-    longFade(introMusic);
+    Audio.longFade(introMusic);
   });
 
   generateBounceKeyframes.subscribe(tileSize => {
     const styleNode = document.getElementById("generated-styles");
-    styleNode.textContent = bounce.generateKeyframes(tileSize);
+    styleNode.textContent = Bounce.generateKeyframes(tileSize);
   });
 
   cacheProgress.subscribe(progress => {
-    cache.setProgress(progress);
+    Cache.setProgress(progress);
   });
 
   clearCache_.subscribe(() => {
-    cache.clear();
+    Cache.clear();
     window.location.reload();
   });
 
   cacheLives.subscribe(times => {
-    cache.setLives(times);
+    Cache.setLives(times);
   });
 }
-
-module.exports = { Embed };

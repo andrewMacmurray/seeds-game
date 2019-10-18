@@ -1,6 +1,8 @@
-const { Embed } = require("./embed.js");
-const cheats = require("./cheats.js");
+import "pepjs"
+import { Elm } from '../elm/Main.elm'
+import { Embed } from './embed'
+import * as Cheats from "./cheats.js"
 
-cheats.activate();
+Cheats.activate();
 
 Embed(Elm.Main);

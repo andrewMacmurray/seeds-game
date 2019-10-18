@@ -1,6 +1,6 @@
-const { setProgress } = require("./cache.js");
+import { setProgress } from "./cache.js"
 
-function activate() {
+export function activate() {
   window.skipToLevel = skipToLevel;
 }
 
@@ -8,5 +8,3 @@ function skipToLevel(worldId, levelId) {
   setProgress({ worldId, levelId });
   window.location.reload();
 }
-
-module.exports = { activate };

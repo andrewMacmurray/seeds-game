@@ -1,22 +1,16 @@
-const { Howl } = require("howler");
+import { Howl } from "howler"
 
-function loadAudio() {
+export function load() {
   return {
-    introMusic: new Howl({ src: ["audio/intro.mp3"] })
+    introMusic: new Howl({ src: [require("../../assets/audio/intro.mp3")] })
   };
 }
 
-function playTrack(track, cb) {
+export function playTrack(track, cb) {
   track.once("play", cb);
   track.play();
 }
 
-function longFade(track) {
+export function longFade(track) {
   track.fade(1, 0, 4000);
 }
-
-module.exports = {
-  loadAudio,
-  playTrack,
-  longFade
-};
