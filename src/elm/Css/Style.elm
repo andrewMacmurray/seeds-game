@@ -14,7 +14,6 @@ module Css.Style exposing
     , compose
     , disablePointer
     , displayStyle
-    , empty
     , height
     , left
     , leftAuto
@@ -26,6 +25,7 @@ module Css.Style exposing
     , marginRight
     , marginTop
     , maxWidth
+    , none
     , opacity
     , paddingAll
     , paddingBottom
@@ -141,8 +141,8 @@ nonEmpty =
 -- Properties
 
 
-empty : Style
-empty =
+none : Style
+none =
     property "" ""
 
 
@@ -393,7 +393,7 @@ applyIf predicate s =
         s
 
     else
-        empty
+        none
 
 
 

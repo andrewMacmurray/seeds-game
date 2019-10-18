@@ -10,10 +10,8 @@ module Scenes.Level exposing
     , view
     )
 
-import Browser.Events
 import Context exposing (Context)
-import Css.Animation as Animation
-import Css.Color as Color exposing (Color)
+import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
@@ -34,21 +32,19 @@ import Data.Level.Setting exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Dict exposing (filterValues, indexedDictFrom, mapValues)
+import Helpers.Dict exposing (indexedDictFrom, mapValues)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
 import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
-import Scenes.Level.TopBar exposing (TopBarViewModel, remainingMoves, topBar)
-import Task
+import Scenes.Level.TopBar exposing (TopBarViewModel, topBar)
 import Views.Board.Line exposing (renderLine)
 import Views.Board.Styles exposing (..)
-import Views.Board.Tile exposing (renderTile_)
+import Views.Board.Tile as Tile
 import Views.InfoWindow
 import Views.Menu as Menu
 
@@ -394,8 +390,8 @@ burstTilesSequence enteringTiles =
         ]
 
 
-winSequence : Model -> Cmd Msg
-winSequence model =
+winSequence : Cmd Msg
+winSequence =
     sequence
         [ ( 500, ShowInfo Success )
         , ( 2000, HideInfo )
@@ -509,7 +505,7 @@ handleDecrementRemainingMoves model =
 
 
 handleStartMove : Move -> Pointer -> Model -> Model
-handleStartMove (( _, block ) as move) pointer model =
+handleStartMove move pointer model =
     { model
         | isDragging = True
         , board = startMove move model.board
@@ -646,7 +642,7 @@ handleCheckLevelComplete model =
             updateContext Context.disableMenu
     in
     if hasWon model then
-        continue (disableMenu { model | levelStatus = Win }) [ winSequence model ]
+        continue (disableMenu { model | levelStatus = Win }) [ winSequence ]
 
     else if hasLost model then
         continue (disableMenu { model | levelStatus = Lose }) [ loseSequence ]
@@ -741,13 +737,13 @@ renderTiles model =
 
 
 renderTile : Model -> Move -> Html Msg
-renderTile model (( _, block ) as move) =
+renderTile model move =
     div
         [ hanldeMoveEvents model move
         , class "pointer"
         , attribute "touch-action" "none"
         ]
-        [ renderTile_
+        [ Tile.view
             { isBursting = isBursting model
             , burstMagnitude = burstMagnitude model.board
             , extraStyles = leavingStyles model move
@@ -760,13 +756,9 @@ renderTile model (( _, block ) as move) =
 
 isBursting : Model -> Bool
 isBursting model =
-    let
-        bursting =
-            model.board
-                |> Board.blocks
-                |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
-    in
-    not model.isDragging && bursting
+    model.board
+        |> Board.blocks
+        |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
 
 
 currentMoveOverlay : Model -> List (Html msg) -> Html msg
@@ -792,7 +784,7 @@ currentMoveLayer model =
 renderCurrentMove : Model -> Move -> Html msg
 renderCurrentMove model (( _, block ) as move) =
     if Block.isCurrentMove block && model.isDragging then
-        renderTile_
+        Tile.view
             { extraStyles = []
             , isBursting = isBursting model
             , burstMagnitude = 1
@@ -848,7 +840,7 @@ leavingStyles model (( _, block ) as move) =
 
 
 handleExitDirection : Move -> Model -> Style
-handleExitDirection ( coord, block ) model =
+handleExitDirection ( _, block ) model =
     case Block.getTileState block of
         Leaving Rain _ ->
             getLeavingStyle Rain model
@@ -860,14 +852,14 @@ handleExitDirection ( coord, block ) model =
             getLeavingStyle (Seed seedType) model
 
         _ ->
-            Style.empty
+            Style.none
 
 
 getLeavingStyle : TileType -> Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault Style.empty
+        |> Maybe.withDefault Style.none
 
 
 newLeavingStyles : Model -> Dict.Dict String Style

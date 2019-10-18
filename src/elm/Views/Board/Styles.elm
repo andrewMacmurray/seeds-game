@@ -30,7 +30,7 @@ module Views.Board.Styles exposing
 
 import Css.Animation as Animation
 import Css.Color as Color
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
 import Data.Board.Block as Block
@@ -39,7 +39,6 @@ import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
-import Dict exposing (Dict)
 
 
 
@@ -85,7 +84,7 @@ boardHeight ( window, dimensions ) =
 
 
 boardWidth : TileViewModel -> Int
-boardWidth (( window, dimensions ) as model) =
+boardWidth ( window, dimensions ) =
     tileWidth window * dimensions.x
 
 
@@ -167,7 +166,7 @@ wallStyles window move =
 enteringStyles : Move -> List Style
 enteringStyles move =
     case Block.getTileState <| Move.block move of
-        Entering tile ->
+        Entering _ ->
             [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
 
         _ ->
@@ -177,7 +176,7 @@ enteringStyles move =
 fallingStyles : Move -> List Style
 fallingStyles move =
     case Block.getTileState <| Move.block move of
-        Falling tile distance ->
+        Falling _ distance ->
             [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
 
         _ ->
@@ -244,7 +243,7 @@ growingStyles move =
 
 
 burstStyles : Int -> Block -> List Style
-burstStyles burstMagnitude block =
+burstStyles _ block =
     if Block.isLeaving block && Block.isBurst block then
         [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
         ]
@@ -268,7 +267,7 @@ burstTracerStyles burstMagnitude move =
             clamp 500 1000 <| 2000 - burstMagnitude * 200
     in
     if Block.isDragging block && Block.isBurst block then
-        [ Animation.animation "bulge-fade" pulseSpeed [ Animation.infinite, Animation.cubicBezier 0 0 0 1 ] ]
+        [ Animation.animation "bulge-fade-5" pulseSpeed [ Animation.cubicBezier 0 0 0 1 ] ]
 
     else
         []

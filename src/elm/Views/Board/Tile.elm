@@ -1,6 +1,5 @@
-module Views.Board.Tile exposing (renderTile_)
+module Views.Board.Tile exposing (view)
 
-import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
 import Data.Board.Move as Move
@@ -8,7 +7,7 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class)
+import Html.Attributes exposing (class)
 import Views.Board.Styles exposing (..)
 import Views.Icons.Burst as Burst
 import Views.Seed.All exposing (renderSeed)
@@ -22,8 +21,8 @@ type alias Settings =
     }
 
 
-renderTile_ : Settings -> Window -> Move -> Html msg
-renderTile_ { extraStyles, isBursting, burstMagnitude, withTracer } window move =
+view : Settings -> Window -> Move -> Html msg
+view { extraStyles, isBursting, burstMagnitude, withTracer } window move =
     let
         coord =
             Move.coord move

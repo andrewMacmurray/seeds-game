@@ -10,7 +10,6 @@ module Scenes.Tutorial exposing
     , view
     )
 
-import Browser.Events
 import Context exposing (Context)
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
@@ -25,7 +24,6 @@ import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute
@@ -34,10 +32,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import Scenes.Level.TopBar exposing (renderScoreIcon)
-import Task
 import Views.Board.Line exposing (renderLine)
 import Views.Board.Styles exposing (boardHeight, boardWidth)
-import Views.Board.Tile exposing (renderTile_)
+import Views.Board.Tile as Tile
 
 
 
@@ -414,7 +411,7 @@ renderTiles model =
         |> Dict.toList
         |> List.map
             (\move ->
-                renderTile_
+                Tile.view
                     { extraStyles = leavingStyles model move
                     , isBursting = False
                     , burstMagnitude = 1

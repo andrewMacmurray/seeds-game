@@ -2,9 +2,9 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Context exposing (..)
+import Context exposing (Context)
 import Css.Color as Color
-import Css.Style exposing (backgroundColor, color, style)
+import Css.Style exposing (backgroundColor, style)
 import Data.Board.Tile as Tile
 import Data.Levels as Levels
 import Data.Lives as Lives
@@ -13,9 +13,8 @@ import Data.Window exposing (Window)
 import Exit
 import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
-import Html exposing (Html, div, p, span, text)
+import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
 import Ports exposing (..)
 import Scene exposing (Scene(..))
@@ -87,7 +86,7 @@ type Msg
     | HideLoadingScreen
     | OpenMenu
     | CloseMenu
-    | RandomBackground Background
+    | RandomBackground Context.Background
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
@@ -122,7 +121,9 @@ init flags =
     , Cmd.batch
         [ bounceKeyframes flags.window
         , Cmd.map TitleMsg titleCmd
-        , trigger <| InitLevel <| Worlds.levelConfig <| Levels.keyFromRaw_ 1 7
+
+        --        , trigger <| InitLevel <| Worlds.levelConfig <| Levels.keyFromRaw_ 1 7
+        , trigger InitIntro
         ]
     )
 
@@ -201,19 +202,19 @@ update msg ({ scene, backdrop } as model) =
             initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
-            ( model, generateBackground RandomBackground )
+            ( model, Context.generateBackground RandomBackground )
 
         ( RandomBackground bgColor, _, _ ) ->
-            ( updateContext model <| showLoadingScreen bgColor, Cmd.none )
+            ( updateContext model <| Context.showLoadingScreen bgColor, Cmd.none )
 
         ( HideLoadingScreen, _, _ ) ->
-            ( updateContext model hideLoadingScreen, Cmd.none )
+            ( updateContext model Context.hideLoadingScreen, Cmd.none )
 
         ( OpenMenu, _, _ ) ->
-            ( updateContext model openMenu, Cmd.none )
+            ( updateContext model Context.openMenu, Cmd.none )
 
         ( CloseMenu, _, _ ) ->
-            ( updateContext model closeMenu, Cmd.none )
+            ( updateContext model Context.closeMenu, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen <| InitHub level )
@@ -222,7 +223,7 @@ update msg ({ scene, backdrop } as model) =
             ( model, clearCache )
 
         ( WindowSize width height, _, _ ) ->
-            ( updateContext model <| setWindow width height
+            ( updateContext model <| Context.setWindow width height
             , bounceKeyframes <| Window width height
             )
 
@@ -478,7 +479,7 @@ updateBackdrop sceneF =
 
 load embedModel embedScene msg initSceneF model =
     Scene.getContext model.scene
-        |> closeMenu
+        |> Context.closeMenu
         |> initSceneF
         |> Return.map msg (embedScene >> embedModel model)
 
