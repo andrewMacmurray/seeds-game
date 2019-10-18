@@ -1,21 +1,9 @@
-import * as Bounce from "./bounce.js"
-import * as Cache from "./cache.js"
-import * as Audio from "./audio.js"
+import * as Bounce from "./bounce";
+import * as Cache from "./cache";
+import * as Audio from "./audio";
+import { Elm } from "../elm/Main";
 
-export function Embed(Program) {
-  const flags = {
-    now: Date.now(),
-    lives: Cache.getLives(),
-    level: Cache.getProgress(),
-    randomMessageIndex: Math.round(Math.random() * 10),
-    window: { height: window.innerHeight, width: window.innerWidth }
-  };
-
-  const { ports } = Program.init({
-    node: document.getElementById("app"),
-    flags
-  });
-
+export function bindPorts(app: Elm.Main.App) {
   const {
     playIntroMusic,
     introMusicPlaying,
@@ -24,7 +12,7 @@ export function Embed(Program) {
     cacheProgress,
     clearCache_,
     cacheLives
-  } = ports;
+  } = app.ports;
 
   const { introMusic } = Audio.load();
 

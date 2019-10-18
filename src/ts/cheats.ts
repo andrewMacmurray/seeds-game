@@ -1,7 +1,7 @@
-import { setProgress } from "./cache.js"
+import { setProgress } from "./cache";
 
 export function activate() {
-  window.skipToLevel = skipToLevel;
+  window["skipToLevel"] = skipToLevel;
 }
 
 function skipToLevel(worldId, levelId) {

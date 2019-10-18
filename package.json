@@ -5,8 +5,8 @@
   "scripts": {
     "deploy-production": "npm run build && firebase deploy -P production",
     "deploy-staging": "npm run build && firebase deploy -P staging",
-    "dev": "npm run css-build && parcel src/index.html",
-    "build": "npm run css-build && parcel build src/index.html",
+    "dev": "npm run css-build && elm-typescript-interop && parcel src/index.html",
+    "build": "npm run css-build && elm-typescript-interop && parcel build src/index.html",
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
     "test": "elm-test"
@@ -21,23 +21,24 @@
     "url": "https://github.com/andrewMacmurray/seeds-game/issues"
   },
   "homepage": "https://github.com/andrewMacmurray/seeds-game#readme",
-  "dependencies": {
+  "devDependencies": {
+    "@types/howler": "^2.1.1",
+    "autoprefixer": "^6.7.3",
     "bounce.js": "^0.8.2",
     "elm": "^0.19.0",
-    "howler": "^2.0.9",
-    "pepjs": "^0.4.3",
-    "tachyons-custom": "^4.5.4"
-  },
-  "devDependencies": {
-    "autoprefixer": "^6.7.3",
     "elm-hot": "^1.1.2",
     "elm-live": "^3.0.6",
+    "elm-typescript-interop": "0.0.15",
+    "howler": "^2.0.9",
     "node-elm-compiler": "^5.0.4",
     "parcel-bundler": "^1.12.4",
+    "pepjs": "^0.4.3",
     "postcss-clean": "^1.0.2",
     "postcss-cli": "^2.6.0",
     "postcss-custom-media": "^5.0.1",
     "postcss-custom-properties": "^5.0.2",
-    "postcss-import": "^9.1.0"
+    "postcss-import": "^9.1.0",
+    "tachyons-custom": "^4.5.4",
+    "typescript": "^3.6.4"
   }
 }

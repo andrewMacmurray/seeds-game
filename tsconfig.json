@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["dom", "es6"],
+    "types": ["howler"],
+    "sourceMap": false
+  },
+  "exclude": ["node_modules", "dist"]
+}
