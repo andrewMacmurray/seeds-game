@@ -244,7 +244,7 @@ update msg model =
             continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
 
         BurstTiles ->
-            continue (updateBoard (setBurstingTiles model.boardDimensions) model) []
+            continue (updateBoard setBurstingTiles model) []
 
         InsertEnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
@@ -542,16 +542,11 @@ handleCheckMove move model =
 addActiveTiles : BoardDimensions -> Board -> Board
 addActiveTiles dimensions board =
     let
-        currMoves =
-            Board.currentMoves board
-
         burstRadius =
             burstMagnitude board
 
         burstCoords =
-            currMoves
-                |> List.filter (Move.block >> Block.isBurst)
-                |> List.map Move.coord
+            burstCoordinates board
 
         burstAreaCoordinates =
             burstCoords
@@ -580,7 +575,7 @@ addActiveTiles dimensions board =
             Board.updateAt coord Block.setActiveToStatic
     in
     List.foldl updateToActive board burstAreaCoordinates
-        |> (\brd -> List.foldl updateToStatic brd nonBurstCoords)
+        |> (\updatedBoard -> List.foldl updateToStatic updatedBoard nonBurstCoords)
 
 
 handleAddBurstType : Model -> Model
@@ -593,52 +588,32 @@ handleAddBurstType model =
             updateBlocks Block.resetDraggingBurstType model
 
 
-setBurstingTiles : BoardDimensions -> Board -> Board
-setBurstingTiles dimensions board =
+setBurstingTiles : Board -> Board
+setBurstingTiles board =
     let
-        -- update Active to Dragging
-        -- update dragging Bursts to Leaving
-        currMoves =
-            Board.currentMoves board
-
-        burstRadius =
-            burstMagnitude board
-
         burstCoords =
-            currMoves
-                |> List.filter (Move.block >> Block.isBurst)
-                |> List.map Move.coord
-
-        burstAreaCoordinates =
-            burstCoords
-                |> List.map (Move.surroundingCoordinates dimensions burstRadius)
-                |> List.concat
-
-        moveType =
-            Board.currentMoveType board
+            burstCoordinates board
 
         withMoveOrder coord =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
-        updateBlockToDragging coord b =
-            if moveType == Block.tileType b then
-                Block.setToDragging (withMoveOrder coord) b
+        updateActiveBlockToDragging coord b =
+            case Block.getTileState b of
+                Active _ ->
+                    Block.setToDragging (withMoveOrder coord) b
 
-            else
-                b
-
-        updateToDragging coord =
-            Board.updateAt coord (updateBlockToDragging coord)
+                _ ->
+                    b
 
         updateBurstsToLeaving coord =
             Board.updateAt coord Block.setDraggingToLeaving
 
         updatedDraggingBoard =
-            List.foldl updateToDragging board burstAreaCoordinates
+            Board.update updateActiveBlockToDragging board
     in
     burstCoords
         |> List.foldl updateBurstsToLeaving updatedDraggingBoard
-        |> mapValues Block.clearBearing
+        |> Board.updateBlocks Block.clearBearing
 
 
 burstMagnitude : Board -> Int
@@ -651,6 +626,13 @@ burstMagnitude board =
             currMoves |> List.filter (Move.block >> Block.isBurst)
     in
     List.length currMoves // 4 + List.length burstTiles
+
+
+burstCoordinates : Board -> List Coord
+burstCoordinates board =
+    Board.currentMoves board
+        |> List.filter (Move.block >> Block.isBurst)
+        |> List.map Move.coord
 
 
 
