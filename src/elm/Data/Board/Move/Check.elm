@@ -8,7 +8,6 @@ import Data.Board.Block as Block
 import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Types exposing (..)
-import Dict
 
 
 startMove : Move -> Board -> Board
@@ -39,7 +38,7 @@ removeLastMove board =
     in
     board
         |> Board.secondLastMove
-        |> Maybe.map (\m -> Board.updateAt (Move.coord m) Block.removeBearing newBoard)
+        |> Maybe.map (\m -> Board.updateAt (Move.coord m) Block.clearBearing newBoard)
         |> Maybe.withDefault newBoard
 
 

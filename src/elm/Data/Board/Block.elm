@@ -1,9 +1,9 @@
 module Data.Board.Block exposing
     ( addBearing
+    , clearBearing
     , empty
     , fold
     , getTileState
-    , getTileType
     , growSeedPod
     , growingOrder
     , hasLine
@@ -18,8 +18,8 @@ module Data.Board.Block exposing
     , leavingOrder
     , map
     , moveOrder
-    , removeBearing
     , resetDraggingBurstType
+    , setActiveToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToLeaving
@@ -29,9 +29,11 @@ module Data.Board.Block exposing
     , setGrowingToStatic
     , setLeavingToEmpty
     , setStaticToFirstMove
+    , setToActive
     , setToDragging
     , setToFalling
     , static
+    , tileType
     )
 
 import Data.Board.Tile as Tile
@@ -93,8 +95,18 @@ setToDragging =
     map << Tile.setToDragging
 
 
-removeBearing : Block -> Block
-removeBearing =
+setToActive : Block -> Block
+setToActive =
+    map Tile.setToActive
+
+
+setActiveToStatic : Block -> Block
+setActiveToStatic =
+    map Tile.setActiveToStatic
+
+
+clearBearing : Block -> Block
+clearBearing =
     map Tile.removeBearing
 
 
@@ -163,8 +175,8 @@ setDraggingToLeaving =
     map Tile.setDraggingToLeaving
 
 
-getTileType : Block -> Maybe TileType
-getTileType =
+tileType : Block -> Maybe TileType
+tileType =
     fold Tile.getTileType Nothing
 
 

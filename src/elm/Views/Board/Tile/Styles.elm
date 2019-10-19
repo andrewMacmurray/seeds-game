@@ -1,5 +1,6 @@
-module Views.Board.Styles exposing
+module Views.Board.Tile.Styles exposing
     ( TileViewModel
+    , activeStyles
     , baseTileClasses
     , boardFullWidth
     , boardHeight
@@ -8,7 +9,6 @@ module Views.Board.Styles exposing
     , boardOffsetTop
     , boardWidth
     , burstStyles
-    , burstTracerStyles
     , centerBlock
     , draggingStyles
     , enteringStyles
@@ -165,7 +165,7 @@ wallStyles window move =
 
 enteringStyles : Move -> List Style
 enteringStyles move =
-    case Block.getTileState <| Move.block move of
+    case Move.tileState move of
         Entering _ ->
             [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
 
@@ -175,7 +175,7 @@ enteringStyles move =
 
 fallingStyles : Move -> List Style
 fallingStyles move =
-    case Block.getTileState <| Move.block move of
+    case Move.tileState move of
         Falling _ distance ->
             [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
 
@@ -183,15 +183,32 @@ fallingStyles move =
             []
 
 
+activeStyles : Move -> List Style
+activeStyles move =
+    case Move.tileState move of
+        Active _ ->
+            [ transform [ scale 0.8 ]
+            , transitionAll 300 []
+            ]
+
+        _ ->
+            []
+
+
 moveTracerStyles : Move -> List Style
 moveTracerStyles move =
-    if Block.isDragging <| Move.block move then
-        [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
-        ]
+    case Move.tileState move of
+        Dragging _ _ _ ->
+            [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
+            ]
 
-    else
-        [ displayStyle "none"
-        ]
+        Active _ ->
+            [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
+            ]
+
+        _ ->
+            [ displayStyle "none"
+            ]
 
 
 draggingStyles : Bool -> Move -> List Style
@@ -223,7 +240,7 @@ draggingStyles isBursting move =
 
 growingStyles : Move -> List Style
 growingStyles move =
-    case Block.getTileState <| Move.block move of
+    case Move.tileState move of
         Growing SeedPod _ ->
             [ transform [ scale 4 ]
             , transitionAll 400 [ delay <| modBy 5 (Block.growingOrder <| Move.block move) * 70 ]
@@ -242,8 +259,8 @@ growingStyles move =
 -- Burst
 
 
-burstStyles : Int -> Block -> List Style
-burstStyles _ block =
+burstStyles : Block -> List Style
+burstStyles block =
     if Block.isLeaving block && Block.isBurst block then
         [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
         ]
@@ -254,23 +271,9 @@ burstStyles _ block =
         ]
 
     else
-        []
-
-
-burstTracerStyles : Int -> Move -> List Style
-burstTracerStyles burstMagnitude move =
-    let
-        block =
-            Move.block move
-
-        pulseSpeed =
-            clamp 500 1000 <| 2000 - burstMagnitude * 200
-    in
-    if Block.isDragging block && Block.isBurst block then
-        [ Animation.animation "bulge-fade-5" pulseSpeed [ Animation.cubicBezier 0 0 0 1 ] ]
-
-    else
-        []
+        [ transitionAll 300 []
+        , transform [ scale 1 ]
+        ]
 
 
 

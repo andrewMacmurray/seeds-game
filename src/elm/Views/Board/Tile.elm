@@ -8,7 +8,7 @@ import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Board.Styles exposing (..)
+import Views.Board.Tile.Styles exposing (..)
 import Views.Icons.Burst as Burst
 import Views.Seed.All exposing (renderSeed)
 
@@ -16,13 +16,12 @@ import Views.Seed.All exposing (renderSeed)
 type alias Settings =
     { extraStyles : List Style
     , isBursting : Bool
-    , burstMagnitude : Int
     , withTracer : Bool
     }
 
 
 view : Settings -> Window -> Move -> Html msg
-view { extraStyles, isBursting, burstMagnitude, withTracer } window move =
+view { extraStyles, isBursting, withTracer } window move =
     let
         coord =
             Move.coord move
@@ -35,8 +34,8 @@ view { extraStyles, isBursting, burstMagnitude, withTracer } window move =
             ]
         , class "dib absolute"
         ]
-        [ innerTile isBursting burstMagnitude window move
-        , renderIf withTracer <| tracer burstMagnitude window move
+        [ innerTile isBursting window move
+        , renderIf withTracer <| tracer window move
         , wall window move
         ]
 
@@ -50,11 +49,10 @@ renderIf predicate element =
         span [] []
 
 
-tracer : Int -> Window -> Move -> Html msg
-tracer burstMagnitude window move =
+tracer : Window -> Move -> Html msg
+tracer window move =
     innerTileWithStyles
-        (moveTracerStyles move ++ burstTracerStyles burstMagnitude move)
-        burstMagnitude
+        (moveTracerStyles move)
         window
         move
 
@@ -68,29 +66,28 @@ wall window move =
         []
 
 
-innerTile : Bool -> Int -> Window -> Move -> Html msg
-innerTile isBursting burstMagnitude window move =
+innerTile : Bool -> Window -> Move -> Html msg
+innerTile isBursting window move =
     innerTileWithStyles
         (draggingStyles isBursting move)
-        burstMagnitude
         window
         move
 
 
-innerTileWithStyles : List Style -> Int -> Window -> Move -> Html msg
-innerTileWithStyles extraStyles burstMagnitude window move =
+innerTileWithStyles : List Style -> Window -> Move -> Html msg
+innerTileWithStyles extraStyles window move =
     div
         [ styles
             [ extraStyles
-            , baseTileStyles window move burstMagnitude
+            , baseTileStyles window move
             ]
         , classes baseTileClasses
         ]
-        [ innerTileElement burstMagnitude <| Move.block move ]
+        [ innerTileElement <| Move.block move ]
 
 
-baseTileStyles : Window -> Move -> Int -> List Style
-baseTileStyles window move magnitude =
+baseTileStyles : Window -> Move -> List Style
+baseTileStyles window move =
     let
         block =
             Move.block move
@@ -99,6 +96,7 @@ baseTileStyles window move magnitude =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
+        , activeStyles move
         , size <| roundFloat <| tileSize block * Tile.scale window
         , tileBackground block
         ]
@@ -109,22 +107,27 @@ roundFloat =
     round >> toFloat
 
 
-innerTileElement : Int -> Block -> Html msg
-innerTileElement burstMagnitude block =
-    case Block.getTileType block of
+innerTileElement : Block -> Html msg
+innerTileElement block =
+    case Block.tileType block of
         Just (Seed seedType) ->
             renderSeed seedType
 
         Just (Burst tile) ->
-            div [ Style.style <| burstStyles burstMagnitude block ]
-                [ renderBurst tile <| Block.isLeaving block ]
+            renderBurst block tile
 
         _ ->
             span [] []
 
 
-renderBurst : Maybe TileType -> Bool -> Html msg
-renderBurst tile isBursting =
+renderBurst : Block -> Maybe TileType -> Html msg
+renderBurst block tile =
+    div [ Style.style <| burstStyles block ]
+        [ renderBurst_ tile <| Block.isLeaving block ]
+
+
+renderBurst_ : Maybe TileType -> Bool -> Html msg
+renderBurst_ tile isBursting =
     case tile of
         Just tile_ ->
             if isBursting then

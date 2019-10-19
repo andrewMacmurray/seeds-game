@@ -121,9 +121,9 @@ init flags =
     , Cmd.batch
         [ bounceKeyframes flags.window
         , Cmd.map TitleMsg titleCmd
+        , trigger <| InitLevel <| Worlds.levelConfig <| Levels.keyFromRaw_ 1 7
 
-        --        , trigger <| InitLevel <| Worlds.levelConfig <| Levels.keyFromRaw_ 1 7
-        , trigger InitIntro
+        -- , trigger InitIntro
         ]
     )
 

@@ -20,6 +20,7 @@ import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
+import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
@@ -27,14 +28,14 @@ import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (pause, sequence, trigger)
+import Helpers.Delay exposing (pause, sequence)
 import Html exposing (..)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Level.TopBar exposing (renderScoreIcon)
 import Views.Board.Line exposing (renderLine)
-import Views.Board.Styles exposing (boardHeight, boardWidth)
 import Views.Board.Tile as Tile
+import Views.Board.Tile.Styles exposing (boardHeight, boardWidth)
 
 
 
@@ -414,7 +415,6 @@ renderTiles model =
                 Tile.view
                     { extraStyles = leavingStyles model move
                     , isBursting = False
-                    , burstMagnitude = 1
                     , withTracer = True
                     }
                     model.context.window
@@ -423,8 +423,8 @@ renderTiles model =
 
 
 leavingStyles : Model -> Move -> List Style
-leavingStyles model (( _, block ) as move) =
-    case Block.getTileState block of
+leavingStyles model move =
+    case Move.tileState move of
         Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionAll 500 [ delay <| modBy 5 order * 80 ]

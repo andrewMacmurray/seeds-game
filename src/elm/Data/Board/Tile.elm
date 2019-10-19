@@ -2,7 +2,6 @@ module Data.Board.Tile exposing
     ( addBearing
     , baseSizeX
     , baseSizeY
-    , burstType
     , getSeedType
     , getTileType
     , growSeedPod
@@ -24,6 +23,7 @@ module Data.Board.Tile exposing
     , resetDraggingBurstType
     , scale
     , seedName
+    , setActiveToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToLeaving
@@ -33,6 +33,7 @@ module Data.Board.Tile exposing
     , setGrowingToStatic
     , setLeavingToEmpty
     , setStaticToFirstMove
+    , setToActive
     , setToDragging
     , setToFalling
     )
@@ -162,6 +163,29 @@ setToDragging moveOrder_ tileState =
     case tileState of
         Static tileType ->
             Dragging tileType moveOrder_ Head
+
+        Active tileType ->
+            Dragging tileType moveOrder_ Head
+
+        x ->
+            x
+
+
+setToActive : TileState -> TileState
+setToActive tileState =
+    case tileState of
+        Static tileType ->
+            Active tileType
+
+        x ->
+            x
+
+
+setActiveToStatic : TileState -> TileState
+setActiveToStatic tileState =
+    case tileState of
+        Active tileType ->
+            Static tileType
 
         x ->
             x
@@ -331,6 +355,9 @@ getTileType tileState =
         Growing tile _ ->
             Just tile
 
+        Active tile ->
+            Just tile
+
         Empty ->
             Nothing
 
@@ -353,19 +380,6 @@ isBurst tileType =
 
         _ ->
             False
-
-
-burstType : TileType -> Maybe TileType
-burstType tileType =
-    case tileType of
-        Burst (Just (Burst _)) ->
-            Nothing
-
-        Burst tile ->
-            tile
-
-        _ ->
-            Nothing
 
 
 resetBurstType : TileType -> TileType

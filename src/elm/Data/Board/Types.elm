@@ -60,6 +60,7 @@ type TileState
     | Falling TileType Distance
     | Entering TileType
     | Growing TileType MoveOrder
+    | Active TileType
     | Empty
 
 

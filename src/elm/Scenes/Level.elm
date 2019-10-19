@@ -43,8 +43,8 @@ import Html.Events exposing (onClick)
 import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Scenes.Level.TopBar exposing (TopBarViewModel, topBar)
 import Views.Board.Line exposing (renderLine)
-import Views.Board.Styles exposing (..)
 import Views.Board.Tile as Tile
+import Views.Board.Tile.Styles exposing (..)
 import Views.InfoWindow
 import Views.Menu as Menu
 
@@ -193,7 +193,7 @@ update msg model =
             continue
                 (model
                     |> handleMakeBoard tiles
-                    |> mapBoard (Wall.addToBoard walls)
+                    |> updateBoard (Wall.addToBoard walls)
                 )
                 []
 
@@ -217,12 +217,12 @@ update msg model =
                 []
 
         SetFallingTiles ->
-            continue (mapBoard setFallingTiles model) []
+            continue (updateBoard setFallingTiles model) []
 
         ShiftBoard ->
             continue
                 (model
-                    |> mapBoard shiftBoard
+                    |> updateBoard shiftBoard
                     |> updateBlocks Block.setFallingToStatic
                     |> updateBlocks Block.setLeavingToEmpty
                 )
@@ -244,7 +244,7 @@ update msg model =
             continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
 
         BurstTiles ->
-            continue (mapBoard (setBurstingTiles model.boardDimensions) model) []
+            continue (updateBoard (setBurstingTiles model.boardDimensions) model) []
 
         InsertEnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
@@ -429,8 +429,8 @@ updateBlocks f model =
     { model | board = Board.updateBlocks f model.board }
 
 
-mapBoard : (Board -> Board) -> HasBoard model -> HasBoard model
-mapBoard f model =
+updateBoard : (Board -> Board) -> HasBoard model -> HasBoard model
+updateBoard f model =
     { model | board = f model.board }
 
 
@@ -477,12 +477,12 @@ handleMakeBoard tiles ({ boardDimensions } as model) =
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
 handleInsertEnteringTiles tiles =
-    mapBoard <| insertNewEnteringTiles tiles
+    updateBoard <| insertNewEnteringTiles tiles
 
 
 handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
 handleInsertNewSeeds seedType =
-    mapBoard <| insertNewSeeds seedType
+    updateBoard <| insertNewSeeds seedType
 
 
 handleAddScore : Model -> Model
@@ -526,10 +526,61 @@ checkMoveFromPosition pointer model =
 handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
-        handleAddBurstType { model | board = addMoveToBoard move model.board }
+        model
+            |> updateBoard (addMoveToBoard move)
+            |> handleAddBurstType
+            |> updateBoard (addActiveTiles model.boardDimensions)
 
     else
         model
+
+
+
+-- Burst
+
+
+addActiveTiles : BoardDimensions -> Board -> Board
+addActiveTiles dimensions board =
+    let
+        currMoves =
+            Board.currentMoves board
+
+        burstRadius =
+            burstMagnitude board
+
+        burstCoords =
+            currMoves
+                |> List.filter (Move.block >> Block.isBurst)
+                |> List.map Move.coord
+
+        burstAreaCoordinates =
+            burstCoords
+                |> List.map (Move.surroundingCoordinates dimensions burstRadius)
+                |> List.concat
+
+        nonBurstCoords =
+            Board.moves board
+                |> List.filter (\move -> not (List.member (Move.coord move) burstAreaCoordinates) || moveType /= Move.tileType move)
+                |> List.map Move.coord
+
+        moveType =
+            Board.currentMoveType board
+
+        updateBlockToActive b =
+            if moveType == Block.tileType b then
+                Block.setToActive b
+
+            else
+                b
+
+        updateToActive coord =
+            Board.updateAt coord updateBlockToActive
+
+        updateToStatic coord =
+            Board.updateAt coord Block.setActiveToStatic
+    in
+    List.foldl updateToActive board burstAreaCoordinates
+        |> (\brd -> List.foldl updateToStatic brd nonBurstCoords)
 
 
 handleAddBurstType : Model -> Model
@@ -545,6 +596,8 @@ handleAddBurstType model =
 setBurstingTiles : BoardDimensions -> Board -> Board
 setBurstingTiles dimensions board =
     let
+        -- update Active to Dragging
+        -- update dragging Bursts to Leaving
         currMoves =
             Board.currentMoves board
 
@@ -556,7 +609,7 @@ setBurstingTiles dimensions board =
                 |> List.filter (Move.block >> Block.isBurst)
                 |> List.map Move.coord
 
-        burstArea =
+        burstAreaCoordinates =
             burstCoords
                 |> List.map (Move.surroundingCoordinates dimensions burstRadius)
                 |> List.concat
@@ -568,7 +621,7 @@ setBurstingTiles dimensions board =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
         updateBlockToDragging coord b =
-            if moveType == Block.getTileType b then
+            if moveType == Block.tileType b then
                 Block.setToDragging (withMoveOrder coord) b
 
             else
@@ -581,11 +634,11 @@ setBurstingTiles dimensions board =
             Board.updateAt coord Block.setDraggingToLeaving
 
         updatedDraggingBoard =
-            List.foldl updateToDragging board burstArea
+            List.foldl updateToDragging board burstAreaCoordinates
     in
     burstCoords
         |> List.foldl updateBurstsToLeaving updatedDraggingBoard
-        |> mapValues Block.removeBearing
+        |> mapValues Block.clearBearing
 
 
 burstMagnitude : Board -> Int
@@ -598,6 +651,10 @@ burstMagnitude board =
             currMoves |> List.filter (Move.block >> Block.isBurst)
     in
     List.length currMoves // 4 + List.length burstTiles
+
+
+
+-- Get Move from position
 
 
 moveFromPosition : Pointer -> Model -> Maybe Move
@@ -739,13 +796,12 @@ renderTiles model =
 renderTile : Model -> Move -> Html Msg
 renderTile model move =
     div
-        [ hanldeMoveEvents model move
+        [ handleMoveEvents model move
         , class "pointer"
         , attribute "touch-action" "none"
         ]
         [ Tile.view
             { isBursting = isBursting model
-            , burstMagnitude = burstMagnitude model.board
             , extraStyles = leavingStyles model move
             , withTracer = True
             }
@@ -787,7 +843,6 @@ renderCurrentMove model (( _, block ) as move) =
         Tile.view
             { extraStyles = []
             , isBursting = isBursting model
-            , burstMagnitude = 1
             , withTracer = False
             }
             model.context.window
@@ -813,8 +868,8 @@ boardLayout model =
         ]
 
 
-hanldeMoveEvents : Model -> Move -> Attribute Msg
-hanldeMoveEvents model move =
+handleMoveEvents : Model -> Move -> Attribute Msg
+handleMoveEvents model move =
     Attribute.applyIf (not model.isDragging) <| onPointerDown <| StartMove move
 
 

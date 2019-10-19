@@ -13,7 +13,7 @@ import Helpers.Svg exposing (height_, width_, windowViewBox_)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (..)
+import Views.Board.Tile.Styles exposing (..)
 
 
 type alias LineViewModel =

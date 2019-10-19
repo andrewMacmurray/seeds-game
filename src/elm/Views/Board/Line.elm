@@ -1,15 +1,16 @@
 module Views.Board.Line exposing (renderLine)
 
 import Css.Style as Style exposing (Style, marginAuto, styles)
-import Css.Transform as Transform exposing (..)
+import Css.Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
 
 
 renderLine : Window -> Move -> Html msg
@@ -25,10 +26,10 @@ renderLine window (( coord, _ ) as move) =
 
 
 lineFromMove : Window -> Move -> Html msg
-lineFromMove window ( coord, block ) =
+lineFromMove window move =
     let
         tileState =
-            getTileState block
+            getTileState <| Move.block move
     in
     case tileState of
         Dragging tileType _ Left ->
