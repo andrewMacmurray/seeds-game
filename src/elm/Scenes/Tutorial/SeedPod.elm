@@ -12,7 +12,7 @@ config =
     , boardDimensions = dimensions
     , board = initialBoard
     , sequence = sequence
-    , resourceBank = Seed Sunflower
+    , resourceBank = Seed Chrysanthemum
     }
 
 
@@ -29,7 +29,7 @@ dimensions =
 text : Dict Int String
 text =
     Dict.fromList
-        [ ( 1, "Green pods can be grown into seeds" )
+        [ ( 1, "Grow seed pods into seeds" )
         ]
 
 
@@ -41,7 +41,7 @@ sequence =
     , ( 400, DragTile ( 1, 1 ) )
     , ( 400, DragTile ( 2, 1 ) )
     , ( 1500, SetGrowingPods )
-    , ( 800, GrowPods Sunflower )
+    , ( 800, GrowPods Chrysanthemum )
     , ( 600, ResetGrowingPods )
     , ( 1500, HideCanvas )
     , ( 1500, ExitTutorial )

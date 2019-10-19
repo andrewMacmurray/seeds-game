@@ -21,7 +21,7 @@ world =
 
 levels : List Levels.Level
 levels =
-    [ Levels.level
+    [ Levels.withTutorial Levels.SeedPod
         { walls = walls borders
         , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
@@ -29,13 +29,10 @@ levels =
         , tileSettings =
             [ seed
                 Chrysanthemum
-                (Probability 50)
+                (Probability 20)
                 (TargetScore 50)
-            , sun
-                (Probability 50)
-                (TargetScore 30)
             , seedPod
-                (Probability 30)
+                (Probability 80)
             ]
         }
     , Levels.level
@@ -57,6 +54,8 @@ levels =
                 (TargetScore 30)
             , seedPod
                 (Probability 25)
+            , burst
+                (Probability 6)
             ]
         }
     , Levels.level
