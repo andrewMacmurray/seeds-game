@@ -553,9 +553,15 @@ addActiveTiles dimensions board =
                 |> List.map (Move.surroundingCoordinates dimensions burstRadius)
                 |> List.concat
 
+        withinBurstArea move =
+            List.member (Move.coord move) burstAreaCoordinates
+
+        nonBurstingMove move =
+            not (withinBurstArea move) || moveType /= Move.tileType move
+
         nonBurstCoords =
             Board.moves board
-                |> List.filter (\move -> not (List.member (Move.coord move) burstAreaCoordinates) || moveType /= Move.tileType move)
+                |> List.filter nonBurstingMove
                 |> List.map Move.coord
 
         moveType =
@@ -597,13 +603,13 @@ setBurstingTiles board =
         withMoveOrder coord =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
-        updateActiveBlockToDragging coord b =
-            case Block.getTileState b of
+        updateActiveBlockToDragging coord block =
+            case Block.getTileState block of
                 Active _ ->
-                    Block.setToDragging (withMoveOrder coord) b
+                    Block.setToDragging (withMoveOrder coord) block
 
                 _ ->
-                    b
+                    block
 
         updateBurstsToLeaving coord =
             Board.updateAt coord Block.setDraggingToLeaving
