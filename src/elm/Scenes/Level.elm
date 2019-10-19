@@ -213,6 +213,7 @@ update msg model =
                 (model
                     |> handleAddScore
                     |> updateBlocks Block.setDraggingToLeaving
+                    |> updateBlocks Block.clearBurstType
                 )
                 []
 
@@ -591,7 +592,7 @@ handleAddBurstType model =
             updateBlocks (Block.setDraggingBurstType moveType) model
 
         Nothing ->
-            updateBlocks Block.resetDraggingBurstType model
+            updateBlocks Block.clearBurstType model
 
 
 setBurstingTiles : Board -> Board

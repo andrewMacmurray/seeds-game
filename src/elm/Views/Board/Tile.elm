@@ -96,7 +96,6 @@ baseTileStyles window move =
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , activeStyles move
         , size <| roundFloat <| tileSize block * Tile.scale window
         , tileBackground block
         ]

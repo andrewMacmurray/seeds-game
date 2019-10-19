@@ -1,6 +1,7 @@
 module Data.Board.Block exposing
     ( addBearing
     , clearBearing
+    , clearBurstType
     , empty
     , fold
     , getTileState
@@ -18,7 +19,6 @@ module Data.Board.Block exposing
     , leavingOrder
     , map
     , moveOrder
-    , resetDraggingBurstType
     , setActiveToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
@@ -125,9 +125,9 @@ setDraggingBurstType =
     map << Tile.setDraggingBurstType
 
 
-resetDraggingBurstType : Block -> Block
-resetDraggingBurstType =
-    map Tile.resetDraggingBurstType
+clearBurstType : Block -> Block
+clearBurstType =
+    map Tile.clearBurstType
 
 
 setGrowingToStatic : Block -> Block

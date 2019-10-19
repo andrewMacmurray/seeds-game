@@ -2,6 +2,7 @@ module Data.Board.Tile exposing
     ( addBearing
     , baseSizeX
     , baseSizeY
+    , clearBurstType
     , getSeedType
     , getTileType
     , growSeedPod
@@ -20,7 +21,6 @@ module Data.Board.Tile exposing
     , map
     , moveOrder
     , removeBearing
-    , resetDraggingBurstType
     , scale
     , seedName
     , setActiveToStatic
@@ -251,11 +251,14 @@ setDraggingBurstType tileType tileState =
             x
 
 
-resetDraggingBurstType : TileState -> TileState
-resetDraggingBurstType tileState =
+clearBurstType : TileState -> TileState
+clearBurstType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
             Dragging (Burst Nothing) moveOrder_ bearing
+
+        Leaving (Burst _) moveOrder_ ->
+            Leaving (Burst Nothing) moveOrder_
 
         x ->
             x

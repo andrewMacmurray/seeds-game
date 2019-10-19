@@ -16,6 +16,7 @@ animations =
         , slideDownScaleOut
         , exitDown
         , hover
+        , bulgeFadeN 2
         , bulgeFadeN 10
         , bulgeFadeN 20
         , shake

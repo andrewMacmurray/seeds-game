@@ -1,6 +1,5 @@
 module Views.Board.Tile.Styles exposing
     ( TileViewModel
-    , activeStyles
     , baseTileClasses
     , boardFullWidth
     , boardHeight
@@ -32,7 +31,7 @@ import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (delay, transitionAll)
+import Css.Transition exposing (delay, transition, transitionAll)
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
@@ -183,27 +182,15 @@ fallingStyles move =
             []
 
 
-activeStyles : Move -> List Style
-activeStyles move =
-    case Move.tileState move of
-        Active _ ->
-            [ transform [ scale 0.8 ]
-            , transitionAll 300 []
-            ]
-
-        _ ->
-            []
-
-
 moveTracerStyles : Move -> List Style
 moveTracerStyles move =
     case Move.tileState move of
         Dragging _ _ _ ->
-            [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
+            [ Animation.animation "bulge-fade-2" 800 [ Animation.ease ]
             ]
 
         Active _ ->
-            [ Animation.animation "bulge-fade" 800 [ Animation.ease ]
+            [ Animation.animation "bulge-fade" 800 [ Animation.ease, Animation.infinite ]
             ]
 
         _ ->
