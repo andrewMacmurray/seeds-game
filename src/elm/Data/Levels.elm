@@ -1,6 +1,6 @@
 module Data.Levels exposing
     ( Cache
-    , Key
+    , Id
     , Level
     , LevelConfig
     , Tutorial(..)
@@ -14,9 +14,9 @@ module Data.Levels exposing
     , getKeysForWorld
     , getLevel
     , getLevels
+    , idFromRaw_
     , isFirstLevelOfWorld
     , isLastLevelOfWorld
-    , keyFromRaw_
     , level
     , next
     , number
@@ -24,7 +24,7 @@ module Data.Levels exposing
     , reached
     , seedType
     , toCache
-    , toId
+    , toStringId
     , tutorial
     , withTutorial
     , world
@@ -35,16 +35,16 @@ module Data.Levels exposing
 import Css.Color exposing (Color)
 import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
 import Data.Board.Wall as Wall
-import Data.Level.Setting exposing (Probability, TargetScore, TileSetting)
+import Data.Level.Setting exposing (Probability, StartTile, TargetScore, TileSetting)
 import Dict exposing (Dict)
 
 
 
--- Level Key
+-- Level Id
 
 
-type Key
-    = Key Cache
+type Id
+    = Id Cache
 
 
 type alias Cache =
@@ -53,25 +53,25 @@ type alias Cache =
     }
 
 
-fromCache : Cache -> Key
+fromCache : Cache -> Id
 fromCache { worldId, levelId } =
-    Key <| Cache worldId levelId
+    Id <| Cache worldId levelId
 
 
-toCache : Key -> Cache
+toCache : Id -> Cache
 toCache key =
     { worldId = worldId_ key
     , levelId = levelId_ key
     }
 
 
-empty : Key
+empty : Id
 empty =
-    keyFromRaw_ 1 1
+    idFromRaw_ 1 1
 
 
-toId : Key -> String
-toId key =
+toStringId : Id -> String
+toStringId key =
     String.join "-"
         [ "world"
         , String.fromInt <| worldId_ key
@@ -116,6 +116,7 @@ type Level
     = Level
         { tiles : List TileSetting
         , walls : List Wall.Config
+        , startTiles : List StartTile
         , boardDimensions : BoardDimensions
         , moves : Int
         , tutorial : Maybe Tutorial
@@ -123,8 +124,9 @@ type Level
 
 
 type alias LevelConfig =
-    { tiles : List TileSetting
+    { tileSettings : List TileSetting
     , walls : List Wall.Config
+    , startTiles : List StartTile
     , boardDimensions : BoardDimensions
     , moves : Int
     }
@@ -141,88 +143,88 @@ type Tutorial
 -- Query Worlds And Levels with Key
 
 
-getLevel : Worlds -> Key -> Maybe Level
-getLevel worlds_ key =
+getLevel : Worlds -> Id -> Maybe Level
+getLevel worlds_ id =
     worlds_
-        |> getWorld_ key
+        |> getWorld_ id
         |> Maybe.map unboxLevels_
-        |> Maybe.andThen (getLevel_ key)
+        |> Maybe.andThen (getLevel_ id)
 
 
-getLevels : Worlds -> Key -> Maybe (List Level)
-getLevels worlds_ key =
+getLevels : Worlds -> Id -> Maybe (List Level)
+getLevels worlds_ id =
     worlds_
-        |> getWorld_ key
+        |> getWorld_ id
         |> Maybe.map (unboxLevels_ >> Dict.toList >> List.map Tuple.second)
 
 
-getKeysForWorld : Worlds -> Key -> Maybe (List Key)
-getKeysForWorld worlds_ key =
+getKeysForWorld : Worlds -> Id -> Maybe (List Id)
+getKeysForWorld worlds_ id =
     worlds_
-        |> getWorld_ key
-        |> Maybe.map (unboxLevels_ >> levelKeys (worldId_ key))
+        |> getWorld_ id
+        |> Maybe.map (unboxLevels_ >> levelKeys (worldId_ id))
 
 
-getWorld_ : Key -> Worlds -> Maybe World
-getWorld_ key worlds_ =
-    Dict.get (worldId_ key) (unboxWorlds_ worlds_)
+getWorld_ : Id -> Worlds -> Maybe World
+getWorld_ id worlds_ =
+    Dict.get (worldId_ id) (unboxWorlds_ worlds_)
 
 
-getLevel_ : Key -> Levels -> Maybe Level
-getLevel_ key levels =
-    Dict.get (levelId_ key) levels
+getLevel_ : Id -> Levels -> Maybe Level
+getLevel_ id levels =
+    Dict.get (levelId_ id) levels
 
 
-isLastLevelOfWorld : Worlds -> Key -> Bool
-isLastLevelOfWorld worlds_ key =
+isLastLevelOfWorld : Worlds -> Id -> Bool
+isLastLevelOfWorld worlds_ id =
     worlds_
-        |> getWorld_ key
+        |> getWorld_ id
         |> Maybe.map unboxLevels_
-        |> Maybe.map (\l -> Dict.size l == levelId_ key)
+        |> Maybe.map (\l -> Dict.size l == levelId_ id)
         |> Maybe.withDefault False
 
 
-isFirstLevelOfWorld : Key -> Bool
-isFirstLevelOfWorld key =
-    levelId_ key == 1
+isFirstLevelOfWorld : Id -> Bool
+isFirstLevelOfWorld id =
+    levelId_ id == 1
 
 
-next : Worlds -> Key -> Key
-next worlds_ key =
-    if isLastLevelOfWorld worlds_ key then
-        keyFromRaw_ (worldId_ key + 1) 1
+next : Worlds -> Id -> Id
+next worlds_ id =
+    if isLastLevelOfWorld worlds_ id then
+        idFromRaw_ (worldId_ id + 1) 1
 
     else
-        keyFromRaw_ (worldId_ key) (levelId_ key + 1)
+        idFromRaw_ (worldId_ id) (levelId_ id + 1)
 
 
-previous : Worlds -> Key -> Key
-previous worlds_ key =
-    if isFirstLevelOfWorld key then
+previous : Worlds -> Id -> Id
+previous worlds_ id =
+    if isFirstLevelOfWorld id then
         let
             wId =
-                worldId_ key - 1
+                worldId_ id - 1
 
             lId =
                 getWorldSizeFromIndex_ worlds_ wId |> Maybe.withDefault 1
         in
-        keyFromRaw_ wId lId
+        idFromRaw_ wId lId
 
     else
-        keyFromRaw_ (worldId_ key) (levelId_ key - 1)
+        idFromRaw_ (worldId_ id) (levelId_ id - 1)
 
 
-reached : Key -> Key -> Bool
-reached (Key current) (Key target) =
+reached : Id -> Id -> Bool
+reached (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId >= target.levelId)
 
 
-completed : Key -> Key -> Bool
-completed (Key current) (Key target) =
+completed : Id -> Id -> Bool
+completed (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId > target.levelId)
 
 
-tutorial : Worlds -> Key -> Maybe Tutorial
+tutorial : Worlds -> Id -> Maybe Tutorial
 tutorial worlds_ =
     getLevel worlds_ >> Maybe.andThen tutorial_
 
@@ -234,17 +236,18 @@ tutorial_ (Level l) =
 
 config : Level -> LevelConfig
 config (Level l) =
-    { tiles = l.tiles
+    { tileSettings = l.tiles
+    , startTiles = l.startTiles
     , walls = l.walls
     , boardDimensions = l.boardDimensions
     , moves = l.moves
     }
 
 
-seedType : Worlds -> Key -> Maybe SeedType
-seedType worlds_ key =
+seedType : Worlds -> Id -> Maybe SeedType
+seedType worlds_ id =
     worlds_
-        |> getWorld_ key
+        |> getWorld_ id
         |> Maybe.map (\(World w) -> w.seedType)
 
 
@@ -279,38 +282,40 @@ makeLevels_ levels =
 
 
 level : LevelConfig -> Level
-level levelConfig =
+level l =
     Level
-        { tiles = levelConfig.tiles
-        , walls = levelConfig.walls
-        , boardDimensions = levelConfig.boardDimensions
-        , moves = levelConfig.moves
+        { tiles = l.tileSettings
+        , walls = l.walls
+        , startTiles = l.startTiles
+        , boardDimensions = l.boardDimensions
+        , moves = l.moves
         , tutorial = Nothing
         }
 
 
 withTutorial : Tutorial -> LevelConfig -> Level
-withTutorial t levelConfig =
+withTutorial t l =
     Level
-        { tiles = levelConfig.tiles
-        , walls = levelConfig.walls
-        , boardDimensions = levelConfig.boardDimensions
-        , moves = levelConfig.moves
+        { tiles = l.tileSettings
+        , walls = l.walls
+        , startTiles = l.startTiles
+        , boardDimensions = l.boardDimensions
+        , moves = l.moves
         , tutorial = Just t
         }
 
 
 
--- Renderable World Data
+-- World Data
 
 
-number : Worlds -> Key -> Maybe Int
-number worlds_ key =
-    if levelExists worlds_ key then
-        (worldId_ key - 1)
+number : Worlds -> Id -> Maybe Int
+number worlds_ id =
+    if levelExists worlds_ id then
+        (worldId_ id - 1)
             |> List.range 1
             |> List.map (getWorldSizeFromIndex_ worlds_)
-            |> List.foldr accumulateSize (levelId_ key)
+            |> List.foldr accumulateSize (levelId_ id)
             |> Just
 
     else
@@ -324,10 +329,10 @@ accumulateSize size total =
 
 getWorldSizeFromIndex_ : Worlds -> Int -> Maybe Int
 getWorldSizeFromIndex_ worlds_ i =
-    getWorld_ (keyFromRaw_ i 1) worlds_ |> Maybe.map worldSize
+    getWorld_ (idFromRaw_ i 1) worlds_ |> Maybe.map worldSize
 
 
-worldsList : Worlds -> List ( WorldConfig, List Key )
+worldsList : Worlds -> List ( WorldConfig, List Id )
 worldsList worlds_ =
     worlds_
         |> unboxWorlds_
@@ -335,19 +340,19 @@ worldsList worlds_ =
         |> List.map configWithKeys
 
 
-configWithKeys : ( Int, World ) -> ( WorldConfig, List Key )
+configWithKeys : ( Int, World ) -> ( WorldConfig, List Id )
 configWithKeys ( worldIndex, world_ ) =
     ( worldConfig world_
     , levelKeys worldIndex <| unboxLevels_ world_
     )
 
 
-levelKeys : Int -> Levels -> List Key
+levelKeys : Int -> Levels -> List Id
 levelKeys worldIndex levels =
     levels
         |> Dict.toList
         |> List.map Tuple.first
-        |> List.map (keyFromRaw_ worldIndex)
+        |> List.map (idFromRaw_ worldIndex)
 
 
 worldSize : World -> Int
@@ -369,9 +374,9 @@ worldConfig (World w) =
     }
 
 
-levelExists : Worlds -> Key -> Bool
-levelExists w key =
-    case getLevel w key of
+levelExists : Worlds -> Id -> Bool
+levelExists w id =
+    case getLevel w id of
         Nothing ->
             False
 
@@ -384,8 +389,8 @@ unboxLevels_ (World w) =
     w.levels
 
 
-levelId_ : Key -> Int
-levelId_ (Key { levelId }) =
+levelId_ : Id -> Int
+levelId_ (Id { levelId }) =
     levelId
 
 
@@ -394,11 +399,11 @@ unboxWorlds_ (Worlds w) =
     w
 
 
-worldId_ : Key -> Int
-worldId_ (Key { worldId }) =
+worldId_ : Id -> Int
+worldId_ (Id { worldId }) =
     worldId
 
 
-keyFromRaw_ : Int -> Int -> Key
-keyFromRaw_ worldId levelId =
-    Key <| Cache worldId levelId
+idFromRaw_ : Int -> Int -> Id
+idFromRaw_ worldId levelId =
+    Id <| Cache worldId levelId

@@ -22,10 +22,11 @@ world =
 levels : List Levels.Level
 levels =
     [ Levels.level
-        { walls = yellowWalls firstLevelWalls
+        { walls = walls firstLevelWalls
+        , startTiles = []
         , boardDimensions = { x = 6, y = 8 }
         , moves = 20
-        , tiles =
+        , tileSettings =
             [ rain
                 (Probability 20)
                 (TargetScore 50)
@@ -38,10 +39,11 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls corners
+        { walls = walls corners
         , moves = 10
+        , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 25)
@@ -61,7 +63,8 @@ levels =
         { walls = []
         , moves = 15
         , boardDimensions = { x = 8, y = 8 }
-        , tiles =
+        , startTiles = []
+        , tileSettings =
             [ seed
                 Chrysanthemum
                 (Probability 25)

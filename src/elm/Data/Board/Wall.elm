@@ -6,11 +6,10 @@ module Data.Board.Wall exposing
     , corners
     , innerBorders
     , s
-    , standardWalls
     , toCoords
     , w
+    , walls
     , withColor
-    , yellowWalls
     )
 
 import Css.Color as Color exposing (Color)
@@ -37,20 +36,6 @@ centerColumns =
         , [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]
-        ]
-
-
-standardWalls : List Coord
-standardWalls =
-    toCoords
-        [ [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, w, w, s, s, w ]
-        , [ w, s, s, w, w, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
         ]
 
 
@@ -127,19 +112,19 @@ toCoord i j x =
 -- Add Walls to board
 
 
+walls : List Coord -> List Config
+walls =
+    withColor Color.blockYellow
+
+
 addToBoard : List Config -> Board -> Board
-addToBoard walls board =
-    List.foldl addWall board walls
+addToBoard walls_ board =
+    List.foldl addWall board walls_
 
 
 addWall : Config -> Board -> Board
 addWall (Config ( wallColor, coord )) =
     Board.placeAt coord <| Wall wallColor
-
-
-yellowWalls : List Coord -> List Config
-yellowWalls =
-    withColor Color.blockYellow
 
 
 withColor : Color -> List Coord -> List Config

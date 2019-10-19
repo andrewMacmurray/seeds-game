@@ -28,7 +28,7 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
-import Data.Level.Setting exposing (TileSetting)
+import Data.Level.Setting as Setting exposing (TileSetting)
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
@@ -36,7 +36,7 @@ import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
 import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Dict exposing (indexedDictFrom, mapValues)
+import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
@@ -67,8 +67,15 @@ type alias Model =
     }
 
 
+type alias InitConfig =
+    { walls : List Wall.Config
+    , startTiles : List Setting.StartTile
+    , randomTiles : List TileType
+    }
+
+
 type Msg
-    = InitTiles (List Wall.Config) (List TileType)
+    = InitTiles InitConfig
     | StopMove
     | StartMove Move Pointer
     | CheckMove Pointer
@@ -77,7 +84,7 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
-    | InsertGrowingSeeds SeedType
+    | AddGrowingSeeds SeedType
     | ResetGrowingSeeds
     | BurstTiles
     | GenerateEnteringTiles RandomSetting
@@ -118,7 +125,7 @@ type InfoContent
 
 type RandomSetting
     = AllTiles
-    | WithoutTile TileType
+    | AllButTileType TileType
 
 
 
@@ -168,13 +175,13 @@ init config context =
 
 
 initialState : Levels.LevelConfig -> Context -> Model
-initialState { tiles, boardDimensions, moves } context =
+initialState { tileSettings, boardDimensions, moves } context =
     { context = context
     , board = Board.fromMoves []
-    , scores = Scores.init tiles
+    , scores = Scores.init tileSettings
     , isDragging = False
     , remainingMoves = moves
-    , tileSettings = tiles
+    , tileSettings = tileSettings
     , boardDimensions = boardDimensions
     , levelStatus = NotStarted
     , infoWindow = InfoWindow.hidden
@@ -189,11 +196,12 @@ initialState { tiles, boardDimensions, moves } context =
 update : Msg -> Model -> Exit.With Status ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitTiles walls tiles ->
+        InitTiles config ->
             continue
                 (model
-                    |> handleMakeBoard tiles
-                    |> updateBoard (Wall.addToBoard walls)
+                    |> createBoard config.randomTiles
+                    |> updateBoard (addStartTiles config.startTiles)
+                    |> updateBoard (Wall.addToBoard config.walls)
                 )
                 []
 
@@ -233,10 +241,15 @@ update msg model =
             continue (updateBlocks Block.setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
-            continue model [ generateRandomSeedType InsertGrowingSeeds model.tileSettings ]
+            continue model [ generateRandomSeedType AddGrowingSeeds model.tileSettings ]
 
-        InsertGrowingSeeds seedType ->
-            continue (handleInsertNewSeeds seedType model) []
+        AddGrowingSeeds seedType ->
+            continue
+                (model
+                    |> handleInsertNewSeeds seedType
+                    |> growLeavingBurstsToSeeds seedType
+                )
+                []
 
         ResetGrowingSeeds ->
             continue (updateBlocks Block.setGrowingToStatic model) []
@@ -245,7 +258,7 @@ update msg model =
             continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
 
         BurstTiles ->
-            continue (updateBoard setBurstingTiles model) []
+            continue (updateBoard burstTiles model) []
 
         InsertEnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
@@ -333,9 +346,9 @@ stopMoveSequence model =
 burstSequence : Maybe TileType -> Cmd Msg
 burstSequence moveType =
     moveType
-        |> Maybe.map WithoutTile
+        |> Maybe.map AllButTileType
         |> Maybe.withDefault AllTiles
-        |> burstTilesSequence
+        |> burstTilesSequence moveType
 
 
 shouldRelease : Board -> Bool
@@ -377,18 +390,30 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : RandomSetting -> Cmd Msg
-burstTilesSequence enteringTiles =
-    sequence
-        [ ( 0, ResetMove )
-        , ( 0, BurstTiles )
-        , ( 700, SetLeavingTiles )
-        , ( 550, SetFallingTiles )
-        , ( 500, ShiftBoard )
-        , ( 0, CheckLevelComplete )
-        , ( 0, GenerateEnteringTiles enteringTiles )
-        , ( 500, ResetEntering )
-        ]
+burstTilesSequence : Maybe TileType -> RandomSetting -> Cmd Msg
+burstTilesSequence moveType enteringTiles =
+    case moveType of
+        Just SeedPod ->
+            sequence
+                [ ( 0, ResetMove )
+                , ( 0, BurstTiles )
+                , ( 700, SetGrowingSeedPods )
+                , ( 800, GrowPodsToSeeds )
+                , ( 0, CheckLevelComplete )
+                , ( 600, ResetGrowingSeeds )
+                ]
+
+        _ ->
+            sequence
+                [ ( 0, ResetMove )
+                , ( 0, BurstTiles )
+                , ( 700, SetLeavingTiles )
+                , ( 550, SetFallingTiles )
+                , ( 500, ShiftBoard )
+                , ( 0, CheckLevelComplete )
+                , ( 0, GenerateEnteringTiles enteringTiles )
+                , ( 500, ResetEntering )
+                ]
 
 
 winSequence : Cmd Msg
@@ -435,9 +460,17 @@ updateBoard f model =
     { model | board = f model.board }
 
 
+addStartTiles : List Setting.StartTile -> Board -> Board
+addStartTiles startTiles board =
+    List.foldl (Board.place << Setting.move) board startTiles
+
+
 handleGenerateInitialTiles : Levels.LevelConfig -> Model -> Cmd Msg
 handleGenerateInitialTiles config { boardDimensions } =
-    generateInitialTiles (InitTiles config.walls) config.tiles boardDimensions
+    generateInitialTiles
+        (InitTiles << InitConfig config.walls config.startTiles)
+        config.tileSettings
+        boardDimensions
 
 
 handleGenerateEnteringTiles : RandomSetting -> Board -> List TileSetting -> Cmd Msg
@@ -446,7 +479,7 @@ handleGenerateEnteringTiles enteringTiles board tileSettings =
         AllTiles ->
             generateEntering board tileSettings
 
-        WithoutTile tileType ->
+        AllButTileType tileType ->
             generateEnteringTilesWithoutTileType tileType board tileSettings
 
 
@@ -471,9 +504,9 @@ generateEntering =
     generateEnteringTiles InsertEnteringTiles
 
 
-handleMakeBoard : List TileType -> HasBoard model -> HasBoard model
-handleMakeBoard tiles ({ boardDimensions } as model) =
-    { model | board = Board.fromTiles boardDimensions tiles }
+createBoard : List TileType -> HasBoard model -> HasBoard model
+createBoard tiles model =
+    { model | board = Board.fromTiles model.boardDimensions tiles }
 
 
 handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
@@ -484,6 +517,11 @@ handleInsertEnteringTiles tiles =
 handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
 handleInsertNewSeeds seedType =
     updateBoard <| insertNewSeeds seedType
+
+
+growLeavingBurstsToSeeds : SeedType -> HasBoard model -> HasBoard model
+growLeavingBurstsToSeeds seedType =
+    updateBlocks (Block.growLeavingBurstToSeed seedType)
 
 
 handleAddScore : Model -> Model
@@ -595,8 +633,8 @@ handleAddBurstType model =
             updateBlocks Block.clearBurstType model
 
 
-setBurstingTiles : Board -> Board
-setBurstingTiles board =
+burstTiles : Board -> Board
+burstTiles board =
     let
         burstCoords =
             burstCoordinates board
@@ -629,10 +667,12 @@ burstMagnitude board =
         currMoves =
             Board.currentMoves board
 
-        burstTiles =
-            currMoves |> List.filter (Move.block >> Block.isBurst)
+        numberOfBurstTiles =
+            currMoves
+                |> List.filter (Move.block >> Block.isBurst)
+                |> List.length
     in
-    List.length currMoves // 4 + List.length burstTiles
+    List.length currMoves // 2 + numberOfBurstTiles
 
 
 burstCoordinates : Board -> List Coord

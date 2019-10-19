@@ -11,6 +11,7 @@ import Data.Lives as Lives
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
 import Exit
+import Helpers.Debug as Debug
 import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
 import Html exposing (Html, div)
@@ -76,7 +77,7 @@ type Msg
     | SummaryMsg Summary.Msg
     | GardenMsg Garden.Msg
     | InitIntro
-    | InitHub Levels.Key
+    | InitHub Levels.Id
     | InitTutorial Tutorial.Config Levels.LevelConfig
     | InitLevel Levels.LevelConfig
     | InitRetry
@@ -90,7 +91,7 @@ type Msg
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
-    | GoToHub Levels.Key
+    | GoToHub Levels.Id
 
 
 
@@ -121,9 +122,7 @@ init flags =
     , Cmd.batch
         [ bounceKeyframes flags.window
         , Cmd.map TitleMsg titleCmd
-        , trigger <| InitLevel <| Worlds.levelConfig <| Levels.keyFromRaw_ 1 7
-
-        -- , trigger InitIntro
+        , Debug.goToLevel 1 7 InitLevel
         ]
     )
 
@@ -279,7 +278,7 @@ exitIntro model _ =
 -- Hub
 
 
-initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+initHub : Levels.Id -> Model -> ( Model, Cmd Msg )
 initHub level =
     initScene Hub HubMsg <| Hub.init level
 
@@ -299,7 +298,7 @@ exitHub model destination =
             ( model, goToGarden )
 
 
-handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
+handleStartLevel : Model -> Levels.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
     case Worlds.tutorial level of
         Just tutorialConfig ->
@@ -586,17 +585,17 @@ bounceKeyframes window =
     generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
 
 
-reachedLevel : Model -> Levels.Key
+reachedLevel : Model -> Levels.Id
 reachedLevel =
     getContext >> .progress >> Progress.reachedLevel
 
 
-currentLevel : Model -> Levels.Key
+currentLevel : Model -> Levels.Id
 currentLevel =
     getContext >> .progress >> currentLevelWithDefault
 
 
-currentLevelWithDefault : Progress -> Levels.Key
+currentLevelWithDefault : Progress -> Levels.Id
 currentLevelWithDefault progress =
     progress
         |> Progress.currentLevel

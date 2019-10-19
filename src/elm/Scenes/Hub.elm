@@ -51,25 +51,25 @@ import Worlds
 
 type alias Model =
     { context : Context
-    , infoWindow : InfoWindow Levels.Key
+    , infoWindow : InfoWindow Levels.Id
     }
 
 
 type Msg
-    = ShowLevelInfo Levels.Key
+    = ShowLevelInfo Levels.Id
     | HideLevelInfo
-    | SetInfoState (InfoWindow Levels.Key)
-    | SetCurrentLevel Levels.Key
-    | ScrollHubTo Levels.Key
+    | SetInfoState (InfoWindow Levels.Id)
+    | SetCurrentLevel Levels.Id
+    | ScrollHubTo Levels.Id
     | ClearCurrentLevel
-    | StartLevel Levels.Key
-    | ExitToLevel Levels.Key
+    | StartLevel Levels.Id
+    | ExitToLevel Levels.Id
     | ExitToGarden
     | DomNoOp (Result Dom.Error ())
 
 
 type Destination
-    = ToLevel Levels.Key
+    = ToLevel Levels.Id
     | ToGarden
 
 
@@ -97,7 +97,7 @@ menuOptions =
 -- Init
 
 
-init : Levels.Key -> Context -> ( Model, Cmd Msg )
+init : Levels.Id -> Context -> ( Model, Cmd Msg )
 init level context =
     ( initialState context
     , sequence
@@ -168,9 +168,9 @@ update msg model =
 -- Update Helpers
 
 
-scrollHubToLevel : Levels.Key -> Cmd Msg
+scrollHubToLevel : Levels.Id -> Cmd Msg
 scrollHubToLevel level =
-    Levels.toId level
+    Levels.toStringId level
         |> Dom.getElement
         |> Task.andThen scrollLevelToView
         |> Task.attempt DomNoOp
@@ -273,7 +273,7 @@ handleStartLevel context level =
     Attribute.applyIf (Lives.remaining context.lives > 0) <| onClick <| StartLevel level
 
 
-infoContent : Context -> Levels.Key -> List (Html msg)
+infoContent : Context -> Levels.Id -> List (Html msg)
 infoContent context level =
     if Lives.remaining context.lives > 0 then
         let
@@ -326,7 +326,7 @@ renderWaitForNextLife context =
 infoIcons : Levels.Level -> Html msg
 infoIcons level =
     Levels.config level
-        |> .tiles
+        |> .tileSettings
         |> List.filter Scores.collectable
         |> List.map renderIcon
         |> infoIconsContainer
@@ -413,7 +413,7 @@ renderWorlds model =
     List.map (renderWorld model) <| List.reverse Worlds.list
 
 
-renderWorld : Model -> ( Levels.WorldConfig, List Levels.Key ) -> Html Msg
+renderWorld : Model -> ( Levels.WorldConfig, List Levels.Id ) -> Html Msg
 renderWorld model ( config, levels ) =
     div [ style [ backgroundColor config.backdropColor ], class "pa5 flex" ]
         [ div
@@ -422,7 +422,7 @@ renderWorld model ( config, levels ) =
         ]
 
 
-renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Key -> Html Msg
+renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Id -> Html Msg
 renderLevel model config index level =
     let
         reachedLevel =
@@ -449,7 +449,7 @@ renderLevel model config index level =
             ]
         , showInfo level model
         , class "tc relative"
-        , id <| Levels.toId level
+        , id <| Levels.toStringId level
         ]
         [ currentLevelPointer isCurrentLevel
         , renderLevelIcon level config.seedType model
@@ -502,7 +502,7 @@ renderNumber visibleLevelNumber hasReachedLevel config =
             [ text <| String.fromInt visibleLevelNumber ]
 
 
-showInfo : Levels.Key -> Model -> Attribute Msg
+showInfo : Levels.Id -> Model -> Attribute Msg
 showInfo level model =
     let
         shouldShowInfo =
@@ -511,7 +511,7 @@ showInfo level model =
     Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
 
 
-renderLevelIcon : Levels.Key -> SeedType -> Model -> Html msg
+renderLevelIcon : Levels.Id -> SeedType -> Model -> Html msg
 renderLevelIcon level seedType model =
     if Levels.completed (Progress.reachedLevel model.context.progress) level then
         renderSeed seedType

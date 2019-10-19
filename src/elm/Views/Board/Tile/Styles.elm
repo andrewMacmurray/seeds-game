@@ -185,6 +185,9 @@ fallingStyles move =
 moveTracerStyles : Move -> List Style
 moveTracerStyles move =
     case Move.tileState move of
+        Dragging (Burst _) _ _ ->
+            [ Animation.animation "bulge-fade-2" 800 [ Animation.ease, Animation.infinite ] ]
+
         Dragging _ _ _ ->
             [ Animation.animation "bulge-fade-2" 800 [ Animation.ease ]
             ]

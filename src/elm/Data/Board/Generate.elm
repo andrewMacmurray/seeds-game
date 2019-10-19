@@ -10,8 +10,6 @@ module Data.Board.Generate exposing
 
 import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Coord as Coord
-import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Setting exposing (Probability(..), TileSetting)

@@ -51,7 +51,7 @@ setWindow width height context =
 -- Progress
 
 
-setCurrentLevel : Levels.Key -> Context -> Context
+setCurrentLevel : Levels.Id -> Context -> Context
 setCurrentLevel level context =
     { context | progress = Progress.setCurrentLevel level context.progress }
 

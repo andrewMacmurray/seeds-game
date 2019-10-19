@@ -5,6 +5,7 @@ module Data.Board.Block exposing
     , empty
     , fold
     , getTileState
+    , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
     , hasLine
@@ -93,6 +94,11 @@ isCurrentMove =
 setToDragging : MoveOrder -> Block -> Block
 setToDragging =
     map << Tile.setToDragging
+
+
+growLeavingBurstToSeed : SeedType -> Block -> Block
+growLeavingBurstToSeed =
+    map << Tile.growLeavingBurstToSeed
 
 
 setToActive : Block -> Block

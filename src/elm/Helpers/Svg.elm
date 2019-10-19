@@ -18,28 +18,34 @@ module Helpers.Svg exposing
 
 import Css.Style as Style
 import Css.Transform as Transform
+import Data.Window exposing (Window)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 
 
+windowViewBox_ : Window -> Attribute msg
 windowViewBox_ window =
     viewBox_ 0 0 (toFloat window.width) (toFloat window.height)
 
 
+translated : Float -> Float -> Svg.Svg msg -> Svg.Svg msg
 translated x y el =
     Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate x y ] ] ] [ el ]
 
 
+scaled : Float -> Svg.Svg msg -> Svg.Svg msg
 scaled n el =
     Svg.g [ Style.svgStyle [ Style.transform [ Transform.scale n ] ] ] [ el ]
 
 
+points_ : List Point -> Attribute msg
 points_ =
     List.map (\pt -> String.fromFloat pt.x ++ "," ++ String.fromFloat pt.y)
         >> String.join " "
         >> points
 
 
+point : Float -> Float -> Point
 point =
     Point
 

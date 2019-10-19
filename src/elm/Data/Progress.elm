@@ -31,8 +31,8 @@ type Progress
 
 
 type alias State =
-    { current : Maybe Levels.Key
-    , reached : Levels.Key
+    { current : Maybe Levels.Id
+    , reached : Levels.Id
     }
 
 
@@ -59,7 +59,7 @@ fromCache cachedLevel =
         |> fromLevel
 
 
-fromLevel : Levels.Key -> Progress
+fromLevel : Levels.Id -> Progress
 fromLevel reached =
     Progress
         { current = Nothing
@@ -71,7 +71,7 @@ fromLevel reached =
 -- Update
 
 
-setCurrentLevel : Levels.Key -> Progress -> Progress
+setCurrentLevel : Levels.Id -> Progress -> Progress
 setCurrentLevel level (Progress progress) =
     Progress { progress | current = Just level }
 
@@ -95,12 +95,12 @@ handleIncrement worlds (Progress progress) =
 --  Query
 
 
-reachedLevel : Progress -> Levels.Key
+reachedLevel : Progress -> Levels.Id
 reachedLevel (Progress progress) =
     progress.reached
 
 
-currentLevel : Progress -> Maybe Levels.Key
+currentLevel : Progress -> Maybe Levels.Id
 currentLevel (Progress progress) =
     progress.current
 
@@ -226,7 +226,7 @@ resourcesInLevels worldSeedType =
         >> Helpers.List.unique
 
 
-scoresAtLevel : Levels.Worlds -> Levels.Key -> Dict String Int
+scoresAtLevel : Levels.Worlds -> Levels.Id -> Dict String Int
 scoresAtLevel worlds level =
     level
         |> Levels.getKeysForWorld worlds
@@ -238,20 +238,20 @@ scoresAtLevel worlds level =
         |> combineWithEmptyScores worlds level
 
 
-combineWithEmptyScores : Levels.Worlds -> Levels.Key -> Dict String Int -> Dict String Int
+combineWithEmptyScores : Levels.Worlds -> Levels.Id -> Dict String Int -> Dict String Int
 combineWithEmptyScores worlds levels scores =
     scoresAtBeginningOfWorld worlds levels
         |> Maybe.withDefault Dict.empty
         |> Dict.union scores
 
 
-scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Key -> Maybe (Dict String Int)
+scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
 scoresAtBeginningOfWorld worlds level =
     targetWorldScores worlds level
         |> Maybe.map (Helpers.Dict.mapValues <| always 0)
 
 
-targetWorldScores : Levels.Worlds -> Levels.Key -> Maybe (Dict String Int)
+targetWorldScores : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
 targetWorldScores worlds level =
     level
         |> Levels.getLevels worlds
@@ -293,4 +293,4 @@ secondaryResource worldSeedType tileType =
 
 tileSettings : Levels.Level -> List TileSetting
 tileSettings =
-    Levels.config >> .tiles
+    Levels.config >> .tileSettings

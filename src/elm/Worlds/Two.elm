@@ -22,10 +22,11 @@ world =
 levels : List Levels.Level
 levels =
     [ Levels.level
-        { walls = yellowWalls borders
+        { walls = walls borders
+        , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Chrysanthemum
                 (Probability 50)
@@ -38,10 +39,11 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls corners
+        { walls = walls corners
+        , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 25)
@@ -58,10 +60,11 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls innerBorders
+        { walls = walls innerBorders
+        , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ rain
                 (Probability 20)
                 (TargetScore 20)
@@ -77,10 +80,11 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls fourthLevelWalls
+        { walls = walls fourthLevelWalls
+        , startTiles = []
         , boardDimensions = { x = 7, y = 8 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 25)
@@ -94,10 +98,11 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls centerColumns
+        { walls = walls centerColumns
+        , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 25)

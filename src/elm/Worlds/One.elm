@@ -2,8 +2,8 @@ module Worlds.One exposing (default, world)
 
 import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
-import Data.Board.Wall exposing (..)
-import Data.Level.Setting exposing (..)
+import Data.Board.Wall as Wall exposing (s, w)
+import Data.Level.Setting as Settings exposing (..)
 import Data.Levels as Levels
 
 
@@ -22,35 +22,38 @@ world =
 levels : List Levels.Level
 levels =
     [ Levels.withTutorial Levels.Seed
-        { walls = yellowWalls firstLevelWalls
+        { walls = Wall.walls firstLevelWalls
+        , startTiles = []
         , boardDimensions = { x = 5, y = 5 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 100)
-                (TargetScore 30)
+                (TargetScore 60)
             ]
         }
     , Levels.withTutorial Levels.Rain
-        { walls = yellowWalls secondLevelWalls
+        { walls = Wall.walls secondLevelWalls
+        , startTiles = []
         , boardDimensions = { x = 6, y = 6 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 50)
-                (TargetScore 10)
+                (TargetScore 20)
             , rain
                 (Probability 50)
-                (TargetScore 10)
+                (TargetScore 20)
             ]
         }
     , Levels.withTutorial Levels.Sun
-        { walls = yellowWalls thirdLevelWalls
-        , boardDimensions = { x = 6, y = 6 }
+        { walls = Wall.walls thirdLevelWalls
+        , startTiles = []
+        , boardDimensions = { x = 7, y = 7 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ rain
                 (Probability 33)
                 (TargetScore 10)
@@ -64,56 +67,63 @@ levels =
             ]
         }
     , Levels.level
-        { walls = yellowWalls fourthLevelWalls
+        { walls = Wall.walls fourthLevelWalls
+        , startTiles = []
         , boardDimensions = { x = 7, y = 7 }
         , moves = 10
-        , tiles =
+        , tileSettings =
             [ seed
                 Sunflower
                 (Probability 20)
-                (TargetScore 60)
+                (TargetScore 30)
             , rain
                 (Probability 20)
-                (TargetScore 60)
-            ]
-        }
-    , Levels.withTutorial Levels.SeedPod
-        { walls = []
-        , moves = 10
-        , boardDimensions = { x = 7, y = 7 }
-        , tiles =
-            [ seed
-                Sunflower
-                (Probability 5)
-                (TargetScore 50)
-            , sun
-                (Probability 45)
                 (TargetScore 30)
-            , seedPod
-                (Probability 45)
             ]
         }
     , Levels.level
-        { walls = yellowWalls sixthLevelWalls
-        , moves = 20
-        , boardDimensions = { x = 7, y = 7 }
-        , tiles =
-            [ seed
-                Sunflower
-                (Probability 33)
-                (TargetScore 100)
-            , sun
-                (Probability 33)
-                (TargetScore 50)
-            , seedPod
-                (Probability 33)
-            ]
-        }
-    , Levels.level
-        { walls = []
+        { walls = Wall.walls fifthLevelWalls
+        , startTiles = fifthLevelStartTiles
         , moves = 10
         , boardDimensions = { x = 8, y = 8 }
-        , tiles =
+        , tileSettings =
+            [ seed
+                Sunflower
+                (Probability 50)
+                (TargetScore 100)
+            , sun
+                (Probability 50)
+                (TargetScore 100)
+            , burst
+                (Probability 1)
+            ]
+        }
+    , Levels.level
+        { walls = Wall.walls sixthLevelWalls
+        , moves = 20
+        , startTiles = sixthLevelStartTiles
+        , boardDimensions = { x = 8, y = 8 }
+        , tileSettings =
+            [ seed
+                Sunflower
+                (Probability 33)
+                (TargetScore 50)
+            , sun
+                (Probability 33)
+                (TargetScore 50)
+            , rain
+                (Probability 33)
+                (TargetScore 50)
+            , burst
+                (Probability 2)
+            ]
+        }
+    , Levels.level
+        { walls = []
+        , moves = 5
+        , startTiles = []
+        , boardDimensions = { x = 8, y = 8 }
+        , tileSettings =
             [ rain
                 (Probability 31)
                 (TargetScore 30)
@@ -137,7 +147,8 @@ default =
         { walls = []
         , moves = 10
         , boardDimensions = { x = 8, y = 8 }
-        , tiles =
+        , startTiles = []
+        , tileSettings =
             [ rain
                 (Probability 25)
                 (TargetScore 30)
@@ -156,60 +167,104 @@ default =
 
 firstLevelWalls : List Coord
 firstLevelWalls =
-    toCoords
+    Wall.toCoords
         [ [ s, s, s, s, s ]
-        , [ w, w, w, w, s ]
         , [ s, s, s, s, s ]
-        , [ s, w, w, w, w ]
+        , [ s, w, s, w, s ]
+        , [ s, s, s, s, s ]
         , [ s, s, s, s, s ]
         ]
 
 
 secondLevelWalls : List Coord
 secondLevelWalls =
-    toCoords
+    Wall.toCoords
         [ [ s, s, s, s, s, s ]
-        , [ s, s, w, w, w, w ]
+        , [ s, w, s, s, w, s ]
         , [ s, s, s, s, s, s ]
-        , [ w, w, w, w, s, s ]
         , [ s, s, s, s, s, s ]
-        , [ s, s, w, w, w, w ]
+        , [ s, w, s, s, w, s ]
+        , [ s, s, s, s, s, s ]
         ]
 
 
 thirdLevelWalls : List Coord
 thirdLevelWalls =
-    toCoords
-        [ [ s, s, s, s, s, s ]
-        , [ s, w, s, s, w, s ]
-        , [ s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s ]
-        , [ s, w, s, s, w, s ]
-        , [ s, s, s, s, s, s ]
+    Wall.toCoords
+        [ [ s, s, s, s, s, s, s ]
+        , [ s, s, w, s, w, s, s ]
+        , [ s, s, w, s, w, s, s ]
+        , [ s, s, s, s, s, s, s ]
+        , [ s, s, w, s, w, s, s ]
+        , [ s, s, w, s, w, s, s ]
+        , [ s, s, s, s, s, s, s ]
         ]
 
 
 fourthLevelWalls : List Coord
 fourthLevelWalls =
-    toCoords
+    Wall.toCoords
         [ [ s, s, s, w, s, s, s ]
         , [ s, s, s, w, s, s, s ]
         , [ s, s, s, w, s, s, s ]
-        , [ s, s, s, w, s, s, s ]
+        , [ s, s, s, s, s, s, s ]
         , [ s, s, s, w, s, s, s ]
         , [ s, s, s, w, s, s, s ]
         , [ s, s, s, w, s, s, s ]
         ]
 
 
+fifthLevelWalls : List Coord
+fifthLevelWalls =
+    Wall.toCoords
+        [ [ s, w, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, s, s ]
+        , [ s, w, s, w, s, w, w, w ]
+        , [ s, s, s, w, s, s, s, s ]
+        , [ s, s, s, w, s, s, s, s ]
+        , [ s, w, s, w, s, w, w, w ]
+        , [ s, w, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        ]
+
+
+fifthLevelStartTiles : List StartTile
+fifthLevelStartTiles =
+    Settings.startTiles
+        [ [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, sun_, bst_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, snf_, snf_, snf_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, sun_, snf_, sun_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, bst_, sun_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        ]
+
+
 sixthLevelWalls : List Coord
 sixthLevelWalls =
-    toCoords
-        [ [ w, s, s, w, s, s, w ]
-        , [ s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s ]
-        , [ w, s, s, w, s, s, w ]
+    Wall.toCoords
+        [ [ s, w, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, w, w, s, s, w, w, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        ]
+
+
+sixthLevelStartTiles : List StartTile
+sixthLevelStartTiles =
+    Settings.startTiles
+        [ [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, bst_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, bst_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
+        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
         ]

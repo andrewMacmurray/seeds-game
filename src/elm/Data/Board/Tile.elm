@@ -5,6 +5,7 @@ module Data.Board.Tile exposing
     , clearBurstType
     , getSeedType
     , getTileType
+    , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
     , hasLine
@@ -166,6 +167,16 @@ setToDragging moveOrder_ tileState =
 
         Active tileType ->
             Dragging tileType moveOrder_ Head
+
+        x ->
+            x
+
+
+growLeavingBurstToSeed : SeedType -> TileState -> TileState
+growLeavingBurstToSeed seedType tileState =
+    case tileState of
+        Leaving (Burst (Just SeedPod)) moveOrder_ ->
+            Growing (Seed seedType) moveOrder_
 
         x ->
             x
