@@ -22,11 +22,11 @@ module Data.Board exposing
     , updateBlocks
     )
 
-import Data.Board.Block as Block
+import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (Block, Board, BoardDimensions, Coord, Move)
+import Data.Board.Types exposing (Board, BoardDimensions, Coord, Move)
 import Dict
 import Helpers.Dict
 

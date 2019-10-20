@@ -1,5 +1,6 @@
 module Data.Board.Block exposing
-    ( addBearing
+    ( Block(..)
+    , addBearing
     , clearBearing
     , clearBurstType
     , empty
@@ -38,8 +39,35 @@ module Data.Board.Block exposing
     , tileType
     )
 
+import Css.Color as Css
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
+
+
+
+-- Block
+
+
+type Block
+    = Wall Css.Color
+    | Space Tile.State
+
+
+
+-- Construct
+
+
+static : Tile.Type -> Block
+static =
+    Tile.Static >> Space
+
+
+empty : Block
+empty =
+    Space Tile.Empty
+
+
+
+-- Query
 
 
 growingOrder : Block -> Int
@@ -90,6 +118,40 @@ moveOrder =
 isCurrentMove : Block -> Bool
 isCurrentMove =
     fold Tile.isCurrentMove False
+
+
+tileType : Block -> Maybe Tile.Type
+tileType =
+    fold Tile.getType Nothing
+
+
+getTileState : Block -> Tile.State
+getTileState =
+    fold identity Tile.Empty
+
+
+isWall : Block -> Bool
+isWall block =
+    case block of
+        Wall _ ->
+            True
+
+        _ ->
+            False
+
+
+isCollectible : Block -> Bool
+isCollectible =
+    fold (matchTile Tile.isCollectible) False
+
+
+isBurst : Block -> Bool
+isBurst =
+    fold (matchTile Tile.isBurst) False
+
+
+
+-- Update
 
 
 setToDragging : Tile.MoveOrder -> Block -> Block
@@ -182,51 +244,15 @@ setDraggingToLeaving =
     map Tile.setDraggingToLeaving
 
 
-tileType : Block -> Maybe Tile.Type
-tileType =
-    fold Tile.getTileType Nothing
 
-
-getTileState : Block -> Tile.State
-getTileState =
-    fold identity Tile.Empty
-
-
-isWall : Block -> Bool
-isWall block =
-    case block of
-        Wall _ ->
-            True
-
-        _ ->
-            False
-
-
-isCollectible : Block -> Bool
-isCollectible =
-    fold (matchTile Tile.isCollectible) False
-
-
-isBurst : Block -> Bool
-isBurst =
-    fold (matchTile Tile.isBurst) False
+-- Helpers
 
 
 matchTile : (Tile.Type -> Bool) -> Tile.State -> Bool
 matchTile f =
-    Tile.getTileType
+    Tile.getType
         >> Maybe.map f
         >> Maybe.withDefault False
-
-
-static : Tile.Type -> Block
-static =
-    Tile.Static >> Space
-
-
-empty : Block
-empty =
-    Space Tile.Empty
 
 
 map : (Tile.State -> Tile.State) -> Block -> Block

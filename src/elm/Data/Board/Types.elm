@@ -1,6 +1,5 @@
 module Data.Board.Types exposing
-    ( Block(..)
-    , Board
+    ( Board
     , BoardDimensions
     , Coord
     , Move
@@ -8,8 +7,7 @@ module Data.Board.Types exposing
     , Y
     )
 
-import Css.Color exposing (Color)
-import Data.Board.Tile as Tile
+import Data.Board.Block exposing (Block)
 import Dict exposing (Dict)
 
 
@@ -41,8 +39,3 @@ type alias Y =
 
 type alias X =
     Int
-
-
-type Block
-    = Wall Color
-    | Space Tile.State

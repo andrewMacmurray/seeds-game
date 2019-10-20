@@ -17,7 +17,7 @@ import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
 import Data.Board as Board
-import Data.Board.Block as Block
+import Data.Board.Block as Block exposing (Block)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move as Move
@@ -265,7 +265,7 @@ handleDragTile : Coord -> Model -> Model
 handleDragTile coord model =
     let
         sunflower =
-            Space <| Static <| Seed Sunflower
+            Block.static <| Seed Sunflower
 
         tile =
             Dict.get coord model.board |> Maybe.withDefault sunflower

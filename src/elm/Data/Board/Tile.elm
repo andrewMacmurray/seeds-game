@@ -10,7 +10,7 @@ module Data.Board.Tile exposing
     , baseSizeY
     , clearBurstType
     , getSeedType
-    , getTileType
+    , getType
     , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
@@ -469,13 +469,13 @@ getSeedType tileType =
 
 map : a -> (Type -> a) -> State -> a
 map default fn =
-    getTileType
+    getType
         >> Maybe.map fn
         >> Maybe.withDefault default
 
 
-getTileType : State -> Maybe Type
-getTileType tileState =
+getType : State -> Maybe Type
+getType tileState =
     case tileState of
         Static tile ->
             Just tile

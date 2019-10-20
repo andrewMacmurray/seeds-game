@@ -16,7 +16,7 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
 import Data.Board as Board
-import Data.Board.Block as Block
+import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
