@@ -620,7 +620,7 @@ withLoadingScreen msg =
     Delay.sequence
         [ ( 0, ShowLoadingScreen )
         , ( 1000, msg )
-        , ( 2000, HideLoadingScreen )
+        , ( 1500, HideLoadingScreen )
         ]
 
 
@@ -628,7 +628,7 @@ goToGarden : Cmd Msg
 goToGarden =
     Delay.sequence
         [ ( 0, ShowLoadingScreen )
-        , ( 3000, HideLoadingScreen )
+        , ( 2500, HideLoadingScreen )
         , ( 0, InitGarden )
         ]
 
