@@ -37,7 +37,7 @@ block =
     Tuple.second
 
 
-tileState : Move -> Tile.TileState
+tileState : Move -> Tile.State
 tileState =
     block >> Block.getTileState
 

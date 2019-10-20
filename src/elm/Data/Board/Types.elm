@@ -9,7 +9,7 @@ module Data.Board.Types exposing
     )
 
 import Css.Color exposing (Color)
-import Data.Board.Tile exposing (TileState)
+import Data.Board.Tile as Tile
 import Dict exposing (Dict)
 
 
@@ -45,4 +45,4 @@ type alias X =
 
 type Block
     = Wall Color
-    | Space TileState
+    | Space Tile.State

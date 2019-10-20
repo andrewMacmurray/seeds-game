@@ -23,7 +23,7 @@ import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile exposing (SeedType(..), TileState(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), State(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)

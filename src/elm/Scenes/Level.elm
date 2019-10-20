@@ -24,7 +24,7 @@ import Data.Board.Move as Move
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Scores as Scores exposing (Scores)
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile exposing (TileState(..), TileType(..))
+import Data.Board.Tile as Tile exposing (State(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)

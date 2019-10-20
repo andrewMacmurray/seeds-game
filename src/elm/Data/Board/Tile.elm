@@ -3,7 +3,7 @@ module Data.Board.Tile exposing
     , Distance
     , MoveOrder
     , SeedType(..)
-    , TileState(..)
+    , State(..)
     , TileType(..)
     , addBearing
     , baseSizeX
@@ -49,7 +49,7 @@ module Data.Board.Tile exposing
 import Data.Window as Window
 
 
-type TileState
+type State
     = Static TileType
     | Dragging TileType MoveOrder Bearing
     | Leaving TileType MoveOrder
@@ -93,14 +93,14 @@ type SeedType
     | Rose
 
 
-map : a -> (TileType -> a) -> TileState -> a
+map : a -> (TileType -> a) -> State -> a
 map default fn =
     getTileType
         >> Maybe.map fn
         >> Maybe.withDefault default
 
 
-growingOrder : TileState -> Int
+growingOrder : State -> Int
 growingOrder tileState =
     case tileState of
         Growing _ order ->
@@ -110,7 +110,7 @@ growingOrder tileState =
             0
 
 
-leavingOrder : TileState -> Int
+leavingOrder : State -> Int
 leavingOrder tileState =
     case tileState of
         Leaving _ order ->
@@ -120,7 +120,7 @@ leavingOrder tileState =
             0
 
 
-isEmpty : TileState -> Bool
+isEmpty : State -> Bool
 isEmpty tileState =
     case tileState of
         Empty ->
@@ -130,7 +130,7 @@ isEmpty tileState =
             False
 
 
-isLeaving : TileState -> Bool
+isLeaving : State -> Bool
 isLeaving tileState =
     case tileState of
         Leaving _ _ ->
@@ -140,7 +140,7 @@ isLeaving tileState =
             False
 
 
-isDragging : TileState -> Bool
+isDragging : State -> Bool
 isDragging tileState =
     case tileState of
         Dragging _ _ _ ->
@@ -150,7 +150,7 @@ isDragging tileState =
             False
 
 
-isGrowing : TileState -> Bool
+isGrowing : State -> Bool
 isGrowing tileState =
     case tileState of
         Growing _ _ ->
@@ -160,7 +160,7 @@ isGrowing tileState =
             False
 
 
-isFalling : TileState -> Bool
+isFalling : State -> Bool
 isFalling tileState =
     case tileState of
         Falling _ _ ->
@@ -170,7 +170,7 @@ isFalling tileState =
             False
 
 
-hasLine : TileState -> Bool
+hasLine : State -> Bool
 hasLine tileState =
     case tileState of
         Dragging _ _ Left ->
@@ -189,7 +189,7 @@ hasLine tileState =
             False
 
 
-moveOrder : TileState -> Int
+moveOrder : State -> Int
 moveOrder tileState =
     case tileState of
         Dragging _ moveOrder_ _ ->
@@ -199,7 +199,7 @@ moveOrder tileState =
             0
 
 
-isCurrentMove : TileState -> Bool
+isCurrentMove : State -> Bool
 isCurrentMove tileState =
     case tileState of
         Dragging _ _ Head ->
@@ -209,7 +209,7 @@ isCurrentMove tileState =
             False
 
 
-setToDragging : MoveOrder -> TileState -> TileState
+setToDragging : MoveOrder -> State -> State
 setToDragging moveOrder_ tileState =
     case tileState of
         Static tileType ->
@@ -222,7 +222,7 @@ setToDragging moveOrder_ tileState =
             x
 
 
-growLeavingBurstToSeed : SeedType -> TileState -> TileState
+growLeavingBurstToSeed : SeedType -> State -> State
 growLeavingBurstToSeed seedType tileState =
     case tileState of
         Leaving (Burst (Just SeedPod)) moveOrder_ ->
@@ -232,7 +232,7 @@ growLeavingBurstToSeed seedType tileState =
             x
 
 
-setToActive : TileState -> TileState
+setToActive : State -> State
 setToActive tileState =
     case tileState of
         Static tileType ->
@@ -242,7 +242,7 @@ setToActive tileState =
             x
 
 
-setActiveToStatic : TileState -> TileState
+setActiveToStatic : State -> State
 setActiveToStatic tileState =
     case tileState of
         Active tileType ->
@@ -252,7 +252,7 @@ setActiveToStatic tileState =
             x
 
 
-removeBearing : TileState -> TileState
+removeBearing : State -> State
 removeBearing tileState =
     case tileState of
         Dragging tileType moveOrder_ _ ->
@@ -262,7 +262,7 @@ removeBearing tileState =
             x
 
 
-setStaticToFirstMove : TileState -> TileState
+setStaticToFirstMove : State -> State
 setStaticToFirstMove tileState =
     case tileState of
         Static tileType ->
@@ -272,7 +272,7 @@ setStaticToFirstMove tileState =
             x
 
 
-addBearing : Bearing -> TileState -> TileState
+addBearing : Bearing -> State -> State
 addBearing bearing tileState =
     case tileState of
         Dragging tileType moveOrder_ _ ->
@@ -282,7 +282,7 @@ addBearing bearing tileState =
             x
 
 
-setGrowingToStatic : TileState -> TileState
+setGrowingToStatic : State -> State
 setGrowingToStatic tileState =
     case tileState of
         Growing (Seed seedType) _ ->
@@ -292,7 +292,7 @@ setGrowingToStatic tileState =
             x
 
 
-growSeedPod : SeedType -> TileState -> TileState
+growSeedPod : SeedType -> State -> State
 growSeedPod seedType tileState =
     case tileState of
         Growing SeedPod n ->
@@ -302,7 +302,7 @@ growSeedPod seedType tileState =
             x
 
 
-setDraggingBurstType : TileType -> TileState -> TileState
+setDraggingBurstType : TileType -> State -> State
 setDraggingBurstType tileType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
@@ -312,7 +312,7 @@ setDraggingBurstType tileType tileState =
             x
 
 
-clearBurstType : TileState -> TileState
+clearBurstType : State -> State
 clearBurstType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
@@ -325,7 +325,7 @@ clearBurstType tileState =
             x
 
 
-setToFalling : Int -> TileState -> TileState
+setToFalling : Int -> State -> State
 setToFalling fallingDistance tileState =
     case tileState of
         Static tile ->
@@ -338,7 +338,7 @@ setToFalling fallingDistance tileState =
             x
 
 
-setEnteringToStatic : TileState -> TileState
+setEnteringToStatic : State -> State
 setEnteringToStatic tileState =
     case tileState of
         Entering tile ->
@@ -348,7 +348,7 @@ setEnteringToStatic tileState =
             x
 
 
-setFallingToStatic : TileState -> TileState
+setFallingToStatic : State -> State
 setFallingToStatic tileState =
     case tileState of
         Falling tile _ ->
@@ -358,7 +358,7 @@ setFallingToStatic tileState =
             x
 
 
-setLeavingToEmpty : TileState -> TileState
+setLeavingToEmpty : State -> State
 setLeavingToEmpty tileState =
     case tileState of
         Leaving _ _ ->
@@ -368,7 +368,7 @@ setLeavingToEmpty tileState =
             x
 
 
-setDraggingToStatic : TileState -> TileState
+setDraggingToStatic : State -> State
 setDraggingToStatic tileState =
     case tileState of
         Dragging tile _ _ ->
@@ -378,7 +378,7 @@ setDraggingToStatic tileState =
             x
 
 
-setDraggingToGrowing : TileState -> TileState
+setDraggingToGrowing : State -> State
 setDraggingToGrowing tileState =
     case tileState of
         Dragging SeedPod order _ ->
@@ -388,7 +388,7 @@ setDraggingToGrowing tileState =
             x
 
 
-setDraggingToLeaving : TileState -> TileState
+setDraggingToLeaving : State -> State
 setDraggingToLeaving tileState =
     case tileState of
         Dragging tile order _ ->
@@ -398,7 +398,7 @@ setDraggingToLeaving tileState =
             x
 
 
-getTileType : TileState -> Maybe TileType
+getTileType : State -> Maybe TileType
 getTileType tileState =
     case tileState of
         Static tile ->

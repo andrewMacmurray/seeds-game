@@ -187,7 +187,7 @@ tileType =
     fold Tile.getTileType Nothing
 
 
-getTileState : Block -> Tile.TileState
+getTileState : Block -> Tile.State
 getTileState =
     fold identity Tile.Empty
 
@@ -212,7 +212,7 @@ isBurst =
     fold (matchTile Tile.isBurst) False
 
 
-matchTile : (Tile.TileType -> Bool) -> Tile.TileState -> Bool
+matchTile : (Tile.TileType -> Bool) -> Tile.State -> Bool
 matchTile f =
     Tile.getTileType
         >> Maybe.map f
@@ -229,7 +229,7 @@ empty =
     Space Tile.Empty
 
 
-map : (Tile.TileState -> Tile.TileState) -> Block -> Block
+map : (Tile.State -> Tile.State) -> Block -> Block
 map f block =
     case block of
         Space tileState ->
@@ -239,7 +239,7 @@ map f block =
             wall
 
 
-fold : (Tile.TileState -> a) -> a -> Block -> a
+fold : (Tile.State -> a) -> a -> Block -> a
 fold f default block =
     case block of
         Wall _ ->

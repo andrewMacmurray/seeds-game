@@ -10,7 +10,7 @@ module Data.Board.Generate exposing
 
 import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Tile as Tile exposing (SeedType(..), TileState(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), State(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
