@@ -1,52 +1,26 @@
 module Data.Board.Wall exposing
-    ( addWalls
-    , borders
-    , centerColumns
+    ( Config
+    , addToBoard
     , corners
-    , innerBorders
+    , invisible
     , s
-    , standardWalls
     , toCoords
     , w
+    , walls
     , withColor
-    , yellowWalls
     )
 
 import Css.Color as Color exposing (Color)
+import Data.Board as Board
 import Data.Board.Types exposing (Block(..), Board, Coord)
-import Dict
 
 
 
--- Visually Construct wall coordinates
+-- Construct Walls
 
 
-centerColumns : List Coord
-centerColumns =
-    toCoords
-        [ [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        ]
-
-
-standardWalls : List Coord
-standardWalls =
-    toCoords
-        [ [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, w, w, s, s, w ]
-        , [ w, s, s, w, w, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        ]
+type Config
+    = Config ( Color, Coord )
 
 
 corners : List Coord
@@ -60,34 +34,6 @@ corners =
         , [ s, s, s, s, s, s, s, s ]
         , [ s, s, s, s, s, s, s, w ]
         , [ s, s, s, s, s, s, w, w ]
-        ]
-
-
-innerBorders : List Coord
-innerBorders =
-    toCoords
-        [ [ s, s, s, s, s, s, s, s ]
-        , [ s, w, w, s, s, w, w, s ]
-        , [ s, w, s, s, s, s, w, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, w, s, s, s, s, w, s ]
-        , [ s, w, w, s, s, w, w, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        ]
-
-
-borders : List Coord
-borders =
-    toCoords
-        [ [ w, w, s, w, w, s, w, w ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ w, w, s, w, w, s, w, w ]
         ]
 
 
@@ -122,25 +68,26 @@ toCoord i j x =
 -- Add Walls to board
 
 
-addWalls : List ( Color, Coord ) -> Board -> Board
-addWalls coords board =
-    List.foldl addWall_ board coords
+invisible : List Coord -> List Config
+invisible =
+    withColor Color.lightYellow
 
 
-addWall_ : ( Color, Coord ) -> Board -> Board
-addWall_ ( wallColor, coord ) currentBoard =
-    Dict.update coord (Maybe.map (always <| Wall wallColor)) currentBoard
-
-
-
--- Construct Walls
-
-
-yellowWalls : List Coord -> List ( Color, Coord )
-yellowWalls =
+walls : List Coord -> List Config
+walls =
     withColor Color.blockYellow
 
 
-withColor : Color -> List Coord -> List ( Color, Coord )
+addToBoard : List Config -> Board -> Board
+addToBoard walls_ board =
+    List.foldl addWall board walls_
+
+
+addWall : Config -> Board -> Board
+addWall (Config ( wallColor, coord )) =
+    Board.placeAt coord <| Wall wallColor
+
+
+withColor : Color -> List Coord -> List Config
 withColor color =
-    List.map (\b -> ( color, b ))
+    List.map (\coord -> Config ( color, coord ))

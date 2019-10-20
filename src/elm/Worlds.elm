@@ -19,7 +19,6 @@ import Scenes.Tutorial as Tutorial
 import Scenes.Tutorial.Rain as Rain
 import Scenes.Tutorial.Seed as Seed
 import Scenes.Tutorial.SeedPod as SeedPod
-import Scenes.Tutorial.Square as Square
 import Scenes.Tutorial.Sun as Sun
 import Worlds.One as One
 import Worlds.Three as Three
@@ -43,57 +42,57 @@ all =
 -- With all Levels applied
 
 
-getLevel : Key -> Maybe Level
+getLevel : Id -> Maybe Level
 getLevel =
     Levels.getLevel all
 
 
-getLevels : Key -> Maybe (List Level)
+getLevels : Id -> Maybe (List Level)
 getLevels =
     Levels.getLevels all
 
 
-getKeysForWorld : Key -> Maybe (List Key)
+getKeysForWorld : Id -> Maybe (List Id)
 getKeysForWorld =
     Levels.getKeysForWorld all
 
 
-isLastLevelOfWorld : Key -> Bool
+isLastLevelOfWorld : Id -> Bool
 isLastLevelOfWorld =
     Levels.isLastLevelOfWorld all
 
 
-tutorial : Key -> Maybe Tutorial.Config
+tutorial : Id -> Maybe Tutorial.Config
 tutorial =
     Levels.tutorial all >> Maybe.map tutorialConfig_
 
 
-number : Key -> Maybe Int
+number : Id -> Maybe Int
 number =
     Levels.number all
 
 
-list : List ( WorldConfig, List Key )
+list : List ( WorldConfig, List Id )
 list =
     Levels.worldsList all
 
 
-next : Key -> Key
+next : Id -> Id
 next =
     Levels.next all
 
 
-previous : Key -> Key
+previous : Id -> Id
 previous =
     Levels.previous all
 
 
-seedType : Key -> Maybe SeedType
+seedType : Id -> Maybe SeedType
 seedType =
     Levels.seedType all
 
 
-levelConfig : Key -> LevelConfig
+levelConfig : Id -> LevelConfig
 levelConfig =
     getLevel
         >> Maybe.withDefault One.default
@@ -118,6 +117,3 @@ tutorialConfig_ tutorial_ =
 
         SeedPod ->
             SeedPod.config
-
-        Square ->
-            Square.config

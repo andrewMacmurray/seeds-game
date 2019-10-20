@@ -1,6 +1,6 @@
-const Bounce = require("bounce.js/bounce.min.js");
+import Bounce from "bounce.js/bounce.min.js";
 
-function generateKeyframes(tileSize) {
+export function generateKeyframes(tileSize) {
   return [
     elasticBounceIn(),
     bounceDown(),
@@ -9,60 +9,56 @@ function generateKeyframes(tileSize) {
   ].join(" ");
 }
 
+const origin = { x: 0, y: 0 };
+
 function elasticBounceIn() {
-  return new Bounce()
+  return bounce()
     .translate({
       from: { x: 0, y: -300 },
-      to: { x: 0, y: 0 },
+      to: origin,
       stiffness: 4
     })
-    .getKeyframeCSS({
-      name: "elastic-bounce-in"
-    });
+    .getKeyframeCSS({ name: "elastic-bounce-in" });
 }
 
 function bounceDown() {
-  return new Bounce()
+  return bounce()
     .translate({
       from: { x: 0, y: -200 },
-      to: { x: 0, y: 0 },
+      to: origin,
       stiffness: 3,
       bounces: 5
     })
-    .getKeyframeCSS({
-      name: "bounce-down"
-    });
+    .getKeyframeCSS({ name: "bounce-down" });
 }
 
 function bounceUp() {
-  return new Bounce()
+  return bounce()
     .translate({
       from: { x: 0, y: 200 },
-      to: { x: 0, y: 0 },
+      to: origin,
       stiffness: 3,
       bounces: 5
     })
-    .getKeyframeCSS({
-      name: "bounce-up"
-    });
+    .getKeyframeCSS({ name: "bounce-up" });
 }
 
 function bounceDowns(tileSize) {
   let anims = [];
   for (let i = 1; i <= 8; i++) {
-    const b = new Bounce()
+    const b = bounce()
       .translate({
-        from: { x: 0, y: 0 },
+        from: origin,
         to: { x: 0, y: tileSize * i },
         stiffness: 2,
         bounces: 2
       })
-      .getKeyframeCSS({
-        name: "bounce-down-" + i
-      });
+      .getKeyframeCSS({ name: "bounce-down-" + i });
     anims.push(b);
   }
   return anims.join(" ");
 }
 
-module.exports = { generateKeyframes };
+function bounce() {
+  return new Bounce();
+}

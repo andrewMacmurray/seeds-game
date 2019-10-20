@@ -1,28 +1,31 @@
-module Views.Board.Tile exposing
-    ( baseTileStyles
-    , innerSeed
-    , innerSeed_
-    , innerTile
-    , makeInnerTile
-    , renderTile_
-    , tileElementMap
-    , tracer
-    , wall
-    )
+module Views.Board.Tile exposing (view)
 
 import Css.Style as Style exposing (..)
 import Data.Board.Block as Block
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class)
-import Views.Board.Styles exposing (..)
+import Html.Attributes exposing (class)
+import Views.Board.Tile.Styles exposing (..)
+import Views.Icons.Burst as Burst
 import Views.Seed.All exposing (renderSeed)
 
 
-renderTile_ : List Style -> Window -> Maybe MoveShape -> Move -> Html msg
-renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
+type alias Settings =
+    { extraStyles : List Style
+    , isBursting : Bool
+    , withTracer : Bool
+    }
+
+
+view : Settings -> Window -> Move -> Html msg
+view { extraStyles, isBursting, withTracer } window move =
+    let
+        coord =
+            Move.coord move
+    in
     div
         [ styles
             [ tileWidthheights window
@@ -31,15 +34,27 @@ renderTile_ extraStyles window moveShape (( coord, _ ) as move) =
             ]
         , class "dib absolute"
         ]
-        [ innerTile window moveShape move
-        , tracer window move
+        [ innerTile isBursting window move
+        , renderIf withTracer <| tracer window move
         , wall window move
         ]
 
 
+renderIf : Bool -> Html msg -> Html msg
+renderIf predicate element =
+    if predicate then
+        element
+
+    else
+        span [] []
+
+
 tracer : Window -> Move -> Html msg
 tracer window move =
-    makeInnerTile (moveTracerStyles move) window move
+    innerTileWithStyles
+        (moveTracerStyles move)
+        window
+        move
 
 
 wall : Window -> Move -> Html msg
@@ -51,13 +66,16 @@ wall window move =
         []
 
 
-innerTile : Window -> Maybe MoveShape -> Move -> Html msg
-innerTile window moveShape move =
-    makeInnerTile (draggingStyles moveShape move) window move
+innerTile : Bool -> Window -> Move -> Html msg
+innerTile isBursting window move =
+    innerTileWithStyles
+        (draggingStyles isBursting move)
+        window
+        move
 
 
-makeInnerTile : List Style -> Window -> Move -> Html msg
-makeInnerTile extraStyles window (( _, tile ) as move) =
+innerTileWithStyles : List Style -> Window -> Move -> Html msg
+innerTileWithStyles extraStyles window move =
     div
         [ styles
             [ extraStyles
@@ -65,35 +83,57 @@ makeInnerTile extraStyles window (( _, tile ) as move) =
             ]
         , classes baseTileClasses
         ]
-        [ innerSeed tile ]
+        [ innerTileElement <| Move.block move ]
 
 
 baseTileStyles : Window -> Move -> List Style
-baseTileStyles window (( _, tile ) as move) =
+baseTileStyles window move =
+    let
+        block =
+            Move.block move
+    in
     List.concat
         [ growingStyles move
         , enteringStyles move
         , fallingStyles move
-        , size <| toFloat <| round <| tileSizeMap tile * Tile.scale window
-        , tileBackgroundMap tile
+        , size <| roundFloat <| tileSize block * Tile.scale window
+        , tileBackground block
         ]
 
 
-innerSeed : Block -> Html msg
-innerSeed =
-    Block.fold (tileElementMap innerSeed_) <| span [] []
+roundFloat : Float -> Float
+roundFloat =
+    round >> toFloat
 
 
-innerSeed_ : TileType -> Html msg
-innerSeed_ tileType =
-    case tileType of
-        Seed seedType ->
+innerTileElement : Block -> Html msg
+innerTileElement block =
+    case Block.tileType block of
+        Just (Seed seedType) ->
             renderSeed seedType
+
+        Just (Burst tile) ->
+            renderBurst block tile
 
         _ ->
             span [] []
 
 
-tileElementMap : (TileType -> Html msg) -> TileState -> Html msg
-tileElementMap =
-    Tile.map <| span [] []
+renderBurst : Block -> Maybe TileType -> Html msg
+renderBurst block tile =
+    div [ Style.style <| burstStyles block ]
+        [ renderBurst_ tile <| Block.isLeaving block ]
+
+
+renderBurst_ : Maybe TileType -> Bool -> Html msg
+renderBurst_ tile isBursting =
+    case tile of
+        Just tile_ ->
+            if isBursting then
+                Burst.active (strokeColors tile_) (strokeColors tile_)
+
+            else
+                Burst.active (strokeColors tile_) (lighterStrokeColor tile_)
+
+        Nothing ->
+            Burst.inactive

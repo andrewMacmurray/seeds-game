@@ -2,9 +2,9 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events exposing (onResize)
-import Context exposing (..)
+import Context exposing (Context)
 import Css.Color as Color
-import Css.Style exposing (backgroundColor, color, style)
+import Css.Style exposing (backgroundColor, style)
 import Data.Board.Tile as Tile
 import Data.Levels as Levels
 import Data.Lives as Lives
@@ -13,12 +13,10 @@ import Data.Window exposing (Window)
 import Exit
 import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
-import Html exposing (Html, div, p, span, text)
+import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
 import Ports exposing (..)
-import Scene exposing (Scene(..))
 import Scenes.Garden as Garden
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
@@ -67,6 +65,17 @@ type alias Model =
     }
 
 
+type Scene
+    = Title Title.Model
+    | Intro Intro.Model
+    | Hub Hub.Model
+    | Tutorial Tutorial.Model
+    | Level Level.Model
+    | Retry Retry.Model
+    | Summary Summary.Model
+    | Garden Garden.Model
+
+
 type Msg
     = TitleMsg Title.Msg
     | IntroMsg Intro.Msg
@@ -77,7 +86,7 @@ type Msg
     | SummaryMsg Summary.Msg
     | GardenMsg Garden.Msg
     | InitIntro
-    | InitHub Levels.Key
+    | InitHub Levels.Id
     | InitTutorial Tutorial.Config Levels.LevelConfig
     | InitLevel Levels.LevelConfig
     | InitRetry
@@ -87,11 +96,11 @@ type Msg
     | HideLoadingScreen
     | OpenMenu
     | CloseMenu
-    | RandomBackground Background
+    | RandomBackground Context.Background
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
-    | GoToHub Levels.Key
+    | GoToHub Levels.Id
 
 
 
@@ -100,12 +109,63 @@ type Msg
 
 getContext : Model -> Context
 getContext model =
-    Scene.getContext model.scene
+    case model.scene of
+        Title subModel ->
+            Title.getContext subModel
+
+        Intro subModel ->
+            Intro.getContext subModel
+
+        Hub subModel ->
+            Hub.getContext subModel
+
+        Tutorial subModel ->
+            Tutorial.getContext subModel
+
+        Level subModel ->
+            Level.getContext subModel
+
+        Retry subModel ->
+            Retry.getContext subModel
+
+        Summary subModel ->
+            Summary.getContext subModel
+
+        Garden subModel ->
+            Garden.getContext subModel
 
 
-updateContext : Model -> (Context -> Context) -> Model
-updateContext model f =
-    { model | scene = Scene.map f model.scene }
+updateContext : (Context -> Context) -> Model -> Model
+updateContext toContext model =
+    { model | scene = updateSceneContext toContext model.scene }
+
+
+updateSceneContext : (Context -> Context) -> Scene -> Scene
+updateSceneContext toContext scene =
+    case scene of
+        Title model ->
+            Title <| Title.updateContext toContext model
+
+        Intro model ->
+            Intro <| Intro.updateContext toContext model
+
+        Hub model ->
+            Hub <| Hub.updateContext toContext model
+
+        Tutorial model ->
+            Tutorial <| Tutorial.updateContext toContext model
+
+        Level model ->
+            Level <| Level.updateContext toContext model
+
+        Retry model ->
+            Retry <| Retry.updateContext toContext model
+
+        Summary model ->
+            Summary <| Summary.updateContext toContext model
+
+        Garden model ->
+            Garden <| Garden.updateContext toContext model
 
 
 
@@ -200,19 +260,19 @@ update msg ({ scene, backdrop } as model) =
             initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
-            ( model, generateBackground RandomBackground )
+            ( model, Context.generateBackground RandomBackground )
 
         ( RandomBackground bgColor, _, _ ) ->
-            ( updateContext model <| showLoadingScreen bgColor, Cmd.none )
+            ( updateContext (Context.showLoadingScreen bgColor) model, Cmd.none )
 
         ( HideLoadingScreen, _, _ ) ->
-            ( updateContext model hideLoadingScreen, Cmd.none )
+            ( updateContext Context.hideLoadingScreen model, Cmd.none )
 
         ( OpenMenu, _, _ ) ->
-            ( updateContext model openMenu, Cmd.none )
+            ( updateContext Context.openMenu model, Cmd.none )
 
         ( CloseMenu, _, _ ) ->
-            ( updateContext model closeMenu, Cmd.none )
+            ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen <| InitHub level )
@@ -221,7 +281,7 @@ update msg ({ scene, backdrop } as model) =
             ( model, clearCache )
 
         ( WindowSize width height, _, _ ) ->
-            ( updateContext model <| setWindow width height
+            ( updateContext (Context.setWindow width height) model
             , bounceKeyframes <| Window width height
             )
 
@@ -277,7 +337,7 @@ exitIntro model _ =
 -- Hub
 
 
-initHub : Levels.Key -> Model -> ( Model, Cmd Msg )
+initHub : Levels.Id -> Model -> ( Model, Cmd Msg )
 initHub level =
     initScene Hub HubMsg <| Hub.init level
 
@@ -297,7 +357,7 @@ exitHub model destination =
             ( model, goToGarden )
 
 
-handleStartLevel : Model -> Levels.Key -> ( Model, Cmd Msg )
+handleStartLevel : Model -> Levels.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
     case Worlds.tutorial level of
         Just tutorialConfig ->
@@ -372,7 +432,7 @@ exitLevel model levelStatus =
 
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
-    if shouldIncrement <| Scene.getContext model.scene then
+    if shouldIncrement <| getContext model then
         ( model, trigger InitSummary )
 
     else
@@ -382,7 +442,7 @@ levelWin model =
 levelLose : Model -> ( Model, Cmd Msg )
 levelLose model =
     if livesRemaining model == 1 then
-        ( updateContext model Context.decrementLife, goToHubCurrentLevel model )
+        ( updateContext Context.decrementLife model, goToHubCurrentLevel model )
 
     else
         ( model, trigger InitRetry )
@@ -459,32 +519,61 @@ exitGarden model _ =
 -- Util
 
 
+initScene :
+    (subModel -> Scene)
+    -> (subMsg -> msg)
+    -> (Context -> ( subModel, Cmd subMsg ))
+    -> Model
+    -> ( Model, Cmd msg )
 initScene =
     load asForeground
 
 
+initBackdrop :
+    (subModel -> Scene)
+    -> (subMsg -> msg)
+    -> (Context -> ( subModel, Cmd subMsg ))
+    -> Model
+    -> ( Model, Cmd msg )
 initBackdrop =
     load asBackdrop
 
 
-updateScene sceneF =
-    Exit.handle (composeScene sceneF asForeground)
+updateScene :
+    (subModel -> Scene)
+    -> (subMsg -> msg)
+    -> (subMsg -> subModel -> Exit.With payload ( subModel, Cmd subMsg ))
+    -> Exit.Handle payload subMsg subModel Model msg
+updateScene toScene =
+    Exit.handle (composeScene toScene asForeground)
 
 
-updateBackdrop sceneF =
-    Exit.handle (composeScene sceneF asBackdrop)
+updateBackdrop :
+    (subModel -> Scene)
+    -> (subMsg -> msg)
+    -> (subMsg -> subModel -> Exit.With payload ( subModel, Cmd subMsg ))
+    -> Exit.Handle payload subMsg subModel Model msg
+updateBackdrop toScene =
+    Exit.handle (composeScene toScene asBackdrop)
 
 
-load embedModel embedScene msg initSceneF model =
-    Scene.getContext model.scene
-        |> closeMenu
-        |> initSceneF
-        |> Return.map msg (embedScene >> embedModel model)
+load :
+    (Model -> Scene -> Model)
+    -> (subModel -> Scene)
+    -> (subMsg -> msg)
+    -> (Context -> Return.Return subMsg subModel)
+    -> Model
+    -> ( Model, Cmd msg )
+load toModel toScene msg initScene_ model =
+    getContext model
+        |> Context.closeMenu
+        |> initScene_
+        |> Return.map msg (toScene >> toModel model)
 
 
 composeScene : (subModel -> Scene) -> (Model -> Scene -> Model) -> (subModel -> Model -> Model)
-composeScene sceneF modelF sceneModel model =
-    modelF model (sceneF sceneModel)
+composeScene toScene toModel sceneModel model =
+    toModel model (toScene sceneModel)
 
 
 asForeground : Model -> Scene -> Model
@@ -519,7 +608,7 @@ moveBackdropToScene model =
 
 syncContext : Model -> Scene -> Scene
 syncContext model scene =
-    Scene.map (always <| Scene.getContext model.scene) scene
+    updateSceneContext (always <| getContext model) scene
 
 
 
@@ -561,7 +650,9 @@ goToHubReachedLevel =
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )
 updateLives now model =
-    { model | scene = Scene.map (Context.updateLives now) model.scene } |> andCmd saveCurrentLives
+    model
+        |> updateContext (Context.updateLives now)
+        |> andCmd saveCurrentLives
 
 
 andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
@@ -584,19 +675,26 @@ bounceKeyframes window =
     generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
 
 
-reachedLevel : Model -> Levels.Key
+reachedLevel : Model -> Levels.Id
 reachedLevel =
     getContext >> .progress >> Progress.reachedLevel
 
 
-currentLevel : Model -> Levels.Key
+currentLevel : Model -> Levels.Id
 currentLevel =
-    getContext >> .progress >> Progress.currentLevel >> Maybe.withDefault Levels.empty
+    getContext >> .progress >> currentLevelWithDefault
+
+
+currentLevelWithDefault : Progress -> Levels.Id
+currentLevelWithDefault progress =
+    progress
+        |> Progress.currentLevel
+        |> Maybe.withDefault (Progress.reachedLevel progress)
 
 
 shouldIncrement : Context -> Bool
 shouldIncrement context =
-    not <| Progress.currentLevelComplete context.progress
+    Progress.currentLevelComplete context.progress == Just False
 
 
 
@@ -640,7 +738,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ animations
-        , loadingScreen <| Scene.getContext model.scene
+        , loadingScreen <| getContext model
         , menu model.scene
         , renderStage
             [ renderScene model.scene
@@ -710,7 +808,7 @@ menu scene =
             renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg <| Level.menuOptions model.context
+            renderMenu model.context LevelMsg <| Level.menuOptions model
 
         Garden model ->
             renderMenu model.context GardenMsg Garden.menuOptions

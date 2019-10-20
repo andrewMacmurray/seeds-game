@@ -1,89 +1,87 @@
-module Data.Board.Shift exposing
-    ( groupBoardByColumn
-    , shiftBoard
-    , yCoord
-    )
+module Data.Board.Shift exposing (groupBoardByColumn, shiftBoard)
 
+import Data.Board as Board
 import Data.Board.Block as Block
+import Data.Board.Coord as Coord
+import Data.Board.Move as Move
 import Data.Board.Types exposing (..)
-import Dict
-import Helpers.List exposing (groupWhile, splitAt)
+import Helpers.List
 
 
 shiftBoard : Board -> Board
-shiftBoard board =
-    board
-        |> groupBoardByColumn
-        |> List.concatMap shiftRow
-        |> Dict.fromList
+shiftBoard =
+    groupBoardByColumn
+        >> List.concatMap shiftRow
+        >> Board.fromMoves
 
 
 groupBoardByColumn : Board -> List (List Move)
-groupBoardByColumn board =
-    board
-        |> Dict.toList
-        |> List.sortBy xCoord
-        |> groupWhile sameColumn
+groupBoardByColumn =
+    Board.moves
+        >> List.sortBy Move.x
+        >> Helpers.List.groupWhile sameColumn
 
 
 shiftRow : List Move -> List Move
-shiftRow row =
-    row
-        |> List.sortBy yCoord
-        |> shiftRemainingTiles
+shiftRow =
+    List.sortBy Move.y >> shiftRemainingTiles
 
 
 shiftRemainingTiles : List Move -> List Move
 shiftRemainingTiles row =
+    let
+        x =
+            getXfromRow row
+
+        shiftMove y move =
+            ( Coord.fromXY x y, Move.block move )
+    in
     row
         |> sortByLeaving
-        |> List.indexedMap (\i ( _, block ) -> ( ( i, getXfromRow row ), block ))
+        |> List.indexedMap shiftMove
 
 
 sortByLeaving : List Move -> List Move
 sortByLeaving row =
     let
+        isWall =
+            Move.block >> Block.isWall
+
         walls =
-            List.filter (\( _, block ) -> Block.isWall block) row
+            List.filter isWall row
+
+        recombine =
+            recombineAround []
     in
     row
-        |> List.filter (\( _, block ) -> not (Block.isWall block))
-        |> List.partition (\( coord, block ) -> Block.isLeaving block)
-        |> (\( a, b ) -> a ++ b)
-        |> reAddWalls walls
+        |> List.filter (not << isWall)
+        |> List.partition (Move.block >> Block.isLeaving)
+        |> recombine
+        |> reInsertMoves walls
 
 
-reAddWalls : List Move -> List Move -> List Move
-reAddWalls walls row =
-    List.foldl addWall row walls
+reInsertMoves : List Move -> List Move -> List Move
+reInsertMoves walls row =
+    List.foldl insertMove row walls
 
 
-addWall : Move -> List Move -> List Move
-addWall (( ( y, x ), w ) as wall) row =
-    row
-        |> splitAt y
-        |> (\( a, b ) -> a ++ [ wall ] ++ b)
+insertMove : Move -> List Move -> List Move
+insertMove move =
+    Helpers.List.splitAt (Move.y move) >> recombineAround [ move ]
 
 
 getXfromRow : List Move -> Int
-getXfromRow coords =
-    coords
-        |> List.head
-        |> Maybe.map Tuple.first
-        |> Maybe.map Tuple.second
-        |> Maybe.withDefault 0
+getXfromRow =
+    List.head
+        >> Maybe.map Move.x
+        >> Maybe.withDefault 0
+
+
+recombineAround : List a -> ( List a, List a ) -> List a
+recombineAround c ( a, b ) =
+    a ++ c ++ b
 
 
 sameColumn : Move -> Move -> Bool
-sameColumn ( ( _, x1 ), _ ) ( ( _, x2 ), _ ) =
-    x1 == x2
-
-
-yCoord : ( Coord, Block ) -> Int
-yCoord ( ( y, _ ), _ ) =
-    y
-
-
-xCoord : ( Coord, Block ) -> Int
-xCoord ( ( _, x ), _ ) =
-    x
+sameColumn m1 m2 =
+    Move.x m1 == Move.x m2

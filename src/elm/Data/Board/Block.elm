@@ -1,33 +1,41 @@
 module Data.Board.Block exposing
     ( addBearing
+    , clearBearing
+    , clearBurstType
+    , empty
     , fold
     , getTileState
-    , getTileType
+    , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
     , hasLine
+    , isBurst
+    , isCollectible
     , isCurrentMove
     , isDragging
+    , isEmpty
     , isFalling
     , isGrowing
     , isLeaving
-    , isReleasing
     , isWall
     , leavingOrder
     , map
     , moveOrder
+    , setActiveToStatic
+    , setDraggingBurstType
     , setDraggingToGrowing
-    , setDraggingToReleasing
+    , setDraggingToLeaving
+    , setDraggingToStatic
     , setEnteringToStatic
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
-    , setReleasingToStatic
     , setStaticToFirstMove
+    , setToActive
     , setToDragging
     , setToFalling
-    , setToLeaving
     , static
+    , tileType
     )
 
 import Data.Board.Tile as Tile
@@ -44,6 +52,11 @@ leavingOrder =
     fold Tile.leavingOrder 0
 
 
+isEmpty : Block -> Bool
+isEmpty =
+    fold Tile.isEmpty False
+
+
 isLeaving : Block -> Bool
 isLeaving =
     fold Tile.isLeaving False
@@ -54,19 +67,14 @@ isDragging =
     fold Tile.isDragging False
 
 
-isGrowing : Block -> Bool
-isGrowing =
-    fold Tile.isGrowing False
-
-
 isFalling : Block -> Bool
 isFalling =
     fold Tile.isFalling False
 
 
-isReleasing : Block -> Bool
-isReleasing =
-    fold Tile.isReleasing False
+isGrowing : Block -> Bool
+isGrowing =
+    fold Tile.isGrowing False
 
 
 hasLine : Block -> Bool
@@ -85,8 +93,28 @@ isCurrentMove =
 
 
 setToDragging : MoveOrder -> Block -> Block
-setToDragging moveOrder_ =
-    map <| Tile.setToDragging moveOrder_
+setToDragging =
+    map << Tile.setToDragging
+
+
+growLeavingBurstToSeed : SeedType -> Block -> Block
+growLeavingBurstToSeed =
+    map << Tile.growLeavingBurstToSeed
+
+
+setToActive : Block -> Block
+setToActive =
+    map Tile.setToActive
+
+
+setActiveToStatic : Block -> Block
+setActiveToStatic =
+    map Tile.setActiveToStatic
+
+
+clearBearing : Block -> Block
+clearBearing =
+    map Tile.removeBearing
 
 
 setStaticToFirstMove : Block -> Block
@@ -94,9 +122,19 @@ setStaticToFirstMove =
     map Tile.setStaticToFirstMove
 
 
-addBearing : MoveBearing -> Block -> Block
-addBearing moveBearing =
-    map <| Tile.addBearing moveBearing
+addBearing : Bearing -> Block -> Block
+addBearing =
+    map << Tile.addBearing
+
+
+setDraggingBurstType : TileType -> Block -> Block
+setDraggingBurstType =
+    map << Tile.setDraggingBurstType
+
+
+clearBurstType : Block -> Block
+clearBurstType =
+    map Tile.clearBurstType
 
 
 setGrowingToStatic : Block -> Block
@@ -105,18 +143,18 @@ setGrowingToStatic =
 
 
 growSeedPod : SeedType -> Block -> Block
-growSeedPod seedType =
-    map (Tile.growSeedPod seedType)
+growSeedPod =
+    map << Tile.growSeedPod
 
 
 setToFalling : Int -> Block -> Block
-setToFalling fallingDistance =
-    map <| Tile.setToFalling fallingDistance
+setToFalling =
+    map << Tile.setToFalling
 
 
 setEnteringToStatic : Block -> Block
 setEnteringToStatic =
-    map Tile.setEnteringToSatic
+    map Tile.setEnteringToStatic
 
 
 setFallingToStatic : Block -> Block
@@ -124,14 +162,14 @@ setFallingToStatic =
     map Tile.setFallingToStatic
 
 
-setReleasingToStatic : Block -> Block
-setReleasingToStatic =
-    map Tile.setReleasingToStatic
-
-
 setLeavingToEmpty : Block -> Block
 setLeavingToEmpty =
     map Tile.setLeavingToEmpty
+
+
+setDraggingToStatic : Block -> Block
+setDraggingToStatic =
+    map Tile.setDraggingToStatic
 
 
 setDraggingToGrowing : Block -> Block
@@ -139,18 +177,13 @@ setDraggingToGrowing =
     map Tile.setDraggingToGrowing
 
 
-setDraggingToReleasing : Block -> Block
-setDraggingToReleasing =
-    map Tile.setDraggingToReleasing
+setDraggingToLeaving : Block -> Block
+setDraggingToLeaving =
+    map Tile.setDraggingToLeaving
 
 
-setToLeaving : Block -> Block
-setToLeaving =
-    map Tile.setToLeaving
-
-
-getTileType : Block -> Maybe TileType
-getTileType =
+tileType : Block -> Maybe TileType
+tileType =
     fold Tile.getTileType Nothing
 
 
@@ -169,26 +202,48 @@ isWall block =
             False
 
 
+isCollectible : Block -> Bool
+isCollectible =
+    fold (matchTile Tile.isCollectible) False
+
+
+isBurst : Block -> Bool
+isBurst =
+    fold (matchTile Tile.isBurst) False
+
+
+matchTile : (TileType -> Bool) -> TileState -> Bool
+matchTile f =
+    Tile.getTileType
+        >> Maybe.map f
+        >> Maybe.withDefault False
+
+
 static : TileType -> Block
 static =
     Static >> Space
 
 
+empty : Block
+empty =
+    Space Empty
+
+
 map : (TileState -> TileState) -> Block -> Block
-map fn block =
+map f block =
     case block of
         Space tileState ->
-            Space <| fn tileState
+            Space <| f tileState
 
         wall ->
             wall
 
 
 fold : (TileState -> a) -> a -> Block -> a
-fold fn default block =
+fold f default block =
     case block of
         Wall _ ->
             default
 
         Space tileState ->
-            fn tileState
+            f tileState

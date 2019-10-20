@@ -2,7 +2,7 @@ module Views.Loading exposing (loadingScreen)
 
 import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
-import Css.Style exposing (Style, backgroundColor, classes, empty, style, width)
+import Css.Style exposing (Style, backgroundColor, classes, none, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
 import Data.Board.Types exposing (SeedType(..))
 import Data.Levels as Levels
@@ -47,7 +47,7 @@ backgroundStyle : Maybe Background -> Style
 backgroundStyle sceneTransition =
     sceneTransition
         |> Maybe.map (loadingScreenColor >> backgroundColor)
-        |> Maybe.withDefault empty
+        |> Maybe.withDefault none
 
 
 loadingScreenColor : Background -> String

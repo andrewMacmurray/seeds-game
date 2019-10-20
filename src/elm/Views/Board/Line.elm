@@ -1,15 +1,16 @@
 module Views.Board.Line exposing (renderLine)
 
 import Css.Style as Style exposing (Style, marginAuto, styles)
-import Css.Transform as Transform exposing (..)
+import Css.Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
 
 
 renderLine : Window -> Move -> Html msg
@@ -25,29 +26,29 @@ renderLine window (( coord, _ ) as move) =
 
 
 lineFromMove : Window -> Move -> Html msg
-lineFromMove window ( coord, block ) =
+lineFromMove window move =
     let
         tileState =
-            getTileState block
+            getTileState <| Move.block move
     in
     case tileState of
-        Dragging tileType _ Left _ ->
+        Dragging tileType _ Left ->
             innerLine window tileType Left
 
-        Dragging tileType _ Right _ ->
+        Dragging tileType _ Right ->
             innerLine window tileType Right
 
-        Dragging tileType _ Up _ ->
+        Dragging tileType _ Up ->
             innerLine window tileType Up
 
-        Dragging tileType _ Down _ ->
+        Dragging tileType _ Down ->
             innerLine window tileType Down
 
         _ ->
             span [] []
 
 
-innerLine : Window -> TileType -> MoveBearing -> Html msg
+innerLine : Window -> TileType -> Bearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =
@@ -74,7 +75,7 @@ innerLine window tileType bearing =
         ]
 
 
-lineTransforms : Window -> MoveBearing -> Style
+lineTransforms : Window -> Bearing -> Style
 lineTransforms window bearing =
     let
         xOffset =
@@ -94,4 +95,4 @@ lineTransforms window bearing =
             Style.transform [ rotateZ 90, translate xOffset 1.5 ]
 
         _ ->
-            Style.empty
+            Style.none

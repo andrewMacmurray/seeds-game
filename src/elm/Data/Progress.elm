@@ -16,10 +16,10 @@ module Data.Progress exposing
     , toCache
     )
 
-import Data.Board.Score as Score
+import Data.Board.Scores as Score
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType, TileType)
-import Data.Level.Setting exposing (TargetScore(..), TileSetting)
+import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Data.Levels as Levels
 import Dict exposing (Dict)
 import Helpers.Dict
@@ -31,8 +31,8 @@ type Progress
 
 
 type alias State =
-    { current : Maybe Levels.Key
-    , reached : Levels.Key
+    { current : Maybe Levels.Id
+    , reached : Levels.Id
     }
 
 
@@ -59,7 +59,7 @@ fromCache cachedLevel =
         |> fromLevel
 
 
-fromLevel : Levels.Key -> Progress
+fromLevel : Levels.Id -> Progress
 fromLevel reached =
     Progress
         { current = Nothing
@@ -71,7 +71,7 @@ fromLevel reached =
 -- Update
 
 
-setCurrentLevel : Levels.Key -> Progress -> Progress
+setCurrentLevel : Levels.Id -> Progress -> Progress
 setCurrentLevel level (Progress progress) =
     Progress { progress | current = Just level }
 
@@ -95,12 +95,12 @@ handleIncrement worlds (Progress progress) =
 --  Query
 
 
-reachedLevel : Progress -> Levels.Key
+reachedLevel : Progress -> Levels.Id
 reachedLevel (Progress progress) =
     progress.reached
 
 
-currentLevel : Progress -> Maybe Levels.Key
+currentLevel : Progress -> Maybe Levels.Id
 currentLevel (Progress progress) =
     progress.current
 
@@ -112,11 +112,9 @@ currentWorldComplete worlds (Progress { current, reached }) =
         |> Maybe.withDefault False
 
 
-currentLevelComplete : Progress -> Bool
+currentLevelComplete : Progress -> Maybe Bool
 currentLevelComplete (Progress { current, reached }) =
-    current
-        |> Maybe.map (\level -> Levels.completed reached level)
-        |> Maybe.withDefault False
+    Maybe.map (\level -> Levels.completed reached level) current
 
 
 reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType
@@ -222,13 +220,13 @@ resourcesInLevels : SeedType -> List Levels.Level -> List TileType
 resourcesInLevels worldSeedType =
     List.map tileSettings
         >> List.concat
-        >> List.filter Score.collectable
+        >> List.filter Score.collectible
         >> List.map .tileType
         >> List.filter (secondaryResource worldSeedType)
         >> Helpers.List.unique
 
 
-scoresAtLevel : Levels.Worlds -> Levels.Key -> Dict String Int
+scoresAtLevel : Levels.Worlds -> Levels.Id -> Dict String Int
 scoresAtLevel worlds level =
     level
         |> Levels.getKeysForWorld worlds
@@ -240,20 +238,20 @@ scoresAtLevel worlds level =
         |> combineWithEmptyScores worlds level
 
 
-combineWithEmptyScores : Levels.Worlds -> Levels.Key -> Dict String Int -> Dict String Int
+combineWithEmptyScores : Levels.Worlds -> Levels.Id -> Dict String Int -> Dict String Int
 combineWithEmptyScores worlds levels scores =
     scoresAtBeginningOfWorld worlds levels
         |> Maybe.withDefault Dict.empty
         |> Dict.union scores
 
 
-scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Key -> Maybe (Dict String Int)
+scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
 scoresAtBeginningOfWorld worlds level =
     targetWorldScores worlds level
         |> Maybe.map (Helpers.Dict.mapValues <| always 0)
 
 
-targetWorldScores : Levels.Worlds -> Levels.Key -> Maybe (Dict String Int)
+targetWorldScores : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
 targetWorldScores worlds level =
     level
         |> Levels.getLevels worlds
@@ -268,12 +266,12 @@ scoresForWorld levels =
         |> totalScoresDict
 
 
-totalScoresDict : List TileSetting -> Dict String Int
+totalScoresDict : List Tile.Setting -> Dict String Int
 totalScoresDict =
     List.foldr accumSettings Dict.empty
 
 
-accumSettings : TileSetting -> Dict String Int -> Dict String Int
+accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
         Just (TargetScore n) ->
@@ -293,6 +291,6 @@ secondaryResource worldSeedType tileType =
             True
 
 
-tileSettings : Levels.Level -> List TileSetting
+tileSettings : Levels.Level -> List Tile.Setting
 tileSettings =
-    Levels.config >> .tiles
+    Levels.config >> .tileSettings

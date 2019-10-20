@@ -12,8 +12,8 @@ module Css.Style exposing
     , classes
     , color
     , compose
+    , disablePointer
     , displayStyle
-    , empty
     , height
     , left
     , leftAuto
@@ -25,6 +25,7 @@ module Css.Style exposing
     , marginRight
     , marginTop
     , maxWidth
+    , none
     , opacity
     , paddingAll
     , paddingBottom
@@ -140,8 +141,8 @@ nonEmpty =
 -- Properties
 
 
-empty : Style
-empty =
+none : Style
+none =
     property "" ""
 
 
@@ -372,6 +373,11 @@ pointer =
     property "cursor" "pointer"
 
 
+disablePointer : Style
+disablePointer =
+    property "pointer-events" "none"
+
+
 showIf : Bool -> Style
 showIf predicate =
     if predicate then
@@ -387,7 +393,7 @@ applyIf predicate s =
         s
 
     else
-        empty
+        none
 
 
 

@@ -10,35 +10,32 @@ module Scenes.Tutorial exposing
     , view
     )
 
-import Browser.Events
 import Context exposing (Context)
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
-import Data.Board.Block exposing (..)
+import Data.Board as Board
+import Data.Board.Block as Block
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
-import Data.Board.Map exposing (..)
-import Data.Board.Move.Bearing exposing (addBearings)
-import Data.Board.Move.Square exposing (setAllTilesOfTypeToDragging)
+import Data.Board.Move as Move
+import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Window exposing (Window)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (pause, sequence, trigger)
+import Helpers.Delay exposing (pause, sequence)
 import Html exposing (..)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Level.TopBar exposing (renderScoreIcon)
-import Task
 import Views.Board.Line exposing (renderLine)
-import Views.Board.Styles exposing (boardHeight, boardWidth)
-import Views.Board.Tile exposing (renderTile_)
+import Views.Board.Tile as Tile
+import Views.Board.Tile.Styles exposing (boardHeight, boardWidth)
 
 
 
@@ -54,7 +51,6 @@ type alias Model =
     , containerVisible : Bool
     , canvasVisible : Bool
     , skipped : Bool
-    , moveShape : Maybe MoveShape
     , resourceBank : TileType
     , boardDimensions : BoardDimensions
     , currentText : Int
@@ -83,7 +79,6 @@ type Msg
     | GrowPods SeedType
     | ResetGrowingPods
     | EnteringTiles (List TileType)
-    | TriggerSquare
     | FallTiles
     | ShiftBoard
     | SetBoardDimensions BoardDimensions
@@ -138,7 +133,6 @@ initialState context =
     , containerVisible = False
     , canvasVisible = True
     , skipped = False
-    , moveShape = Just Line
     , resourceBank = Seed Sunflower
     , boardDimensions = { y = 2, x = 2 }
     , currentText = 1
@@ -169,25 +163,22 @@ update msg model =
             continue (handleDragTile coord model) []
 
         SetGrowingPods ->
-            continue (mapBlocks setDraggingToGrowing model) []
+            continue (updateBlocks Block.setDraggingToGrowing model) []
 
         SetLeaving ->
-            continue (mapBlocks setToLeaving model) []
+            continue (updateBlocks Block.setDraggingToLeaving model) []
 
         ResetLeaving ->
-            continue (mapBlocks setLeavingToEmpty model) []
+            continue (updateBlocks Block.setLeavingToEmpty model) []
 
         GrowPods seedType ->
-            continue (mapBlocks (growSeedPod seedType) model) []
+            continue (updateBlocks (Block.growSeedPod seedType) model) []
 
         ResetGrowingPods ->
-            continue (mapBlocks setGrowingToStatic model) []
+            continue (updateBlocks Block.setGrowingToStatic model) []
 
         EnteringTiles tiles ->
             continue (handleInsertEnteringTiles tiles model) []
-
-        TriggerSquare ->
-            continue (handleSquareMove model) []
 
         FallTiles ->
             continue (mapBoard setFallingTiles model) []
@@ -196,8 +187,8 @@ update msg model =
             continue
                 (model
                     |> mapBoard shiftBoard
-                    |> mapBlocks setFallingToStatic
-                    |> mapBlocks setLeavingToEmpty
+                    |> updateBlocks Block.setFallingToStatic
+                    |> updateBlocks Block.setLeavingToEmpty
                 )
                 []
 
@@ -251,6 +242,16 @@ update msg model =
 -- Update Helpers
 
 
+updateBlocks : (Block -> Block) -> Model -> Model
+updateBlocks f model =
+    { model | board = Board.updateBlocks f model.board }
+
+
+mapBoard : (Board -> Board) -> Model -> Model
+mapBoard f model =
+    { model | board = f model.board }
+
+
 skipSequence : Cmd Msg
 skipSequence =
     sequence
@@ -258,11 +259,6 @@ skipSequence =
         , ( 1500, ExitTutorial )
         , ( 0, DisableTutorial )
         ]
-
-
-handleSquareMove : Model -> Model
-handleSquareMove model =
-    { model | board = setAllTilesOfTypeToDragging model.board }
 
 
 handleDragTile : Coord -> Model -> Model
@@ -274,7 +270,7 @@ handleDragTile coord model =
         tile =
             Dict.get coord model.board |> Maybe.withDefault sunflower
     in
-    { model | board = addBearings ( coord, tile ) model.board }
+    { model | board = Bearing.add ( coord, tile ) model.board }
 
 
 handleInsertEnteringTiles : List TileType -> Model -> Model
@@ -335,11 +331,7 @@ getText textDict n =
 
 handleSkip : Model -> Attribute Msg
 handleSkip model =
-    if not model.skipped then
-        onClick SkipTutorial
-
-    else
-        Attribute.empty
+    Attribute.applyIf (not model.skipped) <| onClick SkipTutorial
 
 
 tutorialBoard : Model -> Html msg
@@ -407,7 +399,7 @@ fadeLine : Model -> Move -> Html msg
 fadeLine model (( _, tile ) as move) =
     let
         visible =
-            hasLine tile
+            Block.hasLine tile
     in
     div
         [ style [ transitionAll 500 [], showIf visible ] ]
@@ -418,12 +410,21 @@ renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
         |> Dict.toList
-        |> List.map (\move -> renderTile_ (leavingStyles model move) model.context.window model.moveShape move)
+        |> List.map
+            (\move ->
+                Tile.view
+                    { extraStyles = leavingStyles model move
+                    , isBursting = False
+                    , withTracer = True
+                    }
+                    model.context.window
+                    move
+            )
 
 
 leavingStyles : Model -> Move -> List Style
-leavingStyles model (( _, block ) as move) =
-    case getTileState block of
+leavingStyles model move =
+    case Move.tileState move of
         Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionAll 500 [ delay <| modBy 5 order * 80 ]

@@ -160,7 +160,7 @@ currentCompletedWorldSeedType progress =
         |> Maybe.withDefault Sunflower
 
 
-worldComplete : Progress -> List Levels.Key -> Bool
+worldComplete : Progress -> List Levels.Id -> Bool
 worldComplete progress levelKeys =
     levelKeys
         |> List.reverse
@@ -236,7 +236,7 @@ allFlowers progress =
         |> List.map (worldFlowers progress)
 
 
-worldFlowers : Progress -> ( WorldConfig, List Levels.Key ) -> Html Msg
+worldFlowers : Progress -> ( WorldConfig, List Levels.Id ) -> Html Msg
 worldFlowers progress ( { seedType }, levelKeys ) =
     if worldComplete progress levelKeys then
         div

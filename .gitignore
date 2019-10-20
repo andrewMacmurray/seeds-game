@@ -18,8 +18,9 @@ package-lock.json
 .firebase
 
 elm-stuff
-public/style.min.css
-public/main.js
-public/pep.min.js
-public/embed.js
-public/sw.js
+assets/style.min.css
+
+dist
+.cache
+
+.idea

@@ -208,7 +208,7 @@ view { context, fadeDirection, bannerHeight } =
         ]
 
 
-handleStart : Levels.Key -> Attribute Msg
+handleStart : Levels.Id -> Attribute Msg
 handleStart progress =
     if progress == Levels.empty then
         onClick PlayIntro

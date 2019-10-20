@@ -9,11 +9,10 @@ module Views.Landscape.RollingHills exposing
 import Css.Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
-import Data.Window as Window exposing (Window)
+import Data.Window exposing (Window)
 import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
-import Views.Flowers.Sunflower as Sunflower
 
 
 type alias Element msg =

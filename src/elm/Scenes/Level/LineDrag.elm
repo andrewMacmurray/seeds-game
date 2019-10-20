@@ -1,9 +1,10 @@
 module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
+import Css.Color as Color
 import Css.Style as Style
 import Css.Unit exposing (px)
-import Data.Board.Move.Square exposing (hasSquareTile)
-import Data.Board.Moves exposing (currentMoveTileType, lastMove)
+import Data.Board as Board
+import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (Board, BoardDimensions)
 import Data.Pointer exposing (Pointer)
@@ -12,7 +13,7 @@ import Helpers.Svg exposing (height_, width_, windowViewBox_)
 import Html exposing (Html, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Styles exposing (..)
+import Views.Board.Tile.Styles exposing (..)
 
 
 type alias LineViewModel =
@@ -26,7 +27,7 @@ type alias LineViewModel =
 
 handleLineDrag : LineViewModel -> Html msg
 handleLineDrag model =
-    if model.isDragging && hasSquareTile model.board |> not then
+    if model.isDragging then
         lineDrag model
 
     else
@@ -43,9 +44,9 @@ lineDrag model =
             lastMoveOrigin model
 
         strokeColor =
-            currentMoveTileType model.board
+            Board.currentMoveType model.board
                 |> Maybe.map strokeColors
-                |> Maybe.withDefault ""
+                |> Maybe.withDefault Color.greyYellow
 
         tileScale =
             Tile.scale window
@@ -78,14 +79,14 @@ lastMoveOrigin model =
         tileScale =
             Tile.scale window
 
-        ( ( y, x ), _ ) =
-            lastMove model.board
+        lastMove =
+            Board.lastMove model.board
 
         y1 =
-            toFloat y
+            toFloat <| Move.y lastMove
 
         x1 =
-            toFloat x
+            toFloat <| Move.x lastMove
 
         sY =
             Tile.baseSizeY * tileScale

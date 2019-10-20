@@ -1,17 +1,12 @@
 module Data.Board.Types exposing
-    ( Block(..)
+    ( Bearing(..)
+    , Block(..)
     , Board
     , BoardDimensions
     , Coord
-    , FallingDistance
-    , GrowingOrder
-    , LeavingOrder
+    , Distance
     , Move
-    , MoveBearing(..)
     , MoveOrder
-    , MoveShape(..)
-    , Score
-    , Scores
     , SeedType(..)
     , TileState(..)
     , TileType(..)
@@ -21,20 +16,6 @@ module Data.Board.Types exposing
 
 import Css.Color exposing (Color)
 import Dict exposing (Dict)
-
-
-
--- Keeps Track of current Scores for each resource
-
-
-type alias Scores =
-    Dict String Score
-
-
-type alias Score =
-    { target : Int
-    , current : Int
-    }
 
 
 
@@ -74,16 +55,16 @@ type Block
 
 type TileState
     = Static TileType
-    | Dragging TileType MoveOrder MoveBearing MoveShape
-    | Releasing TileType
-    | Leaving TileType LeavingOrder
-    | Falling TileType FallingDistance
+    | Dragging TileType MoveOrder Bearing
+    | Leaving TileType MoveOrder
+    | Falling TileType Distance
     | Entering TileType
-    | Growing TileType GrowingOrder
+    | Growing TileType MoveOrder
+    | Active TileType
     | Empty
 
 
-type MoveBearing
+type Bearing
     = Head
     | Left
     | Right
@@ -91,24 +72,11 @@ type MoveBearing
     | Down
 
 
-type MoveShape
-    = Square
-    | Line
+type alias Distance =
+    Int
 
 
 type alias MoveOrder =
-    Int
-
-
-type alias LeavingOrder =
-    Int
-
-
-type alias FallingDistance =
-    Int
-
-
-type alias GrowingOrder =
     Int
 
 
@@ -117,6 +85,7 @@ type TileType
     | Sun
     | SeedPod
     | Seed SeedType
+    | Burst (Maybe TileType)
 
 
 type SeedType

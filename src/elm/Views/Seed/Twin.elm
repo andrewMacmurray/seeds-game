@@ -17,7 +17,7 @@ sunflower =
 
 cornflower : Svg msg
 cornflower =
-    twin ( "#242741", "#C0C6D8" )
+    twin ( Color.midnightBlue, Color.blueGrey )
 
 
 marigold : Svg msg
@@ -28,6 +28,11 @@ marigold =
 lupin : Svg msg
 lupin =
     twin ( Color.crimson, Color.brown )
+
+
+
+--coolLookingSeed =
+--    twin ( Color.midnightBlue, Color.orange )
 
 
 twin : ( Color, Color ) -> Svg msg

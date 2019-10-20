@@ -1,22 +1,32 @@
 const { localStorage } = window;
 
-function getLives() {
+interface Lives {
+  lastPlayed: number;
+  timeTillNextLife: number;
+}
+
+interface Progress {
+  levelId: number;
+  worldId: number;
+}
+
+export function getLives(): Lives | null {
   return safeParse(localStorage.getItem("lives"));
 }
 
-function setLives(lives) {
+export function setLives(lives: Lives) {
   return localStorage.setItem("lives", JSON.stringify(lives));
 }
 
-function getProgress() {
+export function getProgress(): Progress | null {
   return safeParse(localStorage.getItem("progress"));
 }
 
-function setProgress(progress) {
+export function setProgress(progress: Progress) {
   return localStorage.setItem("progress", JSON.stringify(progress));
 }
 
-function clear() {
+export function clear() {
   localStorage.clear();
 }
 
@@ -27,11 +37,3 @@ function safeParse(JSONstring) {
     return null;
   }
 }
-
-module.exports = {
-  getLives,
-  setLives,
-  getProgress,
-  setProgress,
-  clear
-};
