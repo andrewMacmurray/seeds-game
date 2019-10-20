@@ -24,7 +24,7 @@ import Data.Board.Move as Move
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Scores as Scores exposing (Scores)
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile
+import Data.Board.Tile as Tile exposing (TileState(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
@@ -71,7 +71,7 @@ type alias Model =
 type alias InitConfig =
     { walls : List Wall.Config
     , startTiles : List Start.Tile
-    , randomTiles : List TileType
+    , randomTiles : List Tile.TileType
     }
 
 
@@ -85,11 +85,11 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
-    | AddGrowingSeeds SeedType
+    | AddGrowingSeeds Tile.SeedType
     | ResetGrowingSeeds
     | BurstTiles
     | GenerateEnteringTiles RandomSetting
-    | InsertEnteringTiles (List TileType)
+    | InsertEnteringTiles (List Tile.TileType)
     | ResetEntering
     | ShiftBoard
     | ResetMove
@@ -126,7 +126,7 @@ type InfoContent
 
 type RandomSetting
     = AllTiles
-    | AllButTileType TileType
+    | AllButTileType Tile.TileType
 
 
 
@@ -344,7 +344,7 @@ stopMoveSequence model =
         removeTilesSequence AllTiles
 
 
-burstSequence : Maybe TileType -> Cmd Msg
+burstSequence : Maybe Tile.TileType -> Cmd Msg
 burstSequence moveType =
     moveType
         |> Maybe.map AllButTileType
@@ -357,7 +357,7 @@ shouldRelease board =
     List.length (Board.currentMoves board) == 1
 
 
-shouldGrowSeedPods : Maybe TileType -> Bool
+shouldGrowSeedPods : Maybe Tile.TileType -> Bool
 shouldGrowSeedPods moveTileType =
     moveTileType == Just SeedPod
 
@@ -391,7 +391,7 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : Maybe TileType -> RandomSetting -> Cmd Msg
+burstTilesSequence : Maybe Tile.TileType -> RandomSetting -> Cmd Msg
 burstTilesSequence moveType enteringTiles =
     case moveType of
         Just SeedPod ->
@@ -484,7 +484,7 @@ handleGenerateEnteringTiles enteringTiles board tileSettings =
             generateEnteringTilesWithoutTileType tileType board tileSettings
 
 
-generateEnteringTilesWithoutTileType : TileType -> Board -> List Tile.Setting -> Cmd Msg
+generateEnteringTilesWithoutTileType : Tile.TileType -> Board -> List Tile.Setting -> Cmd Msg
 generateEnteringTilesWithoutTileType tileType board tileSettings =
     if List.length tileSettings == 1 then
         generateEntering board tileSettings
@@ -495,7 +495,7 @@ generateEnteringTilesWithoutTileType tileType board tileSettings =
             |> generateEntering board
 
 
-filterSettings : List Tile.Setting -> TileType -> List Tile.Setting
+filterSettings : List Tile.Setting -> Tile.TileType -> List Tile.Setting
 filterSettings settings tile =
     List.filter (\setting -> setting.tileType /= tile) settings
 
@@ -505,22 +505,22 @@ generateEntering =
     generateEnteringTiles InsertEnteringTiles
 
 
-createBoard : List TileType -> HasBoard model -> HasBoard model
+createBoard : List Tile.TileType -> HasBoard model -> HasBoard model
 createBoard tiles model =
     { model | board = Board.fromTiles model.boardDimensions tiles }
 
 
-handleInsertEnteringTiles : List TileType -> HasBoard model -> HasBoard model
+handleInsertEnteringTiles : List Tile.TileType -> HasBoard model -> HasBoard model
 handleInsertEnteringTiles tiles =
     updateBoard <| insertNewEnteringTiles tiles
 
 
-handleInsertNewSeeds : SeedType -> HasBoard model -> HasBoard model
+handleInsertNewSeeds : Tile.SeedType -> HasBoard model -> HasBoard model
 handleInsertNewSeeds seedType =
     updateBoard <| insertNewSeeds seedType
 
 
-growLeavingBurstsToSeeds : SeedType -> HasBoard model -> HasBoard model
+growLeavingBurstsToSeeds : Tile.SeedType -> HasBoard model -> HasBoard model
 growLeavingBurstsToSeeds seedType =
     updateBlocks (Block.growLeavingBurstToSeed seedType)
 
@@ -940,7 +940,7 @@ handleExitDirection ( _, block ) model =
             Style.none
 
 
-getLeavingStyle : TileType -> Model -> Style
+getLeavingStyle : Tile.TileType -> Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Tile.hash tileType)
@@ -955,7 +955,7 @@ newLeavingStyles model =
         |> Dict.fromList
 
 
-prepareLeavingStyle : Model -> Int -> TileType -> ( String, Style )
+prepareLeavingStyle : Model -> Int -> Tile.TileType -> ( String, Style )
 prepareLeavingStyle model resourceBankIndex tileType =
     ( Tile.hash tileType
     , transform

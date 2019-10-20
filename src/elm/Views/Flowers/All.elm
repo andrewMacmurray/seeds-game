@@ -1,13 +1,13 @@
 module Views.Flowers.All exposing (renderFlower)
 
-import Data.Board.Types exposing (SeedType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..))
 import Svg exposing (Svg)
 import Views.Flowers.Chrysanthemum as Chrysanthemum
 import Views.Flowers.Cornflower as Cornflower
 import Views.Flowers.Sunflower as Sunflower
 
 
-renderFlower : SeedType -> Svg msg
+renderFlower : Tile.SeedType -> Svg msg
 renderFlower seedType =
     case seedType of
         Sunflower ->

@@ -1,9 +1,6 @@
 module Worlds exposing
     ( all
-    , getKeysForWorld
     , getLevel
-    , getLevels
-    , isLastLevelOfWorld
     , levelConfig
     , list
     , next
@@ -13,7 +10,7 @@ module Worlds exposing
     , tutorial
     )
 
-import Data.Board.Types exposing (SeedType)
+import Data.Board.Tile as Tile
 import Data.Levels as Levels exposing (..)
 import Scenes.Tutorial as Tutorial
 import Scenes.Tutorial.Rain as Rain
@@ -42,57 +39,42 @@ all =
 -- With all Levels applied
 
 
-getLevel : Id -> Maybe Level
+getLevel : Levels.Id -> Maybe Level
 getLevel =
     Levels.getLevel all
 
 
-getLevels : Id -> Maybe (List Level)
-getLevels =
-    Levels.getLevels all
-
-
-getKeysForWorld : Id -> Maybe (List Id)
-getKeysForWorld =
-    Levels.getKeysForWorld all
-
-
-isLastLevelOfWorld : Id -> Bool
-isLastLevelOfWorld =
-    Levels.isLastLevelOfWorld all
-
-
-tutorial : Id -> Maybe Tutorial.Config
+tutorial : Levels.Id -> Maybe Tutorial.Config
 tutorial =
     Levels.tutorial all >> Maybe.map tutorialConfig_
 
 
-number : Id -> Maybe Int
+number : Levels.Id -> Maybe Int
 number =
     Levels.number all
 
 
-list : List ( WorldConfig, List Id )
+list : List ( WorldConfig, List Levels.Id )
 list =
     Levels.worldsList all
 
 
-next : Id -> Id
+next : Levels.Id -> Levels.Id
 next =
     Levels.next all
 
 
-previous : Id -> Id
+previous : Levels.Id -> Levels.Id
 previous =
     Levels.previous all
 
 
-seedType : Id -> Maybe SeedType
+seedType : Levels.Id -> Maybe Tile.SeedType
 seedType =
     Levels.seedType all
 
 
-levelConfig : Id -> LevelConfig
+levelConfig : Levels.Id -> LevelConfig
 levelConfig =
     getLevel
         >> Maybe.withDefault One.default

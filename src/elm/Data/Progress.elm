@@ -18,7 +18,6 @@ module Data.Progress exposing
 
 import Data.Board.Scores as Score
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (SeedType, TileType)
 import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Data.Levels as Levels
 import Dict exposing (Dict)
@@ -117,17 +116,17 @@ currentLevelComplete (Progress { current, reached }) =
     Maybe.map (\level -> Levels.completed reached level) current
 
 
-reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType
+reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe Tile.SeedType
 reachedLevelSeedType worlds (Progress progress) =
     Levels.seedType worlds progress.reached
 
 
-currentLevelSeedType : Levels.Worlds -> Progress -> Maybe SeedType
+currentLevelSeedType : Levels.Worlds -> Progress -> Maybe Tile.SeedType
 currentLevelSeedType worlds (Progress progress) =
     Maybe.andThen (Levels.seedType worlds) progress.current
 
 
-resources : Levels.Worlds -> Progress -> Maybe (List TileType)
+resources : Levels.Worlds -> Progress -> Maybe (List Tile.TileType)
 resources worlds (Progress progress) =
     case progress.current of
         Just level ->
@@ -140,7 +139,7 @@ resources worlds (Progress progress) =
             Nothing
 
 
-percentComplete : Levels.Worlds -> TileType -> Progress -> Maybe Float
+percentComplete : Levels.Worlds -> Tile.TileType -> Progress -> Maybe Float
 percentComplete worlds tileType ((Progress { reached }) as progress) =
     case position worlds progress of
         CurrentWorldComplete ->
@@ -157,7 +156,7 @@ percent a b =
     (toFloat a / toFloat b) * 100
 
 
-pointsFromPreviousLevel : Levels.Worlds -> TileType -> Progress -> Maybe Int
+pointsFromPreviousLevel : Levels.Worlds -> Tile.TileType -> Progress -> Maybe Int
 pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as progress) =
     let
         tileScore =
@@ -211,12 +210,12 @@ position worlds ((Progress { current }) as progress) =
         MiddleLevel
 
 
-getScoreFor : TileType -> Dict String Int -> Maybe Int
+getScoreFor : Tile.TileType -> Dict String Int -> Maybe Int
 getScoreFor =
     Tile.hash >> Dict.get
 
 
-resourcesInLevels : SeedType -> List Levels.Level -> List TileType
+resourcesInLevels : Tile.SeedType -> List Levels.Level -> List Tile.TileType
 resourcesInLevels worldSeedType =
     List.map tileSettings
         >> List.concat
@@ -281,7 +280,7 @@ accumSettings setting acc =
             acc
 
 
-secondaryResource : SeedType -> TileType -> Bool
+secondaryResource : Tile.SeedType -> Tile.TileType -> Bool
 secondaryResource worldSeedType tileType =
     case Tile.getSeedType tileType of
         Just seed ->

@@ -13,7 +13,7 @@ module Data.Board.Scores exposing
 import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Move as Move
-import Data.Board.Tile as Tile
+import Data.Board.Tile as Tile exposing (TileType(..))
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile
 import Dict exposing (Dict)

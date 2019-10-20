@@ -13,11 +13,9 @@ import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
-import Css.Transform as Transform exposing (scale, translateX, translateY)
+import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
-import Data.Board.Tile exposing (seedName)
-import Data.Board.Types exposing (..)
-import Data.Levels as Levels
+import Data.Board.Tile as Tile exposing (SeedType(..), TileType(..), seedName)
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exitWith)
@@ -25,7 +23,6 @@ import Helpers.Delay exposing (after, sequence, trigger)
 import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Html.Keyed as Keyed
 import Ports exposing (cacheProgress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
 import Scenes.Summary.Cornflower as Cornflower
@@ -61,7 +58,7 @@ type Msg
     | ShowFirstText
     | HideFirstText
     | ShowSecondText
-    | HidenSecondText
+    | HiddenSecondText
     | FadeOut
     | ExitToHub
     | ExitToGarden
@@ -168,7 +165,7 @@ update msg model =
         ShowSecondText ->
             continue { model | text = Second True } []
 
-        HidenSecondText ->
+        HiddenSecondText ->
             continue { model | text = Second False } []
 
         FadeOut ->
@@ -190,7 +187,7 @@ handleSuccessMessage { context } =
             , ( 2000, ShowFirstText )
             , ( 3000, HideFirstText )
             , ( 1000, ShowSecondText )
-            , ( 3000, HidenSecondText )
+            , ( 3000, HiddenSecondText )
             , ( 2000, FadeOut )
             , ( 2000, ExitToGarden )
             ]
@@ -239,14 +236,14 @@ view model =
         ]
 
 
-currentSeedType : Progress -> SeedType
+currentSeedType : Progress -> Tile.SeedType
 currentSeedType progress =
     progress
         |> Progress.currentLevelSeedType Worlds.all
         |> Maybe.withDefault Sunflower
 
 
-backgroundColor : SeedType -> SeedBankState -> Style
+backgroundColor : Tile.SeedType -> SeedBankState -> Style
 backgroundColor seedType seedBankState =
     case seedBankState of
         Visible ->
@@ -259,7 +256,7 @@ backgroundColor seedType seedBankState =
             background <| getBackgroundFor seedType
 
 
-renderFlowerLayer : SeedType -> Window -> SeedBankState -> Html msg
+renderFlowerLayer : Tile.SeedType -> Window -> SeedBankState -> Html msg
 renderFlowerLayer seedType window seedBankState =
     let
         ( flowersHidden, flowersVisible ) =

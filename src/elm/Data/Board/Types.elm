@@ -1,20 +1,15 @@
 module Data.Board.Types exposing
-    ( Bearing(..)
-    , Block(..)
+    ( Block(..)
     , Board
     , BoardDimensions
     , Coord
-    , Distance
     , Move
-    , MoveOrder
-    , SeedType(..)
-    , TileState(..)
-    , TileType(..)
     , X
     , Y
     )
 
 import Css.Color exposing (Color)
+import Data.Board.Tile exposing (TileState)
 import Dict exposing (Dict)
 
 
@@ -51,47 +46,3 @@ type alias X =
 type Block
     = Wall Color
     | Space TileState
-
-
-type TileState
-    = Static TileType
-    | Dragging TileType MoveOrder Bearing
-    | Leaving TileType MoveOrder
-    | Falling TileType Distance
-    | Entering TileType
-    | Growing TileType MoveOrder
-    | Active TileType
-    | Empty
-
-
-type Bearing
-    = Head
-    | Left
-    | Right
-    | Up
-    | Down
-
-
-type alias Distance =
-    Int
-
-
-type alias MoveOrder =
-    Int
-
-
-type TileType
-    = Rain
-    | Sun
-    | SeedPod
-    | Seed SeedType
-    | Burst (Maybe TileType)
-
-
-type SeedType
-    = Sunflower
-    | Chrysanthemum
-    | Cornflower
-    | Lupin
-    | Marigold
-    | Rose

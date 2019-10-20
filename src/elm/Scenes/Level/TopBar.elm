@@ -11,6 +11,7 @@ import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Scores as Scores
+import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile
 import Data.Window exposing (Window)
@@ -64,7 +65,7 @@ topBar model =
         ]
 
 
-renderScore : TopBarViewModel -> TileType -> Html msg
+renderScore : TopBarViewModel -> Tile.TileType -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
@@ -127,7 +128,7 @@ moveCounterColor moves =
         pinkRed
 
 
-scoreContent : TileType -> Scores.Scores -> Html msg
+scoreContent : Tile.TileType -> Scores.Scores -> Html msg
 scoreContent tileType scores =
     if Scores.getScoreFor tileType scores == Just 0 then
         tickFadeIn tileType scores
@@ -136,7 +137,7 @@ scoreContent tileType scores =
         text <| Scores.toString tileType scores
 
 
-tickFadeIn : TileType -> Scores.Scores -> Html msg
+tickFadeIn : Tile.TileType -> Scores.Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
@@ -158,7 +159,7 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : TileType -> Float -> Html msg
+renderScoreIcon : Tile.TileType -> Float -> Html msg
 renderScoreIcon tileType iconSize =
     case scoreIcon tileType of
         Just icon ->
@@ -175,16 +176,16 @@ renderScoreIcon tileType iconSize =
             span [] []
 
 
-scoreIcon : TileType -> Maybe (Svg msg)
+scoreIcon : Tile.TileType -> Maybe (Svg msg)
 scoreIcon tileType =
     case tileType of
-        Sun ->
+        Tile.Sun ->
             Just sunBankFull
 
-        Rain ->
+        Tile.Rain ->
             Just rainBankFull
 
-        Seed seedType ->
+        Tile.Seed seedType ->
             Just <| renderSeed seedType
 
         _ ->

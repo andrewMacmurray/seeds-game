@@ -33,7 +33,8 @@ module Data.Levels exposing
     )
 
 import Css.Color exposing (Color)
-import Data.Board.Types exposing (BoardDimensions, Coord, SeedType, TileType)
+import Data.Board.Tile as Tile
+import Data.Board.Types exposing (BoardDimensions, Coord)
 import Data.Board.Wall as Wall
 import Data.Level.Setting.Start as Start
 import Data.Level.Setting.Tile as Tile exposing (Probability, TargetScore)
@@ -92,7 +93,7 @@ type Worlds
 type World
     = World
         { levels : Levels
-        , seedType : SeedType
+        , seedType : Tile.SeedType
         , backdropColor : Color
         , textColor : Color
         , textCompleteColor : Color
@@ -101,7 +102,7 @@ type World
 
 
 type alias WorldConfig =
-    { seedType : SeedType
+    { seedType : Tile.SeedType
     , backdropColor : Color
     , textColor : Color
     , textCompleteColor : Color
@@ -245,7 +246,7 @@ config (Level l) =
     }
 
 
-seedType : Worlds -> Id -> Maybe SeedType
+seedType : Worlds -> Id -> Maybe Tile.SeedType
 seedType worlds_ id =
     worlds_
         |> getWorld_ id

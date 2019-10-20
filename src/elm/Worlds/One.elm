@@ -1,7 +1,8 @@
 module Worlds.One exposing (default, world)
 
 import Css.Color as Color
-import Data.Board.Types exposing (Coord, SeedType(..))
+import Data.Board.Tile exposing (SeedType(..))
+import Data.Board.Types exposing (Coord)
 import Data.Board.Wall as Wall exposing (s, w)
 import Data.Level.Setting.Start as Start
 import Data.Level.Setting.Tile exposing (..)

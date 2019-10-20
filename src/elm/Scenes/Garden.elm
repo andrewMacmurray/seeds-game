@@ -13,16 +13,15 @@ import Browser.Dom as Dom
 import Context exposing (Context)
 import Css.Animation as Animation
 import Css.Color as Color exposing (rgb)
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Css.Transition as Transition
-import Data.Board.Tile exposing (seedName)
-import Data.Board.Types exposing (SeedType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), seedName)
 import Data.Levels as Levels exposing (WorldConfig)
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exit)
 import Helpers.Delay exposing (after)
-import Html exposing (Html, button, div, label, p, span, text)
+import Html exposing (Html, button, div, p, span, text)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
@@ -44,7 +43,7 @@ import Worlds
 
 type alias Model =
     { context : Context
-    , selectedFlower : SeedType
+    , selectedFlower : Tile.SeedType
     , flowerVisibility : FlowerVisibility
     }
 
@@ -52,7 +51,7 @@ type alias Model =
 type Msg
     = ScrollToCurrentCompletedWorld
     | DomNoOp (Result Dom.Error ())
-    | SelectFlower SeedType
+    | SelectFlower Tile.SeedType
     | ShowFlower
     | HideFlower
     | ClearFlower

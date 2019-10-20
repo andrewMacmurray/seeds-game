@@ -4,11 +4,9 @@ import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, none, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
-import Data.Board.Types exposing (SeedType(..))
-import Data.Levels as Levels
+import Data.Board.Tile as Tile exposing (SeedType(..))
 import Data.Progress as Progress exposing (Progress)
 import Html exposing (..)
-import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
 import Worlds
 
@@ -31,13 +29,13 @@ loadingScreen model =
         ]
 
 
-seedType : Progress -> SeedType
+seedType : Progress -> Tile.SeedType
 seedType progress =
     Progress.currentLevelSeedType Worlds.all progress
         |> Maybe.withDefault (reachedLevelSeedType progress)
 
 
-reachedLevelSeedType : Progress -> SeedType
+reachedLevelSeedType : Progress -> Tile.SeedType
 reachedLevelSeedType progress =
     Progress.reachedLevelSeedType Worlds.all progress
         |> Maybe.withDefault Sunflower

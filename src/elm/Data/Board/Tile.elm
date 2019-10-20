@@ -1,5 +1,11 @@
 module Data.Board.Tile exposing
-    ( addBearing
+    ( Bearing(..)
+    , Distance
+    , MoveOrder
+    , SeedType(..)
+    , TileState(..)
+    , TileType(..)
+    , addBearing
     , baseSizeX
     , baseSizeY
     , clearBurstType
@@ -40,8 +46,51 @@ module Data.Board.Tile exposing
     , setToFalling
     )
 
-import Data.Board.Types exposing (..)
 import Data.Window as Window
+
+
+type TileState
+    = Static TileType
+    | Dragging TileType MoveOrder Bearing
+    | Leaving TileType MoveOrder
+    | Falling TileType Distance
+    | Entering TileType
+    | Growing TileType MoveOrder
+    | Active TileType
+    | Empty
+
+
+type Bearing
+    = Head
+    | Left
+    | Right
+    | Up
+    | Down
+
+
+type alias Distance =
+    Int
+
+
+type alias MoveOrder =
+    Int
+
+
+type TileType
+    = Rain
+    | Sun
+    | SeedPod
+    | Seed SeedType
+    | Burst (Maybe TileType)
+
+
+type SeedType
+    = Sunflower
+    | Chrysanthemum
+    | Cornflower
+    | Lupin
+    | Marigold
+    | Rose
 
 
 map : a -> (TileType -> a) -> TileState -> a

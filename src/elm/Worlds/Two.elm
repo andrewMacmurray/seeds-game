@@ -1,7 +1,8 @@
 module Worlds.Two exposing (world)
 
 import Css.Color as Color
-import Data.Board.Types exposing (Coord, SeedType(..), TileType(..))
+import Data.Board.Tile exposing (SeedType(..))
+import Data.Board.Types exposing (Coord)
 import Data.Board.Wall exposing (..)
 import Data.Level.Setting.Start as Start
 import Data.Level.Setting.Tile exposing (..)

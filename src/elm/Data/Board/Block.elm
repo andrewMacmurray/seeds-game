@@ -92,12 +92,12 @@ isCurrentMove =
     fold Tile.isCurrentMove False
 
 
-setToDragging : MoveOrder -> Block -> Block
+setToDragging : Tile.MoveOrder -> Block -> Block
 setToDragging =
     map << Tile.setToDragging
 
 
-growLeavingBurstToSeed : SeedType -> Block -> Block
+growLeavingBurstToSeed : Tile.SeedType -> Block -> Block
 growLeavingBurstToSeed =
     map << Tile.growLeavingBurstToSeed
 
@@ -122,12 +122,12 @@ setStaticToFirstMove =
     map Tile.setStaticToFirstMove
 
 
-addBearing : Bearing -> Block -> Block
+addBearing : Tile.Bearing -> Block -> Block
 addBearing =
     map << Tile.addBearing
 
 
-setDraggingBurstType : TileType -> Block -> Block
+setDraggingBurstType : Tile.TileType -> Block -> Block
 setDraggingBurstType =
     map << Tile.setDraggingBurstType
 
@@ -142,7 +142,7 @@ setGrowingToStatic =
     map Tile.setGrowingToStatic
 
 
-growSeedPod : SeedType -> Block -> Block
+growSeedPod : Tile.SeedType -> Block -> Block
 growSeedPod =
     map << Tile.growSeedPod
 
@@ -182,14 +182,14 @@ setDraggingToLeaving =
     map Tile.setDraggingToLeaving
 
 
-tileType : Block -> Maybe TileType
+tileType : Block -> Maybe Tile.TileType
 tileType =
     fold Tile.getTileType Nothing
 
 
-getTileState : Block -> TileState
+getTileState : Block -> Tile.TileState
 getTileState =
-    fold identity Empty
+    fold identity Tile.Empty
 
 
 isWall : Block -> Bool
@@ -212,24 +212,24 @@ isBurst =
     fold (matchTile Tile.isBurst) False
 
 
-matchTile : (TileType -> Bool) -> TileState -> Bool
+matchTile : (Tile.TileType -> Bool) -> Tile.TileState -> Bool
 matchTile f =
     Tile.getTileType
         >> Maybe.map f
         >> Maybe.withDefault False
 
 
-static : TileType -> Block
+static : Tile.TileType -> Block
 static =
-    Static >> Space
+    Tile.Static >> Space
 
 
 empty : Block
 empty =
-    Space Empty
+    Space Tile.Empty
 
 
-map : (TileState -> TileState) -> Block -> Block
+map : (Tile.TileState -> Tile.TileState) -> Block -> Block
 map f block =
     case block of
         Space tileState ->
@@ -239,7 +239,7 @@ map f block =
             wall
 
 
-fold : (TileState -> a) -> a -> Block -> a
+fold : (Tile.TileState -> a) -> a -> Block -> a
 fold f default block =
     case block of
         Wall _ ->

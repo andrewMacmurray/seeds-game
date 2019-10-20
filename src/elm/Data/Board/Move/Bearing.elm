@@ -3,6 +3,7 @@ module Data.Board.Move.Bearing exposing (add)
 import Data.Board as Board
 import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
 import Data.Board.Move as Move
+import Data.Board.Tile exposing (Bearing(..))
 import Data.Board.Types exposing (..)
 
 
@@ -21,7 +22,7 @@ updateMoves board ( ( c2, b2 ), ( c1, b1 ) ) =
 
 
 changeBearings : Move -> Move -> ( Move, Move )
-changeBearings (( c2, t2 ) as move2) (( c1, t1 ) as move1) =
+changeBearings (( c2, _ ) as move2) (( c1, t1 ) as move1) =
     let
         newCurrentMove =
             setNewCurrentMove move2 move1

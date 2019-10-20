@@ -1,10 +1,9 @@
 module Views.Icons.SeedBank exposing (seedBank)
 
 import Css.Style as Style exposing (svgStyle)
-import Css.Transform as Css exposing (translateY)
+import Css.Transform exposing (translateY)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
 import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)
@@ -12,7 +11,7 @@ import Views.Seed.All exposing (renderSeed)
 import Views.Seed.Mono exposing (greyedOutSeed)
 
 
-seedBank : SeedType -> Float -> Html msg
+seedBank : Tile.SeedType -> Float -> Html msg
 seedBank seedType percentFull =
     let
         fullHeight =

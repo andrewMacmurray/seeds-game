@@ -18,7 +18,8 @@ module Data.Board.Move exposing
 
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
-import Data.Board.Types exposing (Block, BoardDimensions, Coord, Move, TileState, TileType)
+import Data.Board.Tile as Tile
+import Data.Board.Types exposing (Block, BoardDimensions, Coord, Move)
 
 
 move : Coord -> Block -> Move
@@ -36,7 +37,7 @@ block =
     Tuple.second
 
 
-tileState : Move -> TileState
+tileState : Move -> Tile.TileState
 tileState =
     block >> Block.getTileState
 
@@ -51,7 +52,7 @@ y =
     coord >> Coord.y
 
 
-tileType : Move -> Maybe TileType
+tileType : Move -> Maybe Tile.TileType
 tileType =
     block >> Block.tileType
 

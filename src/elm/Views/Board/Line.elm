@@ -4,7 +4,7 @@ import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
 import Data.Board.Block exposing (getTileState)
 import Data.Board.Move as Move
-import Data.Board.Tile as Tile
+import Data.Board.Tile as Tile exposing (Bearing(..), TileState(..))
 import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
@@ -48,7 +48,7 @@ lineFromMove window move =
             span [] []
 
 
-innerLine : Window -> TileType -> Bearing -> Html msg
+innerLine : Window -> Tile.TileType -> Bearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =

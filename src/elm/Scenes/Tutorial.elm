@@ -23,7 +23,7 @@ import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile
+import Data.Board.Tile as Tile exposing (SeedType(..), TileState(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
@@ -51,7 +51,7 @@ type alias Model =
     , containerVisible : Bool
     , canvasVisible : Bool
     , skipped : Bool
-    , resourceBank : TileType
+    , resourceBank : Tile.TileType
     , boardDimensions : BoardDimensions
     , currentText : Int
     , text : Dict Int String
@@ -62,7 +62,7 @@ type alias Config =
     { text : Dict Int String
     , boardDimensions : BoardDimensions
     , board : Board
-    , resourceBank : TileType
+    , resourceBank : Tile.TileType
     , sequence : Sequence
     }
 
@@ -76,9 +76,9 @@ type Msg
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving
-    | GrowPods SeedType
+    | GrowPods Tile.SeedType
     | ResetGrowingPods
-    | EnteringTiles (List TileType)
+    | EnteringTiles (List Tile.TileType)
     | FallTiles
     | ShiftBoard
     | SetBoardDimensions BoardDimensions
@@ -425,7 +425,7 @@ renderTiles model =
 leavingStyles : Model -> Move -> List Style
 leavingStyles model move =
     case Move.tileState move of
-        Leaving _ order ->
+        Tile.Leaving _ order ->
             [ transform [ translate (resourceBankOffsetX model) -100 ]
             , transitionAll 500 [ delay <| modBy 5 order * 80 ]
             ]

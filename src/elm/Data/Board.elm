@@ -25,7 +25,8 @@ module Data.Board exposing
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
-import Data.Board.Types exposing (Block, Board, BoardDimensions, Coord, Move, TileType)
+import Data.Board.Tile as Tile
+import Data.Board.Types exposing (Block, Board, BoardDimensions, Coord, Move)
 import Dict
 import Helpers.Dict
 
@@ -124,7 +125,7 @@ currentMoves =
         >> List.sortBy (Move.block >> Block.moveOrder)
 
 
-currentMoveType : Board -> Maybe TileType
+currentMoveType : Board -> Maybe Tile.TileType
 currentMoveType =
     filterBursts
         >> matchBlock Block.isDragging
@@ -158,7 +159,7 @@ secondLastMove =
 -- Create
 
 
-fromTiles : BoardDimensions -> List TileType -> Board
+fromTiles : BoardDimensions -> List Tile.TileType -> Board
 fromTiles boardDimensions tiles =
     tiles
         |> List.map Block.static

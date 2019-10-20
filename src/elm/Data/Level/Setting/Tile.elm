@@ -9,7 +9,7 @@ module Data.Level.Setting.Tile exposing
     , sun
     )
 
-import Data.Board.Types exposing (SeedType, TileType(..))
+import Data.Board.Tile exposing (SeedType, TileType(..))
 
 
 type alias Setting =

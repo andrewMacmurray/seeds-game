@@ -10,7 +10,7 @@ module Data.Board.Generate exposing
 
 import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Tile as Tile
+import Data.Board.Tile as Tile exposing (SeedType(..), TileState(..), TileType(..))
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
@@ -20,7 +20,7 @@ import Random exposing (Generator)
 -- Growing Tiles
 
 
-insertNewSeeds : SeedType -> Board -> Board
+insertNewSeeds : Tile.SeedType -> Board -> Board
 insertNewSeeds seedType board =
     let
         seedsToAdd =
@@ -32,14 +32,14 @@ insertNewSeeds seedType board =
     Board.placeMoves board seedsToAdd
 
 
-setGrowingSeed : SeedType -> Move -> Move
+setGrowingSeed : Tile.SeedType -> Move -> Move
 setGrowingSeed seedType ( coord, block ) =
     ( coord
     , Space <| Growing (Seed seedType) <| Block.growingOrder block
     )
 
 
-generateRandomSeedType : (SeedType -> msg) -> List Tile.Setting -> Cmd msg
+generateRandomSeedType : (Tile.SeedType -> msg) -> List Tile.Setting -> Cmd msg
 generateRandomSeedType msg =
     seedTypeGenerator >> Random.generate msg
 
@@ -106,7 +106,7 @@ generateInitialTiles msg tileSettings { x, y } =
         |> Random.generate msg
 
 
-seedTypeGenerator : List Tile.Setting -> Generator SeedType
+seedTypeGenerator : List Tile.Setting -> Generator Tile.SeedType
 seedTypeGenerator =
     filterSeedSettings
         >> tileGenerator

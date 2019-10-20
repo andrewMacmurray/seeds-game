@@ -17,7 +17,8 @@ module Data.Level.Setting.Start exposing
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
-import Data.Board.Types exposing (Coord, Move, SeedType(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), TileType(..))
+import Data.Board.Types exposing (Coord, Move)
 
 
 
@@ -25,7 +26,7 @@ import Data.Board.Types exposing (Coord, Move, SeedType(..), TileType(..))
 
 
 type Tile
-    = Tile Coord TileType
+    = Tile Coord Tile.TileType
 
 
 type Direction
@@ -135,7 +136,7 @@ sunflower =
     seed Sunflower
 
 
-seed : SeedType -> Int -> Int -> Tile
+seed : Tile.SeedType -> Int -> Int -> Tile
 seed seedType x y =
     Tile (toCoord x y) (Seed seedType)
 
