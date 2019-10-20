@@ -1,11 +1,19 @@
 module Data.Board.Coord exposing
     ( fromXY
     , rangeXY
+    , square
     , x
     , y
     )
 
 import Data.Board.Types exposing (Coord)
+
+
+square : { a | x : Int, y : Int, size : Int } -> List Coord
+square options =
+    rangeXY
+        (List.range options.x (options.x + options.size - 1))
+        (List.range options.y (options.y + options.size - 1))
 
 
 rangeXY : List Int -> List Int -> List Coord

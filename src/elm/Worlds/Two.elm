@@ -1,9 +1,10 @@
 module Worlds.Two exposing (world)
 
 import Css.Color as Color
-import Data.Board.Types exposing (Coord, SeedType(..))
+import Data.Board.Types exposing (Coord, SeedType(..), TileType(..))
 import Data.Board.Wall exposing (..)
-import Data.Level.Setting exposing (..)
+import Data.Level.Setting.Start as Start
+import Data.Level.Setting.Tile exposing (..)
 import Data.Levels as Levels
 
 
@@ -22,14 +23,14 @@ world =
 levels : List Levels.Level
 levels =
     [ Levels.withTutorial Levels.SeedPod
-        { walls = walls borders
+        { walls = walls firstLevelWalls
         , startTiles = []
         , boardDimensions = { x = 8, y = 8 }
-        , moves = 10
+        , moves = 5
         , tileSettings =
             [ seed
                 Chrysanthemum
-                (Probability 20)
+                (Probability 5)
                 (TargetScore 50)
             , seedPod
                 (Probability 80)
@@ -59,8 +60,8 @@ levels =
             ]
         }
     , Levels.level
-        { walls = walls innerBorders
-        , startTiles = []
+        { walls = walls thirdLevelWalls
+        , startTiles = thirdLevelStartTiles
         , boardDimensions = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
@@ -76,31 +77,33 @@ levels =
                 (TargetScore 20)
             , seedPod
                 (Probability 40)
+            , burst
+                (Probability 5)
             ]
         }
     , Levels.level
         { walls = walls fourthLevelWalls
-        , startTiles = []
+        , startTiles = fourthLevelStartTiles
         , boardDimensions = { x = 7, y = 8 }
         , moves = 10
         , tileSettings =
             [ seed
                 Sunflower
                 (Probability 25)
-                (TargetScore 50)
+                (TargetScore 35)
             , seed
                 Chrysanthemum
                 (Probability 25)
-                (TargetScore 50)
+                (TargetScore 35)
             , seedPod
-                (Probability 40)
+                (Probability 60)
             ]
         }
     , Levels.level
-        { walls = walls centerColumns
-        , startTiles = []
+        { walls = walls fifthLevelWalls
+        , startTiles = fifthLevelStartTiles
         , boardDimensions = { x = 8, y = 8 }
-        , moves = 10
+        , moves = 7
         , tileSettings =
             [ seed
                 Sunflower
@@ -121,6 +124,48 @@ levels =
     ]
 
 
+firstLevelWalls : List Coord
+firstLevelWalls =
+    toCoords
+        [ [ w, s, s, w, w, s, s, w ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ w, s, s, w, w, s, s, w ]
+        , [ w, s, s, w, w, s, s, w ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ w, s, s, s, s, s, s, w ]
+        , [ w, s, s, w, w, s, s, w ]
+        ]
+
+
+thirdLevelWalls : List Coord
+thirdLevelWalls =
+    toCoords
+        [ [ s, s, s, s, s, s, s, s ]
+        , [ s, w, w, s, s, w, w, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, w, s ]
+        , [ s, w, w, s, s, w, w, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        ]
+
+
+thirdLevelStartTiles : List Start.Tile
+thirdLevelStartTiles =
+    List.concat
+        [ Start.squareOf (Start.seed Chrysanthemum 3 3) { size = 4 }
+        , Start.cornerOf (Start.sun 1 1) { size = 3, facing = Start.BottomRight }
+        , Start.cornerOf (Start.sun 8 1) { size = 3, facing = Start.BottomLeft }
+        , Start.cornerOf (Start.rain 1 8) { size = 3, facing = Start.TopRight }
+        , Start.cornerOf (Start.rain 8 8) { size = 3, facing = Start.TopLeft }
+        , [ Start.burst 3 3
+          , Start.burst 6 6
+          ]
+        ]
+
+
 fourthLevelWalls : List Coord
 fourthLevelWalls =
     toCoords
@@ -132,4 +177,43 @@ fourthLevelWalls =
         , [ s, s, s, w, s, s, s ]
         , [ w, s, s, s, s, s, w ]
         , [ w, w, s, s, s, w, w ]
+        ]
+
+
+fourthLevelStartTiles : List Start.Tile
+fourthLevelStartTiles =
+    [ Start.burst 4 1
+    , Start.burst 4 2
+    , Start.burst 4 7
+    , Start.burst 4 8
+    ]
+
+
+fifthLevelWalls : List Coord
+fifthLevelWalls =
+    toCoords
+        [ [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, s, s, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        , [ s, s, s, w, w, s, s, s ]
+        ]
+
+
+fifthLevelStartTiles : List Start.Tile
+fifthLevelStartTiles =
+    List.concat
+        [ Start.lineOf (Start.rain 1 4) { length = 4, direction = Start.Horizontal }
+        , Start.lineOf (Start.rain 1 5) { length = 4, direction = Start.Horizontal }
+        , Start.lineOf (Start.sun 5 4) { length = 4, direction = Start.Horizontal }
+        , Start.lineOf (Start.sun 5 5) { length = 4, direction = Start.Horizontal }
+        , Start.squareOf (Start.sun 5 4) { size = 2 }
+        , [ Start.burst 3 3
+          , Start.burst 6 3
+          , Start.burst 3 6
+          , Start.burst 6 6
+          ]
         ]

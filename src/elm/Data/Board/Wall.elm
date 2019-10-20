@@ -1,10 +1,7 @@
 module Data.Board.Wall exposing
     ( Config
     , addToBoard
-    , borders
-    , centerColumns
     , corners
-    , innerBorders
     , s
     , toCoords
     , w
@@ -18,25 +15,11 @@ import Data.Board.Types exposing (Block(..), Board, Coord)
 
 
 
--- Visually Construct wall coordinates
+-- Construct Walls
 
 
 type Config
     = Config ( Color, Coord )
-
-
-centerColumns : List Coord
-centerColumns =
-    toCoords
-        [ [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        , [ s, s, s, w, w, s, s, s ]
-        ]
 
 
 corners : List Coord
@@ -50,34 +33,6 @@ corners =
         , [ s, s, s, s, s, s, s, s ]
         , [ s, s, s, s, s, s, s, w ]
         , [ s, s, s, s, s, s, w, w ]
-        ]
-
-
-innerBorders : List Coord
-innerBorders =
-    toCoords
-        [ [ s, s, s, s, s, s, s, s ]
-        , [ s, w, w, s, s, w, w, s ]
-        , [ s, w, s, s, s, s, w, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, w, s, s, s, s, w, s ]
-        , [ s, w, w, s, s, w, w, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        ]
-
-
-borders : List Coord
-borders =
-    toCoords
-        [ [ w, w, s, w, w, s, w, w ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, s, w ]
-        , [ w, w, s, w, w, s, w, w ]
         ]
 
 

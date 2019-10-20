@@ -3,7 +3,7 @@ module Data.Board.Scores exposing
     , Scores
     , addScoreFromMoves
     , allComplete
-    , collectable
+    , collectible
     , getScoreFor
     , init
     , tileTypes
@@ -15,7 +15,7 @@ import Data.Board.Block as Block
 import Data.Board.Move as Move
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Level.Setting exposing (..)
+import Data.Level.Setting.Tile as Tile
 import Dict exposing (Dict)
 
 
@@ -29,9 +29,9 @@ type alias Score =
     }
 
 
-init : List TileSetting -> Scores
+init : List Tile.Setting -> Scores
 init =
-    List.filter collectable
+    List.filter collectible
         >> List.map initScore
         >> Dict.fromList
         >> Scores
@@ -43,12 +43,12 @@ addScoreFromMoves board scores =
         tileType =
             Board.currentMoveType board |> Maybe.withDefault SeedPod
 
-        notBurst =
-            Move.block >> Block.isBurst >> not
+        isCollectible =
+            Move.block >> Block.isCollectible
 
         scoreToAdd =
             Board.currentMoves board
-                |> List.filter notBurst
+                |> List.filter isCollectible
                 |> List.length
     in
     addToScore scoreToAdd tileType scores
@@ -57,13 +57,6 @@ addScoreFromMoves board scores =
 allComplete : Scores -> Bool
 allComplete (Scores scores) =
     Dict.foldl (\_ v b -> b && v.current == v.target) True scores
-
-
-targetReached : TileType -> Scores -> Bool
-targetReached tileType =
-    getScore tileType
-        >> Maybe.map (\s -> s.current == s.target)
-        >> Maybe.withDefault False
 
 
 toString : TileType -> Scores -> String
@@ -99,20 +92,20 @@ updateScore n score =
         { score | current = score.current + n }
 
 
-tileTypes : List TileSetting -> List TileType
+tileTypes : List Tile.Setting -> List TileType
 tileTypes =
-    List.filter collectable >> List.map .tileType
+    List.filter collectible >> List.map .tileType
 
 
-collectable : TileSetting -> Bool
-collectable { targetScore } =
+collectible : Tile.Setting -> Bool
+collectible { targetScore } =
     targetScore /= Nothing
 
 
-initScore : TileSetting -> ( String, Score )
+initScore : Tile.Setting -> ( String, Score )
 initScore { tileType, targetScore } =
     let
-        (TargetScore t) =
-            Maybe.withDefault (TargetScore 0) targetScore
+        (Tile.TargetScore t) =
+            Maybe.withDefault (Tile.TargetScore 0) targetScore
     in
     ( Tile.hash tileType, Score t 0 )

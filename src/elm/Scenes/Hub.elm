@@ -19,7 +19,7 @@ import Css.Transform exposing (..)
 import Data.Board.Scores as Scores
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
-import Data.Level.Setting exposing (TargetScore(..), TileSetting)
+import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Progress as Progress
@@ -325,7 +325,7 @@ infoIcons : Levels.Level -> Html msg
 infoIcons level =
     Levels.config level
         |> .tileSettings
-        |> List.filter Scores.collectable
+        |> List.filter Scores.collectible
         |> List.map renderIcon
         |> infoIconsContainer
 
@@ -341,7 +341,7 @@ infoIconsContainer =
         ]
 
 
-renderIcon : TileSetting -> Html msg
+renderIcon : Tile.Setting -> Html msg
 renderIcon { targetScore, tileType } =
     let
         tileIcon =

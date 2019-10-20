@@ -3,7 +3,7 @@ module Worlds.Three exposing (world)
 import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
 import Data.Board.Wall exposing (..)
-import Data.Level.Setting exposing (..)
+import Data.Level.Setting.Tile exposing (..)
 import Data.Levels as Levels
 
 

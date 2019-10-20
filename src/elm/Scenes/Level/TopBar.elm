@@ -7,17 +7,17 @@ module Scenes.Level.TopBar exposing
 
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Scores as Scores
 import Data.Board.Types exposing (..)
-import Data.Level.Setting exposing (TileSetting)
+import Data.Level.Setting.Tile as Tile
 import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Svg exposing (Svg)
-import Views.Board.Tile.Styles exposing (boardFullWidth, boardWidth, scoreIconSize, topBarHeight)
+import Views.Board.Tile.Styles exposing (boardFullWidth, scoreIconSize, topBarHeight)
 import Views.Icons.RainBank exposing (rainBankFull)
 import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
@@ -27,7 +27,7 @@ import Views.Seed.All exposing (renderSeed)
 type alias TopBarViewModel =
     { window : Window
     , remainingMoves : Int
-    , tileSettings : List TileSetting
+    , tileSettings : List Tile.Setting
     , scores : Scores.Scores
     }
 

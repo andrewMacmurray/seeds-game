@@ -10,6 +10,7 @@ module Data.Board.Block exposing
     , growingOrder
     , hasLine
     , isBurst
+    , isCollectible
     , isCurrentMove
     , isDragging
     , isEmpty
@@ -201,15 +202,21 @@ isWall block =
             False
 
 
+isCollectible : Block -> Bool
+isCollectible =
+    fold (matchTile Tile.isCollectible) False
+
+
 isBurst : Block -> Bool
 isBurst =
-    let
-        burst =
-            Tile.getTileType
-                >> Maybe.map Tile.isBurst
-                >> Maybe.withDefault False
-    in
-    fold burst False
+    fold (matchTile Tile.isBurst) False
+
+
+matchTile : (TileType -> Bool) -> TileState -> Bool
+matchTile f =
+    Tile.getTileType
+        >> Maybe.map f
+        >> Maybe.withDefault False
 
 
 static : TileType -> Block

@@ -3,7 +3,8 @@ module Worlds.One exposing (default, world)
 import Css.Color as Color
 import Data.Board.Types exposing (Coord, SeedType(..))
 import Data.Board.Wall as Wall exposing (s, w)
-import Data.Level.Setting as Settings exposing (..)
+import Data.Level.Setting.Start as Start
+import Data.Level.Setting.Tile exposing (..)
 import Data.Levels as Levels
 
 
@@ -228,18 +229,14 @@ fifthLevelWalls =
         ]
 
 
-fifthLevelStartTiles : List StartTile
+fifthLevelStartTiles : List Start.Tile
 fifthLevelStartTiles =
-    Settings.startTiles
-        [ [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, sun_, bst_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, snf_, snf_, snf_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, sun_, snf_, sun_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, bst_, sun_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        ]
+    [ Start.sun 4 3
+    , Start.burst 5 3
+    , Start.seed Sunflower 4 4
+    , Start.seed Sunflower 5 4
+    , Start.burst 3 5
+    ]
 
 
 sixthLevelWalls : List Coord
@@ -256,15 +253,8 @@ sixthLevelWalls =
         ]
 
 
-sixthLevelStartTiles : List StartTile
+sixthLevelStartTiles : List Start.Tile
 sixthLevelStartTiles =
-    Settings.startTiles
-        [ [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, bst_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, bst_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        , [ rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_, rnd_ ]
-        ]
+    [ Start.burst 4 5
+    , Start.burst 5 4
+    ]

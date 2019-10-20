@@ -28,7 +28,8 @@ import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
 import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
-import Data.Level.Setting as Setting exposing (TileSetting)
+import Data.Level.Setting.Start as Start
+import Data.Level.Setting.Tile as Tile
 import Data.Levels as Levels
 import Data.Lives as Lives
 import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
@@ -59,7 +60,7 @@ type alias Model =
     , scores : Scores
     , isDragging : Bool
     , remainingMoves : Int
-    , tileSettings : List TileSetting
+    , tileSettings : List Tile.Setting
     , boardDimensions : BoardDimensions
     , levelStatus : Status
     , infoWindow : InfoWindow InfoContent
@@ -69,7 +70,7 @@ type alias Model =
 
 type alias InitConfig =
     { walls : List Wall.Config
-    , startTiles : List Setting.StartTile
+    , startTiles : List Start.Tile
     , randomTiles : List TileType
     }
 
@@ -460,9 +461,9 @@ updateBoard f model =
     { model | board = f model.board }
 
 
-addStartTiles : List Setting.StartTile -> Board -> Board
+addStartTiles : List Start.Tile -> Board -> Board
 addStartTiles startTiles board =
-    List.foldl (Board.place << Setting.move) board startTiles
+    List.foldl (Board.place << Start.move) board startTiles
 
 
 handleGenerateInitialTiles : Levels.LevelConfig -> Model -> Cmd Msg
@@ -473,7 +474,7 @@ handleGenerateInitialTiles config { boardDimensions } =
         boardDimensions
 
 
-handleGenerateEnteringTiles : RandomSetting -> Board -> List TileSetting -> Cmd Msg
+handleGenerateEnteringTiles : RandomSetting -> Board -> List Tile.Setting -> Cmd Msg
 handleGenerateEnteringTiles enteringTiles board tileSettings =
     case enteringTiles of
         AllTiles ->
@@ -483,7 +484,7 @@ handleGenerateEnteringTiles enteringTiles board tileSettings =
             generateEnteringTilesWithoutTileType tileType board tileSettings
 
 
-generateEnteringTilesWithoutTileType : TileType -> Board -> List TileSetting -> Cmd Msg
+generateEnteringTilesWithoutTileType : TileType -> Board -> List Tile.Setting -> Cmd Msg
 generateEnteringTilesWithoutTileType tileType board tileSettings =
     if List.length tileSettings == 1 then
         generateEntering board tileSettings
@@ -494,12 +495,12 @@ generateEnteringTilesWithoutTileType tileType board tileSettings =
             |> generateEntering board
 
 
-filterSettings : List TileSetting -> TileType -> List TileSetting
+filterSettings : List Tile.Setting -> TileType -> List Tile.Setting
 filterSettings settings tile =
     List.filter (\setting -> setting.tileType /= tile) settings
 
 
-generateEntering : Board -> List TileSetting -> Cmd Msg
+generateEntering : Board -> List Tile.Setting -> Cmd Msg
 generateEntering =
     generateEnteringTiles InsertEnteringTiles
 
@@ -972,7 +973,7 @@ exitXDistance resourceBankIndex model =
 
         scoreBarWidth =
             model.tileSettings
-                |> List.filter Scores.collectable
+                |> List.filter Scores.collectible
                 |> List.length
                 |> (*) scoreWidth
 

@@ -11,6 +11,7 @@ module Data.Board.Tile exposing
     , hasLine
     , hash
     , isBurst
+    , isCollectible
     , isCurrentMove
     , isDragging
     , isEmpty
@@ -390,6 +391,22 @@ isBurst : TileType -> Bool
 isBurst tileType =
     case tileType of
         Burst _ ->
+            True
+
+        _ ->
+            False
+
+
+isCollectible : TileType -> Bool
+isCollectible tileType =
+    case tileType of
+        Rain ->
+            True
+
+        Sun ->
+            True
+
+        Seed _ ->
             True
 
         _ ->

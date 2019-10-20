@@ -19,7 +19,7 @@ module Data.Progress exposing
 import Data.Board.Scores as Score
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (SeedType, TileType)
-import Data.Level.Setting exposing (TargetScore(..), TileSetting)
+import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Data.Levels as Levels
 import Dict exposing (Dict)
 import Helpers.Dict
@@ -220,7 +220,7 @@ resourcesInLevels : SeedType -> List Levels.Level -> List TileType
 resourcesInLevels worldSeedType =
     List.map tileSettings
         >> List.concat
-        >> List.filter Score.collectable
+        >> List.filter Score.collectible
         >> List.map .tileType
         >> List.filter (secondaryResource worldSeedType)
         >> Helpers.List.unique
@@ -266,12 +266,12 @@ scoresForWorld levels =
         |> totalScoresDict
 
 
-totalScoresDict : List TileSetting -> Dict String Int
+totalScoresDict : List Tile.Setting -> Dict String Int
 totalScoresDict =
     List.foldr accumSettings Dict.empty
 
 
-accumSettings : TileSetting -> Dict String Int -> Dict String Int
+accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
         Just (TargetScore n) ->
@@ -291,6 +291,6 @@ secondaryResource worldSeedType tileType =
             True
 
 
-tileSettings : Levels.Level -> List TileSetting
+tileSettings : Levels.Level -> List Tile.Setting
 tileSettings =
     Levels.config >> .tileSettings

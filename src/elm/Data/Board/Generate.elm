@@ -12,7 +12,7 @@ import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Tile as Tile
 import Data.Board.Types exposing (..)
-import Data.Level.Setting exposing (Probability(..), TileSetting)
+import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
 
 
@@ -39,19 +39,9 @@ setGrowingSeed seedType ( coord, block ) =
     )
 
 
-generateRandomSeedType : (SeedType -> msg) -> List TileSetting -> Cmd msg
+generateRandomSeedType : (SeedType -> msg) -> List Tile.Setting -> Cmd msg
 generateRandomSeedType msg =
     seedTypeGenerator >> Random.generate msg
-
-
-numberOfGrowingPods : Board -> Int
-numberOfGrowingPods =
-    filterGrowing >> Board.size
-
-
-getGrowingCoords : Board -> List Coord
-getGrowingCoords =
-    filterGrowing >> Board.coords
 
 
 filterGrowing : Board -> Board
@@ -74,7 +64,7 @@ insertNewEnteringTiles newTiles board =
     Board.placeMoves board tilesToAdd
 
 
-generateEnteringTiles : (List TileType -> msg) -> Board -> List TileSetting -> Cmd msg
+generateEnteringTiles : (List TileType -> msg) -> Board -> List Tile.Setting -> Cmd msg
 generateEnteringTiles msg board tileSettings =
     tileGenerator tileSettings
         |> Random.list (numberOfEmpties board)
@@ -110,25 +100,25 @@ mono tileType ({ x, y } as scale) =
 -- Generate Board
 
 
-generateInitialTiles : (List TileType -> msg) -> List TileSetting -> BoardDimensions -> Cmd msg
+generateInitialTiles : (List TileType -> msg) -> List Tile.Setting -> BoardDimensions -> Cmd msg
 generateInitialTiles msg tileSettings { x, y } =
     Random.list (x * y) (tileGenerator tileSettings)
         |> Random.generate msg
 
 
-seedTypeGenerator : List TileSetting -> Generator SeedType
+seedTypeGenerator : List Tile.Setting -> Generator SeedType
 seedTypeGenerator =
     filterSeedSettings
         >> tileGenerator
         >> Random.map (Tile.getSeedType >> Maybe.withDefault Sunflower)
 
 
-filterSeedSettings : List TileSetting -> List TileSetting
+filterSeedSettings : List Tile.Setting -> List Tile.Setting
 filterSeedSettings =
     List.filter (.tileType >> Tile.isSeed)
 
 
-tileGenerator : List TileSetting -> Generator TileType
+tileGenerator : List Tile.Setting -> Generator TileType
 tileGenerator tileSettings =
     Random.int 0 (totalProbability tileSettings) |> Random.map (tileProbability tileSettings)
 
@@ -137,7 +127,7 @@ tileGenerator tileSettings =
 -- Probabilities
 
 
-totalProbability : List TileSetting -> Int
+totalProbability : List Tile.Setting -> Int
 totalProbability tileSettings =
     tileSettings
         |> List.map .probability
@@ -145,7 +135,7 @@ totalProbability tileSettings =
         |> List.sum
 
 
-tileProbability : List TileSetting -> Int -> TileType
+tileProbability : List Tile.Setting -> Int -> TileType
 tileProbability tileSettings n =
     tileSettings
         |> List.foldl (evalProbability n) ( Nothing, 0 )
@@ -153,7 +143,7 @@ tileProbability tileSettings n =
         |> Maybe.withDefault SeedPod
 
 
-evalProbability : Int -> TileSetting -> ( Maybe TileType, Int ) -> ( Maybe TileType, Int )
+evalProbability : Int -> Tile.Setting -> ( Maybe TileType, Int ) -> ( Maybe TileType, Int )
 evalProbability n { tileType, probability } ( val, accProb ) =
     let
         (Probability p) =
