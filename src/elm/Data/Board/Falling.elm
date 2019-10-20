@@ -2,7 +2,7 @@ module Data.Board.Falling exposing (setFallingTiles)
 
 import Data.Board as Board
 import Data.Board.Block as Block exposing (Block)
-import Data.Board.Coord as Coord
+import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Move as Move
 import Data.Board.Shift as Shift
 import Data.Board.Types exposing (..)

@@ -17,9 +17,9 @@ module Data.Board.Move exposing
     )
 
 import Data.Board.Block as Block exposing (Block)
-import Data.Board.Coord as Coord
+import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (BoardDimensions, Coord, Move)
+import Data.Board.Types exposing (BoardDimensions, Move)
 
 
 move : Coord -> Block -> Move

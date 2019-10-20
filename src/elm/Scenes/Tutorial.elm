@@ -18,6 +18,7 @@ import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
 import Data.Board as Board
 import Data.Board.Block as Block exposing (Block)
+import Data.Board.Coord exposing (Coord)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move as Move

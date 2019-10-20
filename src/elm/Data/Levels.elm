@@ -34,7 +34,7 @@ module Data.Levels exposing
 
 import Css.Color exposing (Color)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (BoardDimensions, Coord)
+import Data.Board.Types exposing (BoardDimensions)
 import Data.Board.Wall as Wall
 import Data.Level.Setting.Start as Start
 import Data.Level.Setting.Tile as Tile exposing (Probability, TargetScore)

@@ -1,13 +1,11 @@
 module Data.Board.Types exposing
     ( Board
     , BoardDimensions
-    , Coord
     , Move
-    , X
-    , Y
     )
 
 import Data.Board.Block exposing (Block)
+import Data.Board.Coord exposing (Coord)
 import Dict exposing (Dict)
 
 
@@ -27,15 +25,3 @@ type alias Board =
 
 type alias Move =
     ( Coord, Block )
-
-
-type alias Coord =
-    ( Y, X )
-
-
-type alias Y =
-    Int
-
-
-type alias X =
-    Int

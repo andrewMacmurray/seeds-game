@@ -1,12 +1,31 @@
 module Data.Board.Coord exposing
-    ( fromXY
+    ( Coord
+    , X
+    , Y
+    , fromXY
     , rangeXY
     , square
     , x
     , y
     )
 
-import Data.Board.Types exposing (Coord)
+-- Coord
+
+
+type alias Coord =
+    ( Y, X )
+
+
+type alias Y =
+    Int
+
+
+type alias X =
+    Int
+
+
+
+-- Construct
 
 
 square : { a | x : Int, y : Int, size : Int } -> List Coord
@@ -16,21 +35,21 @@ square options =
         (List.range options.y (options.y + options.size - 1))
 
 
-rangeXY : List Int -> List Int -> List Coord
+rangeXY : List X -> List Y -> List Coord
 rangeXY xs =
     List.map (\y_ -> List.map (\x_ -> fromXY x_ y_) xs) >> List.concat
 
 
-fromXY : Int -> Int -> Coord
+fromXY : X -> Y -> Coord
 fromXY x_ y_ =
     ( y_, x_ )
 
 
-x : Coord -> Int
+x : Coord -> X
 x =
     Tuple.second
 
 
-y : Coord -> Int
+y : Coord -> Y
 y =
     Tuple.first
