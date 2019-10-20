@@ -13,7 +13,7 @@ module Data.Board.Scores exposing
 import Data.Board as Board
 import Data.Board.Block as Block
 import Data.Board.Move as Move
-import Data.Board.Tile as Tile exposing (TileType(..))
+import Data.Board.Tile as Tile exposing (Type(..))
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile
 import Dict exposing (Dict)
@@ -59,26 +59,26 @@ allComplete (Scores scores) =
     Dict.foldl (\_ v b -> b && v.current == v.target) True scores
 
 
-toString : TileType -> Scores -> String
+toString : Tile.Type -> Scores -> String
 toString tileType scores =
     getScoreFor tileType scores
         |> Maybe.map String.fromInt
         |> Maybe.withDefault ""
 
 
-getScoreFor : TileType -> Scores -> Maybe Int
+getScoreFor : Tile.Type -> Scores -> Maybe Int
 getScoreFor tileType =
     getScore tileType >> Maybe.map (\{ target, current } -> target - current)
 
 
-addToScore : Int -> TileType -> Scores -> Scores
+addToScore : Int -> Tile.Type -> Scores -> Scores
 addToScore score tileType (Scores scores) =
     scores
         |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
         |> Scores
 
 
-getScore : TileType -> Scores -> Maybe Score
+getScore : Tile.Type -> Scores -> Maybe Score
 getScore tileType (Scores scores) =
     Dict.get (Tile.hash tileType) scores
 
@@ -92,7 +92,7 @@ updateScore n score =
         { score | current = score.current + n }
 
 
-tileTypes : List Tile.Setting -> List TileType
+tileTypes : List Tile.Setting -> List Tile.Type
 tileTypes =
     List.filter collectible >> List.map .tileType
 

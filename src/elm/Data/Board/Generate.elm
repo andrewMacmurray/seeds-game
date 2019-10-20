@@ -10,7 +10,7 @@ module Data.Board.Generate exposing
 
 import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Tile as Tile exposing (SeedType(..), State(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
 import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
@@ -53,7 +53,7 @@ filterGrowing =
 -- Entering Tiles
 
 
-insertNewEnteringTiles : List TileType -> Board -> Board
+insertNewEnteringTiles : List Tile.Type -> Board -> Board
 insertNewEnteringTiles newTiles board =
     let
         tilesToAdd =
@@ -64,7 +64,7 @@ insertNewEnteringTiles newTiles board =
     Board.placeMoves board tilesToAdd
 
 
-generateEnteringTiles : (List TileType -> msg) -> Board -> List Tile.Setting -> Cmd msg
+generateEnteringTiles : (List Tile.Type -> msg) -> Board -> List Tile.Setting -> Cmd msg
 generateEnteringTiles msg board tileSettings =
     tileGenerator tileSettings
         |> Random.list (numberOfEmpties board)
@@ -86,12 +86,12 @@ filterEmpties =
     Board.filterBlocks Block.isEmpty
 
 
-addBlock : Coord -> TileType -> Board -> Board
+addBlock : Coord -> Tile.Type -> Board -> Board
 addBlock coord tileType =
     Board.placeAt coord <| Block.static tileType
 
 
-mono : TileType -> BoardDimensions -> Board
+mono : Tile.Type -> BoardDimensions -> Board
 mono tileType ({ x, y } as scale) =
     Board.fromTiles scale <| List.repeat (x * y) tileType
 
@@ -100,7 +100,7 @@ mono tileType ({ x, y } as scale) =
 -- Generate Board
 
 
-generateInitialTiles : (List TileType -> msg) -> List Tile.Setting -> BoardDimensions -> Cmd msg
+generateInitialTiles : (List Tile.Type -> msg) -> List Tile.Setting -> BoardDimensions -> Cmd msg
 generateInitialTiles msg tileSettings { x, y } =
     Random.list (x * y) (tileGenerator tileSettings)
         |> Random.generate msg
@@ -118,7 +118,7 @@ filterSeedSettings =
     List.filter (.tileType >> Tile.isSeed)
 
 
-tileGenerator : List Tile.Setting -> Generator TileType
+tileGenerator : List Tile.Setting -> Generator Tile.Type
 tileGenerator tileSettings =
     Random.int 0 (totalProbability tileSettings) |> Random.map (tileProbability tileSettings)
 
@@ -135,7 +135,7 @@ totalProbability tileSettings =
         |> List.sum
 
 
-tileProbability : List Tile.Setting -> Int -> TileType
+tileProbability : List Tile.Setting -> Int -> Tile.Type
 tileProbability tileSettings n =
     tileSettings
         |> List.foldl (evalProbability n) ( Nothing, 0 )
@@ -143,7 +143,7 @@ tileProbability tileSettings n =
         |> Maybe.withDefault SeedPod
 
 
-evalProbability : Int -> Tile.Setting -> ( Maybe TileType, Int ) -> ( Maybe TileType, Int )
+evalProbability : Int -> Tile.Setting -> ( Maybe Tile.Type, Int ) -> ( Maybe Tile.Type, Int )
 evalProbability n { tileType, probability } ( val, accProb ) =
     let
         (Probability p) =

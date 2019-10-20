@@ -23,7 +23,7 @@ import Data.Board.Generate exposing (insertNewEnteringTiles)
 import Data.Board.Move as Move
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile exposing (SeedType(..), State(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
@@ -51,7 +51,7 @@ type alias Model =
     , containerVisible : Bool
     , canvasVisible : Bool
     , skipped : Bool
-    , resourceBank : Tile.TileType
+    , resourceBank : Tile.Type
     , boardDimensions : BoardDimensions
     , currentText : Int
     , text : Dict Int String
@@ -62,7 +62,7 @@ type alias Config =
     { text : Dict Int String
     , boardDimensions : BoardDimensions
     , board : Board
-    , resourceBank : Tile.TileType
+    , resourceBank : Tile.Type
     , sequence : Sequence
     }
 
@@ -78,7 +78,7 @@ type Msg
     | ResetLeaving
     | GrowPods Tile.SeedType
     | ResetGrowingPods
-    | EnteringTiles (List Tile.TileType)
+    | EnteringTiles (List Tile.Type)
     | FallTiles
     | ShiftBoard
     | SetBoardDimensions BoardDimensions
@@ -273,7 +273,7 @@ handleDragTile coord model =
     { model | board = Bearing.add ( coord, tile ) model.board }
 
 
-handleInsertEnteringTiles : List TileType -> Model -> Model
+handleInsertEnteringTiles : List Tile.Type -> Model -> Model
 handleInsertEnteringTiles tileList =
     mapBoard <| insertNewEnteringTiles tileList
 

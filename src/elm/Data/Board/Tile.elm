@@ -4,7 +4,7 @@ module Data.Board.Tile exposing
     , MoveOrder
     , SeedType(..)
     , State(..)
-    , TileType(..)
+    , Type(..)
     , addBearing
     , baseSizeX
     , baseSizeY
@@ -49,14 +49,39 @@ module Data.Board.Tile exposing
 import Data.Window as Window
 
 
+
+-- Tile Type
+
+
+type Type
+    = Rain
+    | Sun
+    | SeedPod
+    | Seed SeedType
+    | Burst (Maybe Type)
+
+
+type SeedType
+    = Sunflower
+    | Chrysanthemum
+    | Cornflower
+    | Lupin
+    | Marigold
+    | Rose
+
+
+
+-- Tile State
+
+
 type State
-    = Static TileType
-    | Dragging TileType MoveOrder Bearing
-    | Leaving TileType MoveOrder
-    | Falling TileType Distance
-    | Entering TileType
-    | Growing TileType MoveOrder
-    | Active TileType
+    = Static Type
+    | Dragging Type MoveOrder Bearing
+    | Leaving Type MoveOrder
+    | Falling Type Distance
+    | Entering Type
+    | Growing Type MoveOrder
+    | Active Type
     | Empty
 
 
@@ -76,28 +101,8 @@ type alias MoveOrder =
     Int
 
 
-type TileType
-    = Rain
-    | Sun
-    | SeedPod
-    | Seed SeedType
-    | Burst (Maybe TileType)
 
-
-type SeedType
-    = Sunflower
-    | Chrysanthemum
-    | Cornflower
-    | Lupin
-    | Marigold
-    | Rose
-
-
-map : a -> (TileType -> a) -> State -> a
-map default fn =
-    getTileType
-        >> Maybe.map fn
-        >> Maybe.withDefault default
+-- Query
 
 
 growingOrder : State -> Int
@@ -209,6 +214,46 @@ isCurrentMove tileState =
             False
 
 
+isSeed : Type -> Bool
+isSeed tileType =
+    case tileType of
+        Seed _ ->
+            True
+
+        _ ->
+            False
+
+
+isBurst : Type -> Bool
+isBurst tileType =
+    case tileType of
+        Burst _ ->
+            True
+
+        _ ->
+            False
+
+
+isCollectible : Type -> Bool
+isCollectible tileType =
+    case tileType of
+        Rain ->
+            True
+
+        Sun ->
+            True
+
+        Seed _ ->
+            True
+
+        _ ->
+            False
+
+
+
+-- Update
+
+
 setToDragging : MoveOrder -> State -> State
 setToDragging moveOrder_ tileState =
     case tileState of
@@ -302,7 +347,7 @@ growSeedPod seedType tileState =
             x
 
 
-setDraggingBurstType : TileType -> State -> State
+setDraggingBurstType : Type -> State -> State
 setDraggingBurstType tileType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
@@ -398,7 +443,38 @@ setDraggingToLeaving tileState =
             x
 
 
-getTileType : State -> Maybe TileType
+resetBurstType : Type -> Type
+resetBurstType tileType =
+    case tileType of
+        Burst _ ->
+            Burst Nothing
+
+        x ->
+            x
+
+
+getSeedType : Type -> Maybe SeedType
+getSeedType tileType =
+    case tileType of
+        Seed seedType ->
+            Just seedType
+
+        _ ->
+            Nothing
+
+
+
+-- Helpers
+
+
+map : a -> (Type -> a) -> State -> a
+map default fn =
+    getTileType
+        >> Maybe.map fn
+        >> Maybe.withDefault default
+
+
+getTileType : State -> Maybe Type
 getTileType tileState =
     case tileState of
         Static tile ->
@@ -426,63 +502,7 @@ getTileType tileState =
             Nothing
 
 
-isSeed : TileType -> Bool
-isSeed tileType =
-    case tileType of
-        Seed _ ->
-            True
-
-        _ ->
-            False
-
-
-isBurst : TileType -> Bool
-isBurst tileType =
-    case tileType of
-        Burst _ ->
-            True
-
-        _ ->
-            False
-
-
-isCollectible : TileType -> Bool
-isCollectible tileType =
-    case tileType of
-        Rain ->
-            True
-
-        Sun ->
-            True
-
-        Seed _ ->
-            True
-
-        _ ->
-            False
-
-
-resetBurstType : TileType -> TileType
-resetBurstType tileType =
-    case tileType of
-        Burst _ ->
-            Burst Nothing
-
-        x ->
-            x
-
-
-getSeedType : TileType -> Maybe SeedType
-getSeedType tileType =
-    case tileType of
-        Seed seedType ->
-            Just seedType
-
-        _ ->
-            Nothing
-
-
-hash : TileType -> String
+hash : Type -> String
 hash tileType =
     case tileType of
         Rain ->
@@ -501,7 +521,7 @@ hash tileType =
             hashBurst tile
 
 
-hashBurst : Maybe TileType -> String
+hashBurst : Maybe Type -> String
 hashBurst =
     Maybe.map (\tile -> "Burst" ++ hash tile) >> Maybe.withDefault "BurstEmpty"
 

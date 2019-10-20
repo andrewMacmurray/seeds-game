@@ -9,11 +9,11 @@ module Data.Level.Setting.Tile exposing
     , sun
     )
 
-import Data.Board.Tile exposing (SeedType, TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType, Type(..))
 
 
 type alias Setting =
-    { tileType : TileType
+    { tileType : Tile.Type
     , probability : Probability
     , targetScore : Maybe TargetScore
     }

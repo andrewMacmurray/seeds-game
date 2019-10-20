@@ -15,7 +15,7 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
-import Data.Board.Tile as Tile exposing (SeedType(..), TileType(..), seedName)
+import Data.Board.Tile as Tile exposing (SeedType(..), Type(..), seedName)
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
 import Exit exposing (continue, exitWith)
@@ -485,7 +485,7 @@ resourceVisibility resourceState =
     showIf <| resourceState == Waiting || resourceState == Filling
 
 
-renderResource : ResourceState -> Progress -> TileType -> Html msg
+renderResource : ResourceState -> Progress -> Tile.Type -> Html msg
 renderResource resourceState progress tileType =
     let
         fillLevel =
@@ -515,7 +515,7 @@ renderResource resourceState progress tileType =
             span [] []
 
 
-renderResourceFill : ResourceState -> Progress -> TileType -> Html msg
+renderResourceFill : ResourceState -> Progress -> Tile.Type -> Html msg
 renderResourceFill resourceState progress tileType =
     let
         fill =
@@ -544,7 +544,7 @@ renderResourceFill resourceState progress tileType =
             span [] []
 
 
-renderFill : ResourceState -> TileType -> Progress -> Html msg -> Html msg
+renderFill : ResourceState -> Tile.Type -> Progress -> Html msg -> Html msg
 renderFill resourceState tileType progess element =
     if resourceState == Filling && pointsFromPreviousLevel tileType progess > 0 then
         element
@@ -553,7 +553,7 @@ renderFill resourceState tileType progess element =
         span [] []
 
 
-pointsFromPreviousLevel : TileType -> Progress -> Int
+pointsFromPreviousLevel : Tile.Type -> Progress -> Int
 pointsFromPreviousLevel tileType progress =
     Progress.pointsFromPreviousLevel Worlds.all tileType progress
         |> Maybe.withDefault 0

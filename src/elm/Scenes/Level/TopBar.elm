@@ -65,7 +65,7 @@ topBar model =
         ]
 
 
-renderScore : TopBarViewModel -> Tile.TileType -> Html msg
+renderScore : TopBarViewModel -> Tile.Type -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
@@ -128,7 +128,7 @@ moveCounterColor moves =
         pinkRed
 
 
-scoreContent : Tile.TileType -> Scores.Scores -> Html msg
+scoreContent : Tile.Type -> Scores.Scores -> Html msg
 scoreContent tileType scores =
     if Scores.getScoreFor tileType scores == Just 0 then
         tickFadeIn tileType scores
@@ -137,7 +137,7 @@ scoreContent tileType scores =
         text <| Scores.toString tileType scores
 
 
-tickFadeIn : Tile.TileType -> Scores.Scores -> Html msg
+tickFadeIn : Tile.Type -> Scores.Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
@@ -159,7 +159,7 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : Tile.TileType -> Float -> Html msg
+renderScoreIcon : Tile.Type -> Float -> Html msg
 renderScoreIcon tileType iconSize =
     case scoreIcon tileType of
         Just icon ->
@@ -176,7 +176,7 @@ renderScoreIcon tileType iconSize =
             span [] []
 
 
-scoreIcon : Tile.TileType -> Maybe (Svg msg)
+scoreIcon : Tile.Type -> Maybe (Svg msg)
 scoreIcon tileType =
     case tileType of
         Tile.Sun ->

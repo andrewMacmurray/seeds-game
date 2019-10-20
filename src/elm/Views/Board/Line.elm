@@ -48,7 +48,7 @@ lineFromMove window move =
             span [] []
 
 
-innerLine : Window -> Tile.TileType -> Bearing -> Html msg
+innerLine : Window -> Tile.Type -> Bearing -> Html msg
 innerLine window tileType bearing =
     let
         tileScale =

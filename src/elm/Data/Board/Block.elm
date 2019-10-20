@@ -127,7 +127,7 @@ addBearing =
     map << Tile.addBearing
 
 
-setDraggingBurstType : Tile.TileType -> Block -> Block
+setDraggingBurstType : Tile.Type -> Block -> Block
 setDraggingBurstType =
     map << Tile.setDraggingBurstType
 
@@ -182,7 +182,7 @@ setDraggingToLeaving =
     map Tile.setDraggingToLeaving
 
 
-tileType : Block -> Maybe Tile.TileType
+tileType : Block -> Maybe Tile.Type
 tileType =
     fold Tile.getTileType Nothing
 
@@ -212,14 +212,14 @@ isBurst =
     fold (matchTile Tile.isBurst) False
 
 
-matchTile : (Tile.TileType -> Bool) -> Tile.State -> Bool
+matchTile : (Tile.Type -> Bool) -> Tile.State -> Bool
 matchTile f =
     Tile.getTileType
         >> Maybe.map f
         >> Maybe.withDefault False
 
 
-static : Tile.TileType -> Block
+static : Tile.Type -> Block
 static =
     Tile.Static >> Space
 

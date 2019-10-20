@@ -17,7 +17,7 @@ module Data.Level.Setting.Start exposing
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move
-import Data.Board.Tile as Tile exposing (SeedType(..), TileType(..))
+import Data.Board.Tile as Tile exposing (SeedType(..), Type(..))
 import Data.Board.Types exposing (Coord, Move)
 
 
@@ -26,7 +26,7 @@ import Data.Board.Types exposing (Coord, Move)
 
 
 type Tile
-    = Tile Coord Tile.TileType
+    = Tile Coord Tile.Type
 
 
 type Direction

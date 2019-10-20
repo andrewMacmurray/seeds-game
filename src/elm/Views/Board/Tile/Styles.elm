@@ -280,12 +280,12 @@ tileSize =
     fromBlock tileSize_ 0
 
 
-fromBlock : (Tile.TileType -> a) -> a -> Block -> a
+fromBlock : (Tile.Type -> a) -> a -> Block -> a
 fromBlock f default =
     Block.fold (Tile.map default f) default
 
 
-strokeColors : Tile.TileType -> Color.Color
+strokeColors : Tile.Type -> Color.Color
 strokeColors tile =
     case tile of
         Tile.Rain ->
@@ -304,7 +304,7 @@ strokeColors tile =
             burstColor tile_
 
 
-lighterStrokeColor : Tile.TileType -> Color.Color
+lighterStrokeColor : Tile.Type -> Color.Color
 lighterStrokeColor tile =
     case tile of
         Tile.Rain ->
@@ -323,12 +323,12 @@ lighterStrokeColor tile =
             lighterBurstColor tile_
 
 
-burstColor : Maybe Tile.TileType -> Color.Color
+burstColor : Maybe Tile.Type -> Color.Color
 burstColor =
     Maybe.map strokeColors >> Maybe.withDefault Color.greyYellow
 
 
-lighterBurstColor : Maybe Tile.TileType -> Color.Color
+lighterBurstColor : Maybe Tile.Type -> Color.Color
 lighterBurstColor =
     Maybe.map lighterStrokeColor >> Maybe.withDefault Color.transparent
 
@@ -371,7 +371,7 @@ lighterSeedStrokeColor seedType =
             Color.lightBrown
 
 
-tileBackground_ : Tile.TileType -> List Style
+tileBackground_ : Tile.Type -> List Style
 tileBackground_ tile =
     case tile of
         Tile.Rain ->
@@ -390,7 +390,7 @@ tileBackground_ tile =
             []
 
 
-tileSize_ : Tile.TileType -> Float
+tileSize_ : Tile.Type -> Float
 tileSize_ tile =
     case tile of
         Tile.Rain ->

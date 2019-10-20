@@ -52,7 +52,7 @@ y =
     coord >> Coord.y
 
 
-tileType : Move -> Maybe Tile.TileType
+tileType : Move -> Maybe Tile.Type
 tileType =
     block >> Block.tileType
 

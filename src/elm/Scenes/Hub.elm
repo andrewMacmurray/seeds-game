@@ -17,7 +17,7 @@ import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Data.Board.Scores as Scores
-import Data.Board.Tile as Tile exposing (TileType(..))
+import Data.Board.Tile as Tile exposing (Type(..))
 import Data.Board.Types exposing (..)
 import Data.InfoWindow as InfoWindow exposing (..)
 import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))

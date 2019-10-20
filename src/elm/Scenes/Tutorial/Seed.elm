@@ -1,7 +1,7 @@
 module Scenes.Tutorial.Seed exposing (config)
 
 import Data.Board.Generate as Board
-import Data.Board.Tile exposing (SeedType(..), TileType(..))
+import Data.Board.Tile exposing (SeedType(..), Type(..))
 import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)

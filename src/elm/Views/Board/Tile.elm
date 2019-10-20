@@ -119,13 +119,13 @@ innerTileElement block =
             span [] []
 
 
-renderBurst : Block -> Maybe Tile.TileType -> Html msg
+renderBurst : Block -> Maybe Tile.Type -> Html msg
 renderBurst block tile =
     div [ Style.style <| burstStyles block ]
         [ renderBurst_ tile <| Block.isLeaving block ]
 
 
-renderBurst_ : Maybe Tile.TileType -> Bool -> Html msg
+renderBurst_ : Maybe Tile.Type -> Bool -> Html msg
 renderBurst_ tile isBursting =
     case tile of
         Just tile_ ->

@@ -125,7 +125,7 @@ currentMoves =
         >> List.sortBy (Move.block >> Block.moveOrder)
 
 
-currentMoveType : Board -> Maybe Tile.TileType
+currentMoveType : Board -> Maybe Tile.Type
 currentMoveType =
     filterBursts
         >> matchBlock Block.isDragging
@@ -159,7 +159,7 @@ secondLastMove =
 -- Create
 
 
-fromTiles : BoardDimensions -> List Tile.TileType -> Board
+fromTiles : BoardDimensions -> List Tile.Type -> Board
 fromTiles boardDimensions tiles =
     tiles
         |> List.map Block.static
