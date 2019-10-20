@@ -7,12 +7,12 @@ module Views.Menu exposing
     )
 
 import Context exposing (Context)
-import Css.Animation as Animation exposing (animation)
+import Css.Animation exposing (animation)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
-import Css.Transition exposing (transition, transitionAll)
-import Data.Pointer exposing (onPointerMove, onPointerUp)
+import Css.Transition exposing (transitionAll)
+import Data.Pointer exposing (onPointerUp)
 import Helpers.Attribute as Attribute
 import Html exposing (Attribute, Html, a, button, div, text)
 import Html.Attributes exposing (attribute, class, href, target)

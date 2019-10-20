@@ -352,6 +352,7 @@ seedStrokeColors seedType =
             Color.darkBrown
 
 
+lighterSeedStrokeColor : SeedType -> Color.Color
 lighterSeedStrokeColor seedType =
     case seedType of
         Sunflower ->
@@ -361,7 +362,7 @@ lighterSeedStrokeColor seedType =
             Color.orange
 
         Cornflower ->
-            Color.lightBlue
+            Color.blueGrey
 
         Lupin ->
             Color.brown

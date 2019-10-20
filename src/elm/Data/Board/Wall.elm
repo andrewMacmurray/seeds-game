@@ -2,6 +2,7 @@ module Data.Board.Wall exposing
     ( Config
     , addToBoard
     , corners
+    , invisible
     , s
     , toCoords
     , w
@@ -65,6 +66,11 @@ toCoord i j x =
 
 
 -- Add Walls to board
+
+
+invisible : List Coord -> List Config
+invisible =
+    withColor Color.lightYellow
 
 
 walls : List Coord -> List Config

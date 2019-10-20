@@ -1,19 +1,16 @@
 module Css.Color exposing
     ( Color
-    , ashGreen
     , black
     , blockYellow
+    , blueGrey
     , brown
     , brownYellow
     , chocolate
     , crimson
     , darkBlue
     , darkBrown
-    , darkForestGreen
     , darkRed
-    , darkSeaGreen
     , darkYellow
-    , deepPine
     , fadedOrange
     , firrGreen
     , gold
@@ -26,20 +23,17 @@ module Css.Color exposing
     , lightGreen
     , lightGreyYellow
     , lightOrange
-    , lightPine
     , lightYellow
     , meadowGreen
     , mediumGreen
     , midnightBlue
     , orange
     , petalOrange
-    , pineGreen
     , pinkRed
     , purple
     , rainBlue
     , rgb
     , rgba
-    , seaGreen
     , seedPodGradient
     , silver
     , skyGreen
@@ -262,44 +256,9 @@ meadowGreen =
     rgb 91 201 120
 
 
-lightPine : Color
-lightPine =
-    rgb 86 180 102
-
-
 firrGreen : Color
 firrGreen =
     rgb 93 136 61
-
-
-pineGreen : Color
-pineGreen =
-    rgb 64 145 78
-
-
-deepPine : Color
-deepPine =
-    rgb 38 129 53
-
-
-seaGreen : Color
-seaGreen =
-    rgb 31 125 92
-
-
-darkSeaGreen : Color
-darkSeaGreen =
-    rgb 21 103 77
-
-
-darkForestGreen : Color
-darkForestGreen =
-    rgb 8 71 38
-
-
-ashGreen : Color
-ashGreen =
-    rgb 58 94 82
 
 
 lightBlue : Color
@@ -315,6 +274,11 @@ rainBlue =
 darkBlue : Color
 darkBlue =
     rgb 7 28 65
+
+
+blueGrey : Color
+blueGrey =
+    rgb 192 198 216
 
 
 midnightBlue : Color

@@ -155,11 +155,11 @@ thirdLevelWalls =
 thirdLevelStartTiles : List Start.Tile
 thirdLevelStartTiles =
     List.concat
-        [ Start.squareOf (Start.seed Chrysanthemum 3 3) { size = 4 }
-        , Start.cornerOf (Start.sun 1 1) { size = 3, facing = Start.BottomRight }
-        , Start.cornerOf (Start.sun 8 1) { size = 3, facing = Start.BottomLeft }
-        , Start.cornerOf (Start.rain 1 8) { size = 3, facing = Start.TopRight }
-        , Start.cornerOf (Start.rain 8 8) { size = 3, facing = Start.TopLeft }
+        [ Start.square (Start.seed Chrysanthemum 3 3) { size = 4 }
+        , Start.corner (Start.sun 1 1) { size = 3, facing = Start.BottomRight }
+        , Start.corner (Start.sun 8 1) { size = 3, facing = Start.BottomLeft }
+        , Start.corner (Start.rain 1 8) { size = 3, facing = Start.TopRight }
+        , Start.corner (Start.rain 8 8) { size = 3, facing = Start.TopLeft }
         , [ Start.burst 3 3
           , Start.burst 6 6
           ]
@@ -206,11 +206,11 @@ fifthLevelWalls =
 fifthLevelStartTiles : List Start.Tile
 fifthLevelStartTiles =
     List.concat
-        [ Start.lineOf (Start.rain 1 4) { length = 4, direction = Start.Horizontal }
-        , Start.lineOf (Start.rain 1 5) { length = 4, direction = Start.Horizontal }
-        , Start.lineOf (Start.sun 5 4) { length = 4, direction = Start.Horizontal }
-        , Start.lineOf (Start.sun 5 5) { length = 4, direction = Start.Horizontal }
-        , Start.squareOf (Start.sun 5 4) { size = 2 }
+        [ Start.line (Start.rain 1 4) { length = 4, direction = Start.Horizontal }
+        , Start.line (Start.rain 1 5) { length = 4, direction = Start.Horizontal }
+        , Start.line (Start.sun 5 4) { length = 4, direction = Start.Horizontal }
+        , Start.line (Start.sun 5 5) { length = 4, direction = Start.Horizontal }
+        , Start.square (Start.sun 5 4) { size = 2 }
         , [ Start.burst 3 3
           , Start.burst 6 3
           , Start.burst 3 6

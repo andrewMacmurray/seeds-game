@@ -3,13 +3,15 @@ module Data.Level.Setting.Start exposing
     , Facing(..)
     , Tile
     , burst
-    , cornerOf
-    , lineOf
+    , corner
+    , line
     , move
     , rain
+    , rectangle
     , seed
-    , squareOf
+    , square
     , sun
+    , sunflower
     )
 
 import Data.Board.Block as Block
@@ -51,35 +53,41 @@ move (Tile coord tileType) =
 -- Tiles
 
 
-squareOf : Tile -> { size : Int } -> List Tile
-squareOf (Tile c tt) { size } =
-    toTiles tt <| Coord.square { size = size, x = Coord.x c, y = Coord.y c }
+square : Tile -> { size : Int } -> List Tile
+square tile { size } =
+    rectangle tile { x = size, y = size }
 
 
-lineOf : Tile -> { length : Int, direction : Direction } -> List Tile
-lineOf (Tile coord tileType) { length, direction } =
+line : Tile -> { length : Int, direction : Direction } -> List Tile
+line tile { length, direction } =
+    case direction of
+        Vertical ->
+            rectangle tile { x = 1, y = length }
+
+        Horizontal ->
+            rectangle tile { x = length, y = 1 }
+
+
+rectangle : Tile -> { x : Int, y : Int } -> List Tile
+rectangle (Tile coord tileType) opts =
     let
         x =
             Coord.x coord
 
         y =
             Coord.y coord
+
+        toTiles c =
+            Tile c tileType
     in
-    case direction of
-        Vertical ->
-            toTiles tileType <| Coord.rangeXY [ x ] (List.range y (y + length - 1))
-
-        Horizontal ->
-            toTiles tileType <| Coord.rangeXY (List.range x (x + length - 1)) [ y ]
+    List.map toTiles <|
+        Coord.rangeXY
+            (List.range x (x + opts.x - 1))
+            (List.range y (y + opts.y - 1))
 
 
-toTiles : TileType -> List Coord -> List Tile
-toTiles tileType =
-    List.map (\coord -> Tile coord tileType)
-
-
-cornerOf : Tile -> { size : Int, facing : Facing } -> List Tile
-cornerOf tile { size, facing } =
+corner : Tile -> { size : Int, facing : Facing } -> List Tile
+corner tile { size, facing } =
     let
         flippedY =
             adjustY (-size + 1) tile
@@ -95,16 +103,16 @@ cornerOf tile { size, facing } =
     in
     case facing of
         BottomRight ->
-            List.concat [ lineOf tile vertical, lineOf tile horizontal ]
+            List.concat [ line tile vertical, line tile horizontal ]
 
         BottomLeft ->
-            List.concat [ lineOf tile vertical, lineOf flippedX horizontal ]
+            List.concat [ line tile vertical, line flippedX horizontal ]
 
         TopRight ->
-            List.concat [ lineOf flippedY vertical, lineOf tile horizontal ]
+            List.concat [ line flippedY vertical, line tile horizontal ]
 
         TopLeft ->
-            List.concat [ lineOf flippedY vertical, lineOf flippedX horizontal ]
+            List.concat [ line flippedY vertical, line flippedX horizontal ]
 
 
 burst : Int -> Int -> Tile
@@ -120,6 +128,11 @@ sun x y =
 rain : Int -> Int -> Tile
 rain x y =
     Tile (toCoord x y) Rain
+
+
+sunflower : Int -> Int -> Tile
+sunflower =
+    seed Sunflower
 
 
 seed : SeedType -> Int -> Int -> Tile

@@ -11,6 +11,7 @@ import Data.Lives as Lives
 import Data.Progress as Progress exposing (Progress)
 import Data.Window exposing (Window)
 import Exit
+import Helpers.Debug as Debug
 import Helpers.Delay as Delay exposing (trigger)
 import Helpers.Return as Return
 import Html exposing (Html, div)
@@ -121,6 +122,7 @@ init flags =
     , Cmd.batch
         [ bounceKeyframes flags.window
         , Cmd.map TitleMsg titleCmd
+        , Debug.goToLevel 3 3 InitLevel
         ]
     )
 
