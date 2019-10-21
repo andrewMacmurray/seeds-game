@@ -13,11 +13,11 @@ import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWid
 
 
 renderLine : Window -> Move -> Html msg
-renderLine window (( coord, _ ) as move) =
+renderLine window move =
     div
         [ styles
             [ tileWidthheights window
-            , tileCoordsStyles window coord
+            , tileCoordsStyles window <| Move.coord move
             ]
         , class "dib absolute touch-disabled"
         ]

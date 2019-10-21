@@ -116,7 +116,7 @@ blocks =
 
 moves : Board -> List Move
 moves =
-    Dict.toList
+    Dict.toList >> List.map toMove
 
 
 findBlockAt : Coord -> Board -> Maybe Block
@@ -125,8 +125,8 @@ findBlockAt =
 
 
 matchBlock : (Block -> Bool) -> Board -> Maybe Move
-matchBlock =
-    Helpers.Dict.findValue
+matchBlock f =
+    Helpers.Dict.findValue f >> Maybe.map toMove
 
 
 
@@ -194,4 +194,18 @@ range n =
 
 fromMoves : List Move -> Board
 fromMoves =
-    Dict.fromList
+    List.map fromMove >> Dict.fromList
+
+
+
+-- Helpers
+
+
+toMove : ( Coord, Block ) -> Move
+toMove ( coord, block ) =
+    Move.move coord block
+
+
+fromMove : Move -> ( Coord, Block )
+fromMove move =
+    ( Move.coord move, Move.block move )

@@ -695,7 +695,7 @@ moveFromCoord : Board -> Coord -> Maybe Move
 moveFromCoord board coord =
     board
         |> Board.findBlockAt coord
-        |> Maybe.map (\block -> ( coord, block ))
+        |> Maybe.map (Move.move coord)
 
 
 coordsFromPosition : Pointer -> Model -> Coord
@@ -867,8 +867,8 @@ currentMoveLayer model =
 
 
 renderCurrentMove : Model -> Move -> Html msg
-renderCurrentMove model (( _, block ) as move) =
-    if Block.isCurrentMove block && model.isDragging then
+renderCurrentMove model move =
+    if Block.isCurrentMove (Move.block move) && model.isDragging then
         Tile.view
             { extraStyles = []
             , isBursting = isBursting model
@@ -912,7 +912,11 @@ mapTiles f =
 
 
 leavingStyles : Model -> Move -> List Style
-leavingStyles model (( _, block ) as move) =
+leavingStyles model move =
+    let
+        block =
+            Move.block move
+    in
     if Block.isLeaving block && not (Block.isBurst block) then
         [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
         , opacity 0.2
@@ -924,8 +928,8 @@ leavingStyles model (( _, block ) as move) =
 
 
 handleExitDirection : Move -> Model -> Style
-handleExitDirection ( _, block ) model =
-    case Block.getTileState block of
+handleExitDirection move model =
+    case Block.getTileState <| Move.block move of
         Leaving Rain _ ->
             getLeavingStyle Rain model
 

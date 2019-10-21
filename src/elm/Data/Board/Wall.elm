@@ -17,11 +17,44 @@ import Data.Board.Coord exposing (Coord)
 
 
 
--- Construct Walls
+-- Walls
 
 
 type Config
-    = Config ( Color, Coord )
+    = Config Color Coord
+
+
+
+-- Construct
+
+
+walls : List Coord -> List Config
+walls =
+    withColor Color.blockYellow
+
+
+invisible : List Coord -> List Config
+invisible =
+    withColor Color.lightYellow
+
+
+addToBoard : List Config -> Board -> Board
+addToBoard walls_ board =
+    List.foldl addWall board walls_
+
+
+addWall : Config -> Board -> Board
+addWall (Config color coord) =
+    Board.placeAt coord <| Wall color
+
+
+withColor : Color -> List Coord -> List Config
+withColor color =
+    List.map (Config color)
+
+
+
+-- Visually construct Coordinates
 
 
 corners : List Coord
@@ -63,32 +96,3 @@ toCoord i j x =
 
     else
         []
-
-
-
--- Add Walls to board
-
-
-invisible : List Coord -> List Config
-invisible =
-    withColor Color.lightYellow
-
-
-walls : List Coord -> List Config
-walls =
-    withColor Color.blockYellow
-
-
-addToBoard : List Config -> Board -> Board
-addToBoard walls_ board =
-    List.foldl addWall board walls_
-
-
-addWall : Config -> Board -> Board
-addWall (Config ( wallColor, coord )) =
-    Board.placeAt coord <| Wall wallColor
-
-
-withColor : Color -> List Coord -> List Config
-withColor color =
-    List.map (\coord -> Config ( color, coord ))

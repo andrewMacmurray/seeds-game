@@ -8,6 +8,7 @@ module Data.Board.Move exposing
     , sameTileType
     , tileState
     , tileType
+    , updateBlock
     , x
     , y
     )
@@ -21,8 +22,8 @@ import Data.Board.Tile as Tile
 -- Move
 
 
-type alias Move =
-    ( Coord, Block )
+type Move
+    = Move Coord Block
 
 
 
@@ -30,15 +31,13 @@ type alias Move =
 
 
 move : Coord -> Block -> Move
-move c b =
-    ( c, b )
+move =
+    Move
 
 
 empty : Move
 empty =
-    ( Coord.fromXY 0 0
-    , Block.empty
-    )
+    Move (Coord.fromXY 0 0) Block.empty
 
 
 
@@ -46,13 +45,13 @@ empty =
 
 
 coord : Move -> Coord
-coord =
-    Tuple.first
+coord (Move c _) =
+    c
 
 
 block : Move -> Block
-block =
-    Tuple.second
+block (Move _ b) =
+    b
 
 
 tileState : Move -> Tile.State
@@ -93,3 +92,12 @@ areNeighbours move2 move1 =
     ]
         |> List.map checkCoords
         |> List.any identity
+
+
+
+-- Update
+
+
+updateBlock : (Block -> Block) -> Move -> Move
+updateBlock f (Move c b) =
+    Move c (f b)

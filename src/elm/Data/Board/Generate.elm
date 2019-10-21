@@ -34,10 +34,8 @@ insertNewSeeds seedType board =
 
 
 setGrowingSeed : Tile.SeedType -> Move -> Move
-setGrowingSeed seedType move =
-    ( Move.coord move
-    , Space <| Growing (Seed seedType) <| Block.growingOrder <| Move.block move
-    )
+setGrowingSeed seedType =
+    Move.updateBlock (Space << Growing (Seed seedType) << Block.growingOrder)
 
 
 generateRandomSeedType : (Tile.SeedType -> msg) -> List Tile.Setting -> Cmd msg
@@ -60,7 +58,7 @@ insertNewEnteringTiles newTiles board =
         tilesToAdd =
             board
                 |> getEmptyCoords
-                |> List.map2 (\tile coord -> ( coord, Space <| Entering tile )) newTiles
+                |> List.map2 (\tile coord -> Move.move coord (Space <| Entering tile)) newTiles
     in
     Board.placeMoves board tilesToAdd
 

@@ -31,7 +31,7 @@ changeBearings move2 move1 =
             Move.coord move2
 
         withBearing bearing =
-            ( setNewCurrentMove move2 move1
+            ( setNewCurrentMove move1 move2
             , Move.move c1 <| Block.addBearing bearing <| Move.block move1
             )
     in
@@ -52,10 +52,8 @@ changeBearings move2 move1 =
 
 
 setNewCurrentMove : Move -> Move -> Move
-setNewCurrentMove move2 move1 =
-    ( Move.coord move2
-    , Block.setToDragging (incrementMoveOrder move1) (Move.block move2)
-    )
+setNewCurrentMove move1 =
+    Move.updateBlock (Block.setToDragging <| incrementMoveOrder move1)
 
 
 incrementMoveOrder : Move -> Int

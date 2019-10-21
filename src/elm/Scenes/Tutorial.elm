@@ -267,10 +267,13 @@ handleDragTile coord model =
         sunflower =
             Block.static <| Seed Sunflower
 
-        tile =
+        block =
             Dict.get coord model.board |> Maybe.withDefault sunflower
+
+        move =
+            Move.move coord block
     in
-    { model | board = Bearing.add ( coord, tile ) model.board }
+    { model | board = Bearing.add move model.board }
 
 
 handleInsertEnteringTiles : List Tile.Type -> Model -> Model
@@ -391,15 +394,15 @@ resourceBankOffsetX model =
 renderLines_ : Model -> List (Html msg)
 renderLines_ model =
     model.board
-        |> Dict.toList
+        |> Board.moves
         |> List.map (fadeLine model)
 
 
 fadeLine : Model -> Move -> Html msg
-fadeLine model (( _, tile ) as move) =
+fadeLine model move =
     let
         visible =
-            Block.hasLine tile
+            Block.hasLine (Move.block move)
     in
     div
         [ style [ transitionAll 500 [], showIf visible ] ]
@@ -409,7 +412,7 @@ fadeLine model (( _, tile ) as move) =
 renderTiles : Model -> List (Html msg)
 renderTiles model =
     model.board
-        |> Dict.toList
+        |> Board.moves
         |> List.map
             (\move ->
                 Tile.view

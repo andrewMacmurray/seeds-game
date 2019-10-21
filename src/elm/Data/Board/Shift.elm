@@ -33,7 +33,7 @@ shiftRemainingTiles row =
             getXfromRow row
 
         shiftMove y move =
-            ( Coord.fromXY x y, Move.block move )
+            Move.move (Coord.fromXY x y) (Move.block move)
     in
     row
         |> sortByLeaving
