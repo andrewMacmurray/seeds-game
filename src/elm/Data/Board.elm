@@ -36,8 +36,8 @@ import Helpers.Dict
 -- Board
 
 
-type alias Board =
-    Dict Coord Block
+type Board
+    = Board (Dict Coord Block)
 
 
 type alias Size =
@@ -52,7 +52,7 @@ type alias Size =
 
 updateAt : Coord -> (Block -> Block) -> Board -> Board
 updateAt coord f =
-    Dict.update coord <| Maybe.map f
+    aroundBoard (Dict.update coord <| Maybe.map f)
 
 
 placeMoves : Board -> List Move -> Board
@@ -67,7 +67,7 @@ placeAt coord block =
 
 place : Move -> Board -> Board
 place move =
-    Dict.update (Move.coord move) <| Maybe.map (always <| Move.block move)
+    aroundBoard (Dict.update (Move.coord move) <| Maybe.map (always <| Move.block move))
 
 
 updateBlocks : (Block -> Block) -> Board -> Board
@@ -76,8 +76,8 @@ updateBlocks f =
 
 
 update : (Coord -> Block -> Block) -> Board -> Board
-update =
-    Dict.map
+update f =
+    aroundBoard (Dict.map f)
 
 
 filterBlocks : (Block -> Bool) -> Board -> Board
@@ -86,8 +86,8 @@ filterBlocks f =
 
 
 filter : (Coord -> Block -> Bool) -> Board -> Board
-filter =
-    Dict.filter
+filter f =
+    aroundBoard (Dict.filter f)
 
 
 
@@ -96,37 +96,37 @@ filter =
 
 size : Board -> Int
 size =
-    Dict.size
+    unwrap >> Dict.size
 
 
 isEmpty : Board -> Bool
 isEmpty =
-    Dict.isEmpty
+    unwrap >> Dict.isEmpty
 
 
 coords : Board -> List Coord
 coords =
-    Dict.keys
+    unwrap >> Dict.keys
 
 
 blocks : Board -> List Block
 blocks =
-    Dict.values
+    unwrap >> Dict.values
 
 
 moves : Board -> List Move
 moves =
-    Dict.toList >> List.map toMove
+    unwrap >> Dict.toList >> List.map toMove
 
 
 findBlockAt : Coord -> Board -> Maybe Block
-findBlockAt =
-    Dict.get
+findBlockAt c =
+    unwrap >> Dict.get c
 
 
 matchBlock : (Block -> Bool) -> Board -> Maybe Move
 matchBlock f =
-    Helpers.Dict.findValue f >> Maybe.map toMove
+    unwrap >> Helpers.Dict.findValue f >> Maybe.map toMove
 
 
 
@@ -194,7 +194,7 @@ range n =
 
 fromMoves : List Move -> Board
 fromMoves =
-    List.map fromMove >> Dict.fromList
+    List.map fromMove >> Dict.fromList >> wrap
 
 
 
@@ -209,3 +209,18 @@ toMove ( coord, block ) =
 fromMove : Move -> ( Coord, Block )
 fromMove move =
     ( Move.coord move, Move.block move )
+
+
+aroundBoard : (Dict Coord Block -> Dict Coord Block) -> Board -> Board
+aroundBoard f =
+    unwrap >> f >> wrap
+
+
+wrap : Dict Coord Block -> Board
+wrap =
+    Board
+
+
+unwrap : Board -> Dict Coord Block
+unwrap (Board board) =
+    board

@@ -126,7 +126,7 @@ init config context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , board = Dict.empty
+    , board = Board.fromMoves []
     , boardVisible = True
     , textVisible = True
     , resourceBankVisible = False
@@ -181,12 +181,12 @@ update msg model =
             continue (handleInsertEnteringTiles tiles model) []
 
         FallTiles ->
-            continue (mapBoard setFallingTiles model) []
+            continue (updateBoard setFallingTiles model) []
 
         ShiftBoard ->
             continue
                 (model
-                    |> mapBoard shiftBoard
+                    |> updateBoard shiftBoard
                     |> updateBlocks Block.setFallingToStatic
                     |> updateBlocks Block.setLeavingToEmpty
                 )
@@ -247,8 +247,8 @@ updateBlocks f model =
     { model | board = Board.updateBlocks f model.board }
 
 
-mapBoard : (Board -> Board) -> Model -> Model
-mapBoard f model =
+updateBoard : (Board -> Board) -> Model -> Model
+updateBoard f model =
     { model | board = f model.board }
 
 
@@ -267,18 +267,18 @@ handleDragTile coord model =
         sunflower =
             Block.static <| Seed Sunflower
 
-        block =
-            Dict.get coord model.board |> Maybe.withDefault sunflower
-
         move =
-            Move.move coord block
+            model.board
+                |> Board.findBlockAt coord
+                |> Maybe.withDefault sunflower
+                |> Move.move coord
     in
     { model | board = Bearing.add move model.board }
 
 
 handleInsertEnteringTiles : List Tile.Type -> Model -> Model
 handleInsertEnteringTiles tileList =
-    mapBoard <| insertNewEnteringTiles tileList
+    updateBoard <| insertNewEnteringTiles tileList
 
 
 

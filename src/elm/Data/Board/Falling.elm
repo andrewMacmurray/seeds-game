@@ -54,7 +54,7 @@ addFallingDistance move1 move2 =
 
 fallingTiles : Board -> List Move
 fallingTiles =
-    filterValues Block.isFalling
+    Board.filterBlocks Block.isFalling
         >> Shift.groupBoardByColumn
         >> List.map (List.sortBy Move.y)
         >> List.concat
