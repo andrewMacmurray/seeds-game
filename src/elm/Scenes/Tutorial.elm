@@ -16,7 +16,7 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord exposing (Coord)
 import Data.Board.Falling exposing (setFallingTiles)
@@ -25,7 +25,6 @@ import Data.Board.Move as Move exposing (Move)
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
-import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute
@@ -53,7 +52,7 @@ type alias Model =
     , canvasVisible : Bool
     , skipped : Bool
     , resourceBank : Tile.Type
-    , boardDimensions : BoardDimensions
+    , boardDimensions : Board.Size
     , currentText : Int
     , text : Dict Int String
     }
@@ -61,7 +60,7 @@ type alias Model =
 
 type alias Config =
     { text : Dict Int String
-    , boardDimensions : BoardDimensions
+    , boardSize : Board.Size
     , board : Board
     , resourceBank : Tile.Type
     , sequence : Sequence
@@ -82,7 +81,7 @@ type Msg
     | EnteringTiles (List Tile.Type)
     | FallTiles
     | ShiftBoard
-    | SetBoardDimensions BoardDimensions
+    | SetBoardDimensions Board.Size
     | HideBoard
     | ShowBoard
     | HideText
@@ -144,7 +143,7 @@ initialState context =
 loadTutorialData : Config -> Model -> Model
 loadTutorialData config model =
     { model
-        | boardDimensions = config.boardDimensions
+        | boardDimensions = config.boardSize
         , board = config.board
         , text = config.text
         , resourceBank = config.resourceBank

@@ -26,7 +26,7 @@ levels =
     [ Levels.level
         { walls = walls l1Walls
         , startTiles = []
-        , boardDimensions = { x = 6, y = 8 }
+        , boardSize = { x = 6, y = 8 }
         , moves = 20
         , tileSettings =
             [ rain
@@ -46,7 +46,7 @@ levels =
         { walls = Wall.walls Wall.corners
         , moves = 10
         , startTiles = l2StartingTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ seed
                 Sunflower
@@ -66,7 +66,7 @@ levels =
     , Levels.level
         { walls = []
         , moves = 10
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , startTiles = []
         , tileSettings =
             [ seed

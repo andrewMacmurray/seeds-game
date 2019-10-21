@@ -1,8 +1,8 @@
 module Scenes.Tutorial.Seed exposing (config)
 
+import Data.Board as Board
 import Data.Board.Generate as Board
 import Data.Board.Tile exposing (SeedType(..), Type(..))
-import Data.Board.Types exposing (..)
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
 
@@ -10,15 +10,15 @@ import Scenes.Tutorial as Tutorial exposing (..)
 config : Tutorial.Config
 config =
     { text = text
-    , boardDimensions = dimensions
-    , board = Board.mono (Seed Sunflower) dimensions
+    , boardSize = boardSize
+    , board = Board.mono (Seed Sunflower) boardSize
     , sequence = sequence
     , resourceBank = Seed Sunflower
     }
 
 
-dimensions : BoardDimensions
-dimensions =
+boardSize : Board.Size
+boardSize =
     { x = 2, y = 2 }
 
 

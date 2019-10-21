@@ -3,11 +3,10 @@ module Data.Board.Move.Check exposing
     , startMove
     )
 
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block
 import Data.Board.Move as Move exposing (Move)
 import Data.Board.Move.Bearing as Bearing
-import Data.Board.Types exposing (..)
 
 
 startMove : Move -> Board -> Board

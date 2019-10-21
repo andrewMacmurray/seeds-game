@@ -12,7 +12,6 @@ import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
 import Data.Board.Scores as Scores
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile
 import Data.Window exposing (Window)
 import Html exposing (..)

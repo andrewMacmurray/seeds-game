@@ -228,7 +228,7 @@ resourcesInLevels worldSeedType =
 scoresAtLevel : Levels.Worlds -> Levels.Id -> Dict String Int
 scoresAtLevel worlds level =
     level
-        |> Levels.getKeysForWorld worlds
+        |> Levels.idsForWorld worlds
         |> Maybe.withDefault []
         |> List.filter (Levels.completed level)
         |> List.map (Levels.getLevel worlds >> Maybe.map tileSettings >> Maybe.withDefault [])

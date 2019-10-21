@@ -1,5 +1,7 @@
 module Data.Board exposing
-    ( blocks
+    ( Board
+    , Size
+    , blocks
     , coords
     , currentMoveType
     , currentMoves
@@ -26,9 +28,22 @@ import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (Board, BoardDimensions)
-import Dict
+import Dict exposing (Dict)
 import Helpers.Dict
+
+
+
+-- Board
+
+
+type alias Board =
+    Dict Coord Block
+
+
+type alias Size =
+    { x : Int
+    , y : Int
+    }
 
 
 
@@ -159,7 +174,7 @@ secondLastMove =
 -- Create
 
 
-fromTiles : BoardDimensions -> List Tile.Type -> Board
+fromTiles : Size -> List Tile.Type -> Board
 fromTiles boardDimensions tiles =
     tiles
         |> List.map Block.static
@@ -167,7 +182,7 @@ fromTiles boardDimensions tiles =
         |> fromMoves
 
 
-makeCoords : BoardDimensions -> List Coord
+makeCoords : Size -> List Coord
 makeCoords { x, y } =
     Coord.rangeXY (range x) (range y)
 

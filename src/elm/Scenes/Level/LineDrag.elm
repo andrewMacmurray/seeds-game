@@ -2,11 +2,9 @@ module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
 import Css.Color as Color
 import Css.Style as Style
-import Css.Unit exposing (px)
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Move as Move
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (Board, BoardDimensions)
 import Data.Pointer exposing (Pointer)
 import Data.Window exposing (Window)
 import Helpers.Svg exposing (height_, width_, windowViewBox_)
@@ -18,7 +16,7 @@ import Views.Board.Tile.Styles exposing (..)
 
 type alias LineViewModel =
     { window : Window
-    , boardDimensions : BoardDimensions
+    , boardDimensions : Board.Size
     , board : Board
     , isDragging : Bool
     , pointer : Pointer

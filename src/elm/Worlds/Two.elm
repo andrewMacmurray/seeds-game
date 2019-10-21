@@ -26,7 +26,7 @@ levels =
     [ Levels.withTutorial Levels.SeedPod
         { walls = walls firstLevelWalls
         , startTiles = []
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , moves = 5
         , tileSettings =
             [ seed
@@ -40,7 +40,7 @@ levels =
     , Levels.level
         { walls = walls corners
         , startTiles = []
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
             [ seed
@@ -63,7 +63,7 @@ levels =
     , Levels.level
         { walls = walls thirdLevelWalls
         , startTiles = thirdLevelStartTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
             [ rain
@@ -85,7 +85,7 @@ levels =
     , Levels.level
         { walls = walls fourthLevelWalls
         , startTiles = fourthLevelStartTiles
-        , boardDimensions = { x = 7, y = 8 }
+        , boardSize = { x = 7, y = 8 }
         , moves = 10
         , tileSettings =
             [ seed
@@ -103,7 +103,7 @@ levels =
     , Levels.level
         { walls = walls fifthLevelWalls
         , startTiles = fifthLevelStartTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
             [ seed

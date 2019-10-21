@@ -32,11 +32,11 @@ import Css.Color as Color
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
+import Data.Board as Board
 import Data.Board.Block as Block exposing (Block(..))
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
 import Data.Window exposing (Window)
 
 
@@ -59,7 +59,7 @@ topBarHeight =
 
 
 type alias TileViewModel =
-    ( Window, BoardDimensions )
+    ( Window, Board.Size )
 
 
 boardMarginTop : TileViewModel -> Style
@@ -78,13 +78,13 @@ boardOffsetLeft (( window, _ ) as model) =
 
 
 boardHeight : TileViewModel -> Int
-boardHeight ( window, dimensions ) =
-    round (Tile.baseSizeY * Tile.scale window) * dimensions.y
+boardHeight ( window, size ) =
+    round (Tile.baseSizeY * Tile.scale window) * size.y
 
 
 boardWidth : TileViewModel -> Int
-boardWidth ( window, dimensions ) =
-    tileWidth window * dimensions.x
+boardWidth ( window, size ) =
+    tileWidth window * size.x
 
 
 boardFullWidth : Window -> Int

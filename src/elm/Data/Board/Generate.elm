@@ -8,12 +8,11 @@ module Data.Board.Generate exposing
     , mono
     )
 
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block exposing (Block(..))
 import Data.Board.Coord exposing (Coord)
 import Data.Board.Move exposing (Move)
 import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
-import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
 
@@ -93,7 +92,7 @@ addBlock coord tileType =
     Board.placeAt coord <| Block.static tileType
 
 
-mono : Tile.Type -> BoardDimensions -> Board
+mono : Tile.Type -> Board.Size -> Board
 mono tileType ({ x, y } as scale) =
     Board.fromTiles scale <| List.repeat (x * y) tileType
 
@@ -102,7 +101,7 @@ mono tileType ({ x, y } as scale) =
 -- Generate Board
 
 
-generateInitialTiles : (List Tile.Type -> msg) -> List Tile.Setting -> BoardDimensions -> Cmd msg
+generateInitialTiles : (List Tile.Type -> msg) -> List Tile.Setting -> Board.Size -> Cmd msg
 generateInitialTiles msg tileSettings { x, y } =
     Random.list (x * y) (tileGenerator tileSettings)
         |> Random.generate msg

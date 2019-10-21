@@ -11,10 +11,9 @@ module Data.Board.Wall exposing
     )
 
 import Css.Color as Color exposing (Color)
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block exposing (Block(..))
 import Data.Board.Coord exposing (Coord)
-import Data.Board.Types exposing (Board)
 
 
 

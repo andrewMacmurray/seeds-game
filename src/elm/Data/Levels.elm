@@ -11,10 +11,10 @@ module Data.Levels exposing
     , config
     , empty
     , fromCache
-    , getKeysForWorld
     , getLevel
     , getLevels
     , idFromRaw_
+    , idsForWorld
     , isFirstLevelOfWorld
     , isLastLevelOfWorld
     , level
@@ -33,8 +33,8 @@ module Data.Levels exposing
     )
 
 import Css.Color exposing (Color)
+import Data.Board as Board
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (BoardDimensions)
 import Data.Board.Wall as Wall
 import Data.Level.Setting.Start as Start
 import Data.Level.Setting.Tile as Tile exposing (Probability, TargetScore)
@@ -42,7 +42,7 @@ import Dict exposing (Dict)
 
 
 
--- Level Id
+-- World and Level Config
 
 
 type Id
@@ -53,37 +53,6 @@ type alias Cache =
     { worldId : Int
     , levelId : Int
     }
-
-
-fromCache : Cache -> Id
-fromCache { worldId, levelId } =
-    Id <| Cache worldId levelId
-
-
-toCache : Id -> Cache
-toCache key =
-    { worldId = worldId_ key
-    , levelId = levelId_ key
-    }
-
-
-empty : Id
-empty =
-    idFromRaw_ 1 1
-
-
-toStringId : Id -> String
-toStringId key =
-    String.join "-"
-        [ "world"
-        , String.fromInt <| worldId_ key
-        , "level"
-        , String.fromInt <| levelId_ key
-        ]
-
-
-
--- Query Worlds
 
 
 type Worlds
@@ -119,7 +88,7 @@ type Level
         { tiles : List Tile.Setting
         , walls : List Wall.Config
         , startTiles : List Start.Tile
-        , boardDimensions : BoardDimensions
+        , boardSize : Board.Size
         , moves : Int
         , tutorial : Maybe Tutorial
         }
@@ -129,7 +98,7 @@ type alias LevelConfig =
     { tileSettings : List Tile.Setting
     , walls : List Wall.Config
     , startTiles : List Start.Tile
-    , boardDimensions : BoardDimensions
+    , boardSize : Board.Size
     , moves : Int
     }
 
@@ -142,7 +111,92 @@ type Tutorial
 
 
 
--- Query Worlds And Levels with Key
+-- Level Id
+
+
+fromCache : Cache -> Id
+fromCache { worldId, levelId } =
+    Id <| Cache worldId levelId
+
+
+toCache : Id -> Cache
+toCache key =
+    { worldId = worldId_ key
+    , levelId = levelId_ key
+    }
+
+
+empty : Id
+empty =
+    idFromRaw_ 1 1
+
+
+toStringId : Id -> String
+toStringId key =
+    String.join "-"
+        [ "world"
+        , String.fromInt <| worldId_ key
+        , "level"
+        , String.fromInt <| levelId_ key
+        ]
+
+
+
+-- Construct
+
+
+worlds : List World -> Worlds
+worlds =
+    List.indexedMap (\i w -> ( i + 1, w ))
+        >> Dict.fromList
+        >> Worlds
+
+
+world : WorldConfig -> List Level -> World
+world c levels =
+    World
+        { seedType = c.seedType
+        , backdropColor = c.backdropColor
+        , textColor = c.textColor
+        , textCompleteColor = c.textCompleteColor
+        , textBackgroundColor = c.textBackgroundColor
+        , levels = makeLevels_ levels
+        }
+
+
+level : LevelConfig -> Level
+level l =
+    Level
+        { tiles = l.tileSettings
+        , walls = l.walls
+        , startTiles = l.startTiles
+        , boardSize = l.boardSize
+        , moves = l.moves
+        , tutorial = Nothing
+        }
+
+
+withTutorial : Tutorial -> LevelConfig -> Level
+withTutorial t l =
+    Level
+        { tiles = l.tileSettings
+        , walls = l.walls
+        , startTiles = l.startTiles
+        , boardSize = l.boardSize
+        , moves = l.moves
+        , tutorial = Just t
+        }
+
+
+makeLevels_ : List Level -> Levels
+makeLevels_ levels =
+    levels
+        |> List.indexedMap (\i l -> ( i + 1, l ))
+        |> Dict.fromList
+
+
+
+-- Query
 
 
 getLevel : Worlds -> Id -> Maybe Level
@@ -160,8 +214,8 @@ getLevels worlds_ id =
         |> Maybe.map (unboxLevels_ >> Dict.toList >> List.map Tuple.second)
 
 
-getKeysForWorld : Worlds -> Id -> Maybe (List Id)
-getKeysForWorld worlds_ id =
+idsForWorld : Worlds -> Id -> Maybe (List Id)
+idsForWorld worlds_ id =
     worlds_
         |> getWorld_ id
         |> Maybe.map (unboxLevels_ >> levelKeys (worldId_ id))
@@ -241,7 +295,7 @@ config (Level l) =
     { tileSettings = l.tiles
     , startTiles = l.startTiles
     , walls = l.walls
-    , boardDimensions = l.boardDimensions
+    , boardSize = l.boardSize
     , moves = l.moves
     }
 
@@ -251,64 +305,6 @@ seedType worlds_ id =
     worlds_
         |> getWorld_ id
         |> Maybe.map (\(World w) -> w.seedType)
-
-
-
--- Construct Worlds And Levels
-
-
-worlds : List World -> Worlds
-worlds =
-    List.indexedMap (\i w -> ( i + 1, w ))
-        >> Dict.fromList
-        >> Worlds
-
-
-world : WorldConfig -> List Level -> World
-world c levels =
-    World
-        { seedType = c.seedType
-        , backdropColor = c.backdropColor
-        , textColor = c.textColor
-        , textCompleteColor = c.textCompleteColor
-        , textBackgroundColor = c.textBackgroundColor
-        , levels = makeLevels_ levels
-        }
-
-
-makeLevels_ : List Level -> Levels
-makeLevels_ levels =
-    levels
-        |> List.indexedMap (\i l -> ( i + 1, l ))
-        |> Dict.fromList
-
-
-level : LevelConfig -> Level
-level l =
-    Level
-        { tiles = l.tileSettings
-        , walls = l.walls
-        , startTiles = l.startTiles
-        , boardDimensions = l.boardDimensions
-        , moves = l.moves
-        , tutorial = Nothing
-        }
-
-
-withTutorial : Tutorial -> LevelConfig -> Level
-withTutorial t l =
-    Level
-        { tiles = l.tileSettings
-        , walls = l.walls
-        , startTiles = l.startTiles
-        , boardDimensions = l.boardDimensions
-        , moves = l.moves
-        , tutorial = Just t
-        }
-
-
-
--- World Data
 
 
 number : Worlds -> Id -> Maybe Int

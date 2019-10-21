@@ -10,13 +10,16 @@ module Data.Board.Scores exposing
     , toString
     )
 
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block
 import Data.Board.Move as Move
 import Data.Board.Tile as Tile exposing (Type(..))
-import Data.Board.Types exposing (..)
 import Data.Level.Setting.Tile as Tile
 import Dict exposing (Dict)
+
+
+
+-- Scores
 
 
 type Scores
@@ -29,12 +32,29 @@ type alias Score =
     }
 
 
+
+-- Construct
+
+
 init : List Tile.Setting -> Scores
 init =
     List.filter collectible
         >> List.map initScore
         >> Dict.fromList
         >> Scores
+
+
+initScore : Tile.Setting -> ( String, Score )
+initScore { tileType, targetScore } =
+    let
+        (Tile.TargetScore t) =
+            Maybe.withDefault (Tile.TargetScore 0) targetScore
+    in
+    ( Tile.hash tileType, Score t 0 )
+
+
+
+-- Update
 
 
 addScoreFromMoves : Board -> Scores -> Scores
@@ -54,6 +74,26 @@ addScoreFromMoves board scores =
     addToScore scoreToAdd tileType scores
 
 
+addToScore : Int -> Tile.Type -> Scores -> Scores
+addToScore score tileType (Scores scores) =
+    scores
+        |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+        |> Scores
+
+
+updateScore : Int -> Score -> Score
+updateScore n score =
+    if score.current + n >= score.target then
+        { score | current = score.target }
+
+    else
+        { score | current = score.current + n }
+
+
+
+-- Query
+
+
 allComplete : Scores -> Bool
 allComplete (Scores scores) =
     Dict.foldl (\_ v b -> b && v.current == v.target) True scores
@@ -71,25 +111,9 @@ getScoreFor tileType =
     getScore tileType >> Maybe.map (\{ target, current } -> target - current)
 
 
-addToScore : Int -> Tile.Type -> Scores -> Scores
-addToScore score tileType (Scores scores) =
-    scores
-        |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
-        |> Scores
-
-
 getScore : Tile.Type -> Scores -> Maybe Score
 getScore tileType (Scores scores) =
     Dict.get (Tile.hash tileType) scores
-
-
-updateScore : Int -> Score -> Score
-updateScore n score =
-    if score.current + n >= score.target then
-        { score | current = score.target }
-
-    else
-        { score | current = score.current + n }
 
 
 tileTypes : List Tile.Setting -> List Tile.Type
@@ -100,12 +124,3 @@ tileTypes =
 collectible : Tile.Setting -> Bool
 collectible { targetScore } =
     targetScore /= Nothing
-
-
-initScore : Tile.Setting -> ( String, Score )
-initScore { tileType, targetScore } =
-    let
-        (Tile.TargetScore t) =
-            Maybe.withDefault (Tile.TargetScore 0) targetScore
-    in
-    ( Tile.hash tileType, Score t 0 )

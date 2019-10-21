@@ -15,7 +15,7 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Falling exposing (..)
@@ -25,7 +25,6 @@ import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Scores as Scores exposing (Scores)
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile exposing (State(..), Type(..))
-import Data.Board.Types exposing (..)
 import Data.Board.Wall as Wall
 import Data.InfoWindow as InfoWindow exposing (InfoWindow)
 import Data.Level.Setting.Start as Start
@@ -61,7 +60,7 @@ type alias Model =
     , isDragging : Bool
     , remainingMoves : Int
     , tileSettings : List Tile.Setting
-    , boardDimensions : BoardDimensions
+    , boardSize : Board.Size
     , levelStatus : Status
     , infoWindow : InfoWindow InfoContent
     , pointer : Pointer
@@ -176,14 +175,14 @@ init config context =
 
 
 initialState : Levels.LevelConfig -> Context -> Model
-initialState { tileSettings, boardDimensions, moves } context =
+initialState { tileSettings, boardSize, moves } context =
     { context = context
     , board = Board.fromMoves []
     , scores = Scores.init tileSettings
     , isDragging = False
     , remainingMoves = moves
     , tileSettings = tileSettings
-    , boardDimensions = boardDimensions
+    , boardSize = boardSize
     , levelStatus = NotStarted
     , infoWindow = InfoWindow.hidden
     , pointer = { y = 0, x = 0 }
@@ -448,7 +447,7 @@ hideInfoSequence =
 
 
 type alias HasBoard model =
-    { model | board : Board, boardDimensions : BoardDimensions }
+    { model | board : Board, boardSize : Board.Size }
 
 
 updateBlocks : (Block -> Block) -> HasBoard model -> HasBoard model
@@ -467,11 +466,11 @@ addStartTiles startTiles board =
 
 
 handleGenerateInitialTiles : Levels.LevelConfig -> Model -> Cmd Msg
-handleGenerateInitialTiles config { boardDimensions } =
+handleGenerateInitialTiles config { boardSize } =
     generateInitialTiles
         (InitTiles << InitConfig config.walls config.startTiles)
         config.tileSettings
-        boardDimensions
+        boardSize
 
 
 handleGenerateEnteringTiles : RandomSetting -> Board -> List Tile.Setting -> Cmd Msg
@@ -507,7 +506,7 @@ generateEntering =
 
 createBoard : List Tile.Type -> HasBoard model -> HasBoard model
 createBoard tiles model =
-    { model | board = Board.fromTiles model.boardDimensions tiles }
+    { model | board = Board.fromTiles model.boardSize tiles }
 
 
 handleInsertEnteringTiles : List Tile.Type -> HasBoard model -> HasBoard model
@@ -569,7 +568,7 @@ handleCheckMove move model =
         model
             |> updateBoard (addMoveToBoard move)
             |> handleAddBurstType
-            |> updateBoard (addActiveTiles model.boardDimensions)
+            |> updateBoard (addActiveTiles model.boardSize)
 
     else
         model
@@ -579,8 +578,8 @@ handleCheckMove move model =
 -- Burst
 
 
-addActiveTiles : BoardDimensions -> Board -> Board
-addActiveTiles dimensions board =
+addActiveTiles : Board.Size -> Board -> Board
+addActiveTiles size board =
     let
         burstRadius =
             burstMagnitude board
@@ -590,7 +589,7 @@ addActiveTiles dimensions board =
 
         burstAreaCoordinates =
             burstCoords
-                |> List.map (Move.surroundingCoordinates dimensions burstRadius)
+                |> List.map (Move.surroundingCoordinates size burstRadius)
                 |> List.concat
 
         withinBurstArea move =
@@ -703,7 +702,7 @@ coordsFromPosition : Pointer -> Model -> Coord
 coordsFromPosition pointer model =
     let
         tileViewModel_ =
-            ( model.context.window, model.boardDimensions )
+            ( model.context.window, model.boardSize )
 
         positionY =
             toFloat <| pointer.y - boardOffsetTop tileViewModel_
@@ -1105,7 +1104,7 @@ yesNoButton yesText msg =
 tileViewModel : Model -> TileViewModel
 tileViewModel model =
     ( model.context.window
-    , model.boardDimensions
+    , model.boardSize
     )
 
 
@@ -1122,7 +1121,7 @@ lineViewModel : Model -> LineViewModel
 lineViewModel model =
     { window = model.context.window
     , board = model.board
-    , boardDimensions = model.boardDimensions
+    , boardDimensions = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer
     }

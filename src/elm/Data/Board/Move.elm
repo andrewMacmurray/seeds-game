@@ -20,7 +20,6 @@ module Data.Board.Move exposing
 import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (BoardDimensions)
 
 
 
@@ -86,8 +85,8 @@ sameTileType m1 m2 =
     tileType m1 == tileType m2
 
 
-surroundingCoordinates : BoardDimensions -> Int -> Coord -> List Coord
-surroundingCoordinates dimensions radius center =
+surroundingCoordinates : { size | x : Int, y : Int } -> Int -> Coord -> List Coord
+surroundingCoordinates size radius center =
     let
         centerX =
             Coord.x center
@@ -106,7 +105,7 @@ surroundingCoordinates dimensions radius center =
     in
     combined
         |> List.filter (\c -> c /= center)
-        |> List.filter (\c -> Coord.x c < dimensions.x && Coord.y c < dimensions.y)
+        |> List.filter (\c -> Coord.x c < size.x && Coord.y c < size.y)
 
 
 areNeighbours : Move -> Move -> Bool

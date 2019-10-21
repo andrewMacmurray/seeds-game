@@ -1,10 +1,9 @@
 module Data.Board.Move.Bearing exposing (add)
 
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
 import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile exposing (Bearing(..))
-import Data.Board.Types exposing (..)
 
 
 add : Move -> Board -> Board

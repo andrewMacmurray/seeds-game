@@ -26,7 +26,7 @@ levels =
     [ Levels.withTutorial Levels.Seed
         { walls = Wall.walls l1Walls
         , startTiles = []
-        , boardDimensions = { x = 5, y = 5 }
+        , boardSize = { x = 5, y = 5 }
         , moves = 10
         , tileSettings =
             [ seed
@@ -38,7 +38,7 @@ levels =
     , Levels.withTutorial Levels.Rain
         { walls = Wall.walls l2Walls
         , startTiles = l2StartTiles
-        , boardDimensions = { x = 6, y = 6 }
+        , boardSize = { x = 6, y = 6 }
         , moves = 10
         , tileSettings =
             [ seed
@@ -53,7 +53,7 @@ levels =
     , Levels.level
         { walls = Wall.walls []
         , startTiles = l3StartTiles
-        , boardDimensions = { x = 7, y = 7 }
+        , boardSize = { x = 7, y = 7 }
         , moves = 10
         , tileSettings =
             [ seed
@@ -68,7 +68,7 @@ levels =
     , Levels.withTutorial Levels.Sun
         { walls = Wall.walls l4Walls
         , startTiles = l4StartTiles
-        , boardDimensions = { x = 7, y = 7 }
+        , boardSize = { x = 7, y = 7 }
         , moves = 10
         , tileSettings =
             [ rain
@@ -87,7 +87,7 @@ levels =
         { walls = Wall.walls l5Walls
         , startTiles = l5StartTiles
         , moves = 15
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ seed
                 Sunflower
@@ -107,7 +107,7 @@ levels =
         { walls = Wall.walls l6Walls
         , moves = 20
         , startTiles = l6StartTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ seed
                 Sunflower
@@ -127,7 +127,7 @@ levels =
         { walls = Wall.walls l7Walls
         , moves = 8
         , startTiles = l7StartTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ seed
                 Sunflower
@@ -147,7 +147,7 @@ levels =
         { walls = Wall.invisible l8Invisibles ++ Wall.walls l8Walls
         , moves = 10
         , startTiles = l8StartTiles
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ rain
                 (Probability 20)
@@ -167,7 +167,7 @@ levels =
         { walls = []
         , moves = 5
         , startTiles = []
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , tileSettings =
             [ rain
                 (Probability 31)
@@ -191,7 +191,7 @@ default =
     Levels.level
         { walls = []
         , moves = 10
-        , boardDimensions = { x = 8, y = 8 }
+        , boardSize = { x = 8, y = 8 }
         , startTiles = []
         , tileSettings =
             [ rain

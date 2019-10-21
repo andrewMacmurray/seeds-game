@@ -1,10 +1,9 @@
 module Data.Board.Shift exposing (groupBoardByColumn, shiftBoard)
 
-import Data.Board as Board
+import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord
 import Data.Board.Move as Move exposing (Move)
-import Data.Board.Types exposing (..)
 import Helpers.List
 
 
