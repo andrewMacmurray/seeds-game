@@ -11,7 +11,7 @@ module Data.Board.Generate exposing
 import Data.Board as Board exposing (Board)
 import Data.Board.Block as Block exposing (Block(..))
 import Data.Board.Coord exposing (Coord)
-import Data.Board.Move exposing (Move)
+import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
 import Data.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
@@ -34,9 +34,9 @@ insertNewSeeds seedType board =
 
 
 setGrowingSeed : Tile.SeedType -> Move -> Move
-setGrowingSeed seedType ( coord, block ) =
-    ( coord
-    , Space <| Growing (Seed seedType) <| Block.growingOrder block
+setGrowingSeed seedType move =
+    ( Move.coord move
+    , Space <| Growing (Seed seedType) <| Block.growingOrder <| Move.block move
     )
 
 

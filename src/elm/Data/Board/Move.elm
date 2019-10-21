@@ -4,13 +4,8 @@ module Data.Board.Move exposing
     , block
     , coord
     , empty
-    , isAbove
-    , isBelow
-    , isLeft
-    , isRight
     , move
     , sameTileType
-    , surroundingCoordinates
     , tileState
     , tileType
     , x
@@ -85,59 +80,16 @@ sameTileType m1 m2 =
     tileType m1 == tileType m2
 
 
-surroundingCoordinates : { size | x : Int, y : Int } -> Int -> Coord -> List Coord
-surroundingCoordinates size radius center =
-    let
-        centerX =
-            Coord.x center
-
-        centerY =
-            Coord.y center
-
-        xs =
-            List.range (centerX - radius) (centerX + radius)
-
-        ys =
-            List.range (centerY - radius) (centerY + radius)
-
-        combined =
-            Coord.rangeXY xs ys
-    in
-    combined
-        |> List.filter (\c -> c /= center)
-        |> List.filter (\c -> Coord.x c < size.x && Coord.y c < size.y)
-
-
 areNeighbours : Move -> Move -> Bool
-areNeighbours m1 m2 =
+areNeighbours move2 move1 =
     let
         checkCoords f =
-            f (coord m2) (coord m1)
+            f (coord move1) (coord move2)
     in
-    [ isLeft
-    , isRight
-    , isAbove
-    , isBelow
+    [ Coord.isLeft
+    , Coord.isRight
+    , Coord.isAbove
+    , Coord.isBelow
     ]
         |> List.map checkCoords
         |> List.any identity
-
-
-isLeft : Coord -> Coord -> Bool
-isLeft c1 c2 =
-    Coord.x c2 == Coord.x c1 - 1 && Coord.y c2 == Coord.y c1
-
-
-isRight : Coord -> Coord -> Bool
-isRight c1 c2 =
-    Coord.x c2 == Coord.x c1 + 1 && Coord.y c2 == Coord.y c1
-
-
-isAbove : Coord -> Coord -> Bool
-isAbove c1 c2 =
-    Coord.x c2 == Coord.x c1 && Coord.y c2 == Coord.y c1 - 1
-
-
-isBelow : Coord -> Coord -> Bool
-isBelow c1 c2 =
-    Coord.x c2 == Coord.x c1 && Coord.y c2 == Coord.y c1 + 1

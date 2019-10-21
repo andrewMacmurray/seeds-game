@@ -36,10 +36,20 @@ newFallingTiles beforeBoard shiftedBoard =
 
 
 addFallingDistance : Move -> Move -> Move
-addFallingDistance ( c1, b ) ( c2, _ ) =
-    ( c1
-    , Block.setToFalling (Coord.y c2 - Coord.y c1) b
-    )
+addFallingDistance move1 move2 =
+    let
+        c1 =
+            Move.coord move1
+
+        c2 =
+            Move.coord move2
+
+        fallingDistance =
+            Coord.y c2 - Coord.y c1
+    in
+    Move.block move1
+        |> Block.setToFalling fallingDistance
+        |> Move.move c1
 
 
 fallingTiles : Board -> List Move

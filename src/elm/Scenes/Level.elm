@@ -589,7 +589,7 @@ addActiveTiles size board =
 
         burstAreaCoordinates =
             burstCoords
-                |> List.map (Move.surroundingCoordinates size burstRadius)
+                |> List.map (Coord.surrounding size burstRadius)
                 |> List.concat
 
         withinBurstArea move =

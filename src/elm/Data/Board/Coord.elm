@@ -3,8 +3,13 @@ module Data.Board.Coord exposing
     , X
     , Y
     , fromXY
+    , isAbove
+    , isBelow
+    , isLeft
+    , isRight
     , rangeXY
     , square
+    , surrounding
     , x
     , y
     )
@@ -57,3 +62,46 @@ x =
 y : Coord -> Y
 y =
     Tuple.first
+
+
+surrounding : { size | x : Int, y : Int } -> Int -> Coord -> List Coord
+surrounding size radius center =
+    let
+        centerX =
+            x center
+
+        centerY =
+            y center
+
+        xs =
+            List.range (centerX - radius) (centerX + radius)
+
+        ys =
+            List.range (centerY - radius) (centerY + radius)
+
+        combined =
+            rangeXY xs ys
+    in
+    combined
+        |> List.filter (\c -> c /= center)
+        |> List.filter (\c -> x c < size.x && y c < size.y)
+
+
+isLeft : Coord -> Coord -> Bool
+isLeft c1 c2 =
+    x c2 == x c1 - 1 && y c2 == y c1
+
+
+isRight : Coord -> Coord -> Bool
+isRight c1 c2 =
+    x c2 == x c1 + 1 && y c2 == y c1
+
+
+isAbove : Coord -> Coord -> Bool
+isAbove c1 c2 =
+    x c2 == x c1 && y c2 == y c1 - 1
+
+
+isBelow : Coord -> Coord -> Bool
+isBelow c1 c2 =
+    x c2 == x c1 && y c2 == y c1 + 1

@@ -1,7 +1,8 @@
 module Data.Board.Move.Bearing exposing (add)
 
 import Data.Board as Board exposing (Board)
-import Data.Board.Block exposing (addBearing, moveOrder, setToDragging)
+import Data.Board.Block as Block
+import Data.Board.Coord as Coord
 import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile exposing (Bearing(..))
 
@@ -14,49 +15,49 @@ add current board =
 
 
 updateMoves : Board -> ( Move, Move ) -> Board
-updateMoves board ( ( c2, b2 ), ( c1, b1 ) ) =
+updateMoves board ( move2, move1 ) =
     board
-        |> Board.placeAt c1 b1
-        |> Board.placeAt c2 b2
+        |> Board.place move1
+        |> Board.place move2
 
 
 changeBearings : Move -> Move -> ( Move, Move )
-changeBearings (( c2, _ ) as move2) (( c1, t1 ) as move1) =
+changeBearings move2 move1 =
     let
-        newCurrentMove =
-            setNewCurrentMove move2 move1
+        c1 =
+            Move.coord move1
+
+        c2 =
+            Move.coord move2
+
+        withBearing bearing =
+            ( setNewCurrentMove move2 move1
+            , Move.move c1 <| Block.addBearing bearing <| Move.block move1
+            )
     in
-    if Move.isLeft c1 c2 then
-        ( newCurrentMove
-        , ( c1, addBearing Left t1 )
-        )
+    if Coord.isLeft c1 c2 then
+        withBearing Left
 
-    else if Move.isRight c1 c2 then
-        ( newCurrentMove
-        , ( c1, addBearing Right t1 )
-        )
+    else if Coord.isRight c1 c2 then
+        withBearing Right
 
-    else if Move.isAbove c1 c2 then
-        ( newCurrentMove
-        , ( c1, addBearing Up t1 )
-        )
+    else if Coord.isAbove c1 c2 then
+        withBearing Up
 
-    else if Move.isBelow c1 c2 then
-        ( newCurrentMove
-        , ( c1, addBearing Down t1 )
-        )
+    else if Coord.isBelow c1 c2 then
+        withBearing Down
 
     else
-        ( newCurrentMove
-        , ( c1, addBearing Head t1 )
-        )
+        withBearing Head
 
 
 setNewCurrentMove : Move -> Move -> Move
-setNewCurrentMove ( c2, t2 ) m1 =
-    ( c2, setToDragging (incrementMoveOrder m1) t2 )
+setNewCurrentMove move2 move1 =
+    ( Move.coord move2
+    , Block.setToDragging (incrementMoveOrder move1) (Move.block move2)
+    )
 
 
 incrementMoveOrder : Move -> Int
-incrementMoveOrder ( _, tileState ) =
-    moveOrder tileState + 1
+incrementMoveOrder move =
+    Block.moveOrder (Move.block move) + 1
