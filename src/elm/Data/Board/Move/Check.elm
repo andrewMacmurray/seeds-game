@@ -5,7 +5,7 @@ module Data.Board.Move.Check exposing
 
 import Data.Board as Board
 import Data.Board.Block as Block
-import Data.Board.Move as Move
+import Data.Board.Move as Move exposing (Move)
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Types exposing (..)
 

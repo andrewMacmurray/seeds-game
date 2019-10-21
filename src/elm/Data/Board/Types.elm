@@ -1,7 +1,6 @@
 module Data.Board.Types exposing
     ( Board
     , BoardDimensions
-    , Move
     )
 
 import Data.Board.Block exposing (Block)
@@ -21,7 +20,3 @@ type alias BoardDimensions =
 
 type alias Board =
     Dict Coord Block
-
-
-type alias Move =
-    ( Coord, Block )

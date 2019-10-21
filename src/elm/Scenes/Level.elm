@@ -20,7 +20,7 @@ import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Falling exposing (..)
 import Data.Board.Generate exposing (..)
-import Data.Board.Move as Move
+import Data.Board.Move as Move exposing (Move)
 import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
 import Data.Board.Scores as Scores exposing (Scores)
 import Data.Board.Shift exposing (shiftBoard)

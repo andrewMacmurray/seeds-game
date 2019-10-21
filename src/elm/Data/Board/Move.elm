@@ -1,5 +1,6 @@
 module Data.Board.Move exposing
-    ( areNeighbours
+    ( Move
+    , areNeighbours
     , block
     , coord
     , empty
@@ -19,12 +20,35 @@ module Data.Board.Move exposing
 import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord as Coord exposing (Coord)
 import Data.Board.Tile as Tile
-import Data.Board.Types exposing (BoardDimensions, Move)
+import Data.Board.Types exposing (BoardDimensions)
+
+
+
+-- Move
+
+
+type alias Move =
+    ( Coord, Block )
+
+
+
+-- Construct
 
 
 move : Coord -> Block -> Move
 move c b =
     ( c, b )
+
+
+empty : Move
+empty =
+    ( Coord.fromXY 0 0
+    , Block.empty
+    )
+
+
+
+-- Query
 
 
 coord : Move -> Coord
@@ -60,13 +84,6 @@ tileType =
 sameTileType : Move -> Move -> Bool
 sameTileType m1 m2 =
     tileType m1 == tileType m2
-
-
-empty : Move
-empty =
-    ( Coord.fromXY 0 0
-    , Block.empty
-    )
 
 
 surroundingCoordinates : BoardDimensions -> Int -> Coord -> List Coord

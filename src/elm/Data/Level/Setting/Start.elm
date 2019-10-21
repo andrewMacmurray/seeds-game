@@ -16,9 +16,8 @@ module Data.Level.Setting.Start exposing
 
 import Data.Board.Block as Block
 import Data.Board.Coord as Coord exposing (Coord)
-import Data.Board.Move as Move
+import Data.Board.Move as Move exposing (Move)
 import Data.Board.Tile as Tile exposing (SeedType(..), Type(..))
-import Data.Board.Types exposing (Move)
 
 
 

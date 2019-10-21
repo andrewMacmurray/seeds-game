@@ -21,7 +21,7 @@ import Data.Board.Block as Block exposing (Block)
 import Data.Board.Coord exposing (Coord)
 import Data.Board.Falling exposing (setFallingTiles)
 import Data.Board.Generate exposing (insertNewEnteringTiles)
-import Data.Board.Move as Move
+import Data.Board.Move as Move exposing (Move)
 import Data.Board.Move.Bearing as Bearing
 import Data.Board.Shift exposing (shiftBoard)
 import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
