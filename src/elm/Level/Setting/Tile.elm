@@ -1,4 +1,4 @@
-module Data.Level.Setting.Tile exposing
+module Level.Setting.Tile exposing
     ( Probability(..)
     , Setting
     , TargetScore(..)
@@ -9,7 +9,7 @@ module Data.Level.Setting.Tile exposing
     , sun
     )
 
-import Data.Board.Tile as Tile exposing (SeedType, Type(..))
+import Board.Tile as Tile exposing (SeedType, Type(..))
 
 
 type alias Setting =

@@ -1,12 +1,16 @@
-module Views.Lives exposing (renderLivesLeft)
+module Views.Lives exposing (view)
 
-import Css.Animation exposing (animation, ease, infinite)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale)
-import Data.Transit as Transit exposing (Transit)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Lives
+import Transit exposing (Transit)
 import Views.Icons.Heart as Heart
+
+
+
+-- Config
 
 
 type alias Life =
@@ -17,13 +21,17 @@ type alias Life =
     }
 
 
-renderLivesLeft : Transit Int -> List (Html msg)
-renderLivesLeft lifeState =
+
+-- View
+
+
+view : Transit Int -> List (Html msg)
+view lifeState =
     let
         lives =
             Transit.val lifeState
     in
-    List.range 1 5
+    List.range 1 Lives.max
         |> List.map (\n -> Life (n <= lives) (n == lives) (n == lives + 1) lifeState)
         |> List.map life
 

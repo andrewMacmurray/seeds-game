@@ -1,6 +1,6 @@
 module Views.Flowers.All exposing (renderFlower)
 
-import Data.Board.Tile as Tile exposing (SeedType(..))
+import Board.Tile as Tile exposing (SeedType(..))
 import Svg exposing (Svg)
 import Views.Flowers.Chrysanthemum as Chrysanthemum
 import Views.Flowers.Cornflower as Cornflower

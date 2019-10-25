@@ -1,4 +1,4 @@
-module Data.Levels exposing
+module Levels exposing
     ( Cache
     , Id
     , Level
@@ -32,13 +32,13 @@ module Data.Levels exposing
     , worldsList
     )
 
+import Board
+import Board.Tile as Tile
+import Board.Wall as Wall
 import Css.Color exposing (Color)
-import Data.Board as Board
-import Data.Board.Tile as Tile
-import Data.Board.Wall as Wall
-import Data.Level.Setting.Start as Start
-import Data.Level.Setting.Tile as Tile exposing (Probability, TargetScore)
 import Dict exposing (Dict)
+import Level.Setting.Start as Start
+import Level.Setting.Tile as Tile exposing (Probability, TargetScore)
 
 
 

@@ -1,17 +1,17 @@
 module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
+import Board exposing (Board)
+import Board.Move as Move
+import Board.Tile as Tile
 import Css.Color as Color
 import Css.Style as Style
-import Data.Board as Board exposing (Board)
-import Data.Board.Move as Move
-import Data.Board.Tile as Tile
-import Data.Pointer exposing (Pointer)
-import Data.Window exposing (Window)
 import Helpers.Svg exposing (height_, width_, windowViewBox_)
 import Html exposing (Html, span)
+import Pointer exposing (Pointer)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Board.Tile.Styles exposing (..)
+import Window exposing (Window)
 
 
 type alias LineViewModel =

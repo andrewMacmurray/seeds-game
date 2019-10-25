@@ -1,15 +1,15 @@
 module Views.Board.Tile exposing (view)
 
+import Board.Block as Block exposing (Block)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile
 import Css.Style as Style exposing (..)
-import Data.Board.Block as Block exposing (Block)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Tile as Tile
-import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Board.Tile.Styles exposing (..)
 import Views.Icons.Burst as Burst
 import Views.Seed.All exposing (renderSeed)
+import Window exposing (Window)
 
 
 type alias Settings =

@@ -1,12 +1,12 @@
 module Worlds.One exposing (default, world)
 
+import Board.Coord exposing (Coord)
+import Board.Tile exposing (SeedType(..))
+import Board.Wall as Wall exposing (s, w)
 import Css.Color as Color
-import Data.Board.Coord exposing (Coord)
-import Data.Board.Tile exposing (SeedType(..))
-import Data.Board.Wall as Wall exposing (s, w)
-import Data.Level.Setting.Start as Start
-import Data.Level.Setting.Tile exposing (..)
-import Data.Levels as Levels
+import Level.Setting.Start as Start
+import Level.Setting.Tile exposing (..)
+import Levels
 
 
 world : Levels.World

@@ -1,8 +1,8 @@
 module Progress.Spec exposing (spec)
 
-import Data.Levels as Levels
-import Data.Progress as Progress
 import Expect exposing (..)
+import Levels
+import Progress
 import Test exposing (..)
 
 

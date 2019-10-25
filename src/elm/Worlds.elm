@@ -10,8 +10,8 @@ module Worlds exposing
     , tutorial
     )
 
-import Data.Board.Tile as Tile
-import Data.Levels as Levels exposing (..)
+import Board.Tile as Tile
+import Levels exposing (..)
 import Scenes.Tutorial as Tutorial
 import Scenes.Tutorial.Rain as Rain
 import Scenes.Tutorial.Seed as Seed

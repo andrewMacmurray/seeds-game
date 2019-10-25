@@ -8,7 +8,6 @@ import Css.Color as Color
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Transition as Transition
-import Data.Window as Window exposing (Window)
 import Helpers.Svg exposing (..)
 import Html exposing (Html, div)
 import Html.Attributes
@@ -16,6 +15,7 @@ import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Views.Flowers.Sunflower as Sunflower
 import Views.Landscape.RollingHills as Hills
+import Window exposing (Window)
 
 
 type State

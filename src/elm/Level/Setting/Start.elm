@@ -1,4 +1,4 @@
-module Data.Level.Setting.Start exposing
+module Level.Setting.Start exposing
     ( Direction(..)
     , Facing(..)
     , Tile
@@ -14,10 +14,10 @@ module Data.Level.Setting.Start exposing
     , sunflower
     )
 
-import Data.Board.Block as Block
-import Data.Board.Coord as Coord exposing (Coord)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Tile as Tile exposing (SeedType(..), Type(..))
+import Board.Block as Block
+import Board.Coord as Coord exposing (Coord)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (SeedType(..), Type(..))
 
 
 

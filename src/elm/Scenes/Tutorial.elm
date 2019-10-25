@@ -10,21 +10,21 @@ module Scenes.Tutorial exposing
     , view
     )
 
+import Board exposing (Board)
+import Board.Block as Block exposing (Block)
+import Board.Coord exposing (Coord)
+import Board.Falling exposing (setFallingTiles)
+import Board.Generate exposing (insertNewEnteringTiles)
+import Board.Move as Move exposing (Move)
+import Board.Move.Bearing as Bearing
+import Board.Shift exposing (shiftBoard)
+import Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
 import Context exposing (Context)
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
-import Data.Board as Board exposing (Board)
-import Data.Board.Block as Block exposing (Block)
-import Data.Board.Coord exposing (Coord)
-import Data.Board.Falling exposing (setFallingTiles)
-import Data.Board.Generate exposing (insertNewEnteringTiles)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Move.Bearing as Bearing
-import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
 import Helpers.Attribute as Attribute

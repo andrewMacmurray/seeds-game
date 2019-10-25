@@ -56,11 +56,11 @@ module Css.Style exposing
 import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
 import Css.Unit exposing (..)
-import Data.Window exposing (Window)
 import Html exposing (Attribute, Html)
 import Html.Attributes
 import Svg
 import Svg.Attributes
+import Window exposing (Window)
 
 
 type Style

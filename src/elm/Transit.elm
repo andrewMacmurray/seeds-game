@@ -1,6 +1,13 @@
-module Data.Transit exposing (Transit(..), isTransitioning, map, toStatic, toTransitioning, val)
+module Transit exposing
+    ( Transit(..)
+    , isTransitioning
+    , map
+    , toStatic
+    , toTransitioning
+    , val
+    )
 
--- Simple wrapper type to represent a value that will be transitioned (usually via CSS)
+-- Wrapper to represent a transitioning value (usually via CSS)
 
 
 type Transit a

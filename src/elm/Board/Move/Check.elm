@@ -1,12 +1,12 @@
-module Data.Board.Move.Check exposing
+module Board.Move.Check exposing
     ( addMoveToBoard
     , startMove
     )
 
-import Data.Board as Board exposing (Board)
-import Data.Board.Block as Block
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Move.Bearing as Bearing
+import Board exposing (Board)
+import Board.Block as Block
+import Board.Move as Move exposing (Move)
+import Board.Move.Bearing as Bearing
 
 
 startMove : Move -> Board -> Board

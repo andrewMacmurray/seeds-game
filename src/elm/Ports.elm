@@ -9,8 +9,8 @@ port module Ports exposing
     , playIntroMusic
     )
 
-import Data.Levels as Levels
-import Data.Lives as Lives
+import Levels
+import Lives
 
 
 port generateBounceKeyframes : Float -> Cmd msg

@@ -1,8 +1,8 @@
 module Scenes.Tutorial.Rain exposing (config)
 
-import Data.Board as Board exposing (Board)
-import Data.Board.Generate as Board
-import Data.Board.Tile exposing (SeedType(..), Type(..))
+import Board exposing (Board)
+import Board.Generate as Board
+import Board.Tile exposing (SeedType(..), Type(..))
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
 

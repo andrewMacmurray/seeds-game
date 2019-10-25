@@ -10,28 +10,22 @@ module Scenes.Level exposing
     , view
     )
 
+import Board exposing (Board)
+import Board.Block as Block exposing (Block)
+import Board.Coord as Coord exposing (Coord)
+import Board.Falling exposing (..)
+import Board.Generate exposing (..)
+import Board.Move as Move exposing (Move)
+import Board.Move.Check exposing (addMoveToBoard, startMove)
+import Board.Scores as Scores exposing (Scores)
+import Board.Shift exposing (shiftBoard)
+import Board.Tile as Tile exposing (State(..), Type(..))
+import Board.Wall as Wall
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
-import Data.Board as Board exposing (Board)
-import Data.Board.Block as Block exposing (Block)
-import Data.Board.Coord as Coord exposing (Coord)
-import Data.Board.Falling exposing (..)
-import Data.Board.Generate exposing (..)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Move.Check exposing (addMoveToBoard, startMove)
-import Data.Board.Scores as Scores exposing (Scores)
-import Data.Board.Shift exposing (shiftBoard)
-import Data.Board.Tile as Tile exposing (State(..), Type(..))
-import Data.Board.Wall as Wall
-import Data.InfoWindow as InfoWindow exposing (InfoWindow)
-import Data.Level.Setting.Start as Start
-import Data.Level.Setting.Tile as Tile
-import Data.Levels as Levels
-import Data.Lives as Lives
-import Data.Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Helpers.Attribute as Attribute
@@ -40,6 +34,12 @@ import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
+import InfoWindow exposing (InfoWindow)
+import Level.Setting.Start as Start
+import Level.Setting.Tile as Tile
+import Levels
+import Lives
+import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Scenes.Level.TopBar exposing (TopBarViewModel, topBar)
 import Views.Board.Line exposing (renderLine)

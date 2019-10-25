@@ -1,15 +1,15 @@
 module Views.Board.Line exposing (renderLine)
 
+import Board.Block exposing (getTileState)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (Bearing(..), State(..))
 import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
-import Data.Board.Block exposing (getTileState)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Tile as Tile exposing (Bearing(..), State(..))
-import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Window exposing (Window)
 
 
 renderLine : Window -> Move -> Html msg

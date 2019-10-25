@@ -1,7 +1,7 @@
 module Helpers.Debug exposing (goToLevel)
 
-import Data.Levels as Levels exposing (LevelConfig)
 import Helpers.Delay as Delay
+import Levels exposing (LevelConfig)
 import Ports
 import Worlds
 

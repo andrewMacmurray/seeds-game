@@ -1,4 +1,4 @@
-module Data.Board.Wall exposing
+module Board.Wall exposing
     ( Config
     , addToBoard
     , corners
@@ -10,10 +10,10 @@ module Data.Board.Wall exposing
     , withColor
     )
 
+import Board exposing (Board)
+import Board.Block exposing (Block(..))
+import Board.Coord exposing (Coord)
 import Css.Color as Color exposing (Color)
-import Data.Board as Board exposing (Board)
-import Data.Board.Block exposing (Block(..))
-import Data.Board.Coord exposing (Coord)
 
 
 

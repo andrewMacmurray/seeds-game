@@ -18,9 +18,9 @@ module Helpers.Svg exposing
 
 import Css.Style as Style
 import Css.Transform as Transform
-import Data.Window exposing (Window)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
+import Window exposing (Window)
 
 
 windowViewBox_ : Window -> Attribute msg

@@ -3,16 +3,16 @@ module Scenes.Intro.GrowingSeeds exposing
     , view
     )
 
+import Board.Tile as Tile exposing (SeedType(..))
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (..)
 import Css.Transform as Transform
 import Css.Transition exposing (transition)
-import Data.Board.Tile as Tile exposing (SeedType(..))
-import Data.Window as Window exposing (Window, size)
 import Helpers.Attribute as Attribute
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Seed.All exposing (renderSeed)
+import Window exposing (Window, size)
 
 
 type State

@@ -1,9 +1,9 @@
 module Views.Icons.SeedBank exposing (seedBank)
 
+import Board.Tile as Tile
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)
 import Css.Transition exposing (transitionAll)
-import Data.Board.Tile as Tile
 import Html exposing (Html)
 import Svg
 import Svg.Attributes exposing (..)

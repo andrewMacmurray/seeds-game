@@ -1,10 +1,10 @@
-module Data.Board.Move.Bearing exposing (add)
+module Board.Move.Bearing exposing (add)
 
-import Data.Board as Board exposing (Board)
-import Data.Board.Block as Block
-import Data.Board.Coord as Coord
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Tile exposing (Bearing(..))
+import Board exposing (Board)
+import Board.Block as Block
+import Board.Coord as Coord
+import Board.Move as Move exposing (Move)
+import Board.Tile exposing (Bearing(..))
 
 
 add : Move -> Board -> Board

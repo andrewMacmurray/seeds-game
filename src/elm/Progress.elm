@@ -1,4 +1,4 @@
-module Data.Progress exposing
+module Progress exposing
     ( Progress
     , clearCurrentLevel
     , currentLevel
@@ -16,13 +16,13 @@ module Data.Progress exposing
     , toCache
     )
 
-import Data.Board.Scores as Score
-import Data.Board.Tile as Tile
-import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
-import Data.Levels as Levels
+import Board.Scores as Score
+import Board.Tile as Tile
 import Dict exposing (Dict)
 import Helpers.Dict
 import Helpers.List
+import Level.Setting.Tile as Tile exposing (TargetScore(..))
+import Levels
 
 
 type Progress

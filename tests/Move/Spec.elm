@@ -1,7 +1,6 @@
 module Move.Spec exposing (spec)
 
-import Data.Board.Move as Move
-import Data.Board.Types exposing (..)
+import Board.Coord as Coord exposing (Coord)
 import Expect
 import Test exposing (..)
 
@@ -20,19 +19,19 @@ surroundingCoordinatesSpec =
             [ test "gets correct number of surrounding coordinates" <|
                 \_ ->
                     coord 3 4
-                        |> Move.surroundingCoordinates boardDimensions 1
+                        |> Coord.surrounding boardDimensions 1
                         |> List.length
                         |> Expect.equal 8
             , test "does not include coordinates out of bounds on the given boardSize" <|
                 \_ ->
                     coord 7 7
-                        |> Move.surroundingCoordinates boardDimensions 1
+                        |> Coord.surrounding boardDimensions 1
                         |> List.length
                         |> Expect.equal 3
             , test "gets correct surrounding coordinates" <|
                 \_ ->
                     coord 3 4
-                        |> Move.surroundingCoordinates boardDimensions 1
+                        |> Coord.surrounding boardDimensions 1
                         |> expectCoordinates
                             [ [ ( 2, 3 ), ( 3, 3 ), ( 4, 3 ) ]
                             , [ ( 2, 4 ), {- 3,4 -} ( 4, 4 ) ]
@@ -43,19 +42,19 @@ surroundingCoordinatesSpec =
             [ test "gets correct number of surrounding coordinates" <|
                 \_ ->
                     coord 3 3
-                        |> Move.surroundingCoordinates boardDimensions 2
+                        |> Coord.surrounding boardDimensions 2
                         |> List.length
                         |> Expect.equal 24
             , test "does not include corrdiantes out of bounds on the given boardSize" <|
                 \_ ->
                     coord 7 7
-                        |> Move.surroundingCoordinates boardDimensions 2
+                        |> Coord.surrounding boardDimensions 2
                         |> List.length
                         |> Expect.equal 8
             , test "gets correct surrounding coordinates" <|
                 \_ ->
                     coord 3 4
-                        |> Move.surroundingCoordinates boardDimensions 2
+                        |> Coord.surrounding boardDimensions 2
                         |> expectCoordinates
                             [ [ ( 1, 2 ), ( 2, 2 ), ( 3, 2 ), ( 4, 2 ), ( 5, 2 ) ]
                             , [ ( 1, 3 ), ( 2, 3 ), ( 3, 3 ), ( 4, 3 ), ( 5, 3 ) ]
@@ -82,11 +81,11 @@ expectCoordinates rawExpectedCoords actualCoords =
 
 
 coord : Int -> Int -> Coord
-coord x y =
-    ( y, x )
+coord =
+    Coord.fromXY
 
 
-boardDimensions : BoardDimensions
+boardDimensions : { x : Int, y : Int }
 boardDimensions =
     { x = 8
     , y = 8

@@ -1,4 +1,4 @@
-module Data.Board.Tile exposing
+module Board.Tile exposing
     ( Bearing(..)
     , Distance
     , MoveOrder
@@ -46,7 +46,7 @@ module Data.Board.Tile exposing
     , setToFalling
     )
 
-import Data.Window as Window
+import Window
 
 
 

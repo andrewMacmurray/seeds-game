@@ -1,6 +1,6 @@
 module Views.Seed.All exposing (renderSeed)
 
-import Data.Board.Tile exposing (..)
+import Board.Tile exposing (..)
 import Svg exposing (Svg)
 import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (rose)

@@ -1,4 +1,4 @@
-module Data.Board.Generate exposing
+module Board.Generate exposing
     ( addBlock
     , generateEnteringTiles
     , generateInitialTiles
@@ -8,12 +8,12 @@ module Data.Board.Generate exposing
     , mono
     )
 
-import Data.Board as Board exposing (Board)
-import Data.Board.Block as Block exposing (Block(..))
-import Data.Board.Coord exposing (Coord)
-import Data.Board.Move as Move exposing (Move)
-import Data.Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
-import Data.Level.Setting.Tile as Tile exposing (Probability(..))
+import Board exposing (Board)
+import Board.Block as Block exposing (Block(..))
+import Board.Coord exposing (Coord)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
+import Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
 
 

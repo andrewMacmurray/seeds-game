@@ -1,4 +1,4 @@
-module Data.Board.Block exposing
+module Board.Block exposing
     ( Block(..)
     , addBearing
     , clearBearing
@@ -39,8 +39,8 @@ module Data.Board.Block exposing
     , tileType
     )
 
+import Board.Tile as Tile
 import Css.Color as Css
-import Data.Board.Tile as Tile
 
 
 

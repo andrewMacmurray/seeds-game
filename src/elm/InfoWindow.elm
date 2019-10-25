@@ -1,4 +1,4 @@
-module Data.InfoWindow exposing
+module InfoWindow exposing
     ( InfoWindow
     , State(..)
     , content

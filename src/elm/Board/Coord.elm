@@ -1,4 +1,4 @@
-module Data.Board.Coord exposing
+module Board.Coord exposing
     ( Coord
     , X
     , Y

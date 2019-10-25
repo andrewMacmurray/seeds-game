@@ -1,4 +1,4 @@
-module Data.Window exposing
+module Window exposing
     ( Size(..)
     , Width(..)
     , Window

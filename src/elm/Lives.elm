@@ -1,4 +1,4 @@
-module Data.Lives exposing
+module Lives exposing
     ( Cache
     , Lives
     , TimeTillNextLife

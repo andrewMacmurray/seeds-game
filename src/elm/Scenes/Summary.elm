@@ -9,21 +9,20 @@ module Scenes.Summary exposing
     , view
     )
 
+import Board.Tile as Tile exposing (SeedType(..), Type(..), seedName)
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
-import Data.Board.Tile as Tile exposing (SeedType(..), Type(..), seedName)
-import Data.Progress as Progress exposing (Progress)
-import Data.Window exposing (Window)
 import Exit exposing (continue, exitWith)
 import Helpers.Delay exposing (after, sequence, trigger)
 import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Ports exposing (cacheProgress)
+import Progress exposing (Progress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
 import Scenes.Summary.Cornflower as Cornflower
 import Scenes.Summary.Sunflower as Sunflower
@@ -32,6 +31,7 @@ import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
+import Window exposing (Window)
 import Worlds
 
 

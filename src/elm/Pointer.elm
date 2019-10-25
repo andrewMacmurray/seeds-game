@@ -1,12 +1,11 @@
-module Data.Pointer exposing
+module Pointer exposing
     ( Pointer
     , onPointerDown
     , onPointerMove
     , onPointerUp
     )
 
-import Html exposing (Attribute, Html, node)
-import Html.Attributes exposing (property)
+import Html exposing (Attribute, Html)
 import Html.Events exposing (on, stopPropagationOn)
 import Json.Decode as Json exposing (Decoder, field, float)
 

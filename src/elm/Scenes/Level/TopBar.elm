@@ -5,23 +5,23 @@ module Scenes.Level.TopBar exposing
     , topBar
     )
 
+import Board.Scores as Scores
+import Board.Tile as Tile
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Board.Scores as Scores
-import Data.Board.Tile as Tile
-import Data.Level.Setting.Tile as Tile
-import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Level.Setting.Tile as Tile
 import Svg exposing (Svg)
 import Views.Board.Tile.Styles exposing (boardFullWidth, scoreIconSize, topBarHeight)
 import Views.Icons.RainBank exposing (rainBankFull)
 import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
 import Views.Seed.All exposing (renderSeed)
+import Window exposing (Window)
 
 
 type alias TopBarViewModel =
