@@ -77,7 +77,7 @@ seedType =
 levelConfig : Levels.Id -> LevelConfig
 levelConfig =
     getLevel
-        >> Maybe.withDefault One.default
+        >> Maybe.withDefault Levels.default
         >> Levels.config
 
 

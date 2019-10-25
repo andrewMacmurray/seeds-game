@@ -9,6 +9,7 @@ module Config.Levels exposing
     , Worlds
     , completed
     , config
+    , default
     , empty
     , fromCache
     , getLevel
@@ -38,7 +39,7 @@ import Css.Color exposing (Color)
 import Dict exposing (Dict)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability, TargetScore)
-import Seed exposing (Seed)
+import Seed exposing (Seed(..))
 
 
 
@@ -193,6 +194,30 @@ makeLevels_ levels =
     levels
         |> List.indexedMap (\i l -> ( i + 1, l ))
         |> Dict.fromList
+
+
+default : Level
+default =
+    level
+        { walls = []
+        , moves = 10
+        , boardSize = { x = 8, y = 8 }
+        , startTiles = []
+        , tileSettings =
+            [ Tile.rain
+                (Probability 25)
+                (TargetScore 30)
+            , Tile.seed
+                Sunflower
+                (Probability 25)
+                (TargetScore 50)
+            , Tile.sun
+                (Probability 25)
+                (TargetScore 30)
+            , Tile.seedPod
+                (Probability 25)
+            ]
+        }
 
 
 

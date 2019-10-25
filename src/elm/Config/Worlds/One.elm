@@ -1,4 +1,4 @@
-module Config.Worlds.One exposing (default, world)
+module Config.Worlds.One exposing (world)
 
 import Board.Coord exposing (Coord)
 import Board.Wall as Wall exposing (s, w)
@@ -184,30 +184,6 @@ levels =
             ]
         }
     ]
-
-
-default : Levels.Level
-default =
-    Levels.level
-        { walls = []
-        , moves = 10
-        , boardSize = { x = 8, y = 8 }
-        , startTiles = []
-        , tileSettings =
-            [ rain
-                (Probability 25)
-                (TargetScore 30)
-            , seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 50)
-            , sun
-                (Probability 25)
-                (TargetScore 30)
-            , seedPod
-                (Probability 25)
-            ]
-        }
 
 
 l1Walls : List Coord
