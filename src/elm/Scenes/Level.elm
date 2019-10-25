@@ -62,7 +62,7 @@ type alias Model =
     , tileSettings : List Tile.Setting
     , boardSize : Board.Size
     , levelStatus : Status
-    , infoWindow : InfoWindow InfoContent
+    , infoWindow : InfoWindow Info
     , pointer : Pointer
     }
 
@@ -93,7 +93,7 @@ type Msg
     | ShiftBoard
     | ResetMove
     | CheckLevelComplete
-    | ShowInfo InfoContent
+    | ShowInfo Info
     | HideInfo
     | InfoLeaving
     | InfoHidden
@@ -116,7 +116,7 @@ type Status
     | Exit
 
 
-type InfoContent
+type Info
     = Success
     | NoMovesLeft
     | RestartAreYouSure
@@ -1011,7 +1011,7 @@ renderInfoWindow { infoWindow, context } =
         |> Maybe.withDefault (span [] [])
 
 
-infoContainer : InfoWindow InfoContent -> Html Msg -> Html Msg
+infoContainer : InfoWindow Info -> Html Msg -> Html Msg
 infoContainer infoWindow rendered =
     case InfoWindow.content infoWindow of
         Just RestartAreYouSure ->
@@ -1024,7 +1024,7 @@ infoContainer infoWindow rendered =
             Views.InfoWindow.infoContainer infoWindow rendered
 
 
-renderInfoContent : Int -> InfoContent -> Html Msg
+renderInfoContent : Int -> Info -> Html Msg
 renderInfoContent successMessageIndex infoContent =
     case infoContent of
         Success ->
