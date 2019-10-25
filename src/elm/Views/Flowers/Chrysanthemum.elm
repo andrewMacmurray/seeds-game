@@ -2,9 +2,9 @@ module Views.Flowers.Chrysanthemum exposing (animated, static)
 
 import Css.Animation as Animation
 import Css.Style as Style
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 
 
 static : Svg msg

@@ -27,17 +27,18 @@ module Views.Board.Tile.Styles exposing
     , wallStyles
     )
 
+import Board
+import Board.Block as Block exposing (Block(..))
+import Board.Coord as Coord exposing (Coord)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (Tile)
 import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (delay, transition, transitionAll)
-import Data.Board.Block as Block
-import Data.Board.Coord as Coord
-import Data.Board.Move as Move
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
-import Data.Window exposing (Window)
+import Css.Transition exposing (delay, transitionAll)
+import Seed
+import Window exposing (Window)
 
 
 
@@ -59,7 +60,7 @@ topBarHeight =
 
 
 type alias TileViewModel =
-    ( Window, BoardDimensions )
+    ( Window, Board.Size )
 
 
 boardMarginTop : TileViewModel -> Style
@@ -78,13 +79,13 @@ boardOffsetLeft (( window, _ ) as model) =
 
 
 boardHeight : TileViewModel -> Int
-boardHeight ( window, dimensions ) =
-    round (Tile.baseSizeY * Tile.scale window) * dimensions.y
+boardHeight ( window, size ) =
+    round (Tile.baseSizeY * Tile.scale window) * size.y
 
 
 boardWidth : TileViewModel -> Int
-boardWidth ( window, dimensions ) =
-    tileWidth window * dimensions.x
+boardWidth ( window, size ) =
+    tileWidth window * size.x
 
 
 boardFullWidth : Window -> Int
@@ -165,7 +166,7 @@ wallStyles window move =
 enteringStyles : Move -> List Style
 enteringStyles move =
     case Move.tileState move of
-        Entering _ ->
+        Tile.Entering _ ->
             [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
 
         _ ->
@@ -175,7 +176,7 @@ enteringStyles move =
 fallingStyles : Move -> List Style
 fallingStyles move =
     case Move.tileState move of
-        Falling _ distance ->
+        Tile.Falling _ distance ->
             [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
 
         _ ->
@@ -185,14 +186,14 @@ fallingStyles move =
 moveTracerStyles : Move -> List Style
 moveTracerStyles move =
     case Move.tileState move of
-        Dragging (Burst _) _ _ ->
+        Tile.Dragging (Tile.Burst _) _ _ ->
             [ Animation.animation "bulge-fade-2" 800 [ Animation.ease, Animation.infinite ] ]
 
-        Dragging _ _ _ ->
+        Tile.Dragging _ _ _ ->
             [ Animation.animation "bulge-fade-2" 800 [ Animation.ease ]
             ]
 
-        Active _ ->
+        Tile.Active _ ->
             [ Animation.animation "bulge-fade" 800 [ Animation.ease, Animation.infinite ]
             ]
 
@@ -231,14 +232,14 @@ draggingStyles isBursting move =
 growingStyles : Move -> List Style
 growingStyles move =
     case Move.tileState move of
-        Growing SeedPod _ ->
+        Tile.Growing Tile.SeedPod _ ->
             [ transform [ scale 4 ]
             , transitionAll 400 [ delay <| modBy 5 (Block.growingOrder <| Move.block move) * 70 ]
             , opacity 0
             , disablePointer
             ]
 
-        Growing (Seed _) _ ->
+        Tile.Growing (Tile.Seed _) _ ->
             [ Animation.animation "bulge" 500 [ Animation.ease ] ]
 
         _ ->
@@ -280,130 +281,130 @@ tileSize =
     fromBlock tileSize_ 0
 
 
-fromBlock : (TileType -> a) -> a -> Block -> a
+fromBlock : (Tile -> a) -> a -> Block -> a
 fromBlock f default =
     Block.fold (Tile.map default f) default
 
 
-strokeColors : TileType -> Color.Color
+strokeColors : Tile -> Color.Color
 strokeColors tile =
     case tile of
-        Rain ->
+        Tile.Rain ->
             Color.lightBlue
 
-        Sun ->
+        Tile.Sun ->
             Color.gold
 
-        SeedPod ->
+        Tile.SeedPod ->
             Color.green
 
-        Seed seedType ->
-            seedStrokeColors seedType
+        Tile.Seed seed ->
+            seedStrokeColors seed
 
-        Burst tile_ ->
+        Tile.Burst tile_ ->
             burstColor tile_
 
 
-lighterStrokeColor : TileType -> Color.Color
+lighterStrokeColor : Tile -> Color.Color
 lighterStrokeColor tile =
     case tile of
-        Rain ->
+        Tile.Rain ->
             Color.rgb 171 238 237
 
-        Sun ->
+        Tile.Sun ->
             Color.rgb 249 221 79
 
-        SeedPod ->
+        Tile.SeedPod ->
             Color.rgb 157 229 106
 
-        Seed seedType ->
-            lighterSeedStrokeColor seedType
+        Tile.Seed seed ->
+            lighterSeedStrokeColor seed
 
-        Burst tile_ ->
+        Tile.Burst tile_ ->
             lighterBurstColor tile_
 
 
-burstColor : Maybe TileType -> Color.Color
+burstColor : Maybe Tile -> Color.Color
 burstColor =
     Maybe.map strokeColors >> Maybe.withDefault Color.greyYellow
 
 
-lighterBurstColor : Maybe TileType -> Color.Color
+lighterBurstColor : Maybe Tile -> Color.Color
 lighterBurstColor =
     Maybe.map lighterStrokeColor >> Maybe.withDefault Color.transparent
 
 
-seedStrokeColors : SeedType -> Color.Color
-seedStrokeColors seedType =
-    case seedType of
-        Sunflower ->
+seedStrokeColors : Seed.Seed -> Color.Color
+seedStrokeColors seed =
+    case seed of
+        Seed.Sunflower ->
             Color.darkBrown
 
-        Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Color.purple
 
-        Cornflower ->
+        Seed.Cornflower ->
             Color.darkBlue
 
-        Lupin ->
+        Seed.Lupin ->
             Color.crimson
 
         _ ->
             Color.darkBrown
 
 
-lighterSeedStrokeColor : SeedType -> Color.Color
-lighterSeedStrokeColor seedType =
-    case seedType of
-        Sunflower ->
+lighterSeedStrokeColor : Seed.Seed -> Color.Color
+lighterSeedStrokeColor seed =
+    case seed of
+        Seed.Sunflower ->
             Color.lightBrown
 
-        Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Color.orange
 
-        Cornflower ->
+        Seed.Cornflower ->
             Color.blueGrey
 
-        Lupin ->
+        Seed.Lupin ->
             Color.brown
 
         _ ->
             Color.lightBrown
 
 
-tileBackground_ : TileType -> List Style
+tileBackground_ : Tile -> List Style
 tileBackground_ tile =
     case tile of
-        Rain ->
+        Tile.Rain ->
             [ backgroundColor Color.lightBlue ]
 
-        Sun ->
+        Tile.Sun ->
             [ backgroundColor Color.gold ]
 
-        SeedPod ->
+        Tile.SeedPod ->
             [ background Color.seedPodGradient ]
 
-        Seed _ ->
+        Tile.Seed _ ->
             []
 
-        Burst _ ->
+        Tile.Burst _ ->
             []
 
 
-tileSize_ : TileType -> Float
+tileSize_ : Tile -> Float
 tileSize_ tile =
     case tile of
-        Rain ->
+        Tile.Rain ->
             18
 
-        Sun ->
+        Tile.Sun ->
             18
 
-        SeedPod ->
+        Tile.SeedPod ->
             26
 
-        Seed _ ->
+        Tile.Seed _ ->
             35
 
-        Burst _ ->
+        Tile.Burst _ ->
             35

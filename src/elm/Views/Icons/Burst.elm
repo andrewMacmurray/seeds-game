@@ -6,9 +6,9 @@ module Views.Icons.Burst exposing
 import Css.Color as Color
 import Css.Style as Style
 import Css.Transition as Transition
-import Helpers.Svg exposing (..)
 import Svg
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 
 
 active : Color.Color -> Color.Color -> Svg.Svg msg

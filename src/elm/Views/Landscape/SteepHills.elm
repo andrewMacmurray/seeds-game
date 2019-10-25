@@ -9,13 +9,13 @@ import Axis2d
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
-import Data.Window exposing (Window)
 import Direction2d
 import Geometry.Svg
-import Helpers.Svg exposing (..)
 import Point2d
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
+import Window exposing (Window)
 
 
 type alias Hill msg =

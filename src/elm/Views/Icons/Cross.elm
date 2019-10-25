@@ -1,9 +1,9 @@
 module Views.Icons.Cross exposing (cross)
 
 import Css.Color as Color
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 
 
 cross : Svg msg

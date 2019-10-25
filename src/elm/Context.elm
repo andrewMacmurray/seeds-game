@@ -18,13 +18,13 @@ module Context exposing
     , updateLives
     )
 
-import Data.Levels as Levels
-import Data.Lives as Lives exposing (Lives)
-import Data.Progress as Progress exposing (Progress)
-import Data.Window exposing (Window)
+import Config.Levels as Levels
+import Level.Progress as Progress exposing (Progress)
+import Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Random
 import Time
+import Window exposing (Window)
 
 
 type alias Context =

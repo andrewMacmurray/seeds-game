@@ -1,24 +1,22 @@
 module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 
+import Board exposing (Board)
+import Board.Move as Move
+import Board.Tile as Tile
 import Css.Color as Color
 import Css.Style as Style
-import Css.Unit exposing (px)
-import Data.Board as Board
-import Data.Board.Move as Move
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (Board, BoardDimensions)
-import Data.Pointer exposing (Pointer)
-import Data.Window exposing (Window)
-import Helpers.Svg exposing (height_, width_, windowViewBox_)
 import Html exposing (Html, span)
+import Pointer exposing (Pointer)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (height_, width_, windowViewBox_)
 import Views.Board.Tile.Styles exposing (..)
+import Window exposing (Window)
 
 
 type alias LineViewModel =
     { window : Window
-    , boardDimensions : BoardDimensions
+    , boardDimensions : Board.Size
     , board : Board
     , isDragging : Bool
     , pointer : Pointer
@@ -44,7 +42,7 @@ lineDrag model =
             lastMoveOrigin model
 
         strokeColor =
-            Board.currentMoveType model.board
+            Board.currentTile model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault Color.greyYellow
 

@@ -13,24 +13,24 @@ module Scenes.Title exposing
 
 import Browser.Dom as Dom
 import Browser.Events
+import Config.Levels as Levels
 import Context exposing (Context)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
-import Data.Levels as Levels
-import Data.Progress as Progress
-import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exitWith)
-import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
+import Level.Progress as Progress
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Task
+import Utils.Delay exposing (sequence)
 import Views.Menu as Menu
 import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (lupin, marigold, sunflower)
+import Window exposing (Window)
 
 
 

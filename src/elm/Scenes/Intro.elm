@@ -11,18 +11,17 @@ module Scenes.Intro exposing
 import Context exposing (Context)
 import Css.Animation exposing (animation)
 import Css.Color as Color
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Css.Transition exposing (transitionAll)
-import Data.Window as Window exposing (Window)
 import Exit exposing (continue, exit)
-import Helpers.Delay exposing (sequence, trigger)
 import Html exposing (..)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Intro.DyingLandscape as DL
 import Scenes.Intro.GrowingSeeds as GS
 import Scenes.Intro.SunflowerMeadow as SM
-import Task
+import Utils.Delay exposing (sequence)
+import Window exposing (Window)
 
 
 

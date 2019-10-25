@@ -1,15 +1,17 @@
 module Scenes.Tutorial.SeedPod exposing (config)
 
-import Data.Board.Generate as Board
-import Data.Board.Types exposing (..)
+import Board exposing (Board)
+import Board.Generate as Board
+import Board.Tile exposing (Tile(..))
 import Dict exposing (Dict)
 import Scenes.Tutorial as Tutorial exposing (..)
+import Seed exposing (Seed(..))
 
 
 config : Tutorial.Config
 config =
     { text = text
-    , boardDimensions = dimensions
+    , boardSize = boardSize
     , board = initialBoard
     , sequence = sequence
     , resourceBank = Seed Chrysanthemum
@@ -18,11 +20,11 @@ config =
 
 initialBoard : Board
 initialBoard =
-    Board.mono SeedPod dimensions
+    Board.mono SeedPod boardSize
 
 
-dimensions : BoardDimensions
-dimensions =
+boardSize : Board.Size
+boardSize =
     { x = 3, y = 3 }
 
 

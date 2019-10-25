@@ -1,16 +1,15 @@
 module Views.Board.Tile exposing (view)
 
+import Board.Block as Block exposing (Block)
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (Tile)
 import Css.Style as Style exposing (..)
-import Data.Board.Block as Block
-import Data.Board.Move as Move
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
-import Data.Window exposing (Window)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Board.Tile.Styles exposing (..)
 import Views.Icons.Burst as Burst
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
+import Window exposing (Window)
 
 
 type alias Settings =
@@ -108,24 +107,24 @@ roundFloat =
 
 innerTileElement : Block -> Html msg
 innerTileElement block =
-    case Block.tileType block of
-        Just (Seed seedType) ->
-            renderSeed seedType
+    case Block.tile block of
+        Just (Tile.Seed seedType) ->
+            Seed.view seedType
 
-        Just (Burst tile) ->
+        Just (Tile.Burst tile) ->
             renderBurst block tile
 
         _ ->
             span [] []
 
 
-renderBurst : Block -> Maybe TileType -> Html msg
+renderBurst : Block -> Maybe Tile -> Html msg
 renderBurst block tile =
     div [ Style.style <| burstStyles block ]
         [ renderBurst_ tile <| Block.isLeaving block ]
 
 
-renderBurst_ : Maybe TileType -> Bool -> Html msg
+renderBurst_ : Maybe Tile -> Bool -> Html msg
 renderBurst_ tile isBursting =
     case tile of
         Just tile_ ->

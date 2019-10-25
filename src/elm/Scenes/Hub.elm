@@ -10,37 +10,38 @@ module Scenes.Hub exposing
     , view
     )
 
+import Board.Scores as Scores
+import Board.Tile as Tile exposing (Tile(..))
 import Browser.Dom as Dom
+import Config.Levels as Levels
+import Config.Worlds as Worlds
 import Context exposing (Context)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
-import Data.Board.Scores as Scores
-import Data.Board.Types exposing (..)
-import Data.InfoWindow as InfoWindow exposing (..)
-import Data.Level.Setting.Tile as Tile exposing (TargetScore(..))
-import Data.Levels as Levels
-import Data.Lives as Lives
-import Data.Progress as Progress
-import Data.Transit exposing (Transit(..))
-import Data.Window exposing (Window)
 import Exit exposing (continue, exitWith)
-import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (sequence)
-import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
+import InfoWindow exposing (..)
+import Level.Progress as Progress
+import Level.Setting.Tile as Tile exposing (TargetScore(..))
+import Lives
+import Seed exposing (Seed)
+import Sine
 import Task exposing (Task)
+import Transit exposing (Transit(..))
+import Utils.Attribute as Attribute
+import Utils.Delay exposing (sequence)
 import Views.Icons.Heart as Heart
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
-import Views.Lives exposing (renderLivesLeft)
+import Views.Lives as Lives
 import Views.Menu as Menu
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Views.Seed.Mono exposing (greyedOutSeed)
-import Worlds
+import Window exposing (Window)
 
 
 
@@ -207,7 +208,7 @@ renderTopBar model =
             model.context.lives
                 |> Lives.remaining
                 |> Transitioning
-                |> renderLivesLeft
+                |> Lives.view
     in
     div
         [ style [ background washedYellow ]
@@ -352,8 +353,8 @@ renderIcon { targetScore, tileType } =
                 Sun ->
                     renderWeather orange
 
-                Seed seedType ->
-                    div [ style [ width 35, height 53 ] ] [ renderSeed seedType ]
+                Seed seed ->
+                    div [ style [ width 35, height 53 ] ] [ Seed.view seed ]
 
                 _ ->
                     span [] []
@@ -450,7 +451,7 @@ renderLevel model config index level =
         , id <| Levels.toStringId level
         ]
         [ currentLevelPointer isCurrentLevel
-        , renderLevelIcon level config.seedType model
+        , renderLevelIcon level config.seed model
         , renderNumber levelNumber hasReachedLevel config
         ]
 
@@ -473,7 +474,7 @@ currentLevelPointer isCurrentLevel =
 
 offsetStyles : Int -> List Style
 offsetStyles levelNumber =
-    wave
+    Sine.wave
         { center = [ leftAuto, rightAuto ]
         , right = [ leftAuto ]
         , left = []
@@ -509,10 +510,10 @@ showInfo level model =
     Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
 
 
-renderLevelIcon : Levels.Id -> SeedType -> Model -> Html msg
-renderLevelIcon level seedType model =
+renderLevelIcon : Levels.Id -> Seed -> Model -> Html msg
+renderLevelIcon level seed model =
     if Levels.completed (Progress.reachedLevel model.context.progress) level then
-        renderSeed seedType
+        Seed.view seed
 
     else
         greyedOutSeed

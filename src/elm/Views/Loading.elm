@@ -1,16 +1,14 @@
 module Views.Loading exposing (loadingScreen)
 
+import Config.Worlds as Worlds
 import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, none, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
-import Data.Board.Types exposing (SeedType(..))
-import Data.Levels as Levels
-import Data.Progress as Progress exposing (Progress)
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Views.Seed.All exposing (renderSeed)
-import Worlds
+import Level.Progress as Progress exposing (Progress)
+import Seed exposing (Seed(..))
+import Views.Seed as Seed
 
 
 loadingScreen : Context -> Html msg
@@ -26,18 +24,18 @@ loadingScreen model =
             ]
         ]
         [ div [ style [ width 50 ] ]
-            [ renderSeed <| seedType model.progress
+            [ Seed.view <| seedFromProgress model.progress
             ]
         ]
 
 
-seedType : Progress -> SeedType
-seedType progress =
+seedFromProgress : Progress -> Seed
+seedFromProgress progress =
     Progress.currentLevelSeedType Worlds.all progress
         |> Maybe.withDefault (reachedLevelSeedType progress)
 
 
-reachedLevelSeedType : Progress -> SeedType
+reachedLevelSeedType : Progress -> Seed
 reachedLevelSeedType progress =
     Progress.reachedLevelSeedType Worlds.all progress
         |> Maybe.withDefault Sunflower

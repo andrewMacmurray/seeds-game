@@ -3,17 +3,17 @@ module Scenes.Intro.GrowingSeeds exposing
     , view
     )
 
+import Board.Tile as Tile
 import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (..)
 import Css.Transform as Transform
-import Css.Transition as Transition exposing (transition)
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (SeedType(..))
-import Data.Window as Window exposing (Window, size)
-import Helpers.Attribute as Attribute
+import Css.Transition exposing (transition)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Seed.All exposing (renderSeed)
+import Seed exposing (Seed(..))
+import Utils.Attribute as Attribute
+import Views.Seed as Seed
+import Window exposing (Window, size)
 
 
 type State
@@ -57,8 +57,8 @@ sideSeedsContainer vis =
             div [ class "o-100 flex justify-center", style [ transition "opacity" 1500 [] ] ]
 
 
-growingSeed : Window -> ( Int, SeedType, Float ) -> Html msg
-growingSeed window ( index, seedType, scale ) =
+growingSeed : Window -> ( Int, Seed, Float ) -> Html msg
+growingSeed window ( index, seed, scale ) =
     let
         delayMs =
             index * 100
@@ -75,11 +75,11 @@ growingSeed window ( index, seedType, scale ) =
                 ]
             , class "growing-seed"
             ]
-            [ renderSeed seedType ]
+            [ Seed.view seed ]
         ]
 
 
-seedsLeft : Window.Size -> List ( Int, SeedType, Float )
+seedsLeft : Window.Size -> List ( Int, Seed, Float )
 seedsLeft screenSize =
     case screenSize of
         Window.Small ->
@@ -98,7 +98,7 @@ seedsLeft screenSize =
             ]
 
 
-seedsRight : Window.Size -> List ( Int, SeedType, Float )
+seedsRight : Window.Size -> List ( Int, Seed, Float )
 seedsRight screenSize =
     case screenSize of
         Window.Small ->

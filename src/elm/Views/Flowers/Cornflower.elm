@@ -3,9 +3,9 @@ module Views.Flowers.Cornflower exposing (animated, static)
 import Css.Animation as Animation
 import Css.Style as Style
 import Css.Transform as Transform
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 
 
 static : Svg msg

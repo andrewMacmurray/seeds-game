@@ -3,10 +3,10 @@ module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoC
 import Css.Animation exposing (animation, cubicBezier, ease, linear)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
-import Data.InfoWindow as InfoWindow exposing (..)
-import Data.Window as Window
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import InfoWindow exposing (..)
+import Window
 
 
 infoContainer : InfoWindow a -> Html msg -> Html msg

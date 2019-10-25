@@ -1,24 +1,22 @@
 module Views.Board.Line exposing (renderLine)
 
+import Board.Move as Move exposing (Move)
+import Board.Tile as Tile exposing (Bearing(..), State(..), Tile)
 import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
-import Data.Board.Block exposing (getTileState)
-import Data.Board.Move as Move
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
-import Data.Window exposing (Window)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Window exposing (Window)
 
 
 renderLine : Window -> Move -> Html msg
-renderLine window (( coord, _ ) as move) =
+renderLine window move =
     div
         [ styles
             [ tileWidthheights window
-            , tileCoordsStyles window coord
+            , tileCoordsStyles window <| Move.coord move
             ]
         , class "dib absolute touch-disabled"
         ]
@@ -29,7 +27,7 @@ lineFromMove : Window -> Move -> Html msg
 lineFromMove window move =
     let
         tileState =
-            getTileState <| Move.block move
+            Move.tileState move
     in
     case tileState of
         Dragging tileType _ Left ->
@@ -48,8 +46,8 @@ lineFromMove window move =
             span [] []
 
 
-innerLine : Window -> TileType -> Bearing -> Html msg
-innerLine window tileType bearing =
+innerLine : Window -> Tile -> Bearing -> Html msg
+innerLine window tile bearing =
     let
         tileScale =
             Tile.scale window
@@ -69,7 +67,7 @@ innerLine window tileType bearing =
             , y1 "0"
             , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , Style.svgStyle [ Style.stroke <| strokeColors tileType ]
+            , Style.svgStyle [ Style.stroke <| strokeColors tile ]
             ]
             []
         ]

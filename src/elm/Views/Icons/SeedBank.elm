@@ -1,19 +1,18 @@
 module Views.Icons.SeedBank exposing (seedBank)
 
 import Css.Style as Style exposing (svgStyle)
-import Css.Transform as Css exposing (translateY)
+import Css.Transform exposing (translateY)
 import Css.Transition exposing (transitionAll)
-import Data.Board.Tile as Tile
-import Data.Board.Types exposing (..)
 import Html exposing (Html)
+import Seed exposing (Seed)
 import Svg
 import Svg.Attributes exposing (..)
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Views.Seed.Mono exposing (greyedOutSeed)
 
 
-seedBank : SeedType -> Float -> Html msg
-seedBank seedType percentFull =
+seedBank : Seed -> Float -> Html msg
+seedBank seed percentFull =
     let
         fullHeight =
             193.5
@@ -22,7 +21,7 @@ seedBank seedType percentFull =
             (fullHeight / 100) * (100 - percentFull)
 
         stringSeedType =
-            seedType |> Tile.seedName |> String.toLower
+            seed |> Seed.name |> String.toLower
 
         seedBankId =
             "seed-bank-" ++ stringSeedType
@@ -64,7 +63,7 @@ seedBank seedType percentFull =
                     ]
                 , Svg.g
                     [ mask <| "url(#" ++ seedBankId ++ ")" ]
-                    [ renderSeed seedType ]
+                    [ Seed.view seed ]
                 ]
             ]
         ]

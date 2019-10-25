@@ -15,14 +15,14 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
-import Data.Lives as Lives
-import Data.Transit exposing (Transit(..))
 import Exit exposing (continue, exitWith)
-import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Views.Lives exposing (renderLivesLeft)
+import Lives
+import Transit exposing (Transit(..))
+import Utils.Delay exposing (after)
+import Views.Lives as Lives
 
 
 
@@ -104,7 +104,7 @@ view model =
             [ style [ Style.property "margin-top" <| pc -8 ]
             , class "tc"
             ]
-            [ div [] <| renderLivesLeft <| lifeState model
+            [ div [] <| Lives.view <| lifeState model
             , div [ style [ color Color.darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
@@ -132,7 +132,7 @@ lifeState model =
 
 
 tryAgain : Model -> Html Msg
-tryAgain model =
+tryAgain _ =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style
