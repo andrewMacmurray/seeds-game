@@ -597,18 +597,18 @@ addActiveTiles size board =
             List.member (Move.coord move) burstAreaCoordinates
 
         nonBurstingMove move =
-            not (withinBurstArea move) || moveType /= Move.tileType move
+            not (withinBurstArea move) || tile /= Move.tile move
 
         nonBurstCoords =
             Board.moves board
                 |> List.filter nonBurstingMove
                 |> List.map Move.coord
 
-        moveType =
+        tile =
             Board.currentTile board
 
         updateBlockToActive b =
-            if moveType == Block.tileType b then
+            if tile == Block.tile b then
                 Block.setToActive b
 
             else
@@ -644,7 +644,7 @@ burstTiles board =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
         updateActiveBlockToDragging coord block =
-            case Block.getTileState block of
+            case Block.tileState block of
                 Active _ ->
                     Block.setToDragging (withMoveOrder coord) block
 
@@ -930,7 +930,7 @@ leavingStyles model move =
 
 handleExitDirection : Move -> Model -> Style
 handleExitDirection move model =
-    case Block.getTileState <| Move.block move of
+    case Block.tileState <| Move.block move of
         Leaving Rain _ ->
             getLeavingStyle Rain model
 

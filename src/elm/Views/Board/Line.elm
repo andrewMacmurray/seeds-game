@@ -1,6 +1,5 @@
 module Views.Board.Line exposing (renderLine)
 
-import Board.Block exposing (getTileState)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Bearing(..), State(..), Tile)
 import Css.Style as Style exposing (Style, marginAuto, styles)
@@ -28,7 +27,7 @@ lineFromMove : Window -> Move -> Html msg
 lineFromMove window move =
     let
         tileState =
-            getTileState <| Move.block move
+            Move.tileState move
     in
     case tileState of
         Dragging tileType _ Left ->

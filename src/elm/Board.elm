@@ -144,7 +144,7 @@ currentTile : Board -> Maybe Tile
 currentTile =
     filterBursts
         >> matchBlock Block.isDragging
-        >> Maybe.andThen Move.tileType
+        >> Maybe.andThen Move.tile
 
 
 filterBursts : Board -> Board

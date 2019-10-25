@@ -107,7 +107,7 @@ roundFloat =
 
 innerTileElement : Block -> Html msg
 innerTileElement block =
-    case Block.tileType block of
+    case Block.tile block of
         Just (Tile.Seed seedType) ->
             Seed.view seedType
 

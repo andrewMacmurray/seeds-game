@@ -5,7 +5,6 @@ module Board.Block exposing
     , clearBurstType
     , empty
     , fold
-    , getTileState
     , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
@@ -36,7 +35,8 @@ module Board.Block exposing
     , setToDragging
     , setToFalling
     , static
-    , tileType
+    , tile
+    , tileState
     )
 
 import Board.Tile as Tile exposing (Tile)
@@ -121,13 +121,13 @@ isCurrentMove =
     fold Tile.isCurrentMove False
 
 
-tileType : Block -> Maybe Tile
-tileType =
+tile : Block -> Maybe Tile
+tile =
     fold Tile.get Nothing
 
 
-getTileState : Block -> Tile.State
-getTileState =
+tileState : Block -> Tile.State
+tileState =
     fold identity Tile.Empty
 
 
@@ -259,8 +259,8 @@ matchTile f =
 map : (Tile.State -> Tile.State) -> Block -> Block
 map f block =
     case block of
-        Space tileState ->
-            Space <| f tileState
+        Space tileState_ ->
+            Space <| f tileState_
 
         wall ->
             wall
@@ -272,5 +272,5 @@ fold f default block =
         Wall _ ->
             default
 
-        Space tileState ->
-            f tileState
+        Space tileState_ ->
+            f tileState_

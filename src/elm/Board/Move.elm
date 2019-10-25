@@ -6,8 +6,8 @@ module Board.Move exposing
     , empty
     , move
     , sameTileType
+    , tile
     , tileState
-    , tileType
     , updateBlock
     , x
     , y
@@ -56,7 +56,7 @@ block (Move _ b) =
 
 tileState : Move -> Tile.State
 tileState =
-    block >> Block.getTileState
+    block >> Block.tileState
 
 
 x : Move -> Int
@@ -69,14 +69,14 @@ y =
     coord >> Coord.y
 
 
-tileType : Move -> Maybe Tile
-tileType =
-    block >> Block.tileType
+tile : Move -> Maybe Tile
+tile =
+    block >> Block.tile
 
 
 sameTileType : Move -> Move -> Bool
 sameTileType m1 m2 =
-    tileType m1 == tileType m2
+    tile m1 == tile m2
 
 
 areNeighbours : Move -> Move -> Bool
