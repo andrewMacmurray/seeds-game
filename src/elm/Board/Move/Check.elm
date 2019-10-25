@@ -53,10 +53,10 @@ isValidBurst curr board =
             Board.lastMove board
 
         burstTypeNotSet =
-            Board.currentMoveType board == Nothing
+            Board.currentTile board == Nothing
 
         isValidMoveAfterBurst =
-            isBurst last && Board.currentMoveType board == Move.tileType curr
+            isBurst last && Board.currentTile board == Move.tileType curr
 
         inCurrentMoves =
             Board.inCurrentMoves curr board

@@ -2,13 +2,13 @@ module Views.Board.Tile exposing (view)
 
 import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Views.Board.Tile.Styles exposing (..)
 import Views.Icons.Burst as Burst
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Window exposing (Window)
 
 
@@ -109,7 +109,7 @@ innerTileElement : Block -> Html msg
 innerTileElement block =
     case Block.tileType block of
         Just (Tile.Seed seedType) ->
-            renderSeed seedType
+            Seed.view seedType
 
         Just (Tile.Burst tile) ->
             renderBurst block tile
@@ -118,13 +118,13 @@ innerTileElement block =
             span [] []
 
 
-renderBurst : Block -> Maybe Tile.Type -> Html msg
+renderBurst : Block -> Maybe Tile -> Html msg
 renderBurst block tile =
     div [ Style.style <| burstStyles block ]
         [ renderBurst_ tile <| Block.isLeaving block ]
 
 
-renderBurst_ : Maybe Tile.Type -> Bool -> Html msg
+renderBurst_ : Maybe Tile -> Bool -> Html msg
 renderBurst_ tile isBursting =
     case tile of
         Just tile_ ->

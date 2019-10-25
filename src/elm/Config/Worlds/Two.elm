@@ -1,18 +1,18 @@
 module Config.Worlds.Two exposing (world)
 
 import Board.Coord exposing (Coord)
-import Board.Tile exposing (SeedType(..))
 import Board.Wall exposing (..)
 import Config.Levels as Levels
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
+import Seed exposing (Seed(..))
 
 
 world : Levels.World
 world =
     Levels.world
-        { seedType = Chrysanthemum
+        { seed = Chrysanthemum
         , backdropColor = Color.gold
         , textColor = Color.white
         , textCompleteColor = Color.yellow

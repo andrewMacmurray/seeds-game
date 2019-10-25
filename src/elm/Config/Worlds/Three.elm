@@ -1,18 +1,18 @@
 module Config.Worlds.Three exposing (world)
 
 import Board.Coord exposing (Coord)
-import Board.Tile exposing (SeedType(..))
 import Board.Wall as Wall exposing (..)
 import Config.Levels as Levels
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
+import Seed exposing (Seed(..))
 
 
 world : Levels.World
 world =
     Levels.world
-        { seedType = Cornflower
+        { seed = Cornflower
         , backdropColor = "#1f4a77"
         , textColor = Color.white
         , textCompleteColor = Color.white

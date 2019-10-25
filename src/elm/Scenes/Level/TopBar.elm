@@ -6,7 +6,7 @@ module Scenes.Level.TopBar exposing
     )
 
 import Board.Scores as Scores
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style exposing (..)
@@ -20,7 +20,7 @@ import Views.Board.Tile.Styles exposing (boardFullWidth, scoreIconSize, topBarHe
 import Views.Icons.RainBank exposing (rainBankFull)
 import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Window exposing (Window)
 
 
@@ -64,7 +64,7 @@ topBar model =
         ]
 
 
-renderScore : TopBarViewModel -> Tile.Type -> Html msg
+renderScore : TopBarViewModel -> Tile -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
@@ -127,7 +127,7 @@ moveCounterColor moves =
         pinkRed
 
 
-scoreContent : Tile.Type -> Scores.Scores -> Html msg
+scoreContent : Tile -> Scores.Scores -> Html msg
 scoreContent tileType scores =
     if Scores.getScoreFor tileType scores == Just 0 then
         tickFadeIn tileType scores
@@ -136,7 +136,7 @@ scoreContent tileType scores =
         text <| Scores.toString tileType scores
 
 
-tickFadeIn : Tile.Type -> Scores.Scores -> Html msg
+tickFadeIn : Tile -> Scores.Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
@@ -158,7 +158,7 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : Tile.Type -> Float -> Html msg
+renderScoreIcon : Tile -> Float -> Html msg
 renderScoreIcon tileType iconSize =
     case scoreIcon tileType of
         Just icon ->
@@ -175,7 +175,7 @@ renderScoreIcon tileType iconSize =
             span [] []
 
 
-scoreIcon : Tile.Type -> Maybe (Svg msg)
+scoreIcon : Tile -> Maybe (Svg msg)
 scoreIcon tileType =
     case tileType of
         Tile.Sun ->
@@ -184,8 +184,8 @@ scoreIcon tileType =
         Tile.Rain ->
             Just rainBankFull
 
-        Tile.Seed seedType ->
-            Just <| renderSeed seedType
+        Tile.Seed seed ->
+            Just <| Seed.view seed
 
         _ ->
             Nothing

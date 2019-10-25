@@ -3,8 +3,8 @@ module Board exposing
     , Size
     , blocks
     , coords
-    , currentMoveType
     , currentMoves
+    , currentTile
     , filter
     , filterBlocks
     , findBlockAt
@@ -27,7 +27,7 @@ module Board exposing
 import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 import Dict exposing (Dict)
 import Utils.Dict
 
@@ -140,8 +140,8 @@ currentMoves =
         >> List.sortBy (Move.block >> Block.moveOrder)
 
 
-currentMoveType : Board -> Maybe Tile.Type
-currentMoveType =
+currentTile : Board -> Maybe Tile
+currentTile =
     filterBursts
         >> matchBlock Block.isDragging
         >> Maybe.andThen Move.tileType
@@ -174,7 +174,7 @@ secondLastMove =
 -- Create
 
 
-fromTiles : Size -> List Tile.Type -> Board
+fromTiles : Size -> List Tile -> Board
 fromTiles boardDimensions tiles =
     tiles
         |> List.map Block.static

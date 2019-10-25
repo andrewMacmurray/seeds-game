@@ -2,7 +2,7 @@ module Views.Board.Line exposing (renderLine)
 
 import Board.Block exposing (getTileState)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Bearing(..), State(..))
+import Board.Tile as Tile exposing (Bearing(..), State(..), Tile)
 import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
 import Html exposing (Html, div, span)
@@ -47,8 +47,8 @@ lineFromMove window move =
             span [] []
 
 
-innerLine : Window -> Tile.Type -> Bearing -> Html msg
-innerLine window tileType bearing =
+innerLine : Window -> Tile -> Bearing -> Html msg
+innerLine window tile bearing =
     let
         tileScale =
             Tile.scale window
@@ -68,7 +68,7 @@ innerLine window tileType bearing =
             , y1 "0"
             , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , Style.svgStyle [ Style.stroke <| strokeColors tileType ]
+            , Style.svgStyle [ Style.stroke <| strokeColors tile ]
             ]
             []
         ]

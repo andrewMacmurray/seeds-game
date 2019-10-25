@@ -33,12 +33,12 @@ module Config.Levels exposing
     )
 
 import Board
-import Board.Tile as Tile
 import Board.Wall as Wall
 import Css.Color exposing (Color)
 import Dict exposing (Dict)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability, TargetScore)
+import Seed exposing (Seed)
 
 
 
@@ -62,7 +62,7 @@ type Worlds
 type World
     = World
         { levels : Levels
-        , seedType : Tile.SeedType
+        , seed : Seed
         , backdropColor : Color
         , textColor : Color
         , textCompleteColor : Color
@@ -71,7 +71,7 @@ type World
 
 
 type alias WorldConfig =
-    { seedType : Tile.SeedType
+    { seed : Seed
     , backdropColor : Color
     , textColor : Color
     , textCompleteColor : Color
@@ -155,7 +155,7 @@ worlds =
 world : WorldConfig -> List Level -> World
 world c levels =
     World
-        { seedType = c.seedType
+        { seed = c.seed
         , backdropColor = c.backdropColor
         , textColor = c.textColor
         , textCompleteColor = c.textCompleteColor
@@ -300,11 +300,11 @@ config (Level l) =
     }
 
 
-seedType : Worlds -> Id -> Maybe Tile.SeedType
+seedType : Worlds -> Id -> Maybe Seed
 seedType worlds_ id =
     worlds_
         |> getWorld_ id
-        |> Maybe.map (\(World w) -> w.seedType)
+        |> Maybe.map (\(World w) -> w.seed)
 
 
 number : Worlds -> Id -> Maybe Int
@@ -364,7 +364,7 @@ worldSize =
 
 worldConfig : World -> WorldConfig
 worldConfig (World w) =
-    { seedType = w.seedType
+    { seed = w.seed
     , backdropColor = w.backdropColor
     , textColor = w.textColor
     , textCompleteColor = w.textCompleteColor

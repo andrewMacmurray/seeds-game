@@ -42,7 +42,7 @@ lineDrag model =
             lastMoveOrigin model
 
         strokeColor =
-            Board.currentMoveType model.board
+            Board.currentTile model.board
                 |> Maybe.map strokeColors
                 |> Maybe.withDefault Color.greyYellow
 

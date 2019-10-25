@@ -10,7 +10,6 @@ module Config.Worlds exposing
     , tutorial
     )
 
-import Board.Tile as Tile
 import Config.Levels as Levels exposing (..)
 import Config.Worlds.One as One
 import Config.Worlds.Three as Three
@@ -20,6 +19,7 @@ import Scenes.Tutorial.Rain as Rain
 import Scenes.Tutorial.Seed as Seed
 import Scenes.Tutorial.SeedPod as SeedPod
 import Scenes.Tutorial.Sun as Sun
+import Seed exposing (Seed)
 
 
 
@@ -69,7 +69,7 @@ previous =
     Levels.previous all
 
 
-seedType : Levels.Id -> Maybe Tile.SeedType
+seedType : Levels.Id -> Maybe Seed
 seedType =
     Levels.seedType all
 

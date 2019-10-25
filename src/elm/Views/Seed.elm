@@ -1,15 +1,15 @@
-module Views.Seed.All exposing (renderSeed)
+module Views.Seed exposing (view)
 
-import Board.Tile exposing (..)
+import Seed exposing (Seed(..))
 import Svg exposing (Svg)
 import Views.Seed.Circle exposing (chrysanthemum)
 import Views.Seed.Mono exposing (rose)
 import Views.Seed.Twin exposing (cornflower, lupin, marigold, sunflower)
 
 
-renderSeed : SeedType -> Svg msg
-renderSeed seedType =
-    case seedType of
+view : Seed -> Svg msg
+view seed =
+    case seed of
         Sunflower ->
             sunflower
 

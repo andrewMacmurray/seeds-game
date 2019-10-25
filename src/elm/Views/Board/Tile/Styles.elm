@@ -31,12 +31,13 @@ import Board
 import Board.Block as Block exposing (Block(..))
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
+import Seed
 import Window exposing (Window)
 
 
@@ -280,12 +281,12 @@ tileSize =
     fromBlock tileSize_ 0
 
 
-fromBlock : (Tile.Type -> a) -> a -> Block -> a
+fromBlock : (Tile -> a) -> a -> Block -> a
 fromBlock f default =
     Block.fold (Tile.map default f) default
 
 
-strokeColors : Tile.Type -> Color.Color
+strokeColors : Tile -> Color.Color
 strokeColors tile =
     case tile of
         Tile.Rain ->
@@ -297,14 +298,14 @@ strokeColors tile =
         Tile.SeedPod ->
             Color.green
 
-        Tile.Seed seedType ->
-            seedStrokeColors seedType
+        Tile.Seed seed ->
+            seedStrokeColors seed
 
         Tile.Burst tile_ ->
             burstColor tile_
 
 
-lighterStrokeColor : Tile.Type -> Color.Color
+lighterStrokeColor : Tile -> Color.Color
 lighterStrokeColor tile =
     case tile of
         Tile.Rain ->
@@ -316,62 +317,62 @@ lighterStrokeColor tile =
         Tile.SeedPod ->
             Color.rgb 157 229 106
 
-        Tile.Seed seedType ->
-            lighterSeedStrokeColor seedType
+        Tile.Seed seed ->
+            lighterSeedStrokeColor seed
 
         Tile.Burst tile_ ->
             lighterBurstColor tile_
 
 
-burstColor : Maybe Tile.Type -> Color.Color
+burstColor : Maybe Tile -> Color.Color
 burstColor =
     Maybe.map strokeColors >> Maybe.withDefault Color.greyYellow
 
 
-lighterBurstColor : Maybe Tile.Type -> Color.Color
+lighterBurstColor : Maybe Tile -> Color.Color
 lighterBurstColor =
     Maybe.map lighterStrokeColor >> Maybe.withDefault Color.transparent
 
 
-seedStrokeColors : Tile.SeedType -> Color.Color
-seedStrokeColors seedType =
-    case seedType of
-        Tile.Sunflower ->
+seedStrokeColors : Seed.Seed -> Color.Color
+seedStrokeColors seed =
+    case seed of
+        Seed.Sunflower ->
             Color.darkBrown
 
-        Tile.Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Color.purple
 
-        Tile.Cornflower ->
+        Seed.Cornflower ->
             Color.darkBlue
 
-        Tile.Lupin ->
+        Seed.Lupin ->
             Color.crimson
 
         _ ->
             Color.darkBrown
 
 
-lighterSeedStrokeColor : Tile.SeedType -> Color.Color
-lighterSeedStrokeColor seedType =
-    case seedType of
-        Tile.Sunflower ->
+lighterSeedStrokeColor : Seed.Seed -> Color.Color
+lighterSeedStrokeColor seed =
+    case seed of
+        Seed.Sunflower ->
             Color.lightBrown
 
-        Tile.Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Color.orange
 
-        Tile.Cornflower ->
+        Seed.Cornflower ->
             Color.blueGrey
 
-        Tile.Lupin ->
+        Seed.Lupin ->
             Color.brown
 
         _ ->
             Color.lightBrown
 
 
-tileBackground_ : Tile.Type -> List Style
+tileBackground_ : Tile -> List Style
 tileBackground_ tile =
     case tile of
         Tile.Rain ->
@@ -390,7 +391,7 @@ tileBackground_ tile =
             []
 
 
-tileSize_ : Tile.Type -> Float
+tileSize_ : Tile -> Float
 tileSize_ tile =
     case tile of
         Tile.Rain ->

@@ -9,7 +9,6 @@ module Scenes.Garden exposing
     , view
     )
 
-import Board.Tile as Tile exposing (SeedType(..), seedName)
 import Browser.Dom as Dom
 import Config.Levels as Levels exposing (WorldConfig)
 import Config.Worlds as Worlds
@@ -27,12 +26,13 @@ import Level.Progress as Progress exposing (Progress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
 import Scenes.Summary.Cornflower as Cornflower
 import Scenes.Summary.Sunflower as Sunflower
+import Seed exposing (Seed(..))
 import Task exposing (Task)
 import Utils.Delay exposing (after)
 import Views.Flowers.All exposing (renderFlower)
 import Views.Icons.Cross exposing (cross)
 import Views.Menu as Menu
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Views.Seed.Mono exposing (greyedOutSeed)
 import Window exposing (Window)
 
@@ -43,7 +43,7 @@ import Window exposing (Window)
 
 type alias Model =
     { context : Context
-    , selectedFlower : Tile.SeedType
+    , selectedFlower : Seed
     , flowerVisibility : FlowerVisibility
     }
 
@@ -51,7 +51,7 @@ type alias Model =
 type Msg
     = ScrollToCurrentCompletedWorld
     | DomNoOp (Result Dom.Error ())
-    | SelectFlower Tile.SeedType
+    | SelectFlower Seed
     | ShowFlower
     | HideFlower
     | ClearFlower
@@ -115,8 +115,8 @@ update msg model =
         DomNoOp _ ->
             continue model []
 
-        SelectFlower seedType ->
-            continue { model | selectedFlower = seedType, flowerVisibility = Entering } [ after 100 ShowFlower ]
+        SelectFlower seed ->
+            continue { model | selectedFlower = seed, flowerVisibility = Entering } [ after 100 ShowFlower ]
 
         ShowFlower ->
             continue { model | flowerVisibility = Visible } []
@@ -134,7 +134,7 @@ update msg model =
 scrollToCurrentCompletedWorld : Progress -> Cmd Msg
 scrollToCurrentCompletedWorld progress =
     progress
-        |> (currentCompletedWorldSeedType >> seedName)
+        |> (currentCompletedWorldSeedType >> Seed.name)
         |> Dom.getElement
         |> Task.andThen scrollWorldToView
         |> Task.attempt DomNoOp
@@ -149,13 +149,13 @@ scrollWorldToView { element, viewport } =
     Dom.setViewportOf "flowers" 0 yOffset
 
 
-currentCompletedWorldSeedType : Progress -> SeedType
+currentCompletedWorldSeedType : Progress -> Seed
 currentCompletedWorldSeedType progress =
     Worlds.list
         |> List.filter (\( _, keys ) -> worldComplete progress keys)
         |> List.reverse
         |> List.head
-        |> Maybe.map (Tuple.first >> .seedType)
+        |> Maybe.map (Tuple.first >> .seed)
         |> Maybe.withDefault Sunflower
 
 
@@ -236,25 +236,25 @@ allFlowers progress =
 
 
 worldFlowers : Progress -> ( WorldConfig, List Levels.Id ) -> Html Msg
-worldFlowers progress ( { seedType }, levelKeys ) =
+worldFlowers progress ( { seed }, levelKeys ) =
     if worldComplete progress levelKeys then
         div
-            [ id <| seedName seedType
+            [ id <| Seed.name seed
             , style
                 [ marginTop 50
                 , marginBottom 50
                 ]
             , class "relative pointer"
-            , onClick <| SelectFlower seedType
+            , onClick <| SelectFlower seed
             ]
-            [ flowers seedType
-            , seeds seedType
-            , flowerName seedType
+            [ flowers seed
+            , seeds seed
+            , flowerName seed
             ]
 
     else
         div
-            [ id <| seedName seedType
+            [ id <| Seed.name seed
             , style [ marginTop 75, marginBottom 75 ]
             ]
             [ unfinishedWorldSeeds
@@ -275,42 +275,42 @@ unfinishedWorldSeeds =
         ]
 
 
-flowerName : SeedType -> Html msg
-flowerName seedType =
+flowerName : Seed -> Html msg
+flowerName seed =
     p [ style [ color Color.darkYellow ], class "tc ttu tracked-ultra" ]
-        [ text <| seedName seedType ]
+        [ text <| Seed.name seed ]
 
 
-seeds : SeedType -> Html msg
-seeds seedType =
+seeds : Seed -> Html msg
+seeds seed =
     div [ style [ marginTop -20, marginBottom 30 ], class "flex items-end justify-center" ]
-        [ seed 20 seedType
-        , seed 30 seedType
-        , seed 20 seedType
+        [ renderSeed 20 seed
+        , renderSeed 30 seed
+        , renderSeed 20 seed
         ]
 
 
-seed : Float -> SeedType -> Html msg
-seed size seedType =
-    sized size <| renderSeed seedType
+renderSeed : Float -> Seed -> Html msg
+renderSeed size =
+    sized size << Seed.view
 
 
-flowers : SeedType -> Html msg
-flowers seedType =
+flowers : Seed -> Html msg
+flowers seed =
     let
         spacing =
-            flowerSpacing seedType
+            flowerSpacing seed
     in
     div [ class "flex items-end justify-center relative" ]
-        [ div [ style [ marginRight spacing.offsetX ] ] [ flower spacing.small seedType ]
-        , div [ style [ marginBottom spacing.offsetY ], class "relative" ] [ flower spacing.large seedType ]
-        , div [ style [ marginLeft spacing.offsetX ], class "relative" ] [ flower spacing.small seedType ]
+        [ div [ style [ marginRight spacing.offsetX ] ] [ flower spacing.small seed ]
+        , div [ style [ marginBottom spacing.offsetY ], class "relative" ] [ flower spacing.large seed ]
+        , div [ style [ marginLeft spacing.offsetX ], class "relative" ] [ flower spacing.small seed ]
         ]
 
 
-flower : Float -> SeedType -> Html msg
-flower size seedType =
-    sized size <| renderFlower seedType
+flower : Float -> Seed -> Html msg
+flower size seed =
+    sized size <| renderFlower seed
 
 
 sized : Float -> Html msg -> Html msg
@@ -411,12 +411,12 @@ renderFlowerBackdrop window flowerLayer visibility =
                 []
 
 
-getFlowerLayer seedType window =
+getFlowerLayer seed window =
     let
         description =
-            flowerDescription seedType
+            flowerDescription seed
     in
-    case seedType of
+    case seed of
         Sunflower ->
             { hidden = Sunflower.hidden window
             , visible = Sunflower.visible window
@@ -458,9 +458,9 @@ type alias FlowerSpacing =
     }
 
 
-flowerSpacing : SeedType -> FlowerSpacing
-flowerSpacing seedType =
-    case seedType of
+flowerSpacing : Seed -> FlowerSpacing
+flowerSpacing seed =
+    case seed of
         Sunflower ->
             { large = 150
             , small = 80
@@ -490,9 +490,9 @@ flowerSpacing seedType =
             }
 
 
-flowerDescription : SeedType -> String
-flowerDescription seedType =
-    case seedType of
+flowerDescription : Seed -> String
+flowerDescription seed =
+    case seed of
         Sunflower ->
             "Sunflowers are native to North America but bloom across the world. During growth their bright yellow flowers turn to face the sun. Their seeds are an important food source for both humans and animals."
 

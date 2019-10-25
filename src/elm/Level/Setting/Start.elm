@@ -17,7 +17,8 @@ module Level.Setting.Start exposing
 import Board.Block as Block
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (SeedType(..), Type(..))
+import Board.Tile as Tile exposing (Tile(..))
+import Seed exposing (Seed)
 
 
 
@@ -25,7 +26,7 @@ import Board.Tile as Tile exposing (SeedType(..), Type(..))
 
 
 type Tile
-    = Tile Coord Tile.Type
+    = Tile Coord Tile.Tile
 
 
 type Direction
@@ -45,8 +46,8 @@ type Facing
 
 
 move : Tile -> Move
-move (Tile coord tileType) =
-    Move.move coord <| Block.static tileType
+move (Tile coord tile) =
+    Move.move coord <| Block.static tile
 
 
 
@@ -117,7 +118,7 @@ corner tile { size, facing } =
 
 burst : Int -> Int -> Tile
 burst x y =
-    Tile (toCoord x y) (Burst Nothing)
+    Tile (toCoord x y) (Tile.Burst Nothing)
 
 
 sun : Int -> Int -> Tile
@@ -132,12 +133,12 @@ rain x y =
 
 sunflower : Int -> Int -> Tile
 sunflower =
-    seed Sunflower
+    seed Seed.Sunflower
 
 
-seed : Tile.SeedType -> Int -> Int -> Tile
-seed seedType x y =
-    Tile (toCoord x y) (Seed seedType)
+seed : Seed -> Int -> Int -> Tile
+seed seed_ x y =
+    Tile (toCoord x y) (Seed seed_)
 
 
 

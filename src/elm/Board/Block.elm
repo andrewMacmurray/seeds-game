@@ -39,8 +39,9 @@ module Board.Block exposing
     , tileType
     )
 
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 import Css.Color as Css
+import Seed exposing (Seed)
 
 
 
@@ -56,7 +57,7 @@ type Block
 -- Construct
 
 
-static : Tile.Type -> Block
+static : Tile -> Block
 static =
     Tile.Static >> Space
 
@@ -120,9 +121,9 @@ isCurrentMove =
     fold Tile.isCurrentMove False
 
 
-tileType : Block -> Maybe Tile.Type
+tileType : Block -> Maybe Tile
 tileType =
-    fold Tile.getType Nothing
+    fold Tile.get Nothing
 
 
 getTileState : Block -> Tile.State
@@ -159,7 +160,7 @@ setToDragging =
     map << Tile.setToDragging
 
 
-growLeavingBurstToSeed : Tile.SeedType -> Block -> Block
+growLeavingBurstToSeed : Seed -> Block -> Block
 growLeavingBurstToSeed =
     map << Tile.growLeavingBurstToSeed
 
@@ -189,7 +190,7 @@ addBearing =
     map << Tile.addBearing
 
 
-setDraggingBurstType : Tile.Type -> Block -> Block
+setDraggingBurstType : Tile -> Block -> Block
 setDraggingBurstType =
     map << Tile.setDraggingBurstType
 
@@ -204,7 +205,7 @@ setGrowingToStatic =
     map Tile.setGrowingToStatic
 
 
-growSeedPod : Tile.SeedType -> Block -> Block
+growSeedPod : Seed -> Block -> Block
 growSeedPod =
     map << Tile.growSeedPod
 
@@ -248,9 +249,9 @@ setDraggingToLeaving =
 -- Helpers
 
 
-matchTile : (Tile.Type -> Bool) -> Tile.State -> Bool
+matchTile : (Tile -> Bool) -> Tile.State -> Bool
 matchTile f =
-    Tile.getType
+    Tile.get
         >> Maybe.map f
         >> Maybe.withDefault False
 

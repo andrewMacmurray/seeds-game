@@ -18,7 +18,7 @@ import Board.Generate exposing (insertNewEnteringTiles)
 import Board.Move as Move exposing (Move)
 import Board.Move.Bearing as Bearing
 import Board.Shift exposing (shiftBoard)
-import Board.Tile as Tile exposing (SeedType(..), State(..), Type(..))
+import Board.Tile as Tile exposing (State(..), Tile(..))
 import Context exposing (Context)
 import Css.Color exposing (darkYellow, greyYellow)
 import Css.Style as Style exposing (..)
@@ -31,6 +31,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Level.TopBar exposing (renderScoreIcon)
+import Seed exposing (Seed(..))
 import Utils.Attribute as Attribute
 import Utils.Delay exposing (pause, sequence)
 import Views.Board.Line exposing (renderLine)
@@ -51,7 +52,7 @@ type alias Model =
     , containerVisible : Bool
     , canvasVisible : Bool
     , skipped : Bool
-    , resourceBank : Tile.Type
+    , resourceBank : Tile
     , boardDimensions : Board.Size
     , currentText : Int
     , text : Dict Int String
@@ -62,7 +63,7 @@ type alias Config =
     { text : Dict Int String
     , boardSize : Board.Size
     , board : Board
-    , resourceBank : Tile.Type
+    , resourceBank : Tile
     , sequence : Sequence
     }
 
@@ -76,9 +77,9 @@ type Msg
     | SetGrowingPods
     | SetLeaving
     | ResetLeaving
-    | GrowPods Tile.SeedType
+    | GrowPods Seed
     | ResetGrowingPods
-    | EnteringTiles (List Tile.Type)
+    | EnteringTiles (List Tile)
     | FallTiles
     | ShiftBoard
     | SetBoardDimensions Board.Size
@@ -171,8 +172,8 @@ update msg model =
         ResetLeaving ->
             continue (updateBlocks Block.setLeavingToEmpty model) []
 
-        GrowPods seedType ->
-            continue (updateBlocks (Block.growSeedPod seedType) model) []
+        GrowPods seed ->
+            continue (updateBlocks (Block.growSeedPod seed) model) []
 
         ResetGrowingPods ->
             continue (updateBlocks Block.setGrowingToStatic model) []
@@ -276,7 +277,7 @@ handleDragTile coord model =
     { model | board = Bearing.add move model.board }
 
 
-handleInsertEnteringTiles : List Tile.Type -> Model -> Model
+handleInsertEnteringTiles : List Tile -> Model -> Model
 handleInsertEnteringTiles tileList =
     updateBoard <| insertNewEnteringTiles tileList
 

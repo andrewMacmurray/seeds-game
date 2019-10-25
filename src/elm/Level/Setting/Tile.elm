@@ -9,11 +9,12 @@ module Level.Setting.Tile exposing
     , sun
     )
 
-import Board.Tile as Tile exposing (SeedType, Type(..))
+import Board.Tile as Tile exposing (Tile(..))
+import Seed exposing (Seed)
 
 
 type alias Setting =
-    { tileType : Tile.Type
+    { tileType : Tile
     , probability : Probability
     , targetScore : Maybe TargetScore
     }
@@ -41,9 +42,9 @@ sun prob targetScore =
     Setting Sun prob <| Just targetScore
 
 
-seed : SeedType -> Probability -> TargetScore -> Setting
-seed seedType prob targetScore =
-    Setting (Seed seedType) prob <| Just targetScore
+seed : Seed -> Probability -> TargetScore -> Setting
+seed seed_ prob targetScore =
+    Setting (Seed seed_) prob <| Just targetScore
 
 
 seedPod : Probability -> Setting

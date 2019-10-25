@@ -15,7 +15,7 @@ module Board.Move exposing
 
 import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile)
 
 
 
@@ -69,7 +69,7 @@ y =
     coord >> Coord.y
 
 
-tileType : Move -> Maybe Tile.Type
+tileType : Move -> Maybe Tile
 tileType =
     block >> Block.tileType
 

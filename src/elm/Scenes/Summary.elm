@@ -9,7 +9,7 @@ module Scenes.Summary exposing
     , view
     )
 
-import Board.Tile as Tile exposing (SeedType(..), Type(..), seedName)
+import Board.Tile as Tile exposing (Tile(..))
 import Config.Worlds as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
@@ -25,13 +25,14 @@ import Ports exposing (cacheProgress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
 import Scenes.Summary.Cornflower as Cornflower
 import Scenes.Summary.Sunflower as Sunflower
+import Seed exposing (Seed(..))
 import Sine
 import Svg exposing (Svg)
 import Utils.Delay exposing (after, sequence, trigger)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Window exposing (Window)
 
 
@@ -217,34 +218,34 @@ incrementProgress model =
 view : Model -> Html msg
 view model =
     let
-        seedType =
+        seed =
             currentSeedType model.context.progress
     in
     div
         [ style
             [ height <| toFloat model.context.window.height
-            , backgroundColor seedType model.seedBankState
+            , backgroundColor seed model.seedBankState
             , transition "background" 3000 [ Transition.linear ]
             , animation "fade-in" 1000 [ Animation.linear ]
             ]
         , class "fixed z-5 w-100 top-0 left-0"
         ]
-        [ renderFlowerLayer seedType model.context.window model.seedBankState
-        , worldCompleteText seedType model
+        [ renderFlowerLayer seed model.context.window model.seedBankState
+        , worldCompleteText seed model
         , renderResourcesLayer model
         , renderFadeOut model
         ]
 
 
-currentSeedType : Progress -> Tile.SeedType
+currentSeedType : Progress -> Seed
 currentSeedType progress =
     progress
         |> Progress.currentLevelSeedType Worlds.all
         |> Maybe.withDefault Sunflower
 
 
-backgroundColor : Tile.SeedType -> SeedBankState -> Style
-backgroundColor seedType seedBankState =
+backgroundColor : Seed -> SeedBankState -> Style
+backgroundColor seed seedBankState =
     case seedBankState of
         Visible ->
             background Color.washedYellow
@@ -253,14 +254,14 @@ backgroundColor seedType seedBankState =
             background Color.lightGold
 
         Blooming ->
-            background <| getBackgroundFor seedType
+            background <| getBackgroundFor seed
 
 
-renderFlowerLayer : Tile.SeedType -> Window -> SeedBankState -> Html msg
-renderFlowerLayer seedType window seedBankState =
+renderFlowerLayer : Seed -> Window -> SeedBankState -> Html msg
+renderFlowerLayer seed window seedBankState =
     let
         ( flowersHidden, flowersVisible ) =
-            getFlowerLayer seedType window
+            getFlowerLayer seed window
     in
     case seedBankState of
         Leaving ->
@@ -273,9 +274,9 @@ renderFlowerLayer seedType window seedBankState =
             span [] []
 
 
-getFlowerLayer : SeedType -> Window -> ( Svg msg, Svg msg )
-getFlowerLayer seedType window =
-    case seedType of
+getFlowerLayer : Seed -> Window -> ( Svg msg, Svg msg )
+getFlowerLayer seed window =
+    case seed of
         Sunflower ->
             ( Sunflower.hidden window
             , Sunflower.visible window
@@ -297,9 +298,9 @@ getFlowerLayer seedType window =
             )
 
 
-getBackgroundFor : SeedType -> Color
-getBackgroundFor seedType =
-    case seedType of
+getBackgroundFor : Seed -> Color
+getBackgroundFor seed =
+    case seed of
         Sunflower ->
             Sunflower.background
 
@@ -344,8 +345,8 @@ fadeOverlay window =
 -- Complete Text
 
 
-worldCompleteText : SeedType -> Model -> Html msg
-worldCompleteText seedType model =
+worldCompleteText : Seed -> Model -> Html msg
+worldCompleteText seed model =
     div
         [ style
             [ color Color.white
@@ -355,7 +356,7 @@ worldCompleteText seedType model =
             ]
         , class "tc absolute tracked w-100 z-5"
         ]
-        [ text <| textContent seedType model.text ]
+        [ text <| textContent seed model.text ]
 
 
 textVisibility : TextState -> Style
@@ -368,11 +369,11 @@ textVisibility text =
             showIf visible
 
 
-textContent : SeedType -> TextState -> String
-textContent seedType text =
+textContent : Seed -> TextState -> String
+textContent seed text =
     case text of
         First _ ->
-            "You saved the " ++ seedName seedType ++ "!"
+            "You saved the " ++ Seed.name seed ++ "!"
 
         Second _ ->
             "It will bloom again on our new world"
@@ -394,7 +395,7 @@ renderResourcesLayer ({ context } as model) =
         ]
         [ div [ style [ marginTop -100 ] ]
             [ div [ style [ width 65, marginBottom 30 ], class "center" ]
-                [ renderSeedBank model levelSeed ]
+                [ viewBank model levelSeed ]
             , renderResources model
             , p
                 [ style
@@ -429,14 +430,14 @@ renderResources ({ context } as model) =
         resources
 
 
-renderSeedBank : Model -> SeedType -> Html msg
-renderSeedBank model seedType =
+viewBank : Model -> Seed -> Html msg
+viewBank model seed =
     let
         progress =
             model.context.progress
 
         fillLevel =
-            Progress.percentComplete Worlds.all (Seed seedType) progress
+            Progress.percentComplete Worlds.all (Seed seed) progress
                 |> Maybe.withDefault 0
     in
     div []
@@ -446,17 +447,17 @@ renderSeedBank model seedType =
                 , resourceVisibility model.resourceState
                 ]
             ]
-            [ renderResourceFill model.resourceState progress (Seed seedType) ]
-        , innerSeedBank model.seedBankState seedType fillLevel
+            [ renderResourceFill model.resourceState progress (Seed seed) ]
+        , innerSeedBank model.seedBankState seed fillLevel
         ]
 
 
-innerSeedBank : SeedBankState -> SeedType -> Float -> Html msg
-innerSeedBank seedBankState seedType fillLevel =
+innerSeedBank : SeedBankState -> Seed -> Float -> Html msg
+innerSeedBank seedBankState seed fillLevel =
     case seedBankState of
         Visible ->
             div [ style [ transform [ translateY 0 ], transitionAll 2000 [] ] ]
-                [ seedBank seedType fillLevel ]
+                [ seedBank seed fillLevel ]
 
         Leaving ->
             div
@@ -467,7 +468,7 @@ innerSeedBank seedBankState seedType fillLevel =
                         , transformOrigin "bottom"
                         ]
                     ]
-                    [ seedBank seedType fillLevel ]
+                    [ seedBank seed fillLevel ]
                 ]
 
         Blooming ->
@@ -475,7 +476,7 @@ innerSeedBank seedBankState seedType fillLevel =
                 [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
                 [ div
                     [ style [ animation "bulge-fade" 500 [] ] ]
-                    [ seedBank seedType fillLevel
+                    [ seedBank seed fillLevel
                     ]
                 ]
 
@@ -485,7 +486,7 @@ resourceVisibility resourceState =
     showIf <| resourceState == Waiting || resourceState == Filling
 
 
-renderResource : ResourceState -> Progress -> Tile.Type -> Html msg
+renderResource : ResourceState -> Progress -> Tile -> Html msg
 renderResource resourceState progress tileType =
     let
         fillLevel =
@@ -505,17 +506,17 @@ renderResource resourceState progress tileType =
                 , sunBank fillLevel
                 ]
 
-        Seed seedType ->
+        Seed seed ->
             div [ style [ width 40 ], class "dib ph1 mh4" ]
                 [ renderResourceFill resourceState progress tileType
-                , seedBank seedType fillLevel
+                , seedBank seed fillLevel
                 ]
 
         _ ->
             span [] []
 
 
-renderResourceFill : ResourceState -> Progress -> Tile.Type -> Html msg
+renderResourceFill : ResourceState -> Progress -> Tile -> Html msg
 renderResourceFill resourceState progress tileType =
     let
         fill =
@@ -534,17 +535,17 @@ renderResourceFill resourceState progress tileType =
                 , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.gold) <| List.range 4 54
                 ]
 
-        Seed seedType ->
+        Seed seed ->
             div [ style [ height 50 ] ]
-                [ div [ style [ width 12 ], class "center" ] [ renderSeed seedType ]
-                , fill <| div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seedType) <| List.range 7 57
+                [ div [ style [ width 12 ], class "center" ] [ Seed.view seed ]
+                , fill <| div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seed) <| List.range 7 57
                 ]
 
         _ ->
             span [] []
 
 
-renderFill : ResourceState -> Tile.Type -> Progress -> Html msg -> Html msg
+renderFill : ResourceState -> Tile -> Progress -> Html msg -> Html msg
 renderFill resourceState tileType progess element =
     if resourceState == Filling && pointsFromPreviousLevel tileType progess > 0 then
         element
@@ -553,14 +554,14 @@ renderFill resourceState tileType progess element =
         span [] []
 
 
-pointsFromPreviousLevel : Tile.Type -> Progress -> Int
+pointsFromPreviousLevel : Tile -> Progress -> Int
 pointsFromPreviousLevel tileType progress =
     Progress.pointsFromPreviousLevel Worlds.all tileType progress
         |> Maybe.withDefault 0
 
 
-seedDrop : SeedType -> Int -> Html msg
-seedDrop seedType n =
+seedDrop : Seed -> Int -> Html msg
+seedDrop seed n =
     div
         [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
@@ -572,7 +573,7 @@ seedDrop seedType n =
                 ]
             , class "absolute top-0 left-0 right-0 center"
             ]
-            [ renderSeed seedType ]
+            [ Seed.view seed ]
         ]
 
 

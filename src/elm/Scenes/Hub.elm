@@ -11,7 +11,7 @@ module Scenes.Hub exposing
     )
 
 import Board.Scores as Scores
-import Board.Tile as Tile exposing (Type(..))
+import Board.Tile as Tile exposing (Tile(..))
 import Browser.Dom as Dom
 import Config.Levels as Levels
 import Config.Worlds as Worlds
@@ -28,6 +28,7 @@ import InfoWindow exposing (..)
 import Level.Progress as Progress
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Lives
+import Seed exposing (Seed)
 import Sine
 import Task exposing (Task)
 import Transit exposing (Transit(..))
@@ -38,7 +39,7 @@ import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives as Lives
 import Views.Menu as Menu
-import Views.Seed.All exposing (renderSeed)
+import Views.Seed as Seed
 import Views.Seed.Mono exposing (greyedOutSeed)
 import Window exposing (Window)
 
@@ -352,8 +353,8 @@ renderIcon { targetScore, tileType } =
                 Sun ->
                     renderWeather orange
 
-                Seed seedType ->
-                    div [ style [ width 35, height 53 ] ] [ renderSeed seedType ]
+                Seed seed ->
+                    div [ style [ width 35, height 53 ] ] [ Seed.view seed ]
 
                 _ ->
                     span [] []
@@ -450,7 +451,7 @@ renderLevel model config index level =
         , id <| Levels.toStringId level
         ]
         [ currentLevelPointer isCurrentLevel
-        , renderLevelIcon level config.seedType model
+        , renderLevelIcon level config.seed model
         , renderNumber levelNumber hasReachedLevel config
         ]
 
@@ -509,10 +510,10 @@ showInfo level model =
     Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
 
 
-renderLevelIcon : Levels.Id -> Tile.SeedType -> Model -> Html msg
-renderLevelIcon level seedType model =
+renderLevelIcon : Levels.Id -> Seed -> Model -> Html msg
+renderLevelIcon level seed model =
     if Levels.completed (Progress.reachedLevel model.context.progress) level then
-        renderSeed seedType
+        Seed.view seed
 
     else
         greyedOutSeed

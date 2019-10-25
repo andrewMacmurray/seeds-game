@@ -2,15 +2,13 @@ module Board.Tile exposing
     ( Bearing(..)
     , Distance
     , MoveOrder
-    , SeedType(..)
     , State(..)
-    , Type(..)
+    , Tile(..)
     , addBearing
     , baseSizeX
     , baseSizeY
     , clearBurstType
-    , getSeedType
-    , getType
+    , get
     , growLeavingBurstToSeed
     , growSeedPod
     , growingOrder
@@ -30,7 +28,7 @@ module Board.Tile exposing
     , moveOrder
     , removeBearing
     , scale
-    , seedName
+    , seedType
     , setActiveToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
@@ -46,28 +44,20 @@ module Board.Tile exposing
     , setToFalling
     )
 
+import Seed
 import Window
 
 
 
--- Tile Type
+-- Tile
 
 
-type Type
+type Tile
     = Rain
     | Sun
     | SeedPod
-    | Seed SeedType
-    | Burst (Maybe Type)
-
-
-type SeedType
-    = Sunflower
-    | Chrysanthemum
-    | Cornflower
-    | Lupin
-    | Marigold
-    | Rose
+    | Seed Seed.Seed
+    | Burst (Maybe Tile)
 
 
 
@@ -75,13 +65,13 @@ type SeedType
 
 
 type State
-    = Static Type
-    | Dragging Type MoveOrder Bearing
-    | Leaving Type MoveOrder
-    | Falling Type Distance
-    | Entering Type
-    | Growing Type MoveOrder
-    | Active Type
+    = Static Tile
+    | Dragging Tile MoveOrder Bearing
+    | Leaving Tile MoveOrder
+    | Falling Tile Distance
+    | Entering Tile
+    | Growing Tile MoveOrder
+    | Active Tile
     | Empty
 
 
@@ -214,7 +204,7 @@ isCurrentMove tileState =
             False
 
 
-isSeed : Type -> Bool
+isSeed : Tile -> Bool
 isSeed tileType =
     case tileType of
         Seed _ ->
@@ -224,7 +214,7 @@ isSeed tileType =
             False
 
 
-isBurst : Type -> Bool
+isBurst : Tile -> Bool
 isBurst tileType =
     case tileType of
         Burst _ ->
@@ -234,7 +224,7 @@ isBurst tileType =
             False
 
 
-isCollectible : Type -> Bool
+isCollectible : Tile -> Bool
 isCollectible tileType =
     case tileType of
         Rain ->
@@ -267,11 +257,11 @@ setToDragging moveOrder_ tileState =
             x
 
 
-growLeavingBurstToSeed : SeedType -> State -> State
-growLeavingBurstToSeed seedType tileState =
+growLeavingBurstToSeed : Seed.Seed -> State -> State
+growLeavingBurstToSeed seed tileState =
     case tileState of
         Leaving (Burst (Just SeedPod)) moveOrder_ ->
-            Growing (Seed seedType) moveOrder_
+            Growing (Seed seed) moveOrder_
 
         x ->
             x
@@ -330,24 +320,24 @@ addBearing bearing tileState =
 setGrowingToStatic : State -> State
 setGrowingToStatic tileState =
     case tileState of
-        Growing (Seed seedType) _ ->
-            Static (Seed seedType)
+        Growing (Seed seed) _ ->
+            Static (Seed seed)
 
         x ->
             x
 
 
-growSeedPod : SeedType -> State -> State
-growSeedPod seedType tileState =
+growSeedPod : Seed.Seed -> State -> State
+growSeedPod seed tileState =
     case tileState of
         Growing SeedPod n ->
-            Growing (Seed seedType) n
+            Growing (Seed seed) n
 
         x ->
             x
 
 
-setDraggingBurstType : Type -> State -> State
+setDraggingBurstType : Tile -> State -> State
 setDraggingBurstType tileType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
@@ -443,7 +433,7 @@ setDraggingToLeaving tileState =
             x
 
 
-resetBurstType : Type -> Type
+resetBurstType : Tile -> Tile
 resetBurstType tileType =
     case tileType of
         Burst _ ->
@@ -453,11 +443,11 @@ resetBurstType tileType =
             x
 
 
-getSeedType : Type -> Maybe SeedType
-getSeedType tileType =
+seedType : Tile -> Maybe Seed.Seed
+seedType tileType =
     case tileType of
-        Seed seedType ->
-            Just seedType
+        Seed seedType_ ->
+            Just seedType_
 
         _ ->
             Nothing
@@ -467,15 +457,15 @@ getSeedType tileType =
 -- Helpers
 
 
-map : a -> (Type -> a) -> State -> a
+map : a -> (Tile -> a) -> State -> a
 map default fn =
-    getType
+    get
         >> Maybe.map fn
         >> Maybe.withDefault default
 
 
-getType : State -> Maybe Type
-getType tileState =
+get : State -> Maybe Tile
+get tileState =
     case tileState of
         Static tile ->
             Just tile
@@ -502,7 +492,7 @@ getType tileState =
             Nothing
 
 
-hash : Type -> String
+hash : Tile -> String
 hash tileType =
     case tileType of
         Rain ->
@@ -514,38 +504,16 @@ hash tileType =
         SeedPod ->
             "SeedPod"
 
-        Seed seedType ->
-            seedName seedType
+        Seed seed ->
+            Seed.name seed
 
         Burst tile ->
             hashBurst tile
 
 
-hashBurst : Maybe Type -> String
+hashBurst : Maybe Tile -> String
 hashBurst =
     Maybe.map (\tile -> "Burst" ++ hash tile) >> Maybe.withDefault "BurstEmpty"
-
-
-seedName : SeedType -> String
-seedName seedType =
-    case seedType of
-        Sunflower ->
-            "Sunflower"
-
-        Chrysanthemum ->
-            "Chrysanthemum"
-
-        Cornflower ->
-            "Cornflower"
-
-        Lupin ->
-            "Lupin"
-
-        Marigold ->
-            "Marigold"
-
-        Rose ->
-            "Rose"
 
 
 scale : Window.Window -> Float

@@ -13,7 +13,7 @@ module Board.Scores exposing
 import Board exposing (Board)
 import Board.Block as Block
 import Board.Move as Move
-import Board.Tile as Tile exposing (Type(..))
+import Board.Tile as Tile exposing (Tile(..))
 import Dict exposing (Dict)
 import Level.Setting.Tile as Tile
 
@@ -61,7 +61,7 @@ addScoreFromMoves : Board -> Scores -> Scores
 addScoreFromMoves board scores =
     let
         tileType =
-            Board.currentMoveType board |> Maybe.withDefault SeedPod
+            Board.currentTile board |> Maybe.withDefault SeedPod
 
         isCollectible =
             Move.block >> Block.isCollectible
@@ -74,7 +74,7 @@ addScoreFromMoves board scores =
     addToScore scoreToAdd tileType scores
 
 
-addToScore : Int -> Tile.Type -> Scores -> Scores
+addToScore : Int -> Tile -> Scores -> Scores
 addToScore score tileType (Scores scores) =
     scores
         |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
@@ -99,24 +99,24 @@ allComplete (Scores scores) =
     Dict.foldl (\_ v b -> b && v.current == v.target) True scores
 
 
-toString : Tile.Type -> Scores -> String
+toString : Tile -> Scores -> String
 toString tileType scores =
     getScoreFor tileType scores
         |> Maybe.map String.fromInt
         |> Maybe.withDefault ""
 
 
-getScoreFor : Tile.Type -> Scores -> Maybe Int
+getScoreFor : Tile -> Scores -> Maybe Int
 getScoreFor tileType =
     getScore tileType >> Maybe.map (\{ target, current } -> target - current)
 
 
-getScore : Tile.Type -> Scores -> Maybe Score
+getScore : Tile -> Scores -> Maybe Score
 getScore tileType (Scores scores) =
     Dict.get (Tile.hash tileType) scores
 
 
-tileTypes : List Tile.Setting -> List Tile.Type
+tileTypes : List Tile.Setting -> List Tile
 tileTypes =
     List.filter collectible >> List.map .tileType
 
