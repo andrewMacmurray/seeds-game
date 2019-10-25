@@ -1,4 +1,4 @@
-module Helpers.Delay exposing (after, pause, sequence, trigger)
+module Utils.Delay exposing (after, pause, sequence, trigger)
 
 import Delay
 import Task

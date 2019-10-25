@@ -1,14 +1,14 @@
 module Views.Loading exposing (loadingScreen)
 
 import Board.Tile as Tile exposing (SeedType(..))
+import Config.Worlds as Worlds
 import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, none, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
 import Html exposing (..)
-import Progress exposing (Progress)
+import Level.Progress as Progress exposing (Progress)
 import Views.Seed.All exposing (renderSeed)
-import Worlds
 
 
 loadingScreen : Context -> Html msg

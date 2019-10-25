@@ -1,8 +1,8 @@
 module Progress.Spec exposing (spec)
 
+import Config.Levels as Levels
 import Expect exposing (..)
-import Levels
-import Progress
+import Level.Progress as Progress
 import Test exposing (..)
 
 

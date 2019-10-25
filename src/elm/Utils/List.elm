@@ -1,4 +1,4 @@
-module Helpers.List exposing
+module Utils.List exposing
     ( groupWhile
     , splitAt
     , unique

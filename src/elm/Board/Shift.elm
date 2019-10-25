@@ -4,7 +4,7 @@ import Board exposing (Board)
 import Board.Block as Block
 import Board.Coord as Coord
 import Board.Move as Move exposing (Move)
-import Helpers.List
+import Utils.List
 
 
 shiftBoard : Board -> Board
@@ -18,7 +18,7 @@ groupBoardByColumn : Board -> List (List Move)
 groupBoardByColumn =
     Board.moves
         >> List.sortBy Move.x
-        >> Helpers.List.groupWhile sameColumn
+        >> Utils.List.groupWhile sameColumn
 
 
 shiftRow : List Move -> List Move
@@ -66,7 +66,7 @@ reInsertMoves walls row =
 
 insertMove : Move -> List Move -> List Move
 insertMove move =
-    Helpers.List.splitAt (Move.y move) >> recombineAround [ move ]
+    Utils.List.splitAt (Move.y move) >> recombineAround [ move ]
 
 
 getXfromRow : List Move -> Int

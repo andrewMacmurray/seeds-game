@@ -13,25 +13,26 @@ module Scenes.Hub exposing
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (Type(..))
 import Browser.Dom as Dom
+import Config.Levels as Levels
+import Config.Worlds as Worlds
 import Context exposing (Context)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Exit exposing (continue, exitWith)
-import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (sequence)
-import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import InfoWindow exposing (..)
+import Level.Progress as Progress
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
-import Levels
 import Lives
-import Progress
+import Sine
 import Task exposing (Task)
 import Transit exposing (Transit(..))
+import Utils.Attribute as Attribute
+import Utils.Delay exposing (sequence)
 import Views.Icons.Heart as Heart
 import Views.Icons.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
@@ -40,7 +41,6 @@ import Views.Menu as Menu
 import Views.Seed.All exposing (renderSeed)
 import Views.Seed.Mono exposing (greyedOutSeed)
 import Window exposing (Window)
-import Worlds
 
 
 
@@ -473,7 +473,7 @@ currentLevelPointer isCurrentLevel =
 
 offsetStyles : Int -> List Style
 offsetStyles levelNumber =
-    wave
+    Sine.wave
         { center = [ leftAuto, rightAuto ]
         , right = [ leftAuto ]
         , left = []

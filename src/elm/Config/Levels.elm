@@ -1,4 +1,4 @@
-module Levels exposing
+module Config.Levels exposing
     ( Cache
     , Id
     , Level

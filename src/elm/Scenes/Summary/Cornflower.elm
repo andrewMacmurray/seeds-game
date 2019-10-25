@@ -8,9 +8,9 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 import Views.Flowers.Cornflower as Cornflower
 import Views.Landscape.RollingHills as Hills
 import Window exposing (Window)

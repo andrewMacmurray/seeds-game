@@ -1,4 +1,4 @@
-module Progress exposing
+module Level.Progress exposing
     ( Progress
     , clearCurrentLevel
     , currentLevel
@@ -18,11 +18,11 @@ module Progress exposing
 
 import Board.Scores as Score
 import Board.Tile as Tile
+import Config.Levels as Levels
 import Dict exposing (Dict)
-import Helpers.Dict
-import Helpers.List
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
-import Levels
+import Utils.Dict
+import Utils.List
 
 
 type Progress
@@ -222,7 +222,7 @@ resourcesInLevels worldSeedType =
         >> List.filter Score.collectible
         >> List.map .tileType
         >> List.filter (secondaryResource worldSeedType)
-        >> Helpers.List.unique
+        >> Utils.List.unique
 
 
 scoresAtLevel : Levels.Worlds -> Levels.Id -> Dict String Int
@@ -247,7 +247,7 @@ combineWithEmptyScores worlds levels scores =
 scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
 scoresAtBeginningOfWorld worlds level =
     targetWorldScores worlds level
-        |> Maybe.map (Helpers.Dict.mapValues <| always 0)
+        |> Maybe.map (Utils.Dict.mapValues <| always 0)
 
 
 targetWorldScores : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
@@ -274,7 +274,7 @@ accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
         Just (TargetScore n) ->
-            Helpers.Dict.insertWith (+) (Tile.hash setting.tileType) n acc
+            Utils.Dict.insertWith (+) (Tile.hash setting.tileType) n acc
 
         Nothing ->
             acc

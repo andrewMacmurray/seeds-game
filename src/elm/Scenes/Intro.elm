@@ -14,13 +14,13 @@ import Css.Color as Color
 import Css.Style exposing (..)
 import Css.Transition exposing (transitionAll)
 import Exit exposing (continue, exit)
-import Helpers.Delay exposing (sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Intro.DyingLandscape as DL
 import Scenes.Intro.GrowingSeeds as GS
 import Scenes.Intro.SunflowerMeadow as SM
+import Utils.Delay exposing (sequence)
 import Window exposing (Window)
 
 

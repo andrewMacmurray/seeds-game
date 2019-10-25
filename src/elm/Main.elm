@@ -3,19 +3,19 @@ module Main exposing (main)
 import Board.Tile as Tile
 import Browser
 import Browser.Events exposing (onResize)
+import Config.Levels as Levels
+import Config.Worlds as Worlds
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, style)
 import Exit
-import Helpers.Delay as Delay exposing (trigger)
-import Helpers.Return as Return
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
-import Levels
+import Level.Progress as Progress exposing (Progress)
 import Lives
 import Ports exposing (..)
-import Progress exposing (Progress)
+import Return
 import Scenes.Garden as Garden
 import Scenes.Hub as Hub
 import Scenes.Intro as Intro
@@ -25,11 +25,11 @@ import Scenes.Summary as Summary
 import Scenes.Title as Title
 import Scenes.Tutorial as Tutorial
 import Time exposing (millisToPosix)
+import Utils.Delay as Delay exposing (trigger)
 import Views.Animations exposing (animations)
 import Views.Loading exposing (loadingScreen)
 import Views.Menu as Menu
 import Window exposing (Window)
-import Worlds
 
 
 

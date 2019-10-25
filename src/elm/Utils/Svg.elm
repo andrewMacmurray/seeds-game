@@ -1,4 +1,4 @@
-module Helpers.Svg exposing
+module Utils.Svg exposing
     ( Point
     , cx_
     , cy_

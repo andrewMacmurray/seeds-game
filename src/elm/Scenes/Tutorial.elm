@@ -27,12 +27,12 @@ import Css.Transition exposing (delay, linear, transitionAll)
 import Css.Unit exposing (pc)
 import Dict exposing (Dict)
 import Exit exposing (continue, exit)
-import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (pause, sequence)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Scenes.Level.TopBar exposing (renderScoreIcon)
+import Utils.Attribute as Attribute
+import Utils.Delay exposing (pause, sequence)
 import Views.Board.Line exposing (renderLine)
 import Views.Board.Tile as Tile
 import Views.Board.Tile.Styles exposing (boardHeight, boardWidth)

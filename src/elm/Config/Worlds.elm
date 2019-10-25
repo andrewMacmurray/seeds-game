@@ -1,4 +1,4 @@
-module Worlds exposing
+module Config.Worlds exposing
     ( all
     , getLevel
     , levelConfig
@@ -11,15 +11,15 @@ module Worlds exposing
     )
 
 import Board.Tile as Tile
-import Levels exposing (..)
+import Config.Levels as Levels exposing (..)
+import Config.Worlds.One as One
+import Config.Worlds.Three as Three
+import Config.Worlds.Two as Two
 import Scenes.Tutorial as Tutorial
 import Scenes.Tutorial.Rain as Rain
 import Scenes.Tutorial.Seed as Seed
 import Scenes.Tutorial.SeedPod as SeedPod
 import Scenes.Tutorial.Sun as Sun
-import Worlds.One as One
-import Worlds.Three as Three
-import Worlds.Two as Two
 
 
 

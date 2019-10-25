@@ -7,9 +7,9 @@ import Css.Animation exposing (animation, delay, ease, linear)
 import Css.Color as Color
 import Css.Style as Style exposing (opacity, svgStyle, transformOrigin)
 import Css.Transform as Transform
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 
 
 static : Svg msg

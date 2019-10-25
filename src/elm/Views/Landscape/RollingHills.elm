@@ -9,9 +9,9 @@ module Views.Landscape.RollingHills exposing
 import Css.Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
-import Helpers.Svg exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 import Window exposing (Window)
 
 

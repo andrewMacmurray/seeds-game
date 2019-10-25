@@ -1,4 +1,4 @@
-module Helpers.Dict exposing
+module Utils.Dict exposing
     ( filterValues
     , find
     , findValue

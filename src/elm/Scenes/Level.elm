@@ -21,6 +21,7 @@ import Board.Scores as Scores exposing (Scores)
 import Board.Shift exposing (shiftBoard)
 import Board.Tile as Tile exposing (State(..), Type(..))
 import Board.Wall as Wall
+import Config.Levels as Levels
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -28,20 +29,19 @@ import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
-import Helpers.Attribute as Attribute
-import Helpers.Delay exposing (sequence, trigger)
-import Helpers.Dict exposing (indexedDictFrom)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
 import InfoWindow exposing (InfoWindow)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
-import Levels
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
 import Scenes.Level.TopBar exposing (TopBarViewModel, topBar)
+import Utils.Attribute as Attribute
+import Utils.Delay exposing (sequence, trigger)
+import Utils.Dict exposing (indexedDictFrom)
 import Views.Board.Line exposing (renderLine)
 import Views.Board.Tile as Tile
 import Views.Board.Tile.Styles exposing (..)

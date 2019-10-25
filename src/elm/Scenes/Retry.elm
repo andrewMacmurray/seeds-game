@@ -16,12 +16,12 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Unit exposing (pc)
 import Exit exposing (continue, exitWith)
-import Helpers.Delay exposing (after)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Lives
 import Transit exposing (Transit(..))
+import Utils.Delay exposing (after)
 import Views.Lives as Lives
 
 
@@ -132,7 +132,7 @@ lifeState model =
 
 
 tryAgain : Model -> Html Msg
-tryAgain model =
+tryAgain _ =
     div [ style [ marginTop 50 ], class "pointer" ]
         [ div
             [ style

@@ -12,11 +12,11 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
 import Css.Transition exposing (transitionAll)
-import Helpers.Attribute as Attribute
 import Html exposing (Attribute, Html, a, button, div, text)
 import Html.Attributes exposing (attribute, class, href, target)
 import Html.Events exposing (onClick)
 import Pointer exposing (onPointerUp)
+import Utils.Attribute as Attribute
 import Views.Icons.Cog exposing (cog)
 
 

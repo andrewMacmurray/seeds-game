@@ -8,9 +8,9 @@ import Css.Animation exposing (animation, delay, ease, easeOut)
 import Css.Style exposing (..)
 import Css.Transform as Transform
 import Css.Transition exposing (transition)
-import Helpers.Attribute as Attribute
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Utils.Attribute as Attribute
 import Views.Seed.All exposing (renderSeed)
 import Window exposing (Window, size)
 

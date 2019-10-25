@@ -10,6 +10,7 @@ module Scenes.Summary exposing
     )
 
 import Board.Tile as Tile exposing (SeedType(..), Type(..), seedName)
+import Config.Worlds as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (Color)
@@ -17,22 +18,21 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
 import Exit exposing (continue, exitWith)
-import Helpers.Delay exposing (after, sequence, trigger)
-import Helpers.Sine exposing (wave)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Level.Progress as Progress exposing (Progress)
 import Ports exposing (cacheProgress)
-import Progress exposing (Progress)
 import Scenes.Summary.Chrysanthemum as Chrysanthemum
 import Scenes.Summary.Cornflower as Cornflower
 import Scenes.Summary.Sunflower as Sunflower
+import Sine
 import Svg exposing (Svg)
+import Utils.Delay exposing (after, sequence, trigger)
 import Views.Icons.RainBank exposing (..)
 import Views.Icons.SeedBank exposing (seedBank)
 import Views.Icons.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed.All exposing (renderSeed)
 import Window exposing (Window)
-import Worlds
 
 
 
@@ -562,7 +562,7 @@ pointsFromPreviousLevel tileType progress =
 seedDrop : SeedType -> Int -> Html msg
 seedDrop seedType n =
     div
-        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
+        [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 5
@@ -579,7 +579,7 @@ seedDrop seedType n =
 weatherDrop : String -> Int -> Html msg
 weatherDrop bgColor n =
     div
-        [ style [ transform [ translateX <| wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
+        [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
         [ div
             [ style
                 [ width 6

@@ -1,4 +1,4 @@
-module Helpers.Sine exposing
+module Sine exposing
     ( Wave
     , wave
     )

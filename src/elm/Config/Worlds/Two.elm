@@ -1,12 +1,12 @@
-module Worlds.Two exposing (world)
+module Config.Worlds.Two exposing (world)
 
 import Board.Coord exposing (Coord)
 import Board.Tile exposing (SeedType(..))
 import Board.Wall exposing (..)
+import Config.Levels as Levels
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
-import Levels
 
 
 world : Levels.World

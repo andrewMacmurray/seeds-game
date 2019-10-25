@@ -18,10 +18,10 @@ module Context exposing
     , updateLives
     )
 
-import Levels
+import Config.Levels as Levels
+import Level.Progress as Progress exposing (Progress)
 import Lives exposing (Lives)
 import Ports exposing (cacheLives)
-import Progress exposing (Progress)
 import Random
 import Time
 import Window exposing (Window)

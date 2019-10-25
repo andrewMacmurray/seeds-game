@@ -9,7 +9,7 @@ port module Ports exposing
     , playIntroMusic
     )
 
-import Levels
+import Config.Levels as Levels
 import Lives
 
 

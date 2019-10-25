@@ -8,9 +8,9 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (Style, opacity, svgStyle)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linear, transition)
-import Helpers.Svg exposing (..)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg exposing (..)
 import Views.Flowers.Sunflower as Sunflower
 import Views.Landscape.SteepHills as Hills
 import Window exposing (Window)

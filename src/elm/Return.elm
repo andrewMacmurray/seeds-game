@@ -1,4 +1,4 @@
-module Helpers.Return exposing
+module Return exposing
     ( Return
     , map
     , pipe

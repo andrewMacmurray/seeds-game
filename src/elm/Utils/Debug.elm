@@ -1,9 +1,9 @@
-module Helpers.Debug exposing (goToLevel)
+module Utils.Debug exposing (goToLevel)
 
-import Helpers.Delay as Delay
-import Levels exposing (LevelConfig)
+import Config.Levels as Levels exposing (LevelConfig)
+import Config.Worlds
 import Ports
-import Worlds
+import Utils.Delay as Delay
 
 
 

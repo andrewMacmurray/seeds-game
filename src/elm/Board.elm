@@ -29,7 +29,7 @@ import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile
 import Dict exposing (Dict)
-import Helpers.Dict
+import Utils.Dict
 
 
 
@@ -126,7 +126,7 @@ findBlockAt c =
 
 matchBlock : (Block -> Bool) -> Board -> Maybe Move
 matchBlock f =
-    unwrap >> Helpers.Dict.findValue f >> Maybe.map toMove
+    unwrap >> Utils.Dict.findValue f >> Maybe.map toMove
 
 
 
