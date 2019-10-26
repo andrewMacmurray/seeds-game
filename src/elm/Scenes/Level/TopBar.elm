@@ -1,8 +1,7 @@
 module Scenes.Level.TopBar exposing
-    ( TopBarViewModel
-    , remainingMoves
-    , renderScoreIcon
-    , topBar
+    ( ViewModel
+    , scoreIcon
+    , view
     )
 
 import Board.Scores as Scores
@@ -16,7 +15,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
 import Svg exposing (Svg)
-import Views.Board.Tile.Styles exposing (boardFullWidth, scoreIconSize, topBarHeight)
+import Views.Board.Style as Board
 import Views.Icons.RainBank exposing (rainBankFull)
 import Views.Icons.SunBank exposing (sunBankFull)
 import Views.Icons.Tick exposing (tickBackground)
@@ -24,7 +23,7 @@ import Views.Seed as Seed
 import Window exposing (Window)
 
 
-type alias TopBarViewModel =
+type alias ViewModel =
     { window : Window
     , remainingMoves : Int
     , tileSettings : List Tile.Setting
@@ -32,20 +31,20 @@ type alias TopBarViewModel =
     }
 
 
-topBar : TopBarViewModel -> Html msg
-topBar model =
+view : ViewModel -> Html msg
+view model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
         , style
-            [ height topBarHeight
+            [ height Board.topBarHeight
             , color gold
             , backgroundColor washedYellow
             ]
         ]
         [ div
             [ style
-                [ width <| toFloat <| boardFullWidth model.window
-                , height topBarHeight
+                [ width <| toFloat <| Board.fullWidth model.window
+                , height Board.topBarHeight
                 ]
             , class "flex items-center justify-center relative"
             ]
@@ -64,11 +63,11 @@ topBar model =
         ]
 
 
-renderScore : TopBarViewModel -> Tile -> Html msg
+renderScore : ViewModel -> Tile -> Html msg
 renderScore model tileType =
     let
         scoreMargin =
-            scoreIconSize // 2
+            Board.scoreIconSize // 2
     in
     div
         [ class "relative tc"
@@ -77,7 +76,7 @@ renderScore model tileType =
             , marginLeft <| toFloat scoreMargin
             ]
         ]
-        [ renderScoreIcon tileType scoreIconSize
+        [ scoreIcon tileType Board.scoreIconSize
         , p
             [ class "ma0 absolute left-0 right-0 f6"
             , Html.Attributes.style "bottom" "-1.5em"
@@ -158,9 +157,9 @@ tickFadeIn tileType scores =
         ]
 
 
-renderScoreIcon : Tile -> Float -> Html msg
-renderScoreIcon tileType iconSize =
-    case scoreIcon tileType of
+scoreIcon : Tile -> Float -> Html msg
+scoreIcon tileType iconSize =
+    case scoreIcon_ tileType of
         Just icon ->
             div
                 [ class "bg-center contain"
@@ -175,8 +174,8 @@ renderScoreIcon tileType iconSize =
             span [] []
 
 
-scoreIcon : Tile -> Maybe (Svg msg)
-scoreIcon tileType =
+scoreIcon_ : Tile -> Maybe (Svg msg)
+scoreIcon_ tileType =
     case tileType of
         Tile.Sun ->
             Just sunBankFull

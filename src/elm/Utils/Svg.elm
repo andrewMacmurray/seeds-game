@@ -6,6 +6,8 @@ module Utils.Svg exposing
     , point
     , points_
     , r_
+    , rx_
+    , ry_
     , scaled
     , strokeWidth_
     , translated
@@ -87,6 +89,16 @@ y_ =
 r_ : Float -> Attribute msg
 r_ =
     r << String.fromFloat
+
+
+rx_ : Float -> Attribute msg
+rx_ =
+    rx << String.fromFloat
+
+
+ry_ : Float -> Attribute msg
+ry_ =
+    ry << String.fromFloat
 
 
 strokeWidth_ : Float -> Attribute msg

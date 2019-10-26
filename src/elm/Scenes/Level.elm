@@ -37,15 +37,16 @@ import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
-import Scenes.Level.TopBar exposing (TopBarViewModel, topBar)
+import Scenes.Level.LineDrag as LineDrag exposing (ViewModel)
+import Scenes.Level.TopBar as TopBar
+import Scenes.Level.Tutorial as Tutorial
 import Seed exposing (Seed)
 import Utils.Attribute as Attribute
-import Utils.Delay exposing (sequence, trigger)
+import Utils.Delay as Delay exposing (sequence, trigger)
 import Utils.Dict exposing (indexedDictFrom)
 import Views.Board.Line exposing (renderLine)
+import Views.Board.Style as Board
 import Views.Board.Tile as Tile
-import Views.Board.Tile.Styles exposing (..)
 import Views.InfoWindow
 import Views.Menu as Menu
 
@@ -56,6 +57,7 @@ import Views.Menu as Menu
 
 type alias Model =
     { context : Context
+    , tutorial : Tutorial.Tutorial
     , board : Board
     , scores : Scores
     , isDragging : Bool
@@ -77,6 +79,9 @@ type alias InitConfig =
 
 type Msg
     = InitTiles InitConfig
+    | StartTutorial
+    | NextTutorialStep
+    | HideTutorialStep
     | StopMove
     | StartMove Move Pointer
     | CheckMove Pointer
@@ -85,7 +90,7 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds
-    | AddGrowingSeeds Seed
+    | AddGrowingSeeds Seed.Seed
     | ResetGrowingSeeds
     | BurstTiles
     | GenerateEnteringTiles RandomSetting
@@ -166,18 +171,17 @@ canRestartLevel model =
 
 init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
-    let
-        model =
-            initialState config context
-    in
-    ( model
-    , handleGenerateInitialTiles config model
-    )
+    initialState config context
+        |> withCmds
+            [ handleGenerateInitialTiles config
+            , handleStartTutorial
+            ]
 
 
 initialState : Level.LevelConfig -> Context -> Model
-initialState { tileSettings, boardSize, moves } context =
+initialState { tileSettings, boardSize, moves, tutorial } context =
     { context = context
+    , tutorial = tutorial
     , board = Board.fromMoves []
     , scores = Scores.init tileSettings
     , isDragging = False
@@ -188,6 +192,18 @@ initialState { tileSettings, boardSize, moves } context =
     , infoWindow = InfoWindow.hidden
     , pointer = { y = 0, x = 0 }
     }
+
+
+withCmds : List (model -> Cmd msg) -> model -> ( model, Cmd msg )
+withCmds toCmds model =
+    ( model
+    , Cmd.batch <| List.map (\f -> f model) toCmds
+    )
+
+
+handleStartTutorial : Model -> Cmd Msg
+handleStartTutorial _ =
+    Delay.after 2800 StartTutorial
 
 
 
@@ -206,6 +222,15 @@ update msg model =
                 )
                 []
 
+        StartTutorial ->
+            continue { model | tutorial = Tutorial.showStep model.tutorial } []
+
+        NextTutorialStep ->
+            handleTutorialStep model
+
+        HideTutorialStep ->
+            continue { model | tutorial = Tutorial.hideStep model.tutorial } []
+
         StopMove ->
             continue model [ stopMoveSequence model ]
 
@@ -213,6 +238,7 @@ update msg model =
             continue
                 (model
                     |> stopDrag
+                    |> handleResetTutorial
                     |> updateBlocks Block.setDraggingToStatic
                 )
                 []
@@ -375,6 +401,7 @@ growSeedPodsSequence =
         , ( 800, GrowPodsToSeeds )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
+        , ( 500, NextTutorialStep )
         ]
 
 
@@ -388,6 +415,7 @@ removeTilesSequence enteringTiles =
         , ( 0, CheckLevelComplete )
         , ( 0, GenerateEnteringTiles enteringTiles )
         , ( 500, ResetEntering )
+        , ( 500, NextTutorialStep )
         ]
 
 
@@ -402,6 +430,7 @@ burstTilesSequence moveType enteringTiles =
                 , ( 800, GrowPodsToSeeds )
                 , ( 0, CheckLevelComplete )
                 , ( 600, ResetGrowingSeeds )
+                , ( 500, NextTutorialStep )
                 ]
 
         _ ->
@@ -414,6 +443,7 @@ burstTilesSequence moveType enteringTiles =
                 , ( 0, CheckLevelComplete )
                 , ( 0, GenerateEnteringTiles enteringTiles )
                 , ( 500, ResetEntering )
+                , ( 500, NextTutorialStep )
                 ]
 
 
@@ -495,6 +525,31 @@ generateEnteringTilesWithoutTileType tileType board tileSettings =
             |> generateEntering board
 
 
+handleResetTutorial : Model -> Model
+handleResetTutorial model =
+    if Tutorial.inProgress model.tutorial then
+        { model | tutorial = Tutorial.showStep model.tutorial }
+
+    else
+        model
+
+
+handleTutorialStep : Model -> Exit.With Status ( Model, Cmd Msg )
+handleTutorialStep model =
+    let
+        nextTutorial =
+            Tutorial.nextStep model.tutorial
+
+        triggerHideAutoStep =
+            if Tutorial.isAutoStep nextTutorial then
+                Delay.after 3000 HideTutorialStep
+
+            else
+                Cmd.none
+    in
+    continue { model | tutorial = nextTutorial } [ triggerHideAutoStep ]
+
+
 filterSettings : List Tile.Setting -> Tile -> List Tile.Setting
 filterSettings settings tile =
     List.filter (\setting -> setting.tileType /= tile) settings
@@ -550,6 +605,7 @@ handleStartMove move pointer model =
         | isDragging = True
         , board = startMove move model.board
         , pointer = pointer
+        , tutorial = Tutorial.hideStep model.tutorial
     }
 
 
@@ -702,14 +758,14 @@ moveFromCoord board coord =
 coordsFromPosition : Pointer -> Model -> Coord
 coordsFromPosition pointer model =
     let
-        tileViewModel_ =
-            ( model.context.window, model.boardSize )
+        viewModel =
+            boardViewModel model
 
         positionY =
-            toFloat <| pointer.y - boardOffsetTop tileViewModel_
+            toFloat <| pointer.y - Board.offsetTop viewModel
 
         positionX =
-            toFloat <| pointer.x - boardOffsetLeft tileViewModel_
+            toFloat <| pointer.x - Board.offsetLeft viewModel
 
         scaleFactorY =
             Tile.scale model.context.window * Tile.baseSizeY
@@ -777,13 +833,19 @@ view model =
         , handleCheck model
         , disableIfComplete model
         ]
-        [ topBar <| topBarViewModel model
+        [ topBar model
+        , tutorialOverlay model
         , renderInfoWindow model
-        , currentMoveOverlay model <| currentMoveLayer model
-        , handleLineDrag <| lineViewModel model
+        , currentMoveOverlay model
+        , lineDrag model
         , renderBoard model
         , moveCaptureArea
         ]
+
+
+topBar : Model -> Html msg
+topBar =
+    topBarViewModel >> TopBar.view
 
 
 handleStop : Model -> Attribute Msg
@@ -804,6 +866,28 @@ disableIfComplete model =
 moveCaptureArea : Html msg
 moveCaptureArea =
     div [ class "w-100 h-100 fixed z-1 top-0" ] []
+
+
+lineDrag : Model -> Html msg
+lineDrag =
+    lineDragViewModel >> LineDrag.view
+
+
+
+-- Tutorial Overlay
+
+
+tutorialOverlay : Model -> Html msg
+tutorialOverlay =
+    Tutorial.view << tutorialViewModel
+
+
+tutorialViewModel : Model -> Tutorial.ViewModel
+tutorialViewModel model =
+    { window = model.context.window
+    , boardSize = model.boardSize
+    , tutorial = model.tutorial
+    }
 
 
 
@@ -847,19 +931,23 @@ isBursting model =
         |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
 
 
-currentMoveOverlay : Model -> List (Html msg) -> Html msg
+currentMoveOverlay : Model -> Html msg
 currentMoveOverlay model =
     let
-        vm =
-            tileViewModel model
+        viewModel =
+            boardViewModel model
+
+        moveLayer =
+            currentMoveLayer model
     in
     div
         [ style
-            [ width <| toFloat <| boardWidth vm
-            , top <| toFloat <| boardOffsetTop vm
+            [ Style.width <| toFloat <| Board.width viewModel
+            , top <| toFloat <| Board.offsetTop viewModel
             ]
         , class "z-6 touch-disabled absolute left-0 right-0 flex center"
         ]
+        moveLayer
 
 
 currentMoveLayer : Model -> List (Html msg)
@@ -891,8 +979,8 @@ boardLayout : Model -> List (Html msg) -> Html msg
 boardLayout model =
     div
         [ style
-            [ width <| toFloat <| boardWidth <| tileViewModel model
-            , boardMarginTop <| tileViewModel model
+            [ width <| toFloat <| Board.width <| boardViewModel model
+            , Board.marginTop <| boardViewModel model
             ]
         , class "relative z-3 center flex flex-wrap"
         ]
@@ -963,7 +1051,7 @@ prepareLeavingStyle : Model -> Int -> Tile -> ( String, Style )
 prepareLeavingStyle model resourceBankIndex tileType =
     ( Tile.hash tileType
     , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYdistance (tileViewModel model))
+        [ translate (exitXDistance resourceBankIndex model) -(exitYDistance (boardViewModel model))
         , scale 0.5
         ]
     )
@@ -973,7 +1061,7 @@ exitXDistance : Int -> Model -> Float
 exitXDistance resourceBankIndex model =
     let
         scoreWidth =
-            scoreIconSize * 2
+            Board.scoreIconSize * 2
 
         scoreBarWidth =
             model.tileSettings
@@ -982,7 +1070,7 @@ exitXDistance resourceBankIndex model =
                 |> (*) scoreWidth
 
         baseOffset =
-            (boardWidth (tileViewModel model) - scoreBarWidth) // 2
+            (Board.width (boardViewModel model) - scoreBarWidth) // 2
 
         offset =
             exitOffsetFunction <| Tile.scale model.context.window
@@ -995,9 +1083,9 @@ exitOffsetFunction x =
     25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
 
 
-exitYdistance : TileViewModel -> Float
-exitYdistance model =
-    toFloat (boardOffsetTop model) - 9
+exitYDistance : Board.ViewModel -> Float
+exitYDistance model =
+    toFloat (Board.offsetTop model) - 9
 
 
 
@@ -1106,14 +1194,14 @@ yesNoButton yesText msg =
 -- View Models
 
 
-tileViewModel : Model -> TileViewModel
-tileViewModel model =
-    ( model.context.window
-    , model.boardSize
-    )
+boardViewModel : Model -> Board.ViewModel
+boardViewModel model =
+    { window = model.context.window
+    , boardSize = model.boardSize
+    }
 
 
-topBarViewModel : Model -> TopBarViewModel
+topBarViewModel : Model -> TopBar.ViewModel
 topBarViewModel model =
     { window = model.context.window
     , tileSettings = model.tileSettings
@@ -1122,11 +1210,11 @@ topBarViewModel model =
     }
 
 
-lineViewModel : Model -> LineViewModel
-lineViewModel model =
+lineDragViewModel : Model -> LineDrag.ViewModel
+lineDragViewModel model =
     { window = model.context.window
     , board = model.board
-    , boardDimensions = model.boardSize
+    , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer
     }

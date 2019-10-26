@@ -1,110 +1,53 @@
-module Views.Board.Tile.Styles exposing
-    ( TileViewModel
-    , baseTileClasses
-    , boardFullWidth
-    , boardHeight
-    , boardMarginTop
-    , boardOffsetLeft
-    , boardOffsetTop
-    , boardWidth
+module Views.Board.Tile.Style exposing
+    ( baseClasses
     , burstStyles
     , centerBlock
+    , coordStyles
     , draggingStyles
     , enteringStyles
     , fallingStyles
     , growingStyles
+    , height
     , lighterStrokeColor
     , moveTracerStyles
-    , scoreIconSize
+    , position
     , seedStrokeColors
     , strokeColors
     , tileBackground
-    , tileCoordsStyles
     , tileSize
-    , tileWidth
-    , tileWidthheights
-    , topBarHeight
     , wallStyles
+    , width
+    , widthHeightStyles
     )
 
-import Board
 import Board.Block as Block exposing (Block(..))
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
 import Css.Animation as Animation
 import Css.Color as Color
-import Css.Style exposing (..)
+import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
 import Seed
 import Window exposing (Window)
 
 
-
--- Score Bar
-
-
-scoreIconSize : number
-scoreIconSize =
-    32
-
-
-topBarHeight : number
-topBarHeight =
-    80
-
-
-
--- Board
-
-
-type alias TileViewModel =
-    ( Window, Board.Size )
-
-
-boardMarginTop : TileViewModel -> Style
-boardMarginTop model =
-    marginTop <| toFloat <| boardOffsetTop model
-
-
-boardOffsetTop : TileViewModel -> Int
-boardOffsetTop (( window, _ ) as model) =
-    (window.height - boardHeight model) // 2 + (topBarHeight // 2) - 10
-
-
-boardOffsetLeft : TileViewModel -> Int
-boardOffsetLeft (( window, _ ) as model) =
-    (window.width - boardWidth model) // 2
-
-
-boardHeight : TileViewModel -> Int
-boardHeight ( window, size ) =
-    round (Tile.baseSizeY * Tile.scale window) * size.y
-
-
-boardWidth : TileViewModel -> Int
-boardWidth ( window, size ) =
-    tileWidth window * size.x
-
-
-boardFullWidth : Window -> Int
-boardFullWidth window =
-    tileWidth window * 8
+type alias Position =
+    { x : Float
+    , y : Float
+    }
 
 
 
 -- Tile Position
 
 
-tileCoordsStyles : Window -> Coord -> List Style
-tileCoordsStyles window coord =
+coordStyles : Window -> Coord -> List Style
+coordStyles window coord =
     let
-        x =
-            toFloat <| Coord.x coord * tileWidth window
-
-        y =
-            toFloat <| Coord.y coord * tileHeight window
+        { x, y } =
+            position window coord
     in
     [ transform
         [ translate x y
@@ -113,15 +56,22 @@ tileCoordsStyles window coord =
     ]
 
 
-tileWidthheights : Window -> List Style
-tileWidthheights window =
-    [ width <| toFloat <| tileWidth window
-    , height <| toFloat <| tileHeight window
+position : Window -> Coord -> Position
+position window coord =
+    { x = toFloat <| Coord.x coord * width window
+    , y = toFloat <| Coord.y coord * height window
+    }
+
+
+widthHeightStyles : Window -> List Style
+widthHeightStyles window =
+    [ Style.width <| toFloat <| width window
+    , Style.height <| toFloat <| height window
     ]
 
 
-baseTileClasses : List String
-baseTileClasses =
+baseClasses : List String
+baseClasses =
     [ "br-100"
     , centerBlock
     ]
@@ -132,13 +82,13 @@ centerBlock =
     "ma absolute top-0 left-0 right-0 bottom-0"
 
 
-tileWidth : Window -> Int
-tileWidth window =
+width : Window -> Int
+width window =
     round <| Tile.baseSizeX * Tile.scale window
 
 
-tileHeight : Window -> Int
-tileHeight window =
+height : Window -> Int
+height window =
     round <| Tile.baseSizeY * Tile.scale window
 
 
@@ -155,8 +105,8 @@ wallStyles window move =
     case Move.block move of
         Wall color ->
             [ backgroundColor color
-            , width wallSize
-            , height wallSize
+            , Style.width wallSize
+            , Style.height wallSize
             ]
 
         _ ->
@@ -198,7 +148,7 @@ moveTracerStyles move =
             ]
 
         _ ->
-            [ displayStyle "none"
+            [ display "none"
             ]
 
 

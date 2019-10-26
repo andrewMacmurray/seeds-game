@@ -6,7 +6,7 @@ import Board.Tile as Tile exposing (Tile)
 import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Board.Tile.Styles exposing (..)
+import Views.Board.Tile.Style as Tile exposing (..)
 import Views.Icons.Burst as Burst
 import Views.Seed as Seed
 import Window exposing (Window)
@@ -27,8 +27,8 @@ view { extraStyles, isBursting, withTracer } window move =
     in
     div
         [ styles
-            [ tileWidthheights window
-            , tileCoordsStyles window coord
+            [ widthHeightStyles window
+            , coordStyles window coord
             , extraStyles
             ]
         , class "dib absolute"
@@ -80,7 +80,7 @@ innerTileWithStyles extraStyles window move =
             [ extraStyles
             , baseTileStyles window move
             ]
-        , classes baseTileClasses
+        , classes Tile.baseClasses
         ]
         [ innerTileElement <| Move.block move ]
 

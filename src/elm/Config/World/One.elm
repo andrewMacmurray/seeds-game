@@ -1,11 +1,12 @@
 module Config.World.One exposing (world)
 
-import Board.Coord exposing (Coord)
+import Board.Coord as Coord exposing (Coord)
 import Board.Wall as Wall exposing (s, w)
 import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
+import Scenes.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
 
 
@@ -23,7 +24,7 @@ world =
 
 levels : List Level.Level
 levels =
-    [ Level.withTutorial Level.Seed
+    [ Level.withTutorial l1Tutorial
         { walls = Wall.walls l1Walls
         , startTiles = []
         , boardSize = { x = 5, y = 5 }
@@ -35,7 +36,7 @@ levels =
                 (TargetScore 60)
             ]
         }
-    , Level.withTutorial Level.Rain
+    , Level.withTutorial l2Tutorial
         { walls = Wall.walls l2Walls
         , startTiles = l2StartTiles
         , boardSize = { x = 6, y = 6 }
@@ -65,7 +66,7 @@ levels =
                 (TargetScore 50)
             ]
         }
-    , Level.withTutorial Level.Sun
+    , Level.withTutorial l4Tutorial
         { walls = Wall.walls l4Walls
         , startTiles = l4StartTiles
         , boardSize = { x = 7, y = 7 }
@@ -83,20 +84,20 @@ levels =
                 (TargetScore 15)
             ]
         }
-    , Level.level
+    , Level.withTutorial l5Tutorial
         { walls = Wall.walls l5Walls
         , startTiles = l5StartTiles
         , moves = 15
         , boardSize = { x = 8, y = 8 }
         , tileSettings =
-            [ seed
+            [ rain
+                (Probability 50)
+                (TargetScore 75)
+            , seed
                 Sunflower
                 (Probability 50)
                 (TargetScore 75)
             , sun
-                (Probability 50)
-                (TargetScore 75)
-            , rain
                 (Probability 50)
                 (TargetScore 75)
             , burst
@@ -109,14 +110,14 @@ levels =
         , startTiles = l6StartTiles
         , boardSize = { x = 8, y = 8 }
         , tileSettings =
-            [ seed
+            [ rain
+                (Probability 33)
+                (TargetScore 50)
+            , seed
                 Sunflower
                 (Probability 33)
                 (TargetScore 50)
             , sun
-                (Probability 33)
-                (TargetScore 50)
-            , rain
                 (Probability 33)
                 (TargetScore 50)
             , burst
@@ -197,6 +198,18 @@ l1Walls =
         ]
 
 
+l1Tutorial : Tutorial.Tutorial
+l1Tutorial =
+    let
+        highlightTiles =
+            Tutorial.highlightHorizontalTiles { from = Coord.fromXY 3 4, length = 3 }
+    in
+    Tutorial.tutorial
+        (Tutorial.step "Connect seeds to save them" highlightTiles)
+        [ Tutorial.autoStep "Fill the seed bank to complete the level" Tutorial.highlightSeedBank
+        ]
+
+
 l2Walls : List Coord
 l2Walls =
     Wall.toCoords
@@ -212,8 +225,25 @@ l2Walls =
 l2StartTiles : List Start.Tile
 l2StartTiles =
     List.concat
-        [ Start.square (Start.rain 1 1) { size = 6 }
-        , Start.square (Start.seed Sunflower 2 2) { size = 4 }
+        [ Start.square (Start.sunflower 1 1) { size = 6 }
+        , Start.square (Start.rain 2 2) { size = 4 }
+        ]
+
+
+l2Tutorial : Tutorial.Tutorial
+l2Tutorial =
+    let
+        highlightTiles =
+            Tutorial.highlightMultiple
+                [ Tutorial.highlightVerticalTiles { from = Coord.fromXY 4 2, length = 4 }
+                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 5 3, length = 2 }
+                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 3, length = 2 }
+                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 4, length = 2 }
+                ]
+    in
+    Tutorial.tutorial
+        (Tutorial.step "Collect rain for our seeds" highlightTiles)
+        [ Tutorial.autoStep "But don't run out of moves!" Tutorial.highlightRemainingMoves
         ]
 
 
@@ -250,6 +280,20 @@ l4StartTiles =
         ]
 
 
+l4Tutorial : Tutorial.Tutorial
+l4Tutorial =
+    let
+        highlightTiles =
+            Tutorial.highlightMultiple
+                [ Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 7, length = 4 }
+                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 7 4, length = 4 }
+                ]
+    in
+    Tutorial.tutorial
+        (Tutorial.step "Harvest the sun's warmth for our seeds" highlightTiles)
+        []
+
+
 l5Walls : List Coord
 l5Walls =
     Wall.toCoords
@@ -272,6 +316,22 @@ l5StartTiles =
         , Start.rectangle (Start.sun 4 1) { x = 2, y = 8 }
         , Start.square (Start.burst 4 4) { size = 2 }
         ]
+
+
+l5Tutorial : Tutorial.Tutorial
+l5Tutorial =
+    let
+        highlightTiles =
+            Tutorial.highlightMultiple
+                [ Tutorial.highlightVerticalTiles { from = Coord.fromXY 4 5, length = 3 }
+                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 5 6, length = 2 }
+                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 6, length = 2 }
+                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 7, length = 2 }
+                ]
+    in
+    Tutorial.tutorial
+        (Tutorial.step "Bursts clear all tiles of the same color" highlightTiles)
+        [ Tutorial.autoStep "Longer trails mean bigger bursts!" Tutorial.noHighlight ]
 
 
 l6Walls : List Coord
