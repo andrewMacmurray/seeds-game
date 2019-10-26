@@ -7,18 +7,12 @@ module Config.World exposing
     , number
     , previous
     , seedType
-    , tutorial
     )
 
 import Config.Level as Level exposing (..)
 import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
-import Scenes.Tutorial as Tutorial
-import Scenes.Tutorial.Rain as Rain
-import Scenes.Tutorial.Seed as Seed
-import Scenes.Tutorial.SeedPod as SeedPod
-import Scenes.Tutorial.Sun as Sun
 import Seed exposing (Seed)
 
 
@@ -42,11 +36,6 @@ all =
 getLevel : Level.Id -> Maybe Level
 getLevel =
     Level.getLevel all
-
-
-tutorial : Level.Id -> Maybe Tutorial.Config
-tutorial =
-    Level.tutorial all >> Maybe.map tutorialConfig_
 
 
 number : Level.Id -> Maybe Int
@@ -79,23 +68,3 @@ levelConfig =
     getLevel
         >> Maybe.withDefault Level.default
         >> Level.config
-
-
-
--- Tutorial Config
-
-
-tutorialConfig_ : Level.Tutorial -> Tutorial.Config
-tutorialConfig_ tutorial_ =
-    case tutorial_ of
-        Sun ->
-            Sun.config
-
-        Rain ->
-            Rain.config
-
-        Seed ->
-            Seed.config
-
-        SeedPod ->
-            SeedPod.config

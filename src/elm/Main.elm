@@ -23,7 +23,6 @@ import Scenes.Level as Level
 import Scenes.Retry as Retry
 import Scenes.Summary as Summary
 import Scenes.Title as Title
-import Scenes.Tutorial as Tutorial
 import Time exposing (millisToPosix)
 import Utils.Delay as Delay exposing (trigger)
 import Views.Animations exposing (animations)
@@ -69,7 +68,6 @@ type Scene
     = Title Title.Model
     | Intro Intro.Model
     | Hub Hub.Model
-    | Tutorial Tutorial.Model
     | Level Level.Model
     | Retry Retry.Model
     | Summary Summary.Model
@@ -80,14 +78,12 @@ type Msg
     = TitleMsg Title.Msg
     | IntroMsg Intro.Msg
     | HubMsg Hub.Msg
-    | TutorialMsg Tutorial.Msg
     | LevelMsg Level.Msg
     | RetryMsg Retry.Msg
     | SummaryMsg Summary.Msg
     | GardenMsg Garden.Msg
     | InitIntro
     | InitHub Level.Id
-    | InitTutorial Tutorial.Config Level.LevelConfig
     | InitLevel Level.LevelConfig
     | InitRetry
     | InitSummary
@@ -101,6 +97,43 @@ type Msg
     | WindowSize Int Int
     | UpdateLives Time.Posix
     | GoToHub Level.Id
+
+
+
+-- Init
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags =
+    initialContext flags
+        |> Title.init
+        |> Return.map TitleMsg initialState
+        |> withCmds
+            [ bounceKeyframes flags.window
+            ]
+
+
+initialState : Title.Model -> Model
+initialState titleModel =
+    { scene = Title titleModel
+    , backdrop = Nothing
+    }
+
+
+initialContext : Flags -> Context
+initialContext flags =
+    { window = flags.window
+    , loadingScreen = Nothing
+    , progress = Progress.fromCache flags.level
+    , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
+    , successMessageIndex = flags.randomMessageIndex
+    , menu = Context.Closed
+    }
+
+
+withCmds : List (Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+withCmds cmds ( model, cmd ) =
+    ( model, Cmd.batch (cmd :: cmds) )
 
 
 
@@ -118,9 +151,6 @@ getContext model =
 
         Hub subModel ->
             Hub.getContext subModel
-
-        Tutorial subModel ->
-            Tutorial.getContext subModel
 
         Level subModel ->
             Level.getContext subModel
@@ -152,9 +182,6 @@ updateSceneContext toContext scene =
         Hub model ->
             Hub <| Hub.updateContext toContext model
 
-        Tutorial model ->
-            Tutorial <| Tutorial.updateContext toContext model
-
         Level model ->
             Level <| Level.updateContext toContext model
 
@@ -166,42 +193,6 @@ updateSceneContext toContext scene =
 
         Garden model ->
             Garden <| Garden.updateContext toContext model
-
-
-
--- Init
-
-
-init : Flags -> ( Model, Cmd Msg )
-init flags =
-    let
-        ( titleModel, titleCmd ) =
-            Title.init <| initialContext flags
-    in
-    ( initialState titleModel
-    , Cmd.batch
-        [ bounceKeyframes flags.window
-        , Cmd.map TitleMsg titleCmd
-        ]
-    )
-
-
-initialState : Title.Model -> Model
-initialState titleModel =
-    { scene = Title titleModel
-    , backdrop = Nothing
-    }
-
-
-initialContext : Flags -> Context
-initialContext flags =
-    { window = flags.window
-    , loadingScreen = Nothing
-    , progress = Progress.fromCache flags.level
-    , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
-    , successMessageIndex = flags.randomMessageIndex
-    , menu = Context.Closed
-    }
 
 
 
@@ -219,9 +210,6 @@ update msg ({ scene, backdrop } as model) =
 
         ( HubMsg hub, Hub hubModel, _ ) ->
             updateHub hub hubModel model
-
-        ( TutorialMsg tutorial, Tutorial tutorialModel, _ ) ->
-            updateTutorial tutorial tutorialModel model
 
         ( LevelMsg level, Level levelModel, _ ) ->
             updateLevel level levelModel model
@@ -243,9 +231,6 @@ update msg ({ scene, backdrop } as model) =
 
         ( InitHub level, _, _ ) ->
             initHub level model
-
-        ( InitTutorial tutorialConfig levelConfig, _, _ ) ->
-            initTutorial tutorialConfig levelConfig model
 
         ( InitLevel level, _, _ ) ->
             initLevel level model
@@ -359,34 +344,7 @@ exitHub model destination =
 
 handleStartLevel : Model -> Level.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
-    case Worlds.tutorial level of
-        Just tutorialConfig ->
-            ( model, withLoadingScreen <| InitTutorial tutorialConfig <| Worlds.levelConfig level )
-
-        Nothing ->
-            ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
-
-
-
--- Tutorial
-
-
-initTutorial : Tutorial.Config -> Level.LevelConfig -> Model -> ( Model, Cmd Msg )
-initTutorial tutorialConfig levelConfig model =
-    Return.pipe model
-        [ initScene Tutorial TutorialMsg (Tutorial.init tutorialConfig)
-        , initBackdrop Level LevelMsg (Level.init levelConfig)
-        ]
-
-
-updateTutorial : Tutorial.Msg -> Tutorial.Model -> Model -> ( Model, Cmd Msg )
-updateTutorial =
-    updateScene Tutorial TutorialMsg Tutorial.update |> Exit.onExit exitTutorial
-
-
-exitTutorial : Model -> () -> ( Model, Cmd Msg )
-exitTutorial model _ =
-    ( moveBackdropToScene model, Cmd.none )
+    ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
 
 
 
@@ -772,9 +730,6 @@ renderScene scene =
 
         Level model ->
             [ ( "level", Level.view model |> Html.map LevelMsg ) ]
-
-        Tutorial model ->
-            [ ( "tutorial", Tutorial.view model |> Html.map TutorialMsg ) ]
 
         Summary model ->
             [ ( "summary", Summary.view model |> Html.map SummaryMsg ) ]

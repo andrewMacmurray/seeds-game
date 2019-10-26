@@ -184,7 +184,7 @@ fromTiles boardDimensions tiles =
 
 makeCoords : Size -> List Coord
 makeCoords { x, y } =
-    Coord.rangeXY (range x) (range y)
+    Coord.productXY (range x) (range y)
 
 
 range : Int -> List Int

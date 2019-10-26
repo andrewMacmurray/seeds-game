@@ -3,7 +3,6 @@ module Config.Level exposing
     , Id
     , Level
     , LevelConfig
-    , Tutorial(..)
     , World
     , WorldConfig
     , Worlds
@@ -26,7 +25,6 @@ module Config.Level exposing
     , seedType
     , toCache
     , toStringId
-    , tutorial
     , withTutorial
     , world
     , worlds
@@ -39,6 +37,7 @@ import Css.Color exposing (Color)
 import Dict exposing (Dict)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
+import Scenes.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
 
 
@@ -85,30 +84,26 @@ type alias Levels =
 
 
 type Level
-    = Level
-        { tiles : List Tile.Setting
-        , walls : List Wall.Config
-        , startTiles : List Start.Tile
-        , boardSize : Board.Size
-        , moves : Int
-        , tutorial : Maybe Tutorial
-        }
+    = Level LevelConfig
 
 
-type alias LevelConfig =
+type alias LevelInitConfig =
     { tileSettings : List Tile.Setting
-    , walls : List Wall.Config
     , startTiles : List Start.Tile
+    , walls : List Wall.Config
     , boardSize : Board.Size
     , moves : Int
     }
 
 
-type Tutorial
-    = Sun
-    | Rain
-    | Seed
-    | SeedPod
+type alias LevelConfig =
+    { tileSettings : List Tile.Setting
+    , startTiles : List Start.Tile
+    , walls : List Wall.Config
+    , boardSize : Board.Size
+    , moves : Int
+    , tutorial : Tutorial.Tutorial
+    }
 
 
 
@@ -165,27 +160,27 @@ world c levels =
         }
 
 
-level : LevelConfig -> Level
+level : LevelInitConfig -> Level
 level l =
     Level
-        { tiles = l.tileSettings
+        { tileSettings = l.tileSettings
         , walls = l.walls
         , startTiles = l.startTiles
         , boardSize = l.boardSize
         , moves = l.moves
-        , tutorial = Nothing
+        , tutorial = Tutorial.none
         }
 
 
-withTutorial : Tutorial -> LevelConfig -> Level
-withTutorial t l =
+withTutorial : Tutorial.Tutorial -> LevelInitConfig -> Level
+withTutorial tutorial l =
     Level
-        { tiles = l.tileSettings
+        { tileSettings = l.tileSettings
         , walls = l.walls
         , startTiles = l.startTiles
         , boardSize = l.boardSize
         , moves = l.moves
-        , tutorial = Just t
+        , tutorial = tutorial
         }
 
 
@@ -305,24 +300,9 @@ completed (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId > target.levelId)
 
 
-tutorial : Worlds -> Id -> Maybe Tutorial
-tutorial worlds_ =
-    getLevel worlds_ >> Maybe.andThen tutorial_
-
-
-tutorial_ : Level -> Maybe Tutorial
-tutorial_ (Level l) =
-    l.tutorial
-
-
 config : Level -> LevelConfig
 config (Level l) =
-    { tileSettings = l.tiles
-    , startTiles = l.startTiles
-    , walls = l.walls
-    , boardSize = l.boardSize
-    , moves = l.moves
-    }
+    l
 
 
 seedType : Worlds -> Id -> Maybe Seed

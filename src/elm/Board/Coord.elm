@@ -7,9 +7,11 @@ module Board.Coord exposing
     , isBelow
     , isLeft
     , isRight
-    , rangeXY
+    , productXY
     , square
     , surrounding
+    , translateX
+    , translateY
     , x
     , y
     )
@@ -35,13 +37,13 @@ type alias X =
 
 square : { a | x : Int, y : Int, size : Int } -> List Coord
 square options =
-    rangeXY
+    productXY
         (List.range options.x (options.x + options.size - 1))
         (List.range options.y (options.y + options.size - 1))
 
 
-rangeXY : List X -> List Y -> List Coord
-rangeXY xs =
+productXY : List X -> List Y -> List Coord
+productXY xs =
     List.map (\y_ -> List.map (\x_ -> fromXY x_ y_) xs) >> List.concat
 
 
@@ -80,7 +82,7 @@ surrounding size radius center =
             List.range (centerY - radius) (centerY + radius)
 
         combined =
-            rangeXY xs ys
+            productXY xs ys
     in
     combined
         |> List.filter (\c -> c /= center)
@@ -105,3 +107,17 @@ isAbove c1 c2 =
 isBelow : Coord -> Coord -> Bool
 isBelow c1 c2 =
     x c2 == x c1 && y c2 == y c1 + 1
+
+
+
+-- Update
+
+
+translateX : Int -> Coord -> Coord
+translateX n coord =
+    fromXY (x coord + n) (y coord)
+
+
+translateY : Int -> Coord -> Coord
+translateY n coord =
+    fromXY (x coord) (y coord + n)

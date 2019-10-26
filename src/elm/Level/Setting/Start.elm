@@ -82,7 +82,7 @@ rectangle (Tile coord tileType) opts =
             Tile c tileType
     in
     List.map toTiles <|
-        Coord.rangeXY
+        Coord.productXY
             (List.range x (x + opts.x - 1))
             (List.range y (y + opts.y - 1))
 
@@ -147,12 +147,12 @@ seed seed_ x y =
 
 adjustX : Int -> Tile -> Tile
 adjustX n (Tile coord tileType) =
-    Tile (Coord.fromXY (n + Coord.x coord) (Coord.y coord)) tileType
+    Tile (Coord.translateX n coord) tileType
 
 
 adjustY : Int -> Tile -> Tile
 adjustY n (Tile coord tileType) =
-    Tile (Coord.fromXY (Coord.x coord) (Coord.y coord + n)) tileType
+    Tile (Coord.translateY n coord) tileType
 
 
 toCoord : Int -> Int -> Coord

@@ -13,7 +13,7 @@ module Css.Style exposing
     , color
     , compose
     , disablePointer
-    , displayStyle
+    , display
     , height
     , left
     , leftAuto
@@ -348,8 +348,8 @@ height h =
     property "height" <| px h
 
 
-displayStyle : String -> Style
-displayStyle d =
+display : String -> Style
+display d =
     property "display" <| d
 
 

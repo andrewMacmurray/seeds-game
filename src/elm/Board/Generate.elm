@@ -39,7 +39,7 @@ setGrowingSeed seed =
     Move.updateBlock (Space << Growing (Seed seed) << Block.growingOrder)
 
 
-generateRandomSeedType : (Seed -> msg) -> List Tile.Setting -> Cmd msg
+generateRandomSeedType : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
 generateRandomSeedType msg =
     seedTypeGenerator >> Random.generate msg
 

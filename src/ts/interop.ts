@@ -3,18 +3,16 @@ import * as Cache from "./cache";
 import * as Audio from "./audio";
 import { Elm } from "../elm/Main";
 
-export function bindPorts(app: Elm.Main.App) {
-  const {
-    playIntroMusic,
-    introMusicPlaying,
-    fadeMusic,
-    generateBounceKeyframes,
-    cacheProgress,
-    clearCache_,
-    cacheLives
-  } = app.ports;
-
-  const { introMusic } = Audio.load();
+export function bindPorts({
+  playIntroMusic,
+  introMusicPlaying,
+  fadeMusic,
+  generateBounceKeyframes,
+  cacheProgress,
+  cacheLives,
+  clearCache_
+}: Elm.Main.App["ports"]) {
+  const { introMusic } = Audio.preload();
 
   playIntroMusic.subscribe(() => {
     const musicPlaying = () => introMusicPlaying.send(true);

@@ -1,4 +1,7 @@
-module Scenes.Level.LineDrag exposing (LineViewModel, handleLineDrag)
+module Scenes.Level.LineDrag exposing
+    ( ViewModel
+    , view
+    )
 
 import Board exposing (Board)
 import Board.Move as Move
@@ -10,21 +13,22 @@ import Pointer exposing (Pointer)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (height_, width_, windowViewBox_)
-import Views.Board.Tile.Styles exposing (..)
+import Views.Board.Style as Board
+import Views.Board.Tile.Style exposing (..)
 import Window exposing (Window)
 
 
-type alias LineViewModel =
+type alias ViewModel =
     { window : Window
-    , boardDimensions : Board.Size
+    , boardSize : Board.Size
     , board : Board
     , isDragging : Bool
     , pointer : Pointer
     }
 
 
-handleLineDrag : LineViewModel -> Html msg
-handleLineDrag model =
+view : ViewModel -> Html msg
+view model =
     if model.isDragging then
         lineDrag model
 
@@ -32,7 +36,7 @@ handleLineDrag model =
         span [] []
 
 
-lineDrag : LineViewModel -> Html msg
+lineDrag : ViewModel -> Html msg
 lineDrag model =
     let
         window =
@@ -68,7 +72,7 @@ lineDrag model =
         ]
 
 
-lastMoveOrigin : LineViewModel -> ( Float, Float )
+lastMoveOrigin : ViewModel -> ( Float, Float )
 lastMoveOrigin model =
     let
         window =
@@ -92,15 +96,19 @@ lastMoveOrigin model =
         sX =
             Tile.baseSizeX * tileScale
 
-        tileViewModel =
-            ( model.window, model.boardDimensions )
-
         offsetY =
-            boardOffsetTop tileViewModel |> toFloat
+            Board.offsetTop (boardViewModel model) |> toFloat
 
         offsetX =
-            (window.width - boardWidth tileViewModel) // 2 |> toFloat
+            (window.width - Board.width (boardViewModel model)) // 2 |> toFloat
     in
     ( ((y1 + 1) * sY) + offsetY - (sY / 2)
     , ((x1 + 1) * sX) + offsetX - (sX / 2) + 1
     )
+
+
+boardViewModel : ViewModel -> Board.ViewModel
+boardViewModel model =
+    { window = model.window
+    , boardSize = model.boardSize
+    }

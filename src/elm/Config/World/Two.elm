@@ -1,11 +1,12 @@
 module Config.World.Two exposing (world)
 
-import Board.Coord exposing (Coord)
+import Board.Coord as Coord exposing (Coord)
 import Board.Wall exposing (..)
 import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
+import Scenes.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
 
 
@@ -23,7 +24,7 @@ world =
 
 levels : List Level.Level
 levels =
-    [ Level.withTutorial Level.SeedPod
+    [ Level.withTutorial l1Tutorial
         { walls = walls firstLevelWalls
         , startTiles = []
         , boardSize = { x = 8, y = 8 }
@@ -137,6 +138,15 @@ firstLevelWalls =
         , [ w, s, s, s, s, s, s, w ]
         , [ w, s, s, w, w, s, s, w ]
         ]
+
+
+l1Tutorial : Tutorial.Tutorial
+l1Tutorial =
+    let
+        tileHighlight =
+            Tutorial.highlightHorizontalTiles { from = Coord.fromXY 3 7, length = 4 }
+    in
+    Tutorial.tutorial (Tutorial.step "Pods grow into a random seed" tileHighlight) []
 
 
 thirdLevelWalls : List Coord

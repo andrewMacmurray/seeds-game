@@ -7,7 +7,7 @@ import Css.Transform exposing (..)
 import Html exposing (Html, div, span)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Tile.Styles exposing (strokeColors, tileCoordsStyles, tileWidthheights)
+import Views.Board.Tile.Style as Tile
 import Window exposing (Window)
 
 
@@ -15,8 +15,8 @@ renderLine : Window -> Move -> Html msg
 renderLine window move =
     div
         [ styles
-            [ tileWidthheights window
-            , tileCoordsStyles window <| Move.coord move
+            [ Tile.widthHeightStyles window
+            , Tile.coordStyles window <| Move.coord move
             ]
         , class "dib absolute touch-disabled"
         ]
@@ -67,7 +67,7 @@ innerLine window tile bearing =
             , y1 "0"
             , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , Style.svgStyle [ Style.stroke <| strokeColors tile ]
+            , Style.svgStyle [ Style.stroke <| Tile.strokeColors tile ]
             ]
             []
         ]
