@@ -8,11 +8,7 @@ module InfoWindow exposing
     , visible
     )
 
-
-type State
-    = Visible
-    | Leaving
-    | Hidden
+-- Info Window
 
 
 type InfoWindow content
@@ -20,24 +16,14 @@ type InfoWindow content
     | Empty
 
 
-content : InfoWindow content -> Maybe content
-content infoWindow =
-    case infoWindow of
-        WithContent _ c ->
-            Just c
-
-        Empty ->
-            Nothing
+type State
+    = Visible
+    | Leaving
+    | Hidden
 
 
-state : InfoWindow content -> State
-state infoWindow =
-    case infoWindow of
-        WithContent state_ _ ->
-            state_
 
-        Empty ->
-            Hidden
+-- Construct
 
 
 visible : content -> InfoWindow content
@@ -58,3 +44,27 @@ leaving infoWindow =
 hidden : InfoWindow content
 hidden =
     Empty
+
+
+
+-- Query
+
+
+content : InfoWindow content -> Maybe content
+content infoWindow =
+    case infoWindow of
+        WithContent _ c ->
+            Just c
+
+        Empty ->
+            Nothing
+
+
+state : InfoWindow content -> State
+state infoWindow =
+    case infoWindow of
+        WithContent state_ _ ->
+            state_
+
+        Empty ->
+            Hidden

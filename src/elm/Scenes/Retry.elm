@@ -19,8 +19,6 @@ import Exit exposing (continue, exitWith)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Lives
-import Transit exposing (Transit(..))
 import Utils.Delay exposing (after)
 import Views.Lives as Lives
 
@@ -104,7 +102,7 @@ view model =
             [ style [ Style.property "margin-top" <| pc -8 ]
             , class "tc"
             ]
-            [ div [] <| Lives.view <| lifeState model
+            [ div [] <| Lives.view model.lives
             , div [ style [ color Color.darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
@@ -122,13 +120,6 @@ view model =
                 [ tryAgain model ]
             ]
         ]
-
-
-lifeState : Context -> Transit Int
-lifeState model =
-    model.lives
-        |> Lives.remaining
-        |> Transitioning
 
 
 tryAgain : Model -> Html Msg

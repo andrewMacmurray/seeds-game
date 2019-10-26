@@ -31,7 +31,6 @@ import Lives
 import Seed exposing (Seed)
 import Sine
 import Task exposing (Task)
-import Transit exposing (Transit(..))
 import Utils.Attribute as Attribute
 import Utils.Delay exposing (sequence)
 import Views.Icons.Heart as Heart
@@ -203,18 +202,11 @@ view model =
 
 renderTopBar : Model -> Html msg
 renderTopBar model =
-    let
-        lives =
-            model.context.lives
-                |> Lives.remaining
-                |> Transitioning
-                |> Lives.view
-    in
     div
         [ style [ background washedYellow ]
         , class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         ]
-        [ div [ style [ transform [ scale 0.5 ] ] ] lives
+        [ div [ style [ transform [ scale 0.5 ] ] ] <| Lives.view model.context.lives
         , div [ style [ color darkYellow ], class "f7" ]
             [ renderCountDown model.context.lives ]
         ]

@@ -4,9 +4,10 @@ module Window exposing
     , Window
     , padding
     , size
-    , smallestDimension
     , width
     )
+
+-- Window
 
 
 type alias Window =
@@ -25,6 +26,10 @@ type Width
     = Narrow
     | MediumWidth
     | Wide
+
+
+
+-- Query
 
 
 size : Window -> Size
@@ -50,6 +55,19 @@ width window =
         Narrow
 
 
+
+-- Config
+
+
+padding : number
+padding =
+    35
+
+
+
+-- Helpers
+
+
 smallestDimension : Window -> Int
 smallestDimension window =
     if window.height >= window.width then
@@ -57,8 +75,3 @@ smallestDimension window =
 
     else
         window.height
-
-
-padding : number
-padding =
-    35

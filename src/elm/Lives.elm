@@ -14,14 +14,18 @@ module Lives exposing
 import Time exposing (posixToMillis)
 
 
-type alias Cache =
-    { lastPlayed : Int
-    , timeTillNextLife : Int
-    }
+
+-- Lives
 
 
 type Lives
     = Lives Cache
+
+
+type alias Cache =
+    { lastPlayed : Int
+    , timeTillNextLife : Int
+    }
 
 
 
@@ -80,7 +84,7 @@ timeTillNextLife : Lives -> Maybe TimeTillNextLife
 timeTillNextLife (Lives cache) =
     let
         minutes =
-            modBy 5 <| cache.timeTillNextLife // minute
+            modBy max <| cache.timeTillNextLife // minute
 
         seconds =
             modBy 60 <| cache.timeTillNextLife // second

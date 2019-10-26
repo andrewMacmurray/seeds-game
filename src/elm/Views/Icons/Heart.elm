@@ -3,7 +3,6 @@ module Views.Icons.Heart exposing (alive, beating, beatingAnimation, breaking, b
 import Css.Animation as Animation
 import Css.Color exposing (..)
 import Css.Style as Style exposing (Style, svgStyle, transformOrigin)
-import Css.Unit exposing (ms)
 import Html exposing (Html)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)

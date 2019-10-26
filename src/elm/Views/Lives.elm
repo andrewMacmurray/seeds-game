@@ -5,7 +5,6 @@ import Css.Transform exposing (scale)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Lives
-import Transit exposing (Transit)
 import Views.Icons.Heart as Heart
 
 
@@ -17,7 +16,6 @@ type alias Life =
     { active : Bool
     , currentLife : Bool
     , breaking : Bool
-    , lifeState : Transit Int
     }
 
 
@@ -25,25 +23,25 @@ type alias Life =
 -- View
 
 
-view : Transit Int -> List (Html msg)
-view lifeState =
+view : Lives.Lives -> List (Html msg)
+view lives =
     let
-        lives =
-            Transit.val lifeState
+        remaining =
+            Lives.remaining lives
     in
     List.range 1 Lives.max
-        |> List.map (\n -> Life (n <= lives) (n == lives) (n == lives + 1) lifeState)
-        |> List.map life
+        |> List.map (\n -> Life (n <= remaining) (n == remaining) (n == remaining + 1))
+        |> List.map toLife
 
 
-life : Life -> Html msg
-life { active, currentLife, breaking, lifeState } =
+toLife : Life -> Html msg
+toLife { active, currentLife, breaking } =
     let
         visibleHeart =
             if active then
                 Heart.alive
 
-            else if breaking && Transit.isTransitioning lifeState then
+            else if breaking then
                 Heart.breaking
 
             else
