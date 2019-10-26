@@ -18,7 +18,7 @@ module Level.Progress exposing
 
 import Board.Scores as Score
 import Board.Tile as Tile exposing (Tile)
-import Config.Levels as Levels
+import Config.Level as Level
 import Dict exposing (Dict)
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Seed exposing (Seed)
@@ -31,8 +31,8 @@ type Progress
 
 
 type alias State =
-    { current : Maybe Levels.Id
-    , reached : Levels.Id
+    { current : Maybe Level.Id
+    , reached : Level.Id
     }
 
 
@@ -46,20 +46,20 @@ type Position
 -- Cache
 
 
-toCache : Progress -> Levels.Cache
+toCache : Progress -> Level.Cache
 toCache (Progress progress) =
-    Levels.toCache progress.reached
+    Level.toCache progress.reached
 
 
-fromCache : Maybe Levels.Cache -> Progress
+fromCache : Maybe Level.Cache -> Progress
 fromCache cachedLevel =
     cachedLevel
-        |> Maybe.map Levels.fromCache
-        |> Maybe.withDefault Levels.empty
+        |> Maybe.map Level.fromCache
+        |> Maybe.withDefault Level.empty
         |> fromLevel
 
 
-fromLevel : Levels.Id -> Progress
+fromLevel : Level.Id -> Progress
 fromLevel reached =
     Progress
         { current = Nothing
@@ -71,7 +71,7 @@ fromLevel reached =
 -- Update
 
 
-setCurrentLevel : Levels.Id -> Progress -> Progress
+setCurrentLevel : Level.Id -> Progress -> Progress
 setCurrentLevel level (Progress progress) =
     Progress { progress | current = Just level }
 
@@ -81,66 +81,66 @@ clearCurrentLevel (Progress progress) =
     Progress { progress | current = Nothing }
 
 
-handleIncrement : Levels.Worlds -> Progress -> Progress
+handleIncrement : Level.Worlds -> Progress -> Progress
 handleIncrement worlds (Progress progress) =
     case progress.current of
         Nothing ->
             Progress progress
 
         Just current ->
-            Progress { progress | reached = Levels.next worlds current }
+            Progress { progress | reached = Level.next worlds current }
 
 
 
 --  Query
 
 
-reachedLevel : Progress -> Levels.Id
+reachedLevel : Progress -> Level.Id
 reachedLevel (Progress progress) =
     progress.reached
 
 
-currentLevel : Progress -> Maybe Levels.Id
+currentLevel : Progress -> Maybe Level.Id
 currentLevel (Progress progress) =
     progress.current
 
 
-currentWorldComplete : Levels.Worlds -> Progress -> Bool
+currentWorldComplete : Level.Worlds -> Progress -> Bool
 currentWorldComplete worlds (Progress { current, reached }) =
     current
-        |> Maybe.map (\level -> Levels.isLastLevelOfWorld worlds level && Levels.isFirstLevelOfWorld reached)
+        |> Maybe.map (\level -> Level.isLastLevelOfWorld worlds level && Level.isFirstLevelOfWorld reached)
         |> Maybe.withDefault False
 
 
 currentLevelComplete : Progress -> Maybe Bool
 currentLevelComplete (Progress { current, reached }) =
-    Maybe.map (\level -> Levels.completed reached level) current
+    Maybe.map (\level -> Level.completed reached level) current
 
 
-reachedLevelSeedType : Levels.Worlds -> Progress -> Maybe Seed
+reachedLevelSeedType : Level.Worlds -> Progress -> Maybe Seed
 reachedLevelSeedType worlds (Progress progress) =
-    Levels.seedType worlds progress.reached
+    Level.seedType worlds progress.reached
 
 
-currentLevelSeedType : Levels.Worlds -> Progress -> Maybe Seed
+currentLevelSeedType : Level.Worlds -> Progress -> Maybe Seed
 currentLevelSeedType worlds (Progress progress) =
-    Maybe.andThen (Levels.seedType worlds) progress.current
+    Maybe.andThen (Level.seedType worlds) progress.current
 
 
-resources : Levels.Worlds -> Progress -> Maybe (List Tile)
+resources : Level.Worlds -> Progress -> Maybe (List Tile)
 resources worlds (Progress progress) =
     case progress.current of
         Just level ->
             Maybe.map2
                 resourcesInLevels
-                (Levels.seedType worlds level)
-                (Levels.getLevels worlds level)
+                (Level.seedType worlds level)
+                (Level.getLevels worlds level)
 
         Nothing ->
             Nothing
 
 
-percentComplete : Levels.Worlds -> Tile -> Progress -> Maybe Float
+percentComplete : Level.Worlds -> Tile -> Progress -> Maybe Float
 percentComplete worlds tileType ((Progress { reached }) as progress) =
     case position worlds progress of
         CurrentWorldComplete ->
@@ -157,7 +157,7 @@ percent a b =
     (toFloat a / toFloat b) * 100
 
 
-pointsFromPreviousLevel : Levels.Worlds -> Tile -> Progress -> Maybe Int
+pointsFromPreviousLevel : Level.Worlds -> Tile -> Progress -> Maybe Int
 pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as progress) =
     let
         tileScore =
@@ -167,7 +167,7 @@ pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as prog
             scoresAtLevel worlds
 
         previous =
-            Levels.previous worlds
+            Level.previous worlds
     in
     case position worlds progress of
         CurrentWorldComplete ->
@@ -186,7 +186,7 @@ pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as prog
 
         FirstLevelOfWorld ->
             current
-                |> Maybe.map (Levels.next worlds >> levelScores)
+                |> Maybe.map (Level.next worlds >> levelScores)
                 |> Maybe.andThen tileScore
 
         MiddleLevel ->
@@ -199,12 +199,12 @@ pointsFromPreviousLevel worlds tileType ((Progress { reached, current }) as prog
 -- Internal
 
 
-position : Levels.Worlds -> Progress -> Position
+position : Level.Worlds -> Progress -> Position
 position worlds ((Progress { current }) as progress) =
     if currentWorldComplete worlds progress then
         CurrentWorldComplete
 
-    else if Maybe.map Levels.isFirstLevelOfWorld current == Just True then
+    else if Maybe.map Level.isFirstLevelOfWorld current == Just True then
         FirstLevelOfWorld
 
     else
@@ -216,7 +216,7 @@ getScoreFor =
     Tile.hash >> Dict.get
 
 
-resourcesInLevels : Seed -> List Levels.Level -> List Tile
+resourcesInLevels : Seed -> List Level.Level -> List Tile
 resourcesInLevels worldSeedType =
     List.map tileSettings
         >> List.concat
@@ -226,39 +226,39 @@ resourcesInLevels worldSeedType =
         >> Utils.List.unique
 
 
-scoresAtLevel : Levels.Worlds -> Levels.Id -> Dict String Int
+scoresAtLevel : Level.Worlds -> Level.Id -> Dict String Int
 scoresAtLevel worlds level =
     level
-        |> Levels.idsForWorld worlds
+        |> Level.idsForWorld worlds
         |> Maybe.withDefault []
-        |> List.filter (Levels.completed level)
-        |> List.map (Levels.getLevel worlds >> Maybe.map tileSettings >> Maybe.withDefault [])
+        |> List.filter (Level.completed level)
+        |> List.map (Level.getLevel worlds >> Maybe.map tileSettings >> Maybe.withDefault [])
         |> List.concat
         |> totalScoresDict
         |> combineWithEmptyScores worlds level
 
 
-combineWithEmptyScores : Levels.Worlds -> Levels.Id -> Dict String Int -> Dict String Int
+combineWithEmptyScores : Level.Worlds -> Level.Id -> Dict String Int -> Dict String Int
 combineWithEmptyScores worlds levels scores =
     scoresAtBeginningOfWorld worlds levels
         |> Maybe.withDefault Dict.empty
         |> Dict.union scores
 
 
-scoresAtBeginningOfWorld : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
+scoresAtBeginningOfWorld : Level.Worlds -> Level.Id -> Maybe (Dict String Int)
 scoresAtBeginningOfWorld worlds level =
     targetWorldScores worlds level
         |> Maybe.map (Utils.Dict.mapValues <| always 0)
 
 
-targetWorldScores : Levels.Worlds -> Levels.Id -> Maybe (Dict String Int)
+targetWorldScores : Level.Worlds -> Level.Id -> Maybe (Dict String Int)
 targetWorldScores worlds level =
     level
-        |> Levels.getLevels worlds
+        |> Level.getLevels worlds
         |> Maybe.map scoresForWorld
 
 
-scoresForWorld : List Levels.Level -> Dict String Int
+scoresForWorld : List Level.Level -> Dict String Int
 scoresForWorld levels =
     levels
         |> List.map tileSettings
@@ -291,6 +291,6 @@ secondaryResource worldSeedType tileType =
             True
 
 
-tileSettings : Levels.Level -> List Tile.Setting
+tileSettings : Level.Level -> List Tile.Setting
 tileSettings =
-    Levels.config >> .tileSettings
+    Level.config >> .tileSettings

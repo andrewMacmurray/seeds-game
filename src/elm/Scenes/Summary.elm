@@ -10,7 +10,7 @@ module Scenes.Summary exposing
     )
 
 import Board.Tile as Tile exposing (Tile(..))
-import Config.Worlds as Worlds
+import Config.World as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (Color)

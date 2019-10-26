@@ -18,7 +18,7 @@ module Context exposing
     , updateLives
     )
 
-import Config.Levels as Levels
+import Config.Level as Level
 import Level.Progress as Progress exposing (Progress)
 import Lives exposing (Lives)
 import Ports exposing (cacheLives)
@@ -51,7 +51,7 @@ setWindow width height context =
 -- Progress
 
 
-setCurrentLevel : Levels.Id -> Context -> Context
+setCurrentLevel : Level.Id -> Context -> Context
 setCurrentLevel level context =
     { context | progress = Progress.setCurrentLevel level context.progress }
 
@@ -61,7 +61,7 @@ clearCurrentLevel context =
     { context | progress = Progress.clearCurrentLevel context.progress }
 
 
-incrementProgress : Levels.Worlds -> Context -> Context
+incrementProgress : Level.Worlds -> Context -> Context
 incrementProgress allLevels context =
     { context | progress = Progress.handleIncrement allLevels context.progress }
 

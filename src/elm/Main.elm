@@ -3,8 +3,8 @@ module Main exposing (main)
 import Board.Tile as Tile
 import Browser
 import Browser.Events exposing (onResize)
-import Config.Levels as Levels
-import Config.Worlds as Worlds
+import Config.Level as Level
+import Config.World as Worlds
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, style)
@@ -53,7 +53,7 @@ main =
 type alias Flags =
     { now : Int
     , lives : Maybe Lives.Cache
-    , level : Maybe Levels.Cache
+    , level : Maybe Level.Cache
     , randomMessageIndex : Int
     , window : Window
     }
@@ -86,9 +86,9 @@ type Msg
     | SummaryMsg Summary.Msg
     | GardenMsg Garden.Msg
     | InitIntro
-    | InitHub Levels.Id
-    | InitTutorial Tutorial.Config Levels.LevelConfig
-    | InitLevel Levels.LevelConfig
+    | InitHub Level.Id
+    | InitTutorial Tutorial.Config Level.LevelConfig
+    | InitLevel Level.LevelConfig
     | InitRetry
     | InitSummary
     | InitGarden
@@ -100,7 +100,7 @@ type Msg
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
-    | GoToHub Levels.Id
+    | GoToHub Level.Id
 
 
 
@@ -337,7 +337,7 @@ exitIntro model _ =
 -- Hub
 
 
-initHub : Levels.Id -> Model -> ( Model, Cmd Msg )
+initHub : Level.Id -> Model -> ( Model, Cmd Msg )
 initHub level =
     initScene Hub HubMsg <| Hub.init level
 
@@ -357,7 +357,7 @@ exitHub model destination =
             ( model, goToGarden )
 
 
-handleStartLevel : Model -> Levels.Id -> ( Model, Cmd Msg )
+handleStartLevel : Model -> Level.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
     case Worlds.tutorial level of
         Just tutorialConfig ->
@@ -371,7 +371,7 @@ handleStartLevel model level =
 -- Tutorial
 
 
-initTutorial : Tutorial.Config -> Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+initTutorial : Tutorial.Config -> Level.LevelConfig -> Model -> ( Model, Cmd Msg )
 initTutorial tutorialConfig levelConfig model =
     Return.pipe model
         [ initScene Tutorial TutorialMsg (Tutorial.init tutorialConfig)
@@ -393,7 +393,7 @@ exitTutorial model _ =
 -- Level
 
 
-initLevel : Levels.LevelConfig -> Model -> ( Model, Cmd Msg )
+initLevel : Level.LevelConfig -> Model -> ( Model, Cmd Msg )
 initLevel config =
     initScene Level LevelMsg <| Level.init config
 
@@ -675,17 +675,17 @@ bounceKeyframes window =
     generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
 
 
-reachedLevel : Model -> Levels.Id
+reachedLevel : Model -> Level.Id
 reachedLevel =
     getContext >> .progress >> Progress.reachedLevel
 
 
-currentLevel : Model -> Levels.Id
+currentLevel : Model -> Level.Id
 currentLevel =
     getContext >> .progress >> currentLevelWithDefault
 
 
-currentLevelWithDefault : Progress -> Levels.Id
+currentLevelWithDefault : Progress -> Level.Id
 currentLevelWithDefault progress =
     progress
         |> Progress.currentLevel

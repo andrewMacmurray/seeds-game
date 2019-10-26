@@ -9,14 +9,14 @@ port module Ports exposing
     , playIntroMusic
     )
 
-import Config.Levels as Levels
+import Config.Level as Level
 import Lives
 
 
 port generateBounceKeyframes : Float -> Cmd msg
 
 
-port cacheProgress : Levels.Cache -> Cmd msg
+port cacheProgress : Level.Cache -> Cmd msg
 
 
 port cacheLives : Lives.Cache -> Cmd msg

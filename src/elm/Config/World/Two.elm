@@ -1,17 +1,17 @@
-module Config.Worlds.Two exposing (world)
+module Config.World.Two exposing (world)
 
 import Board.Coord exposing (Coord)
 import Board.Wall exposing (..)
-import Config.Levels as Levels
+import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
 
 
-world : Levels.World
+world : Level.World
 world =
-    Levels.world
+    Level.world
         { seed = Chrysanthemum
         , backdropColor = Color.gold
         , textColor = Color.white
@@ -21,9 +21,9 @@ world =
         levels
 
 
-levels : List Levels.Level
+levels : List Level.Level
 levels =
-    [ Levels.withTutorial Levels.SeedPod
+    [ Level.withTutorial Level.SeedPod
         { walls = walls firstLevelWalls
         , startTiles = []
         , boardSize = { x = 8, y = 8 }
@@ -37,7 +37,7 @@ levels =
                 (Probability 80)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = walls corners
         , startTiles = []
         , boardSize = { x = 8, y = 8 }
@@ -60,7 +60,7 @@ levels =
                 (Probability 6)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = walls thirdLevelWalls
         , startTiles = thirdLevelStartTiles
         , boardSize = { x = 8, y = 8 }
@@ -82,7 +82,7 @@ levels =
                 (Probability 5)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = walls fourthLevelWalls
         , startTiles = fourthLevelStartTiles
         , boardSize = { x = 7, y = 8 }
@@ -100,7 +100,7 @@ levels =
                 (Probability 60)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = walls fifthLevelWalls
         , startTiles = fifthLevelStartTiles
         , boardSize = { x = 8, y = 8 }

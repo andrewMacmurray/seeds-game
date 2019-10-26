@@ -1,17 +1,17 @@
-module Config.Worlds.One exposing (world)
+module Config.World.One exposing (world)
 
 import Board.Coord exposing (Coord)
 import Board.Wall as Wall exposing (s, w)
-import Config.Levels as Levels
+import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
 
 
-world : Levels.World
+world : Level.World
 world =
-    Levels.world
+    Level.world
         { seed = Sunflower
         , backdropColor = Color.yellow
         , textColor = Color.darkYellow
@@ -21,9 +21,9 @@ world =
         levels
 
 
-levels : List Levels.Level
+levels : List Level.Level
 levels =
-    [ Levels.withTutorial Levels.Seed
+    [ Level.withTutorial Level.Seed
         { walls = Wall.walls l1Walls
         , startTiles = []
         , boardSize = { x = 5, y = 5 }
@@ -35,7 +35,7 @@ levels =
                 (TargetScore 60)
             ]
         }
-    , Levels.withTutorial Levels.Rain
+    , Level.withTutorial Level.Rain
         { walls = Wall.walls l2Walls
         , startTiles = l2StartTiles
         , boardSize = { x = 6, y = 6 }
@@ -50,7 +50,7 @@ levels =
                 (TargetScore 35)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.walls []
         , startTiles = l3StartTiles
         , boardSize = { x = 7, y = 7 }
@@ -65,7 +65,7 @@ levels =
                 (TargetScore 50)
             ]
         }
-    , Levels.withTutorial Levels.Sun
+    , Level.withTutorial Level.Sun
         { walls = Wall.walls l4Walls
         , startTiles = l4StartTiles
         , boardSize = { x = 7, y = 7 }
@@ -83,7 +83,7 @@ levels =
                 (TargetScore 15)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.walls l5Walls
         , startTiles = l5StartTiles
         , moves = 15
@@ -103,7 +103,7 @@ levels =
                 (Probability 10)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.walls l6Walls
         , moves = 20
         , startTiles = l6StartTiles
@@ -123,7 +123,7 @@ levels =
                 (Probability 2)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.walls l7Walls
         , moves = 8
         , startTiles = l7StartTiles
@@ -143,7 +143,7 @@ levels =
                 (Probability 5)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.invisible l8Invisibles ++ Wall.walls l8Walls
         , moves = 10
         , startTiles = l8StartTiles
@@ -163,7 +163,7 @@ levels =
                 (Probability 5)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = []
         , moves = 5
         , startTiles = []

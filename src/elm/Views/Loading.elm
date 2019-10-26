@@ -1,6 +1,6 @@
 module Views.Loading exposing (loadingScreen)
 
-import Config.Worlds as Worlds
+import Config.World as Worlds
 import Context exposing (Background(..), Context)
 import Css.Color exposing (gold, rainBlue)
 import Css.Style exposing (Style, backgroundColor, classes, none, style, width)

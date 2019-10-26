@@ -1,17 +1,17 @@
-module Config.Worlds.Three exposing (world)
+module Config.World.Three exposing (world)
 
 import Board.Coord exposing (Coord)
 import Board.Wall as Wall exposing (..)
-import Config.Levels as Levels
+import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
 
 
-world : Levels.World
+world : Level.World
 world =
-    Levels.world
+    Level.world
         { seed = Cornflower
         , backdropColor = "#1f4a77"
         , textColor = Color.white
@@ -21,9 +21,9 @@ world =
         levels
 
 
-levels : List Levels.Level
+levels : List Level.Level
 levels =
-    [ Levels.level
+    [ Level.level
         { walls = walls l1Walls
         , startTiles = []
         , boardSize = { x = 6, y = 8 }
@@ -42,7 +42,7 @@ levels =
                 (Probability 5)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = Wall.walls Wall.corners
         , moves = 10
         , startTiles = l2StartingTiles
@@ -63,7 +63,7 @@ levels =
                 (Probability 25)
             ]
         }
-    , Levels.level
+    , Level.level
         { walls = []
         , moves = 10
         , boardSize = { x = 8, y = 8 }

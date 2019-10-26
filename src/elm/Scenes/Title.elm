@@ -13,7 +13,7 @@ module Scenes.Title exposing
 
 import Browser.Dom as Dom
 import Browser.Events
-import Config.Levels as Levels
+import Config.Level as Level
 import Context exposing (Context)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color as Color
@@ -208,9 +208,9 @@ view { context, fadeDirection, bannerHeight } =
         ]
 
 
-handleStart : Levels.Id -> Attribute Msg
+handleStart : Level.Id -> Attribute Msg
 handleStart progress =
-    if progress == Levels.empty then
+    if progress == Level.empty then
         onClick PlayIntro
 
     else

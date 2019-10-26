@@ -1,4 +1,4 @@
-module Config.Levels exposing
+module Config.Level exposing
     ( Cache
     , Id
     , Level
@@ -38,7 +38,7 @@ import Board.Wall as Wall
 import Css.Color exposing (Color)
 import Dict exposing (Dict)
 import Level.Setting.Start as Start
-import Level.Setting.Tile as Tile exposing (Probability, TargetScore)
+import Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
 import Seed exposing (Seed(..))
 
 

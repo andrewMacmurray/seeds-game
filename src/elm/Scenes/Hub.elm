@@ -13,8 +13,8 @@ module Scenes.Hub exposing
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (Tile(..))
 import Browser.Dom as Dom
-import Config.Levels as Levels
-import Config.Worlds as Worlds
+import Config.Level as Level
+import Config.World as Worlds
 import Context exposing (Context)
 import Css.Animation exposing (animation, ease, infinite)
 import Css.Color exposing (..)
@@ -50,25 +50,25 @@ import Window exposing (Window)
 
 type alias Model =
     { context : Context
-    , infoWindow : InfoWindow Levels.Id
+    , infoWindow : InfoWindow Level.Id
     }
 
 
 type Msg
-    = ShowLevelInfo Levels.Id
+    = ShowLevelInfo Level.Id
     | HideLevelInfo
-    | SetInfoState (InfoWindow Levels.Id)
-    | SetCurrentLevel Levels.Id
-    | ScrollHubTo Levels.Id
+    | SetInfoState (InfoWindow Level.Id)
+    | SetCurrentLevel Level.Id
+    | ScrollHubTo Level.Id
     | ClearCurrentLevel
-    | StartLevel Levels.Id
-    | ExitToLevel Levels.Id
+    | StartLevel Level.Id
+    | ExitToLevel Level.Id
     | ExitToGarden
     | DomNoOp (Result Dom.Error ())
 
 
 type Destination
-    = ToLevel Levels.Id
+    = ToLevel Level.Id
     | ToGarden
 
 
@@ -96,7 +96,7 @@ menuOptions =
 -- Init
 
 
-init : Levels.Id -> Context -> ( Model, Cmd Msg )
+init : Level.Id -> Context -> ( Model, Cmd Msg )
 init level context =
     ( initialState context
     , sequence
@@ -167,9 +167,9 @@ update msg model =
 -- Update Helpers
 
 
-scrollHubToLevel : Levels.Id -> Cmd Msg
+scrollHubToLevel : Level.Id -> Cmd Msg
 scrollHubToLevel level =
-    Levels.toStringId level
+    Level.toStringId level
         |> Dom.getElement
         |> Task.andThen scrollLevelToView
         |> Task.attempt DomNoOp
@@ -255,7 +255,7 @@ renderInfoWindow : Model -> Html Msg
 renderInfoWindow { infoWindow, context } =
     let
         level =
-            InfoWindow.content infoWindow |> Maybe.withDefault Levels.empty
+            InfoWindow.content infoWindow |> Maybe.withDefault Level.empty
     in
     case InfoWindow.state infoWindow of
         InfoWindow.Hidden ->
@@ -272,7 +272,7 @@ handleStartLevel context level =
     Attribute.applyIf (Lives.remaining context.lives > 0) <| onClick <| StartLevel level
 
 
-infoContent : Context -> Levels.Id -> List (Html msg)
+infoContent : Context -> Level.Id -> List (Html msg)
 infoContent context level =
     if Lives.remaining context.lives > 0 then
         let
@@ -322,9 +322,9 @@ renderWaitForNextLife context =
     ]
 
 
-infoIcons : Levels.Level -> Html msg
+infoIcons : Level.Level -> Html msg
 infoIcons level =
-    Levels.config level
+    Level.config level
         |> .tileSettings
         |> List.filter Scores.collectible
         |> List.map renderIcon
@@ -412,7 +412,7 @@ renderWorlds model =
     List.map (renderWorld model) <| List.reverse Worlds.list
 
 
-renderWorld : Model -> ( Levels.WorldConfig, List Levels.Id ) -> Html Msg
+renderWorld : Model -> ( Level.WorldConfig, List Level.Id ) -> Html Msg
 renderWorld model ( config, levels ) =
     div [ style [ backgroundColor config.backdropColor ], class "pa5 flex" ]
         [ div
@@ -421,7 +421,7 @@ renderWorld model ( config, levels ) =
         ]
 
 
-renderLevel : Model -> Levels.WorldConfig -> Int -> Levels.Id -> Html Msg
+renderLevel : Model -> Level.WorldConfig -> Int -> Level.Id -> Html Msg
 renderLevel model config index level =
     let
         reachedLevel =
@@ -431,7 +431,7 @@ renderLevel model config index level =
             Worlds.number level |> Maybe.withDefault 1
 
         hasReachedLevel =
-            Levels.reached reachedLevel level
+            Level.reached reachedLevel level
 
         isCurrentLevel =
             level == reachedLevel
@@ -448,7 +448,7 @@ renderLevel model config index level =
             ]
         , showInfo level model
         , class "tc relative"
-        , id <| Levels.toStringId level
+        , id <| Level.toStringId level
         ]
         [ currentLevelPointer isCurrentLevel
         , renderLevelIcon level config.seed model
@@ -482,7 +482,7 @@ offsetStyles levelNumber =
         (levelNumber - 1)
 
 
-renderNumber : Int -> Bool -> Levels.WorldConfig -> Html Msg
+renderNumber : Int -> Bool -> Level.WorldConfig -> Html Msg
 renderNumber visibleLevelNumber hasReachedLevel config =
     if hasReachedLevel then
         div
@@ -501,18 +501,18 @@ renderNumber visibleLevelNumber hasReachedLevel config =
             [ text <| String.fromInt visibleLevelNumber ]
 
 
-showInfo : Levels.Id -> Model -> Attribute Msg
+showInfo : Level.Id -> Model -> Attribute Msg
 showInfo level model =
     let
         shouldShowInfo =
-            Levels.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden
+            Level.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden
     in
     Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
 
 
-renderLevelIcon : Levels.Id -> Seed -> Model -> Html msg
+renderLevelIcon : Level.Id -> Seed -> Model -> Html msg
 renderLevelIcon level seed model =
-    if Levels.completed (Progress.reachedLevel model.context.progress) level then
+    if Level.completed (Progress.reachedLevel model.context.progress) level then
         Seed.view seed
 
     else

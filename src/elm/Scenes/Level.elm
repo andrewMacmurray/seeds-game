@@ -21,7 +21,7 @@ import Board.Scores as Scores exposing (Scores)
 import Board.Shift exposing (shiftBoard)
 import Board.Tile as Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
-import Config.Levels as Levels
+import Config.Level as Level
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
@@ -164,7 +164,7 @@ canRestartLevel model =
 -- Init
 
 
-init : Levels.LevelConfig -> Context -> ( Model, Cmd Msg )
+init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
     let
         model =
@@ -175,7 +175,7 @@ init config context =
     )
 
 
-initialState : Levels.LevelConfig -> Context -> Model
+initialState : Level.LevelConfig -> Context -> Model
 initialState { tileSettings, boardSize, moves } context =
     { context = context
     , board = Board.fromMoves []
@@ -466,7 +466,7 @@ addStartTiles startTiles board =
     List.foldl (Board.place << Start.move) board startTiles
 
 
-handleGenerateInitialTiles : Levels.LevelConfig -> Model -> Cmd Msg
+handleGenerateInitialTiles : Level.LevelConfig -> Model -> Cmd Msg
 handleGenerateInitialTiles config { boardSize } =
     generateInitialTiles
         (InitTiles << InitConfig config.walls config.startTiles)

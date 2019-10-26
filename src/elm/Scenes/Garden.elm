@@ -10,8 +10,8 @@ module Scenes.Garden exposing
     )
 
 import Browser.Dom as Dom
-import Config.Levels as Levels exposing (WorldConfig)
-import Config.Worlds as Worlds
+import Config.Level as Level exposing (WorldConfig)
+import Config.World as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation
 import Css.Color as Color exposing (rgb)
@@ -159,12 +159,12 @@ currentCompletedWorldSeedType progress =
         |> Maybe.withDefault Sunflower
 
 
-worldComplete : Progress -> List Levels.Id -> Bool
+worldComplete : Progress -> List Level.Id -> Bool
 worldComplete progress levelKeys =
     levelKeys
         |> List.reverse
         |> List.head
-        |> Maybe.map (\l -> Levels.completed (Progress.reachedLevel progress) l)
+        |> Maybe.map (\l -> Level.completed (Progress.reachedLevel progress) l)
         |> Maybe.withDefault False
 
 
@@ -235,7 +235,7 @@ allFlowers progress =
         |> List.map (worldFlowers progress)
 
 
-worldFlowers : Progress -> ( WorldConfig, List Levels.Id ) -> Html Msg
+worldFlowers : Progress -> ( WorldConfig, List Level.Id ) -> Html Msg
 worldFlowers progress ( { seed }, levelKeys ) =
     if worldComplete progress levelKeys then
         div
