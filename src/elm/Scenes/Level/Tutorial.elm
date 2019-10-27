@@ -4,19 +4,19 @@ module Scenes.Level.Tutorial exposing
     , ViewModel
     , autoStep
     , hideStep
-    , highlightHorizontalTiles
     , highlightMultiple
-    , highlightRemainingMoves
-    , highlightSeedBank
-    , highlightVerticalTiles
+    , horizontalTiles
     , inProgress
     , isAutoStep
     , nextStep
     , noHighlight
     , none
+    , remainingMoves
+    , seedBank
     , showStep
     , step
     , tutorial
+    , verticalTiles
     , view
     )
 
@@ -190,23 +190,23 @@ none =
 -- Highlight
 
 
-highlightHorizontalTiles : { from : Coord, length : Int } -> Highlight
-highlightHorizontalTiles =
+horizontalTiles : { from : Coord, length : Int } -> Highlight
+horizontalTiles =
     HorizontalTiles
 
 
-highlightVerticalTiles : { from : Coord, length : Int } -> Highlight
-highlightVerticalTiles =
+verticalTiles : { from : Coord, length : Int } -> Highlight
+verticalTiles =
     VerticalTiles
 
 
-highlightRemainingMoves : Highlight
-highlightRemainingMoves =
+remainingMoves : Highlight
+remainingMoves =
     RemainingMoves
 
 
-highlightSeedBank : Highlight
-highlightSeedBank =
+seedBank : Highlight
+seedBank =
     SeedBank
 
 
@@ -310,7 +310,7 @@ highlightMask model =
         (List.concat
             [ [ maskBackground model ]
             , highlightCenterSeedBank model
-            , remainingMoves model
+            , remainingMovesHighlight model
             , tileHighlights model
             , connectingBlock model
             ]
@@ -322,8 +322,8 @@ maskId =
     "tutorial-overlay-mask"
 
 
-remainingMoves : InternalViewModel -> List (Svg msg)
-remainingMoves model =
+remainingMovesHighlight : InternalViewModel -> List (Svg msg)
+remainingMovesHighlight model =
     let
         left =
             leftEdge model + 26

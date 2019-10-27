@@ -106,7 +106,7 @@ levels =
         }
     , Level.level
         { walls = Wall.walls l6Walls
-        , moves = 20
+        , moves = 10
         , startTiles = l6StartTiles
         , boardSize = { x = 8, y = 8 }
         , tileSettings =
@@ -130,14 +130,14 @@ levels =
         , startTiles = l7StartTiles
         , boardSize = { x = 8, y = 8 }
         , tileSettings =
-            [ seed
+            [ rain
+                (Probability 33)
+                (TargetScore 50)
+            , seed
                 Sunflower
                 (Probability 33)
                 (TargetScore 50)
             , sun
-                (Probability 33)
-                (TargetScore 50)
-            , rain
                 (Probability 33)
                 (TargetScore 50)
             , burst
@@ -146,7 +146,7 @@ levels =
         }
     , Level.level
         { walls = Wall.invisible l8Invisibles ++ Wall.walls l8Walls
-        , moves = 10
+        , moves = 8
         , startTiles = l8StartTiles
         , boardSize = { x = 8, y = 8 }
         , tileSettings =
@@ -202,11 +202,11 @@ l1Tutorial : Tutorial.Tutorial
 l1Tutorial =
     let
         highlightTiles =
-            Tutorial.highlightHorizontalTiles { from = Coord.fromXY 3 4, length = 3 }
+            Tutorial.horizontalTiles { from = Coord.fromXY 3 4, length = 3 }
     in
     Tutorial.tutorial
         (Tutorial.step "Connect seeds to save them" highlightTiles)
-        [ Tutorial.autoStep "Fill the seed bank to complete the level" Tutorial.highlightSeedBank
+        [ Tutorial.autoStep "Fill the seed bank to complete the level" Tutorial.seedBank
         ]
 
 
@@ -235,15 +235,15 @@ l2Tutorial =
     let
         highlightTiles =
             Tutorial.highlightMultiple
-                [ Tutorial.highlightVerticalTiles { from = Coord.fromXY 4 2, length = 4 }
-                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 5 3, length = 2 }
-                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 3, length = 2 }
-                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 4, length = 2 }
+                [ Tutorial.verticalTiles { from = Coord.fromXY 4 2, length = 4 }
+                , Tutorial.verticalTiles { from = Coord.fromXY 5 3, length = 2 }
+                , Tutorial.horizontalTiles { from = Coord.fromXY 4 3, length = 2 }
+                , Tutorial.horizontalTiles { from = Coord.fromXY 4 4, length = 2 }
                 ]
     in
     Tutorial.tutorial
         (Tutorial.step "Collect rain for our seeds" highlightTiles)
-        [ Tutorial.autoStep "But don't run out of moves!" Tutorial.highlightRemainingMoves
+        [ Tutorial.autoStep "But don't run out of moves!" Tutorial.remainingMoves
         ]
 
 
@@ -285,8 +285,8 @@ l4Tutorial =
     let
         highlightTiles =
             Tutorial.highlightMultiple
-                [ Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 7, length = 4 }
-                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 7 4, length = 4 }
+                [ Tutorial.horizontalTiles { from = Coord.fromXY 4 7, length = 4 }
+                , Tutorial.verticalTiles { from = Coord.fromXY 7 4, length = 4 }
                 ]
     in
     Tutorial.tutorial
@@ -323,10 +323,10 @@ l5Tutorial =
     let
         highlightTiles =
             Tutorial.highlightMultiple
-                [ Tutorial.highlightVerticalTiles { from = Coord.fromXY 4 5, length = 3 }
-                , Tutorial.highlightVerticalTiles { from = Coord.fromXY 5 6, length = 2 }
-                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 6, length = 2 }
-                , Tutorial.highlightHorizontalTiles { from = Coord.fromXY 4 7, length = 2 }
+                [ Tutorial.verticalTiles { from = Coord.fromXY 4 5, length = 3 }
+                , Tutorial.verticalTiles { from = Coord.fromXY 5 6, length = 2 }
+                , Tutorial.horizontalTiles { from = Coord.fromXY 4 6, length = 2 }
+                , Tutorial.horizontalTiles { from = Coord.fromXY 4 7, length = 2 }
                 ]
     in
     Tutorial.tutorial
