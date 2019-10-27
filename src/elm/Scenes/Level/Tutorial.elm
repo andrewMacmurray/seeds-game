@@ -298,7 +298,7 @@ highlightOverlay model =
             [ width_ <| toFloat model.window.width
             , height_ <| toFloat model.window.height
             , fillOpacity "0.4"
-            , mask "url(#valentina)"
+            , mask <| String.concat [ "url(#", maskId, ")" ]
             ]
             []
         ]
@@ -306,7 +306,7 @@ highlightOverlay model =
 
 highlightMask : InternalViewModel -> Svg msg
 highlightMask model =
-    Svg.mask [ id "valentina" ]
+    Svg.mask [ id maskId ]
         (List.concat
             [ [ maskBackground model ]
             , highlightCenterSeedBank model
@@ -315,6 +315,11 @@ highlightMask model =
             , connectingBlock model
             ]
         )
+
+
+maskId : String
+maskId =
+    "tutorial-overlay-mask"
 
 
 remainingMoves : InternalViewModel -> List (Svg msg)
