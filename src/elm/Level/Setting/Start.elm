@@ -3,12 +3,13 @@ module Level.Setting.Start exposing
     , Facing(..)
     , Tile
     , burst
+    , chrysanthemum
     , corner
     , line
     , move
     , rain
     , rectangle
-    , seed
+    , seedPod
     , square
     , sun
     , sunflower
@@ -104,16 +105,16 @@ corner tile { size, facing } =
     in
     case facing of
         BottomRight ->
-            List.concat [ line tile vertical, line tile horizontal ]
+            line tile vertical ++ line tile horizontal
 
         BottomLeft ->
-            List.concat [ line tile vertical, line flippedX horizontal ]
+            line tile vertical ++ line flippedX horizontal
 
         TopRight ->
-            List.concat [ line flippedY vertical, line tile horizontal ]
+            line flippedY vertical ++ line tile horizontal
 
         TopLeft ->
-            List.concat [ line flippedY vertical, line flippedX horizontal ]
+            line flippedY vertical ++ line flippedX horizontal
 
 
 burst : Int -> Int -> Tile
@@ -131,9 +132,19 @@ rain x y =
     Tile (toCoord x y) Rain
 
 
+seedPod : Int -> Int -> Tile
+seedPod x y =
+    Tile (toCoord x y) SeedPod
+
+
 sunflower : Int -> Int -> Tile
 sunflower =
     seed Seed.Sunflower
+
+
+chrysanthemum : Int -> Int -> Tile
+chrysanthemum =
+    seed Seed.Chrysanthemum
 
 
 seed : Seed -> Int -> Int -> Tile

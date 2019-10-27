@@ -26,7 +26,7 @@ levels : List Level.Level
 levels =
     [ Level.withTutorial l1Tutorial
         { walls = walls firstLevelWalls
-        , startTiles = []
+        , startTiles = l1StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 5
         , tileSettings =
@@ -62,8 +62,8 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls thirdLevelWalls
-        , startTiles = thirdLevelStartTiles
+        { walls = walls l3Walls
+        , startTiles = l3StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
@@ -84,8 +84,8 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls fourthLevelWalls
-        , startTiles = fourthLevelStartTiles
+        { walls = walls l4Walls
+        , startTiles = l4StartTiles
         , boardSize = { x = 7, y = 8 }
         , moves = 10
         , tileSettings =
@@ -102,8 +102,8 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls fifthLevelWalls
-        , startTiles = fifthLevelStartTiles
+        { walls = walls l5Walls
+        , startTiles = l5StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
@@ -144,13 +144,18 @@ l1Tutorial : Tutorial.Tutorial
 l1Tutorial =
     let
         tileHighlight =
-            Tutorial.highlightHorizontalTiles { from = Coord.fromXY 3 7, length = 4 }
+            Tutorial.horizontalTiles { from = Coord.fromXY 3 7, length = 4 }
     in
-    Tutorial.tutorial (Tutorial.step "Pods grow into a random seed" tileHighlight) []
+    Tutorial.tutorial (Tutorial.step "Pods grow into seeds" tileHighlight) []
 
 
-thirdLevelWalls : List Coord
-thirdLevelWalls =
+l1StartTiles : List Start.Tile
+l1StartTiles =
+    Start.line (Start.seedPod 3 6) { length = 4, direction = Start.Horizontal }
+
+
+l3Walls : List Coord
+l3Walls =
     toCoords
         [ [ s, s, s, s, s, s, s, s ]
         , [ s, w, w, s, s, w, w, s ]
@@ -163,10 +168,10 @@ thirdLevelWalls =
         ]
 
 
-thirdLevelStartTiles : List Start.Tile
-thirdLevelStartTiles =
+l3StartTiles : List Start.Tile
+l3StartTiles =
     List.concat
-        [ Start.square (Start.seed Chrysanthemum 3 3) { size = 4 }
+        [ Start.square (Start.chrysanthemum 3 3) { size = 4 }
         , Start.corner (Start.sun 1 1) { size = 3, facing = Start.BottomRight }
         , Start.corner (Start.sun 8 1) { size = 3, facing = Start.BottomLeft }
         , Start.corner (Start.rain 1 8) { size = 3, facing = Start.TopRight }
@@ -174,11 +179,14 @@ thirdLevelStartTiles =
         , [ Start.burst 3 3
           , Start.burst 6 6
           ]
+        , Start.square (Start.seedPod 4 4) { size = 2 }
+        , Start.square (Start.seedPod 4 1) { size = 2 }
+        , Start.square (Start.seedPod 4 7) { size = 2 }
         ]
 
 
-fourthLevelWalls : List Coord
-fourthLevelWalls =
+l4Walls : List Coord
+l4Walls =
     toCoords
         [ [ w, w, s, s, s, w, w ]
         , [ w, s, s, s, s, s, w ]
@@ -191,8 +199,8 @@ fourthLevelWalls =
         ]
 
 
-fourthLevelStartTiles : List Start.Tile
-fourthLevelStartTiles =
+l4StartTiles : List Start.Tile
+l4StartTiles =
     [ Start.burst 4 1
     , Start.burst 4 2
     , Start.burst 4 7
@@ -200,8 +208,8 @@ fourthLevelStartTiles =
     ]
 
 
-fifthLevelWalls : List Coord
-fifthLevelWalls =
+l5Walls : List Coord
+l5Walls =
     toCoords
         [ [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]
@@ -214,8 +222,8 @@ fifthLevelWalls =
         ]
 
 
-fifthLevelStartTiles : List Start.Tile
-fifthLevelStartTiles =
+l5StartTiles : List Start.Tile
+l5StartTiles =
     List.concat
         [ Start.line (Start.rain 1 4) { length = 4, direction = Start.Horizontal }
         , Start.line (Start.rain 1 5) { length = 4, direction = Start.Horizontal }
