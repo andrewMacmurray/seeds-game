@@ -487,16 +487,6 @@ initScene =
     load asForeground
 
 
-initBackdrop :
-    (subModel -> Scene)
-    -> (subMsg -> msg)
-    -> (Context -> ( subModel, Cmd subMsg ))
-    -> Model
-    -> ( Model, Cmd msg )
-initBackdrop =
-    load asBackdrop
-
-
 updateScene :
     (subModel -> Scene)
     -> (subMsg -> msg)
@@ -552,21 +542,6 @@ copyCurrentSceneToBackdrop model =
 clearBackdrop : Model -> Model
 clearBackdrop model =
     { model | backdrop = Nothing }
-
-
-moveBackdropToScene : Model -> Model
-moveBackdropToScene model =
-    case model.backdrop of
-        Just scene ->
-            { model | scene = syncContext model scene, backdrop = Nothing }
-
-        _ ->
-            model
-
-
-syncContext : Model -> Scene -> Scene
-syncContext model scene =
-    updateSceneContext (always <| getContext model) scene
 
 
 

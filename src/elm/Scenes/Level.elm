@@ -571,8 +571,8 @@ handleInsertEnteringTiles tiles =
 
 
 handleInsertNewSeeds : Seed -> HasBoard model -> HasBoard model
-handleInsertNewSeeds seed =
-    updateBoard <| insertNewSeeds seed
+handleInsertNewSeeds =
+    updateBoard << insertNewSeeds
 
 
 growLeavingBurstsToSeeds : Seed -> HasBoard model -> HasBoard model

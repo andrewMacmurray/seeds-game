@@ -1,6 +1,5 @@
 module Utils.Dict exposing
-    ( filterValues
-    , find
+    ( find
     , findValue
     , indexedDictFrom
     , insertWith
@@ -13,11 +12,6 @@ import Dict exposing (Dict)
 mapValues : (a -> b) -> Dict comparable a -> Dict comparable b
 mapValues f =
     Dict.map <| always f
-
-
-filterValues : (b -> Bool) -> Dict comparable b -> Dict comparable b
-filterValues f =
-    Dict.filter <| always f
 
 
 insertWith : (a -> a -> a) -> comparable -> a -> Dict comparable a -> Dict comparable a

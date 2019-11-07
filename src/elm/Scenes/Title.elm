@@ -17,7 +17,7 @@ import Config.Level as Level
 import Context exposing (Context)
 import Css.Animation exposing (animation, delay, linear)
 import Css.Color as Color
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Exit exposing (continue, exitWith)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
@@ -215,11 +215,6 @@ handleStart progress =
 
     else
         onClick GoToHub
-
-
-percentWindowHeight : Float -> Window -> Float
-percentWindowHeight percent window =
-    toFloat window.height / 100 * percent
 
 
 seeds : FadeDirection -> Html msg

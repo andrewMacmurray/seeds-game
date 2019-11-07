@@ -6,9 +6,7 @@ module Board.Block exposing
     , empty
     , fold
     , growLeavingBurstToSeed
-    , growSeedPod
     , growingOrder
-    , hasLine
     , isBurst
     , isCollectible
     , isCurrentMove
@@ -106,11 +104,6 @@ isGrowing =
     fold Tile.isGrowing False
 
 
-hasLine : Block -> Bool
-hasLine =
-    fold Tile.hasLine False
-
-
 moveOrder : Block -> Int
 moveOrder =
     fold Tile.moveOrder 0
@@ -203,11 +196,6 @@ clearBurstType =
 setGrowingToStatic : Block -> Block
 setGrowingToStatic =
     map Tile.setGrowingToStatic
-
-
-growSeedPod : Seed -> Block -> Block
-growSeedPod =
-    map << Tile.growSeedPod
 
 
 setToFalling : Int -> Block -> Block

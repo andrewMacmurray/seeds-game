@@ -5,7 +5,6 @@ import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Shift as Shift
-import Utils.Dict exposing (filterValues)
 
 
 setFallingTiles : Board -> Board

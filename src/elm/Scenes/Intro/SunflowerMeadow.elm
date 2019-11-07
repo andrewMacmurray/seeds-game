@@ -3,13 +3,11 @@ module Scenes.Intro.SunflowerMeadow exposing
     , view
     )
 
-import Css.Animation as Animation exposing (animation)
-import Css.Color as Color
+import Css.Animation as Animation
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Transition as Transition
 import Html exposing (Html, div)
-import Html.Attributes
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)

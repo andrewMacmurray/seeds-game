@@ -1,6 +1,5 @@
 module Board.Generate exposing
-    ( addBlock
-    , generateEnteringTiles
+    ( generateEnteringTiles
     , generateInitialTiles
     , generateRandomSeedType
     , insertNewEnteringTiles
@@ -84,11 +83,6 @@ getEmptyCoords =
 filterEmpties : Board -> Board
 filterEmpties =
     Board.filterBlocks Block.isEmpty
-
-
-addBlock : Coord -> Tile -> Board -> Board
-addBlock coord tileType =
-    Board.placeAt coord <| Block.static tileType
 
 
 mono : Tile -> Board.Size -> Board

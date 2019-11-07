@@ -10,9 +10,7 @@ module Board.Tile exposing
     , clearBurstType
     , get
     , growLeavingBurstToSeed
-    , growSeedPod
     , growingOrder
-    , hasLine
     , hash
     , isBurst
     , isCollectible
@@ -165,25 +163,6 @@ isFalling tileState =
             False
 
 
-hasLine : State -> Bool
-hasLine tileState =
-    case tileState of
-        Dragging _ _ Left ->
-            True
-
-        Dragging _ _ Right ->
-            True
-
-        Dragging _ _ Up ->
-            True
-
-        Dragging _ _ Down ->
-            True
-
-        _ ->
-            False
-
-
 moveOrder : State -> Int
 moveOrder tileState =
     case tileState of
@@ -322,16 +301,6 @@ setGrowingToStatic tileState =
     case tileState of
         Growing (Seed seed) _ ->
             Static (Seed seed)
-
-        x ->
-            x
-
-
-growSeedPod : Seed.Seed -> State -> State
-growSeedPod seed tileState =
-    case tileState of
-        Growing SeedPod n ->
-            Growing (Seed seed) n
 
         x ->
             x

@@ -2,7 +2,7 @@ module Views.InfoWindow exposing (infoContainer, infoContainerBaseClasses, infoC
 
 import Css.Animation exposing (animation, cubicBezier, ease, linear)
 import Css.Color exposing (..)
-import Css.Style as Style exposing (..)
+import Css.Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import InfoWindow exposing (..)
