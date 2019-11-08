@@ -11,7 +11,7 @@ import Css.Transition as Transition
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
-import Views.Flowers.Cornflower as Cornflower
+import Views.Flower.Cornflower as Cornflower
 import Views.Landscape.RollingHills as Hills
 import Window exposing (Window)
 

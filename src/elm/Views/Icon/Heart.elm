@@ -1,4 +1,4 @@
-module Views.Icons.Heart exposing (alive, beating, beatingAnimation, breaking, broken)
+module Views.Icon.Heart exposing (alive, beating, beatingAnimation, breaking, broken)
 
 import Css.Animation as Animation
 import Css.Color exposing (..)

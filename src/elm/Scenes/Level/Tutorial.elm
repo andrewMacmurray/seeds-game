@@ -27,11 +27,11 @@ import Css.Color as Color
 import Css.Style as Style
 import Html exposing (Html)
 import Html.Attributes as Attribute
+import Scenes.Level.Board.Style as Board
+import Scenes.Level.Board.Tile.Style as Tile
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
 import Utils.Svg exposing (..)
-import Views.Board.Style as Board
-import Views.Board.Tile.Style as Tile
 import Window exposing (Window)
 
 

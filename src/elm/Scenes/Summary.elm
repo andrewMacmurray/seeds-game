@@ -29,9 +29,9 @@ import Seed exposing (Seed(..))
 import Sine
 import Svg exposing (Svg)
 import Utils.Delay exposing (after, sequence, trigger)
-import Views.Icons.RainBank exposing (..)
-import Views.Icons.SeedBank exposing (seedBank)
-import Views.Icons.SunBank exposing (sunBank, sunBankFull)
+import Views.Icon.RainBank exposing (..)
+import Views.Icon.SeedBank exposing (seedBank)
+import Views.Icon.SunBank exposing (sunBank, sunBankFull)
 import Views.Seed as Seed
 import Window exposing (Window)
 

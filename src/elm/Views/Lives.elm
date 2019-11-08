@@ -5,7 +5,7 @@ import Css.Transform exposing (scale)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Lives
-import Views.Icons.Heart as Heart
+import Views.Icon.Heart as Heart
 
 
 

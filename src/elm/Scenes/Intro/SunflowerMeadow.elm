@@ -11,7 +11,7 @@ import Html exposing (Html, div)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
-import Views.Flowers.Sunflower as Sunflower
+import Views.Flower.Sunflower as Sunflower
 import Views.Landscape.RollingHills as Hills
 import Window exposing (Window)
 

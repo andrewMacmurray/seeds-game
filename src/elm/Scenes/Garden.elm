@@ -29,8 +29,8 @@ import Scenes.Summary.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Task exposing (Task)
 import Utils.Delay exposing (after)
-import Views.Flowers.All exposing (renderFlower)
-import Views.Icons.Cross exposing (cross)
+import Views.Flower as Flower
+import Views.Icon.Cross exposing (cross)
 import Views.Menu as Menu
 import Views.Seed as Seed
 import Views.Seed.Mono exposing (greyedOutSeed)
@@ -309,8 +309,8 @@ flowers seed =
 
 
 flower : Float -> Seed -> Html msg
-flower size seed =
-    sized size <| renderFlower seed
+flower size =
+    sized size << Flower.view
 
 
 sized : Float -> Html msg -> Html msg

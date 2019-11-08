@@ -33,8 +33,8 @@ import Sine
 import Task exposing (Task)
 import Utils.Attribute as Attribute
 import Utils.Delay exposing (sequence)
-import Views.Icons.Heart as Heart
-import Views.Icons.Triangle exposing (triangle)
+import Views.Icon.Heart as Heart
+import Views.Icon.Triangle exposing (triangle)
 import Views.InfoWindow exposing (infoContainer)
 import Views.Lives as Lives
 import Views.Menu as Menu

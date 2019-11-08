@@ -1,4 +1,4 @@
-module Views.Flowers.Sunflower exposing
+module Views.Flower.Sunflower exposing
     ( animated
     , static
     )

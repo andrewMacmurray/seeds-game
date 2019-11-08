@@ -1,4 +1,4 @@
-module Views.Icons.Triangle exposing (triangle)
+module Views.Icon.Triangle exposing (triangle)
 
 import Css.Color exposing (lightGold)
 import Svg exposing (Svg)

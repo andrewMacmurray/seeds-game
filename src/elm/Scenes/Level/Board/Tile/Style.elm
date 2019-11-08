@@ -1,4 +1,4 @@
-module Views.Board.Tile.Style exposing
+module Scenes.Level.Board.Tile.Style exposing
     ( baseClasses
     , burstStyles
     , centerBlock

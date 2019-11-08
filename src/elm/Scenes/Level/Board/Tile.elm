@@ -1,4 +1,4 @@
-module Views.Board.Tile exposing (view)
+module Scenes.Level.Board.Tile exposing (view)
 
 import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
@@ -6,8 +6,8 @@ import Board.Tile as Tile exposing (Tile)
 import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Views.Board.Tile.Style as Tile exposing (..)
-import Views.Icons.Burst as Burst
+import Scenes.Level.Board.Tile.Style as Tile exposing (..)
+import Views.Icon.Burst as Burst
 import Views.Seed as Seed
 import Window exposing (Window)
 

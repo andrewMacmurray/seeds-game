@@ -1,4 +1,4 @@
-module Views.Icons.Cog exposing (cog)
+module Views.Icon.Cog exposing (cog)
 
 import Css.Color as Color
 import Css.Style as Style

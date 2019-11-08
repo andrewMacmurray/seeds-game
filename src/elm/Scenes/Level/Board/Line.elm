@@ -1,13 +1,13 @@
-module Views.Board.Line exposing (renderLine)
+module Scenes.Level.Board.Line exposing (renderLine)
 
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Bearing(..), State(..), Tile)
 import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
 import Html exposing (Html, div, span)
+import Scenes.Level.Board.Tile.Style as Tile
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Views.Board.Tile.Style as Tile
 import Window exposing (Window)
 
 

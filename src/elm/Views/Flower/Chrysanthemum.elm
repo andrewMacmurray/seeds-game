@@ -1,4 +1,4 @@
-module Views.Flowers.Chrysanthemum exposing (animated, static)
+module Views.Flower.Chrysanthemum exposing (animated, static)
 
 import Css.Animation as Animation
 import Css.Style as Style

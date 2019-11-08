@@ -17,7 +17,7 @@ import Html.Attributes exposing (attribute, class, href, target)
 import Html.Events exposing (onClick)
 import Pointer exposing (onPointerUp)
 import Utils.Attribute as Attribute
-import Views.Icons.Cog exposing (cog)
+import Views.Icon.Cog exposing (cog)
 
 
 

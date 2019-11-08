@@ -1,4 +1,4 @@
-module Views.Flowers.Cornflower exposing (animated, static)
+module Views.Flower.Cornflower exposing (animated, static)
 
 import Css.Animation as Animation
 import Css.Style as Style

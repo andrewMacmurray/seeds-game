@@ -1,4 +1,4 @@
-module Views.Icons.SunBank exposing (sunBank, sunBankFull, sunPath)
+module Views.Icon.SunBank exposing (sunBank, sunBankFull, sunPath)
 
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)

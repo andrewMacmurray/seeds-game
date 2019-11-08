@@ -1,4 +1,4 @@
-module Views.Icons.Cross exposing (cross)
+module Views.Icon.Cross exposing (cross)
 
 import Css.Color as Color
 import Svg exposing (Svg)

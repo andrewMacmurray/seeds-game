@@ -11,7 +11,7 @@ import Css.Transition as Transition exposing (cubicBezier, delay, easeOut, linea
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
-import Views.Flowers.Sunflower as Sunflower
+import Views.Flower.Sunflower as Sunflower
 import Views.Landscape.SteepHills as Hills
 import Window exposing (Window)
 

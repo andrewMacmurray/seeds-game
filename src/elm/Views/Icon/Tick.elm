@@ -1,4 +1,4 @@
-module Views.Icons.Tick exposing (tick, tickBackground)
+module Views.Icon.Tick exposing (tick, tickBackground)
 
 import Css.Color exposing (white)
 import Html exposing (Html)

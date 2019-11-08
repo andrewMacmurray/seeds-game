@@ -10,11 +10,11 @@ import Css.Color as Color
 import Css.Style as Style
 import Html exposing (Html, span)
 import Pointer exposing (Pointer)
+import Scenes.Level.Board.Style as Board
+import Scenes.Level.Board.Tile.Style exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (height_, width_, windowViewBox_)
-import Views.Board.Style as Board
-import Views.Board.Tile.Style exposing (..)
 import Window exposing (Window)
 
 

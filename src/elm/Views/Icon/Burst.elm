@@ -1,4 +1,4 @@
-module Views.Icons.Burst exposing
+module Views.Icon.Burst exposing
     ( active
     , inactive
     )

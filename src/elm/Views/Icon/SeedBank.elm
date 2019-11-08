@@ -1,4 +1,4 @@
-module Views.Icons.SeedBank exposing (seedBank)
+module Views.Icon.SeedBank exposing (seedBank)
 
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)

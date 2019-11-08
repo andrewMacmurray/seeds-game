@@ -14,11 +14,11 @@ import Css.Transition exposing (transitionAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
+import Scenes.Level.Board.Style as Board
 import Svg exposing (Svg)
-import Views.Board.Style as Board
-import Views.Icons.RainBank exposing (rainBankFull)
-import Views.Icons.SunBank exposing (sunBankFull)
-import Views.Icons.Tick exposing (tickBackground)
+import Views.Icon.RainBank exposing (rainBankFull)
+import Views.Icon.SunBank exposing (sunBankFull)
+import Views.Icon.Tick exposing (tickBackground)
 import Views.Seed as Seed
 import Window exposing (Window)
 

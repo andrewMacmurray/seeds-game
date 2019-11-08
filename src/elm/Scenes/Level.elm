@@ -37,6 +37,9 @@ import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
+import Scenes.Level.Board.Line exposing (renderLine)
+import Scenes.Level.Board.Style as Board
+import Scenes.Level.Board.Tile as Tile
 import Scenes.Level.LineDrag as LineDrag exposing (ViewModel)
 import Scenes.Level.TopBar as TopBar
 import Scenes.Level.Tutorial as Tutorial
@@ -44,9 +47,6 @@ import Seed exposing (Seed)
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay exposing (sequence, trigger)
 import Utils.Dict exposing (indexedDictFrom)
-import Views.Board.Line exposing (renderLine)
-import Views.Board.Style as Board
-import Views.Board.Tile as Tile
 import Views.InfoWindow
 import Views.Menu as Menu
 

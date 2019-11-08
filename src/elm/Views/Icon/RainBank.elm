@@ -1,4 +1,4 @@
-module Views.Icons.RainBank exposing (rainBank, rainBankFull)
+module Views.Icon.RainBank exposing (rainBank, rainBankFull)
 
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)

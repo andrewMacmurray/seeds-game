@@ -1,14 +1,14 @@
-module Views.Flowers.All exposing (renderFlower)
+module Views.Flower exposing (view)
 
 import Seed exposing (Seed(..))
 import Svg exposing (Svg)
-import Views.Flowers.Chrysanthemum as Chrysanthemum
-import Views.Flowers.Cornflower as Cornflower
-import Views.Flowers.Sunflower as Sunflower
+import Views.Flower.Chrysanthemum as Chrysanthemum
+import Views.Flower.Cornflower as Cornflower
+import Views.Flower.Sunflower as Sunflower
 
 
-renderFlower : Seed -> Svg msg
-renderFlower seed =
+view : Seed -> Svg msg
+view seed =
     case seed of
         Sunflower ->
             Sunflower.static
