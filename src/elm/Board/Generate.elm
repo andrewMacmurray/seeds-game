@@ -3,7 +3,6 @@ module Board.Generate exposing
     , board
     , enteringTiles
     , insertEnteringTiles
-    , insertGrowingSeeds
     , randomSeedType
     )
 
@@ -18,24 +17,7 @@ import Seed exposing (Seed)
 
 
 
--- Growing Tiles
-
-
-insertGrowingSeeds : Seed.Seed -> Board -> Board
-insertGrowingSeeds seed board_ =
-    let
-        seedsToAdd =
-            board_
-                |> filterGrowing
-                |> Board.moves
-                |> List.map (setGrowingSeed seed)
-    in
-    Board.placeMoves board_ seedsToAdd
-
-
-setGrowingSeed : Seed -> Move -> Move
-setGrowingSeed seed =
-    Move.updateBlock (Space << Growing (Seed seed) << Block.growingOrder)
+-- Random Seeds
 
 
 randomSeedType : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
@@ -43,9 +25,16 @@ randomSeedType msg =
     seedTypeGenerator >> Random.generate msg
 
 
-filterGrowing : Board -> Board
-filterGrowing =
-    Board.filterBlocks Block.isGrowing
+seedTypeGenerator : List Tile.Setting -> Generator Seed
+seedTypeGenerator =
+    filterSeedSettings
+        >> tileGenerator
+        >> Random.map (Tile.seedType >> Maybe.withDefault Seed.Sunflower)
+
+
+filterSeedSettings : List Tile.Setting -> List Tile.Setting
+filterSeedSettings =
+    List.filter (.tileType >> Tile.isSeed)
 
 
 
@@ -129,18 +118,6 @@ board msg tileSettings ({ x, y } as boardSize) =
     Random.list (x * y) (tileGenerator tileSettings)
         |> Random.map (Board.fromTiles boardSize)
         |> Random.generate msg
-
-
-seedTypeGenerator : List Tile.Setting -> Generator Seed
-seedTypeGenerator =
-    filterSeedSettings
-        >> tileGenerator
-        >> Random.map (Tile.seedType >> Maybe.withDefault Seed.Sunflower)
-
-
-filterSeedSettings : List Tile.Setting -> List Tile.Setting
-filterSeedSettings =
-    List.filter (.tileType >> Tile.isSeed)
 
 
 tileGenerator : List Tile.Setting -> Generator Tile

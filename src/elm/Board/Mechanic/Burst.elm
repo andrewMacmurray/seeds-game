@@ -1,14 +1,16 @@
 module Board.Mechanic.Burst exposing
-    ( activate
-    , handleAddToBoard
+    ( burst
+    , drag
     , isValidNextMove
-    , shouldActivate
+    , reset
+    , shouldBurst
     )
 
 import Board exposing (Board)
 import Board.Block as Block
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
+import Board.Move.Check as Check
 import Board.Tile exposing (State(..), Tile)
 
 
@@ -17,7 +19,7 @@ import Board.Tile exposing (State(..), Tile)
 
 
 isValidNextMove : Move -> Board -> Bool
-isValidNextMove curr board =
+isValidNextMove move board =
     let
         last =
             Board.lastMove board
@@ -26,14 +28,12 @@ isValidNextMove curr board =
             Board.activeMoveType board == Nothing
 
         isValidMoveAfterBurst =
-            isBurst last && Board.activeMoveType board == Move.tile curr
+            isBurst last && Board.activeMoveType board == Move.tile move
 
-        inCurrentMoves =
-            Board.isActiveMove curr board
+        isNewNeighbour =
+            Check.isNewNeighbour move board
     in
-    (isBurst curr || isValidMoveAfterBurst || burstTypeNotSet)
-        && Move.areNeighbours curr last
-        && not inCurrentMoves
+    (isBurst move || isValidMoveAfterBurst || burstTypeNotSet) && isNewNeighbour
 
 
 isBurst : Move -> Bool
@@ -42,14 +42,12 @@ isBurst =
 
 
 
--- Add to Board
+-- Drag
 
 
-handleAddToBoard : Board.Size -> Board -> Board
-handleAddToBoard boardSize board =
-    board
-        |> handleAddBurstType
-        |> addActiveTiles boardSize
+drag : Board.Size -> Board -> Board
+drag boardSize =
+    handleAddBurstType >> addActiveTiles boardSize
 
 
 handleAddBurstType : Board -> Board
@@ -108,16 +106,16 @@ addActiveTiles boardSize board =
 
 
 
--- Activate
+-- Burst
 
 
-shouldActivate : Board -> Bool
-shouldActivate =
+shouldBurst : Board -> Bool
+shouldBurst =
     Board.activeMoves >> List.any (Move.block >> Block.isBurst)
 
 
-activate : Board -> Board
-activate board =
+burst : Board -> Board
+burst board =
     let
         burstCoords =
             coordinates board
@@ -163,3 +161,12 @@ coordinates =
     Board.activeMoves
         >> List.filter (Move.block >> Block.isBurst)
         >> List.map Move.coord
+
+
+
+-- Reset
+
+
+reset : Board -> Board
+reset =
+    Board.updateBlocks Block.clearBurstType

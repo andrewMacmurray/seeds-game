@@ -16,10 +16,11 @@ import Board.Coord exposing (Coord)
 import Board.Falling exposing (..)
 import Board.Generate as Generate exposing (..)
 import Board.Mechanic.Burst as Burst
+import Board.Mechanic.Pod as Pod
 import Board.Move as Move exposing (Move)
 import Board.Move.Move as Move
 import Board.Scores as Scores exposing (Scores)
-import Board.Shift exposing (shiftBoard)
+import Board.Shift as Board
 import Board.Tile as Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
 import Config.Level as Level
@@ -91,7 +92,7 @@ type Msg
     | InsertEnteringTiles (List Tile)
     | ResetEntering
     | ShiftBoard
-    | ResetMove
+    | EndMove
     | CheckLevelComplete
     | ShowInfo Info
     | HideInfo
@@ -218,57 +219,34 @@ update msg model =
             continue model [ stopMoveSequence model ]
 
         ReleaseTile ->
-            continue
-                (model
-                    |> stopDrag
-                    |> handleResetTutorial
-                    |> updateBlocks Block.setDraggingToStatic
-                )
-                []
+            continue (releaseTiles model) []
 
         SetLeavingTiles ->
-            continue
-                (model
-                    |> handleAddScore
-                    |> updateBlocks Block.setDraggingToLeaving
-                    |> updateBlocks Block.clearBurstType
-                )
-                []
+            continue (setLeavingTiles model) []
 
         SetFallingTiles ->
             continue (updateBoard setFallingTiles model) []
 
         ShiftBoard ->
-            continue
-                (model
-                    |> updateBoard shiftBoard
-                    |> updateBlocks Block.setFallingToStatic
-                    |> updateBlocks Block.setLeavingToEmpty
-                )
-                []
+            continue (shiftBoard model) []
 
         SetGrowingSeedPods ->
-            continue (updateBlocks Block.setDraggingToGrowing model) []
+            continue (updateBoard Pod.growPods model) []
 
         GrowPodsToSeeds ->
             continue model [ Generate.randomSeedType AddGrowingSeeds model.tileSettings ]
 
         AddGrowingSeeds seed ->
-            continue
-                (model
-                    |> handleInsertNewSeeds seed
-                    |> growLeavingBurstsToSeeds seed
-                )
-                []
+            continue (updateBoard (Pod.growSeeds seed) model) []
 
         ResetGrowingSeeds ->
-            continue (updateBlocks Block.setGrowingToStatic model) []
+            continue (updateBoard Pod.reset model) []
 
         GenerateEnteringTiles generateSetting ->
             continue model [ generateEnteringTiles generateSetting model.board model.tileSettings ]
 
         BurstTiles ->
-            continue (updateBoard Burst.activate model) []
+            continue (updateBoard Burst.burst model) []
 
         InsertEnteringTiles tiles ->
             continue (insertEnteringTiles tiles model) []
@@ -276,13 +254,8 @@ update msg model =
         ResetEntering ->
             continue (updateBlocks Block.setEnteringToStatic model) []
 
-        ResetMove ->
-            continue
-                (model
-                    |> stopDrag
-                    |> handleDecrementRemainingMoves
-                )
-                []
+        EndMove ->
+            continue (endMove model) []
 
         StartMove move pointer ->
             continue (handleStartMove move pointer model) []
@@ -343,10 +316,10 @@ stopMoveSequence model =
     if shouldRelease model.board then
         Delay.trigger ReleaseTile
 
-    else if Burst.shouldActivate model.board then
+    else if Burst.shouldBurst model.board then
         burstSequence moveTileType
 
-    else if shouldGrowSeedPods moveTileType then
+    else if Pod.shouldGrow model.board then
         growSeedPodsSequence
 
     else
@@ -366,15 +339,10 @@ shouldRelease board =
     List.length (Board.activeMoves board) == 1
 
 
-shouldGrowSeedPods : Maybe Tile -> Bool
-shouldGrowSeedPods moveTileType =
-    moveTileType == Just SeedPod
-
-
 growSeedPodsSequence : Cmd Msg
 growSeedPodsSequence =
     Delay.sequence
-        [ ( 0, ResetMove )
+        [ ( 0, EndMove )
         , ( 0, SetGrowingSeedPods )
         , ( 800, GrowPodsToSeeds )
         , ( 0, CheckLevelComplete )
@@ -386,7 +354,7 @@ growSeedPodsSequence =
 removeTilesSequence : Generate.Setting -> Cmd Msg
 removeTilesSequence enteringTiles =
     Delay.sequence
-        [ ( 0, ResetMove )
+        [ ( 0, EndMove )
         , ( 0, SetLeavingTiles )
         , ( 350, SetFallingTiles )
         , ( 500, ShiftBoard )
@@ -402,7 +370,7 @@ burstTilesSequence moveType generateSetting =
     case moveType of
         Just SeedPod ->
             Delay.sequence
-                [ ( 0, ResetMove )
+                [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetGrowingSeedPods )
                 , ( 800, GrowPodsToSeeds )
@@ -413,7 +381,7 @@ burstTilesSequence moveType generateSetting =
 
         _ ->
             Delay.sequence
-                [ ( 0, ResetMove )
+                [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetLeavingTiles )
                 , ( 550, SetFallingTiles )
@@ -505,9 +473,51 @@ insertEnteringTiles =
     updateBoard << Generate.insertEnteringTiles
 
 
-handleInsertNewSeeds : Seed -> HasBoard model -> HasBoard model
-handleInsertNewSeeds =
-    updateBoard << Generate.insertGrowingSeeds
+
+-- End Move
+
+
+endMove : Model -> Model
+endMove =
+    stopDrag >> decrementRemainingMoves
+
+
+
+-- Release
+
+
+releaseTiles : Model -> Model
+releaseTiles =
+    stopDrag
+        >> handleResetTutorial
+        >> updateBlocks Block.setDraggingToStatic
+
+
+
+-- Shift
+
+
+shiftBoard : Model -> Model
+shiftBoard =
+    updateBoard Board.shift
+        >> updateBlocks Block.setFallingToStatic
+        >> updateBlocks Block.setLeavingToEmpty
+
+
+
+-- Leaving
+
+
+setLeavingTiles : Model -> Model
+setLeavingTiles =
+    addScores
+        >> updateBlocks Block.setDraggingToLeaving
+        >> updateBoard Burst.reset
+
+
+addScores : Model -> Model
+addScores model =
+    { model | scores = Scores.addScoreFromMoves model.board model.scores }
 
 
 
@@ -540,21 +550,7 @@ handleTutorialStep model =
 
 
 
--- Pods
-
-
-growLeavingBurstsToSeeds : Seed -> HasBoard model -> HasBoard model
-growLeavingBurstsToSeeds seed =
-    updateBlocks (Block.growLeavingBurstToSeed seed)
-
-
-
 -- Moves
-
-
-handleAddScore : Model -> Model
-handleAddScore model =
-    { model | scores = Scores.addScoreFromMoves model.board model.scores }
 
 
 stopDrag : Model -> Model
@@ -562,8 +558,8 @@ stopDrag model =
     { model | isDragging = False }
 
 
-handleDecrementRemainingMoves : Model -> Model
-handleDecrementRemainingMoves model =
+decrementRemainingMoves : Model -> Model
+decrementRemainingMoves model =
     if model.remainingMoves < 1 then
         { model | remainingMoves = 0 }
 
@@ -575,7 +571,7 @@ handleStartMove : Move -> Pointer -> Model -> Model
 handleStartMove move pointer model =
     { model
         | isDragging = True
-        , board = Move.addToBoard move model.board
+        , board = Move.drag move model.board
         , pointer = pointer
         , tutorial = Tutorial.hideStep model.tutorial
     }
@@ -595,15 +591,15 @@ handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
         model
-            |> updateBoard (Move.addToBoard move)
-            |> updateBoard (Burst.handleAddToBoard model.boardSize)
+            |> updateBoard (Move.drag move)
+            |> updateBoard (Burst.drag model.boardSize)
 
     else
         model
 
 
 
--- Get Move from position
+-- Move from position
 
 
 moveFromPosition : Pointer -> Model -> Maybe Move

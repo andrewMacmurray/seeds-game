@@ -4,7 +4,7 @@ import Board exposing (Board)
 import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Shift as Shift
+import Board.Shift as Board
 
 
 setFallingTiles : Board -> Board
@@ -14,7 +14,7 @@ setFallingTiles board =
             Board.update (temporaryMarkFalling board) board
 
         shiftedBoard =
-            Shift.shiftBoard beforeBoard
+            Board.shift beforeBoard
 
         fallingTilesToUpdate =
             newFallingTiles beforeBoard shiftedBoard
@@ -54,7 +54,7 @@ addFallingDistance move1 move2 =
 fallingTiles : Board -> List Move
 fallingTiles =
     Board.filterBlocks Block.isFalling
-        >> Shift.groupBoardByColumn
+        >> Board.groupBoardByColumn
         >> List.map (List.sortBy Move.y)
         >> List.concat
 
