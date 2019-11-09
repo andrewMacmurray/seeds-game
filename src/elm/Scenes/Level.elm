@@ -71,13 +71,6 @@ type alias Model =
     }
 
 
-type alias InitConfig =
-    { walls : List Wall.Config
-    , startTiles : List Start.Tile
-    , randomTiles : List Tile
-    }
-
-
 type Msg
     = BoardGenerated Level.LevelConfig Board
     | StartTutorial
@@ -94,7 +87,7 @@ type Msg
     | AddGrowingSeeds Seed.Seed
     | ResetGrowingSeeds
     | BurstTiles
-    | GenerateEnteringTiles RandomSetting
+    | GenerateEnteringTiles Generate.Setting
     | InsertEnteringTiles (List Tile)
     | ResetEntering
     | ShiftBoard
@@ -128,11 +121,6 @@ type Info
     | NoMovesLeft
     | RestartAreYouSure
     | ExitAreYouSure
-
-
-type RandomSetting
-    = AllTiles
-    | AllButTileType Tile
 
 
 
@@ -263,7 +251,7 @@ update msg model =
             continue (updateBlocks Block.setDraggingToGrowing model) []
 
         GrowPodsToSeeds ->
-            continue model [ generateRandomSeedType AddGrowingSeeds model.tileSettings ]
+            continue model [ Generate.randomSeedType AddGrowingSeeds model.tileSettings ]
 
         AddGrowingSeeds seed ->
             continue
@@ -276,14 +264,14 @@ update msg model =
         ResetGrowingSeeds ->
             continue (updateBlocks Block.setGrowingToStatic model) []
 
-        GenerateEnteringTiles moveType ->
-            continue model [ handleGenerateEnteringTiles moveType model.board model.tileSettings ]
+        GenerateEnteringTiles generateSetting ->
+            continue model [ generateEnteringTiles generateSetting model.board model.tileSettings ]
 
         BurstTiles ->
             continue (updateBoard Burst.activate model) []
 
         InsertEnteringTiles tiles ->
-            continue (handleInsertEnteringTiles tiles model) []
+            continue (insertEnteringTiles tiles model) []
 
         ResetEntering ->
             continue (updateBlocks Block.setEnteringToStatic model) []
@@ -303,7 +291,7 @@ update msg model =
             continue (checkMoveFromPosition pointer model) []
 
         CheckLevelComplete ->
-            handleCheckLevelComplete model
+            checkLevelComplete model
 
         HideInfo ->
             continue model [ hideInfoSequence ]
@@ -355,21 +343,21 @@ stopMoveSequence model =
     if shouldRelease model.board then
         Delay.trigger ReleaseTile
 
-    else if shouldBurst model.board then
+    else if Burst.shouldActivate model.board then
         burstSequence moveTileType
 
     else if shouldGrowSeedPods moveTileType then
         growSeedPodsSequence
 
     else
-        removeTilesSequence AllTiles
+        removeTilesSequence Generate.All
 
 
 burstSequence : Maybe Tile -> Cmd Msg
 burstSequence moveType =
     moveType
-        |> Maybe.map AllButTileType
-        |> Maybe.withDefault AllTiles
+        |> Maybe.map Generate.Filtered
+        |> Maybe.withDefault Generate.All
         |> burstTilesSequence moveType
 
 
@@ -381,11 +369,6 @@ shouldRelease board =
 shouldGrowSeedPods : Maybe Tile -> Bool
 shouldGrowSeedPods moveTileType =
     moveTileType == Just SeedPod
-
-
-shouldBurst : Board -> Bool
-shouldBurst =
-    Board.activeMoves >> List.any (Move.block >> Block.isBurst)
 
 
 growSeedPodsSequence : Cmd Msg
@@ -400,7 +383,7 @@ growSeedPodsSequence =
         ]
 
 
-removeTilesSequence : RandomSetting -> Cmd Msg
+removeTilesSequence : Generate.Setting -> Cmd Msg
 removeTilesSequence enteringTiles =
     Delay.sequence
         [ ( 0, ResetMove )
@@ -414,8 +397,8 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : Maybe Tile -> RandomSetting -> Cmd Msg
-burstTilesSequence moveType enteringTiles =
+burstTilesSequence : Maybe Tile -> Generate.Setting -> Cmd Msg
+burstTilesSequence moveType generateSetting =
     case moveType of
         Just SeedPod ->
             Delay.sequence
@@ -436,7 +419,7 @@ burstTilesSequence moveType enteringTiles =
                 , ( 550, SetFallingTiles )
                 , ( 500, ShiftBoard )
                 , ( 0, CheckLevelComplete )
-                , ( 0, GenerateEnteringTiles enteringTiles )
+                , ( 0, GenerateEnteringTiles generateSetting )
                 , ( 500, ResetEntering )
                 , ( 500, NextTutorialStep )
                 ]
@@ -495,7 +478,7 @@ generateBoard config { boardSize } =
     Generate.board (BoardGenerated config) config.tileSettings boardSize
 
 
-initBoard : Level.LevelConfig -> Board -> HasBoard model -> HasBoard b
+initBoard : Level.LevelConfig -> Board -> HasBoard model -> HasBoard model
 initBoard config board model =
     model
         |> updateBoard (always board)
@@ -509,43 +492,17 @@ addStartTiles startTiles board =
 
 
 
--- Generate Entering
+-- Entering Tiles
 
 
-handleGenerateEnteringTiles : RandomSetting -> Board -> List Tile.Setting -> Cmd Msg
-handleGenerateEnteringTiles enteringTiles board tileSettings =
-    case enteringTiles of
-        AllTiles ->
-            generateEntering board tileSettings
-
-        AllButTileType tileType ->
-            generateEnteringTilesWithoutTileType tileType board tileSettings
-
-
-generateEnteringTilesWithoutTileType : Tile -> Board -> List Tile.Setting -> Cmd Msg
-generateEnteringTilesWithoutTileType tileType board tileSettings =
-    if List.length tileSettings == 1 then
-        generateEntering board tileSettings
-
-    else
-        tileType
-            |> filterSettings tileSettings
-            |> generateEntering board
-
-
-generateEntering : Board -> List Tile.Setting -> Cmd Msg
-generateEntering =
+generateEnteringTiles : Generate.Setting -> Board -> List Tile.Setting -> Cmd Msg
+generateEnteringTiles =
     Generate.enteringTiles InsertEnteringTiles
 
 
-filterSettings : List Tile.Setting -> Tile -> List Tile.Setting
-filterSettings settings tile =
-    List.filter (\setting -> setting.tileType /= tile) settings
-
-
-handleInsertEnteringTiles : List Tile -> HasBoard model -> HasBoard model
-handleInsertEnteringTiles tiles =
-    updateBoard <| Generate.insertEnteringTiles tiles
+insertEnteringTiles : List Tile -> HasBoard model -> HasBoard model
+insertEnteringTiles =
+    updateBoard << Generate.insertEnteringTiles
 
 
 handleInsertNewSeeds : Seed -> HasBoard model -> HasBoard model
@@ -688,8 +645,8 @@ coordsFromPosition pointer model =
 -- Level End
 
 
-handleCheckLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
-handleCheckLevelComplete model =
+checkLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
+checkLevelComplete model =
     let
         disableMenu =
             updateContext Context.disableMenu

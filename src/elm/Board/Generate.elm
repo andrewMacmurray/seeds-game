@@ -1,10 +1,10 @@
 module Board.Generate exposing
-    ( board
+    ( Setting(..)
+    , board
     , enteringTiles
-    , generateRandomSeedType
     , insertEnteringTiles
     , insertGrowingSeeds
-    , mono
+    , randomSeedType
     )
 
 import Board exposing (Board)
@@ -38,8 +38,8 @@ setGrowingSeed seed =
     Move.updateBlock (Space << Growing (Seed seed) << Block.growingOrder)
 
 
-generateRandomSeedType : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
-generateRandomSeedType msg =
+randomSeedType : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
+randomSeedType msg =
     seedTypeGenerator >> Random.generate msg
 
 
@@ -49,22 +49,42 @@ filterGrowing =
 
 
 
--- Entering Tiles
+-- Generate Entering Tiles
 
 
-insertEnteringTiles : List Tile -> Board -> Board
-insertEnteringTiles newTiles board_ =
-    let
-        tilesToAdd =
-            board_
-                |> getEmptyCoords
-                |> List.map2 (\tile coord -> Move.move coord (Space <| Entering tile)) newTiles
-    in
-    Board.placeMoves board_ tilesToAdd
+type Setting
+    = All
+    | Filtered Tile
 
 
-enteringTiles : (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
-enteringTiles msg board_ tileSettings =
+enteringTiles : (List Tile -> msg) -> Setting -> Board -> List Tile.Setting -> Cmd msg
+enteringTiles msg setting board_ tileSettings =
+    case setting of
+        All ->
+            generateEntering msg board_ tileSettings
+
+        Filtered tile ->
+            filteredEnteringTiles msg tile board_ tileSettings
+
+
+filteredEnteringTiles : (List Tile -> msg) -> Tile -> Board -> List Tile.Setting -> Cmd msg
+filteredEnteringTiles msg tileType board_ tileSettings =
+    if List.length tileSettings == 1 then
+        generateEntering msg board_ tileSettings
+
+    else
+        tileSettings
+            |> withoutSettingFor tileType
+            |> generateEntering msg board_
+
+
+withoutSettingFor : Tile -> List Tile.Setting -> List Tile.Setting
+withoutSettingFor tile =
+    List.filter (\setting -> setting.tileType /= tile)
+
+
+generateEntering : (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
+generateEntering msg board_ tileSettings =
     tileGenerator tileSettings
         |> Random.list (numberOfEmpties board_)
         |> Random.generate msg
@@ -75,19 +95,29 @@ numberOfEmpties =
     filterEmpties >> Board.size
 
 
-getEmptyCoords : Board -> List Coord
-getEmptyCoords =
+
+-- Insert Entering Tiles
+
+
+insertEnteringTiles : List Tile -> Board -> Board
+insertEnteringTiles newTiles board_ =
+    let
+        tilesToAdd =
+            board_
+                |> emptyCoords
+                |> List.map2 (\tile coord -> Move.move coord (Space <| Entering tile)) newTiles
+    in
+    Board.placeMoves board_ tilesToAdd
+
+
+emptyCoords : Board -> List Coord
+emptyCoords =
     filterEmpties >> Board.coords
 
 
 filterEmpties : Board -> Board
 filterEmpties =
     Board.filterBlocks Block.isEmpty
-
-
-mono : Tile -> Board.Size -> Board
-mono tileType ({ x, y } as scale) =
-    Board.fromTiles scale <| List.repeat (x * y) tileType
 
 
 

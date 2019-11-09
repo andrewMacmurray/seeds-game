@@ -2,6 +2,7 @@ module Board.Mechanic.Burst exposing
     ( activate
     , handleAddToBoard
     , isValidNextMove
+    , shouldActivate
     )
 
 import Board exposing (Board)
@@ -108,6 +109,11 @@ addActiveTiles boardSize board =
 
 
 -- Activate
+
+
+shouldActivate : Board -> Bool
+shouldActivate =
+    Board.activeMoves >> List.any (Move.block >> Block.isBurst)
 
 
 activate : Board -> Board
