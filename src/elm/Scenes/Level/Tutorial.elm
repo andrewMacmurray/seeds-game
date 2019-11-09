@@ -27,6 +27,7 @@ import Css.Color as Color
 import Css.Style as Style
 import Html exposing (Html)
 import Html.Attributes as Attribute
+import Level.Setting.Tile as Tile
 import Scenes.Level.Board.Style as Board
 import Scenes.Level.Board.Tile.Style as Tile
 import Svg exposing (Svg)
@@ -74,6 +75,7 @@ type Highlight
 type alias ViewModel =
     { window : Window
     , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
     , tutorial : Tutorial
     }
 
@@ -227,6 +229,7 @@ highlightMultiple =
 type alias InternalViewModel =
     { window : Window
     , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
     , highlight : Highlight
     , visible : Bool
     , text : String
@@ -244,6 +247,7 @@ view model =
                 vm =
                     { window = model.window
                     , boardSize = model.boardSize
+                    , tileSettings = model.tileSettings
                     , text = config.text
                     , visible = c.visible
                     , highlight = config.highlight
@@ -501,4 +505,5 @@ boardViewModel : InternalViewModel -> Board.ViewModel
 boardViewModel model =
     { window = model.window
     , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
     }

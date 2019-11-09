@@ -9,6 +9,7 @@ import Board.Tile as Tile
 import Css.Color as Color
 import Css.Style as Style
 import Html exposing (Html, span)
+import Level.Setting.Tile as Tile
 import Pointer exposing (Pointer)
 import Scenes.Level.Board.Style as Board
 import Scenes.Level.Board.Tile.Style exposing (..)
@@ -21,6 +22,7 @@ import Window exposing (Window)
 type alias ViewModel =
     { window : Window
     , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
     , board : Board
     , isDragging : Bool
     , pointer : Pointer
@@ -111,4 +113,5 @@ boardViewModel : ViewModel -> Board.ViewModel
 boardViewModel model =
     { window = model.window
     , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
     }

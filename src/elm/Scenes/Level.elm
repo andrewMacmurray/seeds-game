@@ -749,6 +749,7 @@ tutorialViewModel : Model -> Tutorial.ViewModel
 tutorialViewModel model =
     { window = model.context.window
     , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
     , tutorial = model.tutorial
     }
 
@@ -778,11 +779,12 @@ renderTile model move =
         , attribute "touch-action" "none"
         ]
         [ Tile.view
-            { isBursting = isBursting model
-            , extraStyles = leavingStyles model move
+            { boardSize = model.boardSize
+            , window = model.context.window
+            , tileSettings = model.tileSettings
+            , isBursting = isBursting model
             , withTracer = True
             }
-            model.context.window
             move
         ]
 
@@ -822,11 +824,12 @@ renderCurrentMove : Model -> Move -> Html msg
 renderCurrentMove model move =
     if Block.isCurrentMove (Move.block move) && model.isDragging then
         Tile.view
-            { extraStyles = []
+            { boardSize = model.boardSize
+            , window = model.context.window
+            , tileSettings = model.tileSettings
             , isBursting = isBursting model
             , withTracer = False
             }
-            model.context.window
             move
 
     else
@@ -857,98 +860,6 @@ handleMoveEvents model move =
 mapTiles : (Move -> a) -> Board -> List a
 mapTiles f =
     Board.moves >> List.map f
-
-
-
--- Leaving Styles
-
-
-leavingStyles : Model -> Move -> List Style
-leavingStyles model move =
-    let
-        block =
-            Move.block move
-    in
-    if Block.isLeaving block && not (Block.isBurst block) then
-        [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
-        , opacity 0.2
-        , handleExitDirection move model
-        ]
-
-    else
-        []
-
-
-handleExitDirection : Move -> Model -> Style
-handleExitDirection move model =
-    case Block.tileState <| Move.block move of
-        Leaving Rain _ ->
-            getLeavingStyle Rain model
-
-        Leaving Sun _ ->
-            getLeavingStyle Sun model
-
-        Leaving (Seed seedType) _ ->
-            getLeavingStyle (Seed seedType) model
-
-        _ ->
-            Style.none
-
-
-getLeavingStyle : Tile -> Model -> Style
-getLeavingStyle tileType model =
-    newLeavingStyles model
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault Style.none
-
-
-newLeavingStyles : Model -> Dict.Dict String Style
-newLeavingStyles model =
-    model.tileSettings
-        |> Scores.tileTypes
-        |> List.indexedMap (prepareLeavingStyle model)
-        |> Dict.fromList
-
-
-prepareLeavingStyle : Model -> Int -> Tile -> ( String, Style )
-prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.hash tileType
-    , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYDistance (boardViewModel model))
-        , scale 0.5
-        ]
-    )
-
-
-exitXDistance : Int -> Model -> Float
-exitXDistance resourceBankIndex model =
-    let
-        scoreWidth =
-            Board.scoreIconSize * 2
-
-        scoreBarWidth =
-            model.tileSettings
-                |> List.filter Scores.collectible
-                |> List.length
-                |> (*) scoreWidth
-
-        baseOffset =
-            (Board.width (boardViewModel model) - scoreBarWidth) // 2
-
-        offset =
-            exitOffsetFunction <| Tile.scale model.context.window
-    in
-    toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
-
-
-exitOffsetFunction : Float -> Float
-exitOffsetFunction x =
-    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
-
-
-exitYDistance : Board.ViewModel -> Float
-exitYDistance model =
-    toFloat (Board.offsetTop model) - 9
 
 
 
@@ -1061,6 +972,7 @@ boardViewModel : Model -> Board.ViewModel
 boardViewModel model =
     { window = model.context.window
     , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
     }
 
 
@@ -1077,6 +989,7 @@ lineDragViewModel : Model -> LineDrag.ViewModel
 lineDragViewModel model =
     { window = model.context.window
     , board = model.board
+    , tileSettings = model.tileSettings
     , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer

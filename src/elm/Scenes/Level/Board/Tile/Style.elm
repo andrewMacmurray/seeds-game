@@ -23,7 +23,7 @@ module Scenes.Level.Board.Tile.Style exposing
 import Board.Block as Block exposing (Block(..))
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Tile)
+import Board.Tile as Tile exposing (State(..), Tile(..))
 import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style as Style exposing (..)

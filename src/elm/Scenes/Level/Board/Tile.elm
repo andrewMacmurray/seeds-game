@@ -1,26 +1,31 @@
 module Scenes.Level.Board.Tile exposing (view)
 
+import Board
 import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
 import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Level.Setting.Tile as Tile
+import Scenes.Level.Board.Style as Board exposing (leaving)
 import Scenes.Level.Board.Tile.Style as Tile exposing (..)
 import Views.Icon.Burst as Burst
 import Views.Seed as Seed
 import Window exposing (Window)
 
 
-type alias Settings =
-    { extraStyles : List Style
-    , isBursting : Bool
+type alias ViewModel =
+    { isBursting : Bool
+    , window : Window
     , withTracer : Bool
+    , tileSettings : List Tile.Setting
+    , boardSize : Board.Size
     }
 
 
-view : Settings -> Window -> Move -> Html msg
-view { extraStyles, isBursting, withTracer } window move =
+view : ViewModel -> Move -> Html msg
+view ({ window } as model) move =
     let
         coord =
             Move.coord move
@@ -29,12 +34,12 @@ view { extraStyles, isBursting, withTracer } window move =
         [ styles
             [ widthHeightStyles window
             , coordStyles window coord
-            , extraStyles
+            , leaving (boardViewModel model) move
             ]
         , class "dib absolute"
         ]
-        [ innerTile isBursting window move
-        , renderIf withTracer <| tracer window move
+        [ innerTile model.isBursting window move
+        , renderIf model.withTracer <| tracer window move
         , wall window move
         ]
 
@@ -136,3 +141,11 @@ renderBurst_ tile isBursting =
 
         Nothing ->
             Burst.inactive
+
+
+boardViewModel : ViewModel -> Board.ViewModel
+boardViewModel model =
+    { window = model.window
+    , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
+    }
