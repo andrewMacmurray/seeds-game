@@ -1,9 +1,9 @@
 module Board.Generate exposing
-    ( generateEnteringTiles
-    , generateInitialTiles
+    ( board
+    , enteringTiles
     , generateRandomSeedType
-    , insertNewEnteringTiles
-    , insertNewSeeds
+    , insertEnteringTiles
+    , insertGrowingSeeds
     , mono
     )
 
@@ -21,16 +21,16 @@ import Seed exposing (Seed)
 -- Growing Tiles
 
 
-insertNewSeeds : Seed -> Board -> Board
-insertNewSeeds seed board =
+insertGrowingSeeds : Seed.Seed -> Board -> Board
+insertGrowingSeeds seed board_ =
     let
         seedsToAdd =
-            board
+            board_
                 |> filterGrowing
                 |> Board.moves
                 |> List.map (setGrowingSeed seed)
     in
-    Board.placeMoves board seedsToAdd
+    Board.placeMoves board_ seedsToAdd
 
 
 setGrowingSeed : Seed -> Move -> Move
@@ -52,21 +52,21 @@ filterGrowing =
 -- Entering Tiles
 
 
-insertNewEnteringTiles : List Tile -> Board -> Board
-insertNewEnteringTiles newTiles board =
+insertEnteringTiles : List Tile -> Board -> Board
+insertEnteringTiles newTiles board_ =
     let
         tilesToAdd =
-            board
+            board_
                 |> getEmptyCoords
                 |> List.map2 (\tile coord -> Move.move coord (Space <| Entering tile)) newTiles
     in
-    Board.placeMoves board tilesToAdd
+    Board.placeMoves board_ tilesToAdd
 
 
-generateEnteringTiles : (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
-generateEnteringTiles msg board tileSettings =
+enteringTiles : (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
+enteringTiles msg board_ tileSettings =
     tileGenerator tileSettings
-        |> Random.list (numberOfEmpties board)
+        |> Random.list (numberOfEmpties board_)
         |> Random.generate msg
 
 
@@ -94,9 +94,10 @@ mono tileType ({ x, y } as scale) =
 -- Generate Board
 
 
-generateInitialTiles : (List Tile -> msg) -> List Tile.Setting -> Board.Size -> Cmd msg
-generateInitialTiles msg tileSettings { x, y } =
+board : (Board -> msg) -> List Tile.Setting -> Board.Size -> Cmd msg
+board msg tileSettings ({ x, y } as boardSize) =
     Random.list (x * y) (tileGenerator tileSettings)
+        |> Random.map (Board.fromTiles boardSize)
         |> Random.generate msg
 
 

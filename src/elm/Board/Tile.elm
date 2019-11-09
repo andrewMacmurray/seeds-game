@@ -53,8 +53,8 @@ import Window
 type Tile
     = Rain
     | Sun
-    | SeedPod
     | Seed Seed.Seed
+    | SeedPod
     | Burst (Maybe Tile)
 
 

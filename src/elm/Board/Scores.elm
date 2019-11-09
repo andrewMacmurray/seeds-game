@@ -61,13 +61,13 @@ addScoreFromMoves : Board -> Scores -> Scores
 addScoreFromMoves board scores =
     let
         tileType =
-            Board.currentTile board |> Maybe.withDefault SeedPod
+            Board.activeMoveType board |> Maybe.withDefault SeedPod
 
         isCollectible =
             Move.block >> Block.isCollectible
 
         scoreToAdd =
-            Board.currentMoves board
+            Board.activeMoves board
                 |> List.filter isCollectible
                 |> List.length
     in
