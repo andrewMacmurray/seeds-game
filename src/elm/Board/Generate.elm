@@ -57,14 +57,17 @@ enteringTiles msg setting board_ tileSettings =
 
 
 filteredEnteringTiles : (List Tile -> msg) -> Tile -> Board -> List Tile.Setting -> Cmd msg
-filteredEnteringTiles msg tileType board_ tileSettings =
+filteredEnteringTiles msg tile board_ tileSettings =
     if List.length tileSettings == 1 then
         generateEntering msg board_ tileSettings
 
     else
-        tileSettings
-            |> withoutSettingFor tileType
-            |> generateEntering msg board_
+        generateWithoutSettingFor tile msg board_ tileSettings
+
+
+generateWithoutSettingFor : Tile -> (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
+generateWithoutSettingFor tile msg board_ =
+    withoutSettingFor tile >> generateEntering msg board_
 
 
 withoutSettingFor : Tile -> List Tile.Setting -> List Tile.Setting
@@ -73,10 +76,10 @@ withoutSettingFor tile =
 
 
 generateEntering : (List Tile -> msg) -> Board -> List Tile.Setting -> Cmd msg
-generateEntering msg board_ tileSettings =
-    tileGenerator tileSettings
-        |> Random.list (numberOfEmpties board_)
-        |> Random.generate msg
+generateEntering msg board_ =
+    tileGenerator
+        >> Random.list (numberOfEmpties board_)
+        >> Random.generate msg
 
 
 numberOfEmpties : Board -> Int
@@ -130,11 +133,10 @@ tileGenerator tileSettings =
 
 
 totalProbability : List Tile.Setting -> Int
-totalProbability tileSettings =
-    tileSettings
-        |> List.map .probability
-        |> List.map (\(Probability p) -> p)
-        |> List.sum
+totalProbability =
+    List.map .probability
+        >> List.map (\(Probability p) -> p)
+        >> List.sum
 
 
 tileProbability : List Tile.Setting -> Int -> Tile

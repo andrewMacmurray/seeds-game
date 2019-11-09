@@ -27,8 +27,6 @@ import Config.Level as Level
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale, translate)
-import Css.Transition exposing (delay, transitionAll)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Html exposing (Attribute, Html, div, p, span, text)
@@ -782,18 +780,11 @@ renderTile model move =
             { boardSize = model.boardSize
             , window = model.context.window
             , tileSettings = model.tileSettings
-            , isBursting = isBursting model
+            , isBursting = Burst.isBursting model.board
             , withTracer = True
             }
             move
         ]
-
-
-isBursting : Model -> Bool
-isBursting model =
-    model.board
-        |> Board.blocks
-        |> List.any (\b -> Block.isBurst b && Block.isLeaving b)
 
 
 currentMoveOverlay : Model -> Html msg
@@ -827,7 +818,7 @@ renderCurrentMove model move =
             { boardSize = model.boardSize
             , window = model.context.window
             , tileSettings = model.tileSettings
-            , isBursting = isBursting model
+            , isBursting = Burst.isBursting model.board
             , withTracer = False
             }
             move

@@ -49,7 +49,7 @@ growPods =
 
 growSeeds : Seed -> Board -> Board
 growSeeds seed =
-    insertGrowingSeeds seed >> growLeavingBurstsToSeeds seed
+    addGrowingSeeds seed >> growLeavingBurstsToSeeds seed
 
 
 growLeavingBurstsToSeeds : Seed -> Board -> Board
@@ -57,8 +57,8 @@ growLeavingBurstsToSeeds seed =
     Board.updateBlocks (Block.growLeavingBurstToSeed seed)
 
 
-insertGrowingSeeds : Seed -> Board -> Board
-insertGrowingSeeds seed board_ =
+addGrowingSeeds : Seed -> Board -> Board
+addGrowingSeeds seed board_ =
     let
         seedsToAdd =
             board_

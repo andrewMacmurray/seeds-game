@@ -1,6 +1,7 @@
 module Board.Mechanic.Burst exposing
     ( burst
     , drag
+    , isBursting
     , isValidNextMove
     , reset
     , shouldBurst
@@ -112,6 +113,11 @@ addActiveTiles boardSize board =
 shouldBurst : Board -> Bool
 shouldBurst =
     Board.activeMoves >> List.any (Move.block >> Block.isBurst)
+
+
+isBursting : Board -> Bool
+isBursting =
+    Board.blocks >> List.any (\block -> Block.isBurst block && Block.isLeaving block)
 
 
 burst : Board -> Board
