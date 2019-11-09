@@ -15,6 +15,10 @@ import Views.Seed as Seed
 import Window exposing (Window)
 
 
+
+-- Model
+
+
 type alias ViewModel =
     { isBursting : Bool
     , window : Window
@@ -24,16 +28,16 @@ type alias ViewModel =
     }
 
 
+
+-- View
+
+
 view : ViewModel -> Move -> Html msg
 view ({ window } as model) move =
-    let
-        coord =
-            Move.coord move
-    in
     div
         [ styles
             [ widthHeightStyles window
-            , coordStyles window coord
+            , coordStyles window (Move.coord move)
             , leaving (boardViewModel model) move
             ]
         , class "dib absolute"
@@ -130,10 +134,10 @@ renderBurst block tile =
 
 
 renderBurst_ : Maybe Tile -> Bool -> Html msg
-renderBurst_ tile isBursting =
+renderBurst_ tile isLeaving =
     case tile of
         Just tile_ ->
-            if isBursting then
+            if isLeaving then
                 Burst.active (strokeColors tile_) (strokeColors tile_)
 
             else
@@ -141,6 +145,10 @@ renderBurst_ tile isBursting =
 
         Nothing ->
             Burst.inactive
+
+
+
+-- View Models
 
 
 boardViewModel : ViewModel -> Board.ViewModel

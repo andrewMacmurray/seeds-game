@@ -163,13 +163,13 @@ exitXDistance resourceBankIndex model =
             (width model - scoreBarWidth) // 2
 
         offset =
-            exitOffsetFunction <| Tile.scale model.window
+            exitOffset <| Tile.scale model.window
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
 
-exitOffsetFunction : Float -> Float
-exitOffsetFunction x =
+exitOffset : Float -> Float
+exitOffset x =
     25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
 
 
