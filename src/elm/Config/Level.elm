@@ -37,7 +37,7 @@ import Css.Color exposing (Color)
 import Dict exposing (Dict)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
-import Scenes.Level.Tutorial as Tutorial
+import Scene.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
 
 

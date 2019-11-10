@@ -6,7 +6,7 @@ import Config.Level as Level
 import Css.Color as Color
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
-import Scenes.Level.Tutorial as Tutorial
+import Scene.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
 
 

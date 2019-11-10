@@ -16,18 +16,18 @@ import Level.Progress as Progress exposing (Progress)
 import Lives
 import Ports exposing (..)
 import Return
-import Scenes.Garden as Garden
-import Scenes.Hub as Hub
-import Scenes.Intro as Intro
-import Scenes.Level as Level
-import Scenes.Retry as Retry
-import Scenes.Summary as Summary
-import Scenes.Title as Title
+import Scene.Garden as Garden
+import Scene.Hub as Hub
+import Scene.Intro as Intro
+import Scene.Level as Level
+import Scene.Retry as Retry
+import Scene.Summary as Summary
+import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Delay as Delay exposing (trigger)
-import Views.Animations exposing (animations)
-import Views.Loading exposing (loadingScreen)
-import Views.Menu as Menu
+import View.Animation exposing (animations)
+import View.Loading exposing (loadingScreen)
+import View.Menu as Menu
 import Window exposing (Window)
 
 

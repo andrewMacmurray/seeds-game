@@ -9,9 +9,15 @@ module Lives exposing
     , timeTillNextLife
     , toCache
     , update
+    , view
     )
 
+import Css.Style as Style exposing (..)
+import Css.Transform exposing (scale)
+import Html exposing (..)
+import Html.Attributes exposing (class)
 import Time exposing (posixToMillis)
+import View.Icon.Heart as Heart
 
 
 
@@ -141,3 +147,56 @@ decrementAboveZero n1 n2 =
 
     else
         n3
+
+
+
+-- View
+
+
+type alias ViewModel =
+    { active : Bool
+    , currentLife : Bool
+    , breaking : Bool
+    }
+
+
+view : Lives -> List (Html msg)
+view lives =
+    List.range 1 max
+        |> List.map (viewModel (remaining lives))
+        |> List.map heart
+
+
+viewModel : Int -> Int -> ViewModel
+viewModel remaining_ life =
+    { active = life <= remaining_
+    , currentLife = life == remaining_
+    , breaking = life == remaining_ + 1
+    }
+
+
+heart : ViewModel -> Html msg
+heart { active, currentLife, breaking } =
+    let
+        visibleHeart =
+            if active then
+                Heart.alive
+
+            else if breaking then
+                Heart.breaking
+
+            else
+                Heart.broken
+    in
+    div
+        [ style
+            [ width 35
+            , height 35
+            , marginLeft 10
+            , marginRight 10
+            , Style.applyIf (not active) <| transform [ scale 1.11 ]
+            , Style.applyIf currentLife Heart.beatingAnimation
+            ]
+        , class "dib"
+        ]
+        [ visibleHeart ]
