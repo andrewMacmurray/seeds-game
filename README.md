@@ -16,7 +16,7 @@ clone the repo:
 > git clone https://github.com/andrewMacmurray/seeds-game.git
 ```
 
-make sure you have [Elm](https://guide.elm-lang.org/install.html) and [Node](https://nodejs.org/en/download/) installed.
+make sure you have [Node](https://nodejs.org/en/download/) installed.
 
 install the dependencies with:
 
@@ -24,7 +24,7 @@ install the dependencies with:
 > npm install
 ```
 
-run the dev environment (watches for changes in css and elm, launches and live reloads a dev server) with:
+run the dev environment (watches for changes in css, ts and elm, launches and live reloads a dev server) with:
 
 ```sh
 > npm run dev
