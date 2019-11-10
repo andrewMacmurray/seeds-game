@@ -15,15 +15,16 @@ module Board.Block exposing
     , isFalling
     , isGrowing
     , isLeaving
+    , isReleasing
     , isSeed
     , isWall
     , leavingOrder
     , map
     , moveOrder
+    , releaseDraggingSeeds
     , seedType
     , setActiveToStatic
     , setDraggingBurstType
-    , setDraggingSeedsToStatic
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -31,6 +32,7 @@ module Board.Block exposing
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
+    , setReleasingToStatic
     , setStaticToFirstMove
     , setToActive
     , setToDragging
@@ -95,6 +97,11 @@ isLeaving =
 isDragging : Block -> Bool
 isDragging =
     fold Tile.isDragging False
+
+
+isReleasing : Block -> Bool
+isReleasing =
+    fold Tile.isReleasing False
 
 
 isFalling : Block -> Bool
@@ -171,9 +178,14 @@ growLeavingBurstToSeed =
     map << Tile.growLeavingBurstToSeed
 
 
-setDraggingSeedsToStatic : Block -> Block
-setDraggingSeedsToStatic =
-    map Tile.setDraggingSeedsToStatic
+releaseDraggingSeeds : Block -> Block
+releaseDraggingSeeds =
+    map Tile.releaseDraggingSeeds
+
+
+setReleasingToStatic : Block -> Block
+setReleasingToStatic =
+    map Tile.setReleasingToStatic
 
 
 setToActive : Block -> Block

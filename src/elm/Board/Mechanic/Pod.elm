@@ -90,12 +90,14 @@ shouldGrow board =
 
 growPods : Board -> Board
 growPods =
-    Board.updateBlocks Block.setDraggingToGrowing >> resetDraggingSeeds
+    Board.updateBlocks Block.setDraggingToGrowing >> releaseDraggingSeeds
 
 
 growSeeds : Seed -> Board -> Board
 growSeeds seed =
-    addGrowingSeeds seed >> growLeavingBurstsToSeeds seed
+    addGrowingSeeds seed
+        >> growLeavingBurstsToSeeds seed
+        >> resetReleasingSeeds
 
 
 growLeavingBurstsToSeeds : Seed -> Board -> Board
@@ -103,9 +105,14 @@ growLeavingBurstsToSeeds seed =
     Board.updateBlocks (Block.growLeavingBurstToSeed seed)
 
 
-resetDraggingSeeds : Board -> Board
-resetDraggingSeeds =
-    Board.updateBlocks Block.setDraggingSeedsToStatic
+releaseDraggingSeeds : Board -> Board
+releaseDraggingSeeds =
+    Board.updateBlocks Block.releaseDraggingSeeds
+
+
+resetReleasingSeeds : Board -> Board
+resetReleasingSeeds =
+    Board.updateBlocks Block.setReleasingToStatic
 
 
 addGrowingSeeds : Seed -> Board -> Board

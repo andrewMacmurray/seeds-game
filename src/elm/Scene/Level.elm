@@ -217,7 +217,7 @@ update msg model =
             continue { model | tutorial = Tutorial.hideStep model.tutorial } []
 
         StopMove ->
-            continue model [ stopMoveSequence model ]
+            continue model [ stopMoveSequence model.board ]
 
         ReleaseTile ->
             continue (releaseTiles model) []
@@ -308,16 +308,16 @@ update msg model =
 -- Sequences
 
 
-stopMoveSequence : Model -> Cmd Msg
-stopMoveSequence model =
-    if shouldRelease model.board then
-        Delay.trigger ReleaseTile
+stopMoveSequence : Board -> Cmd Msg
+stopMoveSequence board =
+    if shouldRelease board then
+        triggerRelease
 
-    else if Burst.shouldBurst model.board then
-        burstSequence model.board
+    else if Burst.shouldBurst board then
+        burstSequence board
 
-    else if Pod.shouldGrow model.board then
-        growSeedPodsSequence model.board
+    else if Pod.shouldGrow board then
+        growSeedPodsSequence board
 
     else
         removeTilesSequence Generate.All
@@ -481,6 +481,11 @@ endMove =
 
 
 -- Release
+
+
+triggerRelease : Cmd Msg
+triggerRelease =
+    Delay.trigger ReleaseTile
 
 
 releaseTiles : Model -> Model

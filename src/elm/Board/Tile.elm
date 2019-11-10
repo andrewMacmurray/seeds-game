@@ -20,16 +20,17 @@ module Board.Tile exposing
     , isFalling
     , isGrowing
     , isLeaving
+    , isReleasing
     , isSeed
     , leavingOrder
     , map
     , moveOrder
+    , releaseDraggingSeeds
     , removeBearing
     , scale
     , seedType
     , setActiveToStatic
     , setDraggingBurstType
-    , setDraggingSeedsToStatic
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -37,6 +38,7 @@ module Board.Tile exposing
     , setFallingToStatic
     , setGrowingToStatic
     , setLeavingToEmpty
+    , setReleasingToStatic
     , setStaticToFirstMove
     , setToActive
     , setToDragging
@@ -71,6 +73,7 @@ type State
     | Entering Tile
     | Growing Tile MoveOrder
     | Active Tile
+    | Releasing Tile MoveOrder
     | Empty
 
 
@@ -138,6 +141,16 @@ isDragging : State -> Bool
 isDragging tileState =
     case tileState of
         Dragging _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
+isReleasing : State -> Bool
+isReleasing tileState =
+    case tileState of
+        Releasing _ _ ->
             True
 
         _ ->
@@ -247,11 +260,21 @@ growLeavingBurstToSeed seed tileState =
             x
 
 
-setDraggingSeedsToStatic : State -> State
-setDraggingSeedsToStatic tileState =
+releaseDraggingSeeds : State -> State
+releaseDraggingSeeds tileState =
     case tileState of
-        Dragging (Seed seed) _ _ ->
-            Static (Seed seed)
+        Dragging (Seed seed) moveOrder_ _ ->
+            Releasing (Seed seed) moveOrder_
+
+        x ->
+            x
+
+
+setReleasingToStatic : State -> State
+setReleasingToStatic tileState =
+    case tileState of
+        Releasing tile _ ->
+            Static tile
 
         x ->
             x
@@ -466,6 +489,9 @@ get tileState =
             Just tile
 
         Active tile ->
+            Just tile
+
+        Releasing tile _ ->
             Just tile
 
         Empty ->

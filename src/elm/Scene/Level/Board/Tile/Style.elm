@@ -12,6 +12,7 @@ module Scene.Level.Board.Tile.Style exposing
     , lighterStrokeColor
     , moveTracerStyles
     , position
+    , releasingStyles
     , seedStrokeColors
     , size
     , strokeColors
@@ -128,6 +129,16 @@ fallingStyles move =
     case Move.tileState move of
         Tile.Falling _ distance ->
             [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
+
+        _ ->
+            []
+
+
+releasingStyles : Move -> List Style
+releasingStyles move =
+    case Move.tileState move of
+        Releasing _ order ->
+            [ transitionAll (200 + (30 * order)) [] ]
 
         _ ->
             []
