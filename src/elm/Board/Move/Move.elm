@@ -10,7 +10,7 @@ import Board.Move.Check as Check
 
 
 
--- Add To Board
+-- Drag
 
 
 drag : Move -> Board -> Board
