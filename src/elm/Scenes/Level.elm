@@ -136,6 +136,10 @@ updateContext f model =
     { model | context = f model.context }
 
 
+
+-- Menu
+
+
 menuOptions : Model -> List (Menu.Option Msg)
 menuOptions model =
     if canRestartLevel model then
@@ -232,7 +236,7 @@ update msg model =
             continue (updateBoard Pod.growPods model) []
 
         GrowPodsToSeeds ->
-            continue model [ Generate.randomSeedType AddGrowingSeeds model.tileSettings ]
+            continue model [ generateSeedType model ]
 
         AddGrowingSeeds seed ->
             continue (updateBoard (Pod.growSeeds seed) model) []
@@ -503,6 +507,15 @@ shiftBoard =
 
 
 
+-- Grow Pods
+
+
+generateSeedType : Model -> Cmd Msg
+generateSeedType model =
+    Pod.generateSeedType AddGrowingSeeds model.tileSettings
+
+
+
 -- Leaving
 
 
@@ -536,15 +549,17 @@ handleTutorialStep model =
     let
         nextTutorial =
             Tutorial.nextStep model.tutorial
-
-        triggerHideAutoStep =
-            if Tutorial.isAutoStep nextTutorial then
-                Delay.after 3000 HideTutorialStep
-
-            else
-                Cmd.none
     in
-    continue { model | tutorial = nextTutorial } [ triggerHideAutoStep ]
+    continue { model | tutorial = nextTutorial } [ triggerHideAutoStep nextTutorial ]
+
+
+triggerHideAutoStep : Tutorial.Tutorial -> Cmd Msg
+triggerHideAutoStep next =
+    if Tutorial.isAutoStep next then
+        Delay.after 3000 HideTutorialStep
+
+    else
+        Cmd.none
 
 
 

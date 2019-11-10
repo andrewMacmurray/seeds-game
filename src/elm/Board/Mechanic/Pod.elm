@@ -1,5 +1,6 @@
 module Board.Mechanic.Pod exposing
-    ( growPods
+    ( generateSeedType
+    , growPods
     , growSeeds
     , isValidNextMove
     , reset
@@ -8,9 +9,11 @@ module Board.Mechanic.Pod exposing
 
 import Board exposing (Board)
 import Board.Block as Block exposing (Block(..))
+import Board.Generate as Generate
 import Board.Move as Move exposing (Move)
 import Board.Move.Check as Check
 import Board.Tile exposing (State(..), Tile(..))
+import Level.Setting.Tile as Tile
 import Seed exposing (Seed)
 
 
@@ -31,6 +34,15 @@ isValidNextMove move board =
             Check.isNewNeighbour move board
     in
     isPod && sameTileType && isNewNeighbour
+
+
+
+-- Generate
+
+
+generateSeedType : (Seed -> msg) -> List Tile.Setting -> Cmd msg
+generateSeedType =
+    Generate.randomSeedType
 
 
 
