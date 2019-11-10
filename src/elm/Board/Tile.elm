@@ -29,6 +29,7 @@ module Board.Tile exposing
     , seedType
     , setActiveToStatic
     , setDraggingBurstType
+    , setDraggingSeedsToStatic
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -241,6 +242,16 @@ growLeavingBurstToSeed seed tileState =
     case tileState of
         Leaving (Burst (Just SeedPod)) moveOrder_ ->
             Growing (Seed seed) moveOrder_
+
+        x ->
+            x
+
+
+setDraggingSeedsToStatic : State -> State
+setDraggingSeedsToStatic tileState =
+    case tileState of
+        Dragging (Seed seed) _ _ ->
+            Static (Seed seed)
 
         x ->
             x

@@ -23,6 +23,7 @@ module Board.Block exposing
     , seedType
     , setActiveToStatic
     , setDraggingBurstType
+    , setDraggingSeedsToStatic
     , setDraggingToGrowing
     , setDraggingToLeaving
     , setDraggingToStatic
@@ -168,6 +169,11 @@ setToDragging =
 growLeavingBurstToSeed : Seed -> Block -> Block
 growLeavingBurstToSeed =
     map << Tile.growLeavingBurstToSeed
+
+
+setDraggingSeedsToStatic : Block -> Block
+setDraggingSeedsToStatic =
+    map Tile.setDraggingSeedsToStatic
 
 
 setToActive : Block -> Block

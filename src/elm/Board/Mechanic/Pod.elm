@@ -95,12 +95,19 @@ growPods =
 
 growSeeds : Seed -> Board -> Board
 growSeeds seed =
-    addGrowingSeeds seed >> growLeavingBurstsToSeeds seed
+    addGrowingSeeds seed
+        >> growLeavingBurstsToSeeds seed
+        >> resetDraggingSeeds
 
 
 growLeavingBurstsToSeeds : Seed -> Board -> Board
 growLeavingBurstsToSeeds seed =
     Board.updateBlocks (Block.growLeavingBurstToSeed seed)
+
+
+resetDraggingSeeds : Board -> Board
+resetDraggingSeeds =
+    Board.updateBlocks Block.setDraggingSeedsToStatic
 
 
 addGrowingSeeds : Seed -> Board -> Board
