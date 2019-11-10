@@ -74,6 +74,10 @@ tile =
     block >> Block.tile
 
 
+
+-- Checks
+
+
 sameTileType : Move -> Move -> Bool
 sameTileType m1 m2 =
     tile m1 == tile m2

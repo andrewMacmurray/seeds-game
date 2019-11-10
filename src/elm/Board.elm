@@ -1,16 +1,16 @@
 module Board exposing
     ( Board
     , Size
+    , activeMoveType
+    , activeMoves
     , blocks
     , coords
-    , currentMoves
-    , currentTile
     , filter
     , filterBlocks
     , findBlockAt
     , fromMoves
     , fromTiles
-    , inCurrentMoves
+    , isActiveMove
     , isEmpty
     , lastMove
     , moves
@@ -133,15 +133,15 @@ matchBlock f =
 -- Moves
 
 
-currentMoves : Board -> List Move
-currentMoves =
+activeMoves : Board -> List Move
+activeMoves =
     filterBlocks Block.isDragging
         >> moves
         >> List.sortBy (Move.block >> Block.moveOrder)
 
 
-currentTile : Board -> Maybe Tile
-currentTile =
+activeMoveType : Board -> Maybe Tile
+activeMoveType =
     filterBursts
         >> matchBlock Block.isDragging
         >> Maybe.andThen Move.tile
@@ -152,9 +152,9 @@ filterBursts =
     filterBlocks (not << Block.isBurst)
 
 
-inCurrentMoves : Move -> Board -> Bool
-inCurrentMoves move =
-    currentMoves >> List.member move
+isActiveMove : Move -> Board -> Bool
+isActiveMove move =
+    activeMoves >> List.member move
 
 
 lastMove : Board -> Move
@@ -164,7 +164,7 @@ lastMove =
 
 secondLastMove : Board -> Maybe Move
 secondLastMove =
-    currentMoves
+    activeMoves
         >> List.reverse
         >> List.drop 1
         >> List.head

@@ -1,4 +1,4 @@
-module Board.Shift exposing (groupBoardByColumn, shiftBoard)
+module Board.Shift exposing (groupBoardByColumn, shift)
 
 import Board exposing (Board)
 import Board.Block as Block
@@ -7,8 +7,8 @@ import Board.Move as Move exposing (Move)
 import Utils.List
 
 
-shiftBoard : Board -> Board
-shiftBoard =
+shift : Board -> Board
+shift =
     groupBoardByColumn
         >> List.concatMap shiftRow
         >> Board.fromMoves
