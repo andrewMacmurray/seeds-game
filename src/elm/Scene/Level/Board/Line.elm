@@ -7,8 +7,10 @@ import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Bearing(..), State(..), Tile(..))
 import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
+import Css.Transition as Transition
 import Html exposing (Html, div, span)
 import Scene.Level.Board.Tile.Style as Tile
+import Seed exposing (Seed)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Window exposing (Window)
@@ -20,7 +22,7 @@ import Window exposing (Window)
 
 type alias ViewModel =
     { window : Window
-    , isSeedPodMove : Bool
+    , activeSeedType : Maybe Seed
     }
 
 
@@ -84,19 +86,23 @@ innerLine model tile bearing =
             , y1 "0"
             , x2 <| String.fromFloat <| 50 * tileScale
             , y2 "0"
-            , Style.svgStyle [ stroke model.isSeedPodMove tile ]
+            , Style.svgStyle
+                [ stroke model.activeSeedType tile
+                , Transition.transition "stroke" 250 []
+                ]
             ]
             []
         ]
 
 
-stroke : Bool -> Tile -> Style
-stroke isSeedPodMove tile =
-    if isSeedPodMove then
-        Style.stroke <| Tile.strokeColors SeedPod
+stroke : Maybe Seed -> Tile -> Style
+stroke activeSeedType tile =
+    case activeSeedType of
+        Just seed ->
+            Style.stroke <| Tile.strokeColors (Seed seed)
 
-    else
-        Style.stroke <| Tile.strokeColors tile
+        Nothing ->
+            Style.stroke <| Tile.strokeColors tile
 
 
 lineTransforms : Window -> Bearing -> Style

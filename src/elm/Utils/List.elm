@@ -1,5 +1,6 @@
 module Utils.List exposing
     ( groupWhile
+    , inverseRange
     , splitAt
     , unique
     )
@@ -76,3 +77,16 @@ dropWhile predicate list =
 
             else
                 list
+
+
+inverseRange : Int -> Int -> List Int
+inverseRange from length =
+    let
+        inverseRange_ xs from_ length_ =
+            if length_ == 0 then
+                from_ :: xs
+
+            else
+                from_ :: inverseRange_ xs (from_ - 1) (length_ - 1)
+    in
+    inverseRange_ [] from length

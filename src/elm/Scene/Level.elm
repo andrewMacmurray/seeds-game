@@ -1001,7 +1001,7 @@ topBarViewModel model =
 lineViewModel : Model -> Line.ViewModel
 lineViewModel model =
     { window = model.context.window
-    , isSeedPodMove = isSeedPodMove model
+    , activeSeedType = Board.activeSeedType model.board
     }
 
 
