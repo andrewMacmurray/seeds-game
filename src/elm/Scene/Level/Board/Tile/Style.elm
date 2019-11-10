@@ -1,5 +1,6 @@
 module Scene.Level.Board.Tile.Style exposing
-    ( baseClasses
+    ( background
+    , baseClasses
     , burstStyles
     , centerBlock
     , coordStyles
@@ -12,9 +13,8 @@ module Scene.Level.Board.Tile.Style exposing
     , moveTracerStyles
     , position
     , seedStrokeColors
+    , size
     , strokeColors
-    , tileBackground
-    , tileSize
     , wallStyles
     , width
     , widthHeightStyles
@@ -221,13 +221,13 @@ burstStyles block =
 -- Tile Type Styles
 
 
-tileBackground : Block -> List Style
-tileBackground =
+background : Block -> List Style
+background =
     fromBlock tileBackground_ []
 
 
-tileSize : Block -> Float
-tileSize =
+size : Block -> Float
+size =
     fromBlock tileSize_ 0
 
 
@@ -332,7 +332,7 @@ tileBackground_ tile =
             [ backgroundColor Color.gold ]
 
         Tile.SeedPod ->
-            [ background Color.seedPodGradient ]
+            [ Style.background Color.seedPodGradient ]
 
         Tile.Seed _ ->
             []

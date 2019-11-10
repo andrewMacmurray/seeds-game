@@ -8,8 +8,8 @@ import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board exposing (leaving)
-import Scene.Level.Board.Tile.Style as Tile exposing (..)
+import Scene.Level.Board.Tile.Leaving as Leaving
+import Scene.Level.Board.Tile.Style as Tile
 import View.Icon.Burst as Burst
 import View.Seed as Seed
 import Window exposing (Window)
@@ -36,9 +36,9 @@ view : ViewModel -> Move -> Html msg
 view ({ window } as model) move =
     div
         [ styles
-            [ widthHeightStyles window
-            , coordStyles window (Move.coord move)
-            , leaving (boardViewModel model) move
+            [ Tile.widthHeightStyles window
+            , Tile.coordStyles window (Move.coord move)
+            , Leaving.styles (leavingViewModel model) move
             ]
         , class "dib absolute"
         ]
@@ -60,7 +60,7 @@ renderIf predicate element =
 tracer : Window -> Move -> Html msg
 tracer window move =
     innerTileWithStyles
-        (moveTracerStyles move)
+        (Tile.moveTracerStyles move)
         window
         move
 
@@ -68,8 +68,8 @@ tracer window move =
 wall : Window -> Move -> Html msg
 wall window move =
     div
-        [ style <| wallStyles window move
-        , class centerBlock
+        [ style <| Tile.wallStyles window move
+        , class Tile.centerBlock
         ]
         []
 
@@ -77,7 +77,7 @@ wall window move =
 innerTile : Bool -> Window -> Move -> Html msg
 innerTile isBursting window move =
     innerTileWithStyles
-        (draggingStyles isBursting move)
+        (Tile.draggingStyles isBursting move)
         window
         move
 
@@ -101,11 +101,11 @@ baseTileStyles window move =
             Move.block move
     in
     List.concat
-        [ growingStyles move
-        , enteringStyles move
-        , fallingStyles move
-        , size <| roundFloat <| tileSize block * Tile.scale window
-        , tileBackground block
+        [ Tile.growingStyles move
+        , Tile.enteringStyles move
+        , Tile.fallingStyles move
+        , size <| roundFloat <| Tile.size block * Tile.scale window
+        , Tile.background block
         ]
 
 
@@ -129,7 +129,7 @@ innerTileElement block =
 
 renderBurst : Block -> Maybe Tile -> Html msg
 renderBurst block tile =
-    div [ Style.style <| burstStyles block ]
+    div [ Style.style <| Tile.burstStyles block ]
         [ renderBurst_ tile <| Block.isLeaving block ]
 
 
@@ -138,10 +138,10 @@ renderBurst_ tile isLeaving =
     case tile of
         Just tile_ ->
             if isLeaving then
-                Burst.active (strokeColors tile_) (strokeColors tile_)
+                Burst.active (Tile.strokeColors tile_) (Tile.strokeColors tile_)
 
             else
-                Burst.active (strokeColors tile_) (lighterStrokeColor tile_)
+                Burst.active (Tile.strokeColors tile_) (Tile.lighterStrokeColor tile_)
 
         Nothing ->
             Burst.inactive
@@ -151,8 +151,8 @@ renderBurst_ tile isLeaving =
 -- View Models
 
 
-boardViewModel : ViewModel -> Board.ViewModel
-boardViewModel model =
+leavingViewModel : ViewModel -> Leaving.ViewModel
+leavingViewModel model =
     { window = model.window
     , boardSize = model.boardSize
     , tileSettings = model.tileSettings

@@ -505,5 +505,4 @@ boardViewModel : InternalViewModel -> Board.ViewModel
 boardViewModel model =
     { window = model.window
     , boardSize = model.boardSize
-    , tileSettings = model.tileSettings
     }

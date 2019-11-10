@@ -977,7 +977,6 @@ boardViewModel : Model -> Board.ViewModel
 boardViewModel model =
     { window = model.context.window
     , boardSize = model.boardSize
-    , tileSettings = model.tileSettings
     }
 
 
