@@ -4,6 +4,7 @@ module Board exposing
     , activeMoveType
     , activeMoves
     , activeSeed
+    , activeSeedType
     , blocks
     , coords
     , filter
@@ -29,8 +30,9 @@ module Board exposing
 import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile exposing (Tile(..))
+import Board.Tile as Tile exposing (Tile(..))
 import Dict exposing (Dict)
+import Seed exposing (Seed)
 import Utils.Dict
 
 
@@ -149,6 +151,11 @@ activeMoveType board =
 
     else
         draggingMoveType board
+
+
+activeSeedType : Board -> Maybe Seed
+activeSeedType =
+    activeSeed >> Maybe.andThen Tile.seedType
 
 
 activeSeed : Board -> Maybe Tile

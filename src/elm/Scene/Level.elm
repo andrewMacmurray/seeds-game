@@ -81,7 +81,7 @@ type Msg
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
-    | GrowPodsToSeeds
+    | GrowPodsToSeeds (Maybe Seed.Seed)
     | AddGrowingSeeds Seed.Seed
     | ResetGrowingSeeds
     | BurstTiles
@@ -234,8 +234,8 @@ update msg model =
         SetGrowingSeedPods ->
             continue (updateBoard Pod.growPods model) []
 
-        GrowPodsToSeeds ->
-            continue model [ generateSeedType model ]
+        GrowPodsToSeeds seedType ->
+            continue model [ generateSeedType seedType model.tileSettings ]
 
         AddGrowingSeeds seed ->
             continue (updateBoard (Pod.growSeeds seed) model) []
@@ -310,29 +310,25 @@ update msg model =
 
 stopMoveSequence : Model -> Cmd Msg
 stopMoveSequence model =
-    let
-        moveTileType =
-            Board.activeMoveType model.board
-    in
     if shouldRelease model.board then
         Delay.trigger ReleaseTile
 
     else if Burst.shouldBurst model.board then
-        burstSequence moveTileType
+        burstSequence model.board
 
     else if Pod.shouldGrow model.board then
-        growSeedPodsSequence
+        growSeedPodsSequence model.board
 
     else
         removeTilesSequence Generate.All
 
 
-burstSequence : Maybe Tile -> Cmd Msg
-burstSequence moveType =
-    moveType
+burstSequence : Board -> Cmd Msg
+burstSequence board =
+    Board.activeMoveType board
         |> Maybe.map Generate.Filtered
         |> Maybe.withDefault Generate.All
-        |> burstTilesSequence moveType
+        |> burstTilesSequence board
 
 
 shouldRelease : Board -> Bool
@@ -340,12 +336,12 @@ shouldRelease board =
     List.length (Board.activeMoves board) == 1
 
 
-growSeedPodsSequence : Cmd Msg
-growSeedPodsSequence =
+growSeedPodsSequence : Board -> Cmd Msg
+growSeedPodsSequence board =
     Delay.sequence
         [ ( 0, EndMove )
         , ( 0, SetGrowingSeedPods )
-        , ( 800, GrowPodsToSeeds )
+        , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         , ( 500, NextTutorialStep )
@@ -366,15 +362,15 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : Maybe Tile -> Generate.Setting -> Cmd Msg
-burstTilesSequence moveType generateSetting =
-    case moveType of
+burstTilesSequence : Board -> Generate.Setting -> Cmd Msg
+burstTilesSequence board generateSetting =
+    case Board.activeMoveType board of
         Just SeedPod ->
             Delay.sequence
                 [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetGrowingSeedPods )
-                , ( 800, GrowPodsToSeeds )
+                , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
                 , ( 0, CheckLevelComplete )
                 , ( 600, ResetGrowingSeeds )
                 , ( 500, NextTutorialStep )
@@ -509,9 +505,9 @@ shiftBoard =
 -- Seed Pods
 
 
-generateSeedType : Model -> Cmd Msg
-generateSeedType model =
-    Pod.generateSeedType AddGrowingSeeds model.board model.tileSettings
+generateSeedType : Maybe Seed -> List Tile.Setting -> Cmd Msg
+generateSeedType =
+    Pod.generateSeedType AddGrowingSeeds
 
 
 isSeedPodMove : Model -> Bool

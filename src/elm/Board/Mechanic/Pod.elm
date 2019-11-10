@@ -69,10 +69,10 @@ isSeed =
 -- Generate
 
 
-generateSeedType : (Seed -> msg) -> Board -> List Tile.Setting -> Cmd msg
-generateSeedType msg board settings =
-    case Board.activeSeed board of
-        Just (Seed seed) ->
+generateSeedType : (Seed -> msg) -> Maybe Seed -> List Tile.Setting -> Cmd msg
+generateSeedType msg seedType settings =
+    case seedType of
+        Just seed ->
             Generate.constantSeed msg seed
 
         _ ->
@@ -90,14 +90,12 @@ shouldGrow board =
 
 growPods : Board -> Board
 growPods =
-    Board.updateBlocks Block.setDraggingToGrowing
+    Board.updateBlocks Block.setDraggingToGrowing >> resetDraggingSeeds
 
 
 growSeeds : Seed -> Board -> Board
 growSeeds seed =
-    addGrowingSeeds seed
-        >> growLeavingBurstsToSeeds seed
-        >> resetDraggingSeeds
+    addGrowingSeeds seed >> growLeavingBurstsToSeeds seed
 
 
 growLeavingBurstsToSeeds : Seed -> Board -> Board
