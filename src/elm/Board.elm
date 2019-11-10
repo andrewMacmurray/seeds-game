@@ -3,6 +3,7 @@ module Board exposing
     , Size
     , activeMoveType
     , activeMoves
+    , activeSeed
     , blocks
     , coords
     , filter
@@ -12,6 +13,7 @@ module Board exposing
     , fromTiles
     , isActiveMove
     , isEmpty
+    , isSeedPodMove
     , lastMove
     , moves
     , place
@@ -27,7 +29,7 @@ module Board exposing
 import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile exposing (Tile)
+import Board.Tile exposing (Tile(..))
 import Dict exposing (Dict)
 import Utils.Dict
 
@@ -141,10 +143,35 @@ activeMoves =
 
 
 activeMoveType : Board -> Maybe Tile
-activeMoveType =
+activeMoveType board =
+    if isSeedPodMove board then
+        Just SeedPod
+
+    else
+        draggingMoveType board
+
+
+activeSeed : Board -> Maybe Tile
+activeSeed =
+    activeMoves
+        >> List.map Move.block
+        >> List.filter Block.isSeed
+        >> List.head
+        >> Maybe.andThen Block.tile
+
+
+draggingMoveType : Board -> Maybe Tile
+draggingMoveType =
     filterBursts
         >> matchBlock Block.isDragging
         >> Maybe.andThen Move.tile
+
+
+isSeedPodMove : Board -> Bool
+isSeedPodMove =
+    activeMoves
+        >> List.map Move.tile
+        >> List.member (Just SeedPod)
 
 
 filterBursts : Board -> Board

@@ -24,25 +24,59 @@ import Seed exposing (Seed)
 isValidNextMove : Move -> Board -> Bool
 isValidNextMove move board =
     let
-        isPod =
-            Move.tile move == Just SeedPod
+        activeSeed =
+            Board.activeSeed board
+
+        isActiveSeedPodMove =
+            Board.activeMoveType board == Just SeedPod
+
+        moveType =
+            Move.tile move
+
+        isSeedPodMove =
+            moveType == Just SeedPod
+
+        twoSeedPods =
+            isSeedPodMove && sameTileType
+
+        isFirstSeedMove =
+            isSeed move && activeSeed == Nothing && isActiveSeedPodMove
+
+        isNextSeedMove =
+            moveType == activeSeed && isActiveSeedPodMove
 
         sameTileType =
             Check.sameActiveTileType move board
 
+        isNextSeedPodMove =
+            isActiveSeedPodMove && isSeedPodMove
+
+        isMatchingMove =
+            twoSeedPods || isFirstSeedMove || isNextSeedMove || isNextSeedPodMove
+
         isNewNeighbour =
             Check.isNewNeighbour move board
     in
-    isPod && sameTileType && isNewNeighbour
+    isMatchingMove && isNewNeighbour
+
+
+isSeed : Move -> Bool
+isSeed =
+    Move.block >> Block.isSeed
 
 
 
 -- Generate
 
 
-generateSeedType : (Seed -> msg) -> List Tile.Setting -> Cmd msg
-generateSeedType =
-    Generate.randomSeedType
+generateSeedType : (Seed -> msg) -> Board -> List Tile.Setting -> Cmd msg
+generateSeedType msg board settings =
+    case Board.activeSeed board of
+        Just (Seed seed) ->
+            Generate.constantSeed msg seed
+
+        _ ->
+            Generate.randomSeed msg settings
 
 
 

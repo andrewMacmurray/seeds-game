@@ -1,9 +1,10 @@
 module Board.Generate exposing
     ( Setting(..)
     , board
+    , constantSeed
     , enteringTiles
     , insertEnteringTiles
-    , randomSeedType
+    , randomSeed
     )
 
 import Board exposing (Board)
@@ -20,9 +21,14 @@ import Seed exposing (Seed)
 -- Random Seeds
 
 
-randomSeedType : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
-randomSeedType msg =
+randomSeed : (Seed.Seed -> msg) -> List Tile.Setting -> Cmd msg
+randomSeed msg =
     seedTypeGenerator >> Random.generate msg
+
+
+constantSeed : (Seed.Seed -> msg) -> Seed -> Cmd msg
+constantSeed msg seed =
+    Random.generate msg (Random.constant seed)
 
 
 seedTypeGenerator : List Tile.Setting -> Generator Seed

@@ -37,7 +37,7 @@ import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Scene.Level.Board.Line exposing (renderLine)
+import Scene.Level.Board.Line as Line
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
 import Scene.Level.LineDrag as LineDrag exposing (ViewModel)
@@ -506,12 +506,20 @@ shiftBoard =
 
 
 
--- Grow Pods
+-- Seed Pods
 
 
 generateSeedType : Model -> Cmd Msg
 generateSeedType model =
-    Pod.generateSeedType AddGrowingSeeds model.tileSettings
+    Pod.generateSeedType AddGrowingSeeds model.board model.tileSettings
+
+
+isSeedPodMove : Model -> Bool
+isSeedPodMove model =
+    model.board
+        |> Board.activeMoves
+        |> List.map Move.tile
+        |> List.member (Just SeedPod)
 
 
 
@@ -843,7 +851,7 @@ renderCurrentMove model move =
 
 renderLines : Model -> List (Html msg)
 renderLines model =
-    mapTiles (renderLine model.context.window) model.board
+    mapTiles (Line.view (lineViewModel model)) model.board
 
 
 boardLayout : Model -> List (Html msg) -> Html msg
@@ -989,11 +997,19 @@ topBarViewModel model =
     }
 
 
+lineViewModel : Model -> Line.ViewModel
+lineViewModel model =
+    { window = model.context.window
+    , isSeedPodMove = isSeedPodMove model
+    }
+
+
 lineDragViewModel : Model -> LineDrag.ViewModel
 lineDragViewModel model =
     { window = model.context.window
     , board = model.board
     , tileSettings = model.tileSettings
+    , isSeedPodMove = isSeedPodMove model
     , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer
