@@ -82,7 +82,7 @@ type Msg
     | SetFallingTiles
     | SetGrowingSeedPods
     | GrowPodsToSeeds (Maybe Seed.Seed)
-    | AddGrowingSeeds Seed.Seed
+    | AddGrowingSeeds (List Tile)
     | ResetGrowingSeeds
     | BurstTiles
     | GenerateEnteringTiles Generate.Setting
@@ -235,10 +235,10 @@ update msg model =
             continue (updateBoard Pod.growPods model) []
 
         GrowPodsToSeeds seedType ->
-            continue model [ generateSeedType seedType model.tileSettings ]
+            continue model [ generateSeedType seedType model.board model.tileSettings ]
 
-        AddGrowingSeeds seed ->
-            continue (updateBoard (Pod.growSeeds seed) model) []
+        AddGrowingSeeds seeds ->
+            continue (updateBoard (Pod.growSeeds seeds) model) []
 
         ResetGrowingSeeds ->
             continue (updateBoard Pod.reset model) []
@@ -510,9 +510,9 @@ shiftBoard =
 -- Seed Pods
 
 
-generateSeedType : Maybe Seed -> List Tile.Setting -> Cmd Msg
+generateSeedType : Maybe Seed.Seed -> Board -> List Tile.Setting -> Cmd Msg
 generateSeedType =
-    Pod.generateSeedType AddGrowingSeeds
+    Pod.generateNewSeeds AddGrowingSeeds
 
 
 isSeedPodMove : Model -> Bool

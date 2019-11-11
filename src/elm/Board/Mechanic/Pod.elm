@@ -1,5 +1,5 @@
 module Board.Mechanic.Pod exposing
-    ( generateSeedType
+    ( generateNewSeeds
     , growPods
     , growSeeds
     , isValidNextMove
@@ -14,7 +14,7 @@ import Board.Move as Move exposing (Move)
 import Board.Move.Check as Check
 import Board.Tile exposing (State(..), Tile(..))
 import Level.Setting.Tile as Tile
-import Seed exposing (Seed)
+import Seed exposing (Seed(..))
 
 
 
@@ -69,14 +69,14 @@ isSeed =
 -- Generate
 
 
-generateSeedType : (Seed -> msg) -> Maybe Seed -> List Tile.Setting -> Cmd msg
-generateSeedType msg seedType settings =
+generateNewSeeds : (List Tile -> msg) -> Maybe Seed.Seed -> Board -> List Tile.Setting -> Cmd msg
+generateNewSeeds msg seedType board settings =
     case seedType of
         Just seed ->
-            Generate.constantSeed msg seed
+            Generate.constantSeed msg board seed
 
         _ ->
-            Generate.randomSeed msg settings
+            Generate.randomSeeds msg board settings
 
 
 
@@ -93,11 +93,12 @@ growPods =
     Board.updateBlocks Block.setDraggingToGrowing >> releaseDraggingSeeds
 
 
-growSeeds : Seed -> Board -> Board
-growSeeds seed =
-    addGrowingSeeds seed
-        >> growLeavingBurstsToSeeds seed
-        >> resetReleasingSeeds
+growSeeds : List Tile -> Board -> Board
+growSeeds seeds board =
+    board
+        |> addGrowingSeeds seeds
+        |> growLeavingBurstsToSeeds (activeSeedType board)
+        |> resetReleasingSeeds
 
 
 growLeavingBurstsToSeeds : Seed -> Board -> Board
@@ -110,26 +111,31 @@ releaseDraggingSeeds =
     Board.updateBlocks Block.releaseDraggingSeeds
 
 
+activeSeedType : Board -> Seed
+activeSeedType =
+    Board.activeSeedType >> Maybe.withDefault Sunflower
+
+
 resetReleasingSeeds : Board -> Board
 resetReleasingSeeds =
     Board.updateBlocks Block.setReleasingToStatic
 
 
-addGrowingSeeds : Seed -> Board -> Board
-addGrowingSeeds seed board_ =
+addGrowingSeeds : List Tile -> Board -> Board
+addGrowingSeeds seeds board_ =
     let
         seedsToAdd =
             board_
                 |> filterGrowing
                 |> Board.moves
-                |> List.map (setGrowingSeed seed)
+                |> List.map2 setGrowingSeed seeds
     in
     Board.placeMoves board_ seedsToAdd
 
 
-setGrowingSeed : Seed -> Move -> Move
+setGrowingSeed : Tile -> Move -> Move
 setGrowingSeed seed =
-    Move.updateBlock (Space << Growing (Seed seed) << Block.growingOrder)
+    Move.updateBlock (Space << Growing seed << Block.growingOrder)
 
 
 filterGrowing : Board -> Board
