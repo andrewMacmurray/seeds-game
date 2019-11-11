@@ -9,7 +9,7 @@
     "build": "npm run css-build && elm-typescript-interop && parcel build src/index.html",
     "css-dev": "postcss --watch --config ./postcss-config.js",
     "css-build": "postcss --config ./postcss-config.js",
-    "test-watch": "elm-test --watch"
+    "test": "elm-test"
   },
   "repository": {
     "type": "git",
