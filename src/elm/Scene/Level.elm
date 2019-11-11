@@ -37,7 +37,7 @@ import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Scene.Level.Board.Line exposing (renderLine)
+import Scene.Level.Board.Line as Line
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
 import Scene.Level.LineDrag as LineDrag exposing (ViewModel)
@@ -81,8 +81,8 @@ type Msg
     | SetLeavingTiles
     | SetFallingTiles
     | SetGrowingSeedPods
-    | GrowPodsToSeeds
-    | AddGrowingSeeds Seed.Seed
+    | GrowPodsToSeeds (Maybe Seed.Seed)
+    | AddGrowingSeeds (List Tile)
     | ResetGrowingSeeds
     | BurstTiles
     | GenerateEnteringTiles Generate.Setting
@@ -217,7 +217,7 @@ update msg model =
             continue { model | tutorial = Tutorial.hideStep model.tutorial } []
 
         StopMove ->
-            continue model [ stopMoveSequence model ]
+            continue model [ stopMoveSequence model.board ]
 
         ReleaseTile ->
             continue (releaseTiles model) []
@@ -234,11 +234,11 @@ update msg model =
         SetGrowingSeedPods ->
             continue (updateBoard Pod.growPods model) []
 
-        GrowPodsToSeeds ->
-            continue model [ generateSeedType model ]
+        GrowPodsToSeeds seedType ->
+            continue model [ generateSeedType seedType model.board model.tileSettings ]
 
-        AddGrowingSeeds seed ->
-            continue (updateBoard (Pod.growSeeds seed) model) []
+        AddGrowingSeeds seeds ->
+            continue (updateBoard (Pod.growSeeds seeds) model) []
 
         ResetGrowingSeeds ->
             continue (updateBoard Pod.reset model) []
@@ -308,31 +308,27 @@ update msg model =
 -- Sequences
 
 
-stopMoveSequence : Model -> Cmd Msg
-stopMoveSequence model =
-    let
-        moveTileType =
-            Board.activeMoveType model.board
-    in
-    if shouldRelease model.board then
-        Delay.trigger ReleaseTile
+stopMoveSequence : Board -> Cmd Msg
+stopMoveSequence board =
+    if shouldRelease board then
+        triggerRelease
 
-    else if Burst.shouldBurst model.board then
-        burstSequence moveTileType
+    else if Burst.shouldBurst board then
+        burstSequence board
 
-    else if Pod.shouldGrow model.board then
-        growSeedPodsSequence
+    else if Pod.shouldGrow board then
+        growSeedPodsSequence board
 
     else
         removeTilesSequence Generate.All
 
 
-burstSequence : Maybe Tile -> Cmd Msg
-burstSequence moveType =
-    moveType
+burstSequence : Board -> Cmd Msg
+burstSequence board =
+    Board.activeMoveType board
         |> Maybe.map Generate.Filtered
         |> Maybe.withDefault Generate.All
-        |> burstTilesSequence moveType
+        |> burstTilesSequence board
 
 
 shouldRelease : Board -> Bool
@@ -340,12 +336,12 @@ shouldRelease board =
     List.length (Board.activeMoves board) == 1
 
 
-growSeedPodsSequence : Cmd Msg
-growSeedPodsSequence =
+growSeedPodsSequence : Board -> Cmd Msg
+growSeedPodsSequence board =
     Delay.sequence
         [ ( 0, EndMove )
         , ( 0, SetGrowingSeedPods )
-        , ( 800, GrowPodsToSeeds )
+        , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         , ( 500, NextTutorialStep )
@@ -366,15 +362,15 @@ removeTilesSequence enteringTiles =
         ]
 
 
-burstTilesSequence : Maybe Tile -> Generate.Setting -> Cmd Msg
-burstTilesSequence moveType generateSetting =
-    case moveType of
+burstTilesSequence : Board -> Generate.Setting -> Cmd Msg
+burstTilesSequence board generateSetting =
+    case Board.activeMoveType board of
         Just SeedPod ->
             Delay.sequence
                 [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetGrowingSeedPods )
-                , ( 800, GrowPodsToSeeds )
+                , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
                 , ( 0, CheckLevelComplete )
                 , ( 600, ResetGrowingSeeds )
                 , ( 500, NextTutorialStep )
@@ -487,6 +483,11 @@ endMove =
 -- Release
 
 
+triggerRelease : Cmd Msg
+triggerRelease =
+    Delay.trigger ReleaseTile
+
+
 releaseTiles : Model -> Model
 releaseTiles =
     stopDrag
@@ -506,12 +507,20 @@ shiftBoard =
 
 
 
--- Grow Pods
+-- Seed Pods
 
 
-generateSeedType : Model -> Cmd Msg
-generateSeedType model =
-    Pod.generateSeedType AddGrowingSeeds model.tileSettings
+generateSeedType : Maybe Seed.Seed -> Board -> List Tile.Setting -> Cmd Msg
+generateSeedType =
+    Pod.generateNewSeeds AddGrowingSeeds
+
+
+isSeedPodMove : Model -> Bool
+isSeedPodMove model =
+    model.board
+        |> Board.activeMoves
+        |> List.map Move.tile
+        |> List.member (Just SeedPod)
 
 
 
@@ -843,7 +852,7 @@ renderCurrentMove model move =
 
 renderLines : Model -> List (Html msg)
 renderLines model =
-    mapTiles (renderLine model.context.window) model.board
+    mapTiles (Line.view (lineViewModel model)) model.board
 
 
 boardLayout : Model -> List (Html msg) -> Html msg
@@ -989,11 +998,19 @@ topBarViewModel model =
     }
 
 
+lineViewModel : Model -> Line.ViewModel
+lineViewModel model =
+    { window = model.context.window
+    , activeSeedType = Board.activeSeedType model.board
+    }
+
+
 lineDragViewModel : Model -> LineDrag.ViewModel
 lineDragViewModel model =
     { window = model.context.window
     , board = model.board
     , tileSettings = model.tileSettings
+    , isSeedPodMove = isSeedPodMove model
     , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer

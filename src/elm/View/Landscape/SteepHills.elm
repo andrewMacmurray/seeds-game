@@ -8,7 +8,6 @@ module View.Landscape.SteepHills exposing
 import Axis2d
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (Style)
-import Css.Transform as Transform
 import Direction2d
 import Geometry.Svg
 import Point2d
@@ -77,8 +76,7 @@ hillFullScreen window slope color hillStyles elements =
         , height_ 1200
         , viewBox_ 0 0 100 100
         ]
-    <|
-        renderHill slope elements (hill color hillStyles)
+        (renderHill slope elements (hill color hillStyles))
 
 
 renderHill : Float -> List (Element msg) -> (Float -> Svg msg) -> List (Svg msg)

@@ -38,11 +38,29 @@ levels =
                 (Probability 80)
             ]
         }
+    , Level.withTutorial l2Tutorial
+        { walls = []
+        , startTiles = l2StartTiles
+        , boardSize = { x = 8, y = 8 }
+        , moves = 8
+        , tileSettings =
+            [ seed
+                Chrysanthemum
+                (Probability 5)
+                (TargetScore 50)
+            , seed
+                Sunflower
+                (Probability 5)
+                (TargetScore 50)
+            , seedPod
+                (Probability 80)
+            ]
+        }
     , Level.level
         { walls = walls corners
         , startTiles = []
         , boardSize = { x = 8, y = 8 }
-        , moves = 10
+        , moves = 7
         , tileSettings =
             [ seed
                 Sunflower
@@ -62,8 +80,31 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls l3Walls
-        , startTiles = l3StartTiles
+        { walls = walls diagonal
+        , startTiles = l4StartTiles
+        , boardSize = { x = 8, y = 8 }
+        , moves = 7
+        , tileSettings =
+            [ seed
+                Sunflower
+                (Probability 25)
+                (TargetScore 30)
+            , sun
+                (Probability 25)
+                (TargetScore 20)
+            , seed
+                Chrysanthemum
+                (Probability 25)
+                (TargetScore 30)
+            , seedPod
+                (Probability 5)
+            , burst
+                (Probability 6)
+            ]
+        }
+    , Level.level
+        { walls = walls l5Walls
+        , startTiles = l5StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
@@ -84,10 +125,10 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls l4Walls
-        , startTiles = l4StartTiles
+        { walls = walls l6Walls
+        , startTiles = []
         , boardSize = { x = 7, y = 8 }
-        , moves = 10
+        , moves = 7
         , tileSettings =
             [ seed
                 Sunflower
@@ -102,8 +143,8 @@ levels =
             ]
         }
     , Level.level
-        { walls = walls l5Walls
-        , startTiles = l5StartTiles
+        { walls = walls lWalls
+        , startTiles = l7StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
@@ -154,8 +195,39 @@ l1StartTiles =
     Start.line (Start.seedPod 3 7) { length = 4, direction = Start.Horizontal }
 
 
-l3Walls : List Coord
-l3Walls =
+l2Tutorial : Tutorial.Tutorial
+l2Tutorial =
+    let
+        tileHighlight =
+            Tutorial.horizontalTiles { from = Coord.fromXY 3 4, length = 4 }
+    in
+    Tutorial.tutorial (Tutorial.step "Pods will grow into seeds they touch" tileHighlight) []
+
+
+l2StartTiles : List Start.Tile
+l2StartTiles =
+    List.concat
+        [ Start.square (Start.seedPod 1 1) { size = 8 }
+        , [ Start.sunflower 5 4
+          , Start.chrysanthemum 2 3
+          , Start.sunflower 6 7
+          , Start.chrysanthemum 7 2
+          ]
+        ]
+
+
+l4StartTiles : List Start.Tile
+l4StartTiles =
+    List.concat
+        [ Start.line (Start.seedPod 1 2) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.seedPod 1 3) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.seedPod 2 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.seedPod 3 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        ]
+
+
+l5Walls : List Coord
+l5Walls =
     toCoords
         [ [ s, s, s, s, s, s, s, s ]
         , [ s, w, w, s, s, w, w, s ]
@@ -168,8 +240,8 @@ l3Walls =
         ]
 
 
-l3StartTiles : List Start.Tile
-l3StartTiles =
+l5StartTiles : List Start.Tile
+l5StartTiles =
     List.concat
         [ Start.square (Start.chrysanthemum 3 3) { size = 4 }
         , Start.corner (Start.sun 1 1) { size = 3, facing = Start.BottomRight }
@@ -185,8 +257,22 @@ l3StartTiles =
         ]
 
 
-l4Walls : List Coord
-l4Walls =
+diagonal : List Coord
+diagonal =
+    toCoords
+        [ [ w, s, s, s, s, s, s, s ]
+        , [ s, w, s, s, s, s, s, s ]
+        , [ s, s, w, s, s, s, s, s ]
+        , [ s, s, s, w, s, s, s, s ]
+        , [ s, s, s, s, w, s, s, s ]
+        , [ s, s, s, s, s, w, s, s ]
+        , [ s, s, s, s, s, s, w, s ]
+        , [ s, s, s, s, s, s, s, w ]
+        ]
+
+
+l6Walls : List Coord
+l6Walls =
     toCoords
         [ [ w, w, s, s, s, w, w ]
         , [ w, s, s, s, s, s, w ]
@@ -199,17 +285,8 @@ l4Walls =
         ]
 
 
-l4StartTiles : List Start.Tile
-l4StartTiles =
-    [ Start.burst 4 1
-    , Start.burst 4 2
-    , Start.burst 4 7
-    , Start.burst 4 8
-    ]
-
-
-l5Walls : List Coord
-l5Walls =
+lWalls : List Coord
+lWalls =
     toCoords
         [ [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]
@@ -222,8 +299,8 @@ l5Walls =
         ]
 
 
-l5StartTiles : List Start.Tile
-l5StartTiles =
+l7StartTiles : List Start.Tile
+l7StartTiles =
     List.concat
         [ Start.line (Start.rain 1 4) { length = 4, direction = Start.Horizontal }
         , Start.line (Start.rain 1 5) { length = 4, direction = Start.Horizontal }

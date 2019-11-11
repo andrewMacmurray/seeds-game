@@ -5,7 +5,7 @@ module Scene.Level.LineDrag exposing
 
 import Board exposing (Board)
 import Board.Move as Move
-import Board.Tile as Tile
+import Board.Tile as Tile exposing (Tile(..))
 import Css.Color as Color
 import Css.Style as Style
 import Html exposing (Html, span)
@@ -25,6 +25,7 @@ type alias ViewModel =
     , tileSettings : List Tile.Setting
     , board : Board
     , isDragging : Bool
+    , isSeedPodMove : Bool
     , pointer : Pointer
     }
 
@@ -47,11 +48,6 @@ lineDrag model =
         ( oY, oX ) =
             lastMoveOrigin model
 
-        strokeColor =
-            Board.activeMoveType model.board
-                |> Maybe.map strokeColors
-                |> Maybe.withDefault Color.greyYellow
-
         tileScale =
             Tile.scale window
     in
@@ -62,7 +58,7 @@ lineDrag model =
         , class "fixed top-0 right-0 z-4 touch-disabled"
         ]
         [ line
-            [ Style.svgStyle [ Style.stroke strokeColor ]
+            [ Style.svgStyle [ Style.stroke <| strokeColor model ]
             , strokeWidth <| String.fromFloat <| 6 * tileScale
             , strokeLinecap "round"
             , x1 <| String.fromFloat oX
@@ -72,6 +68,17 @@ lineDrag model =
             ]
             []
         ]
+
+
+strokeColor : ViewModel -> Color.Color
+strokeColor model =
+    if model.isSeedPodMove then
+        strokeColors SeedPod
+
+    else
+        Board.activeMoveType model.board
+            |> Maybe.map strokeColors
+            |> Maybe.withDefault Color.greyYellow
 
 
 lastMoveOrigin : ViewModel -> ( Float, Float )

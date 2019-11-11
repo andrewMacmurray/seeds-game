@@ -20,6 +20,7 @@ import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
+import Utils.List as List
 
 
 
@@ -27,12 +28,13 @@ import Seed exposing (Seed)
 
 
 type Tile
-    = Tile Coord Tile.Tile
+    = Tile Tile.Tile Coord
 
 
 type Direction
     = Vertical
     | Horizontal
+    | Diagonal Facing
 
 
 type Facing
@@ -47,7 +49,7 @@ type Facing
 
 
 move : Tile -> Move
-move (Tile coord tile) =
+move (Tile tile coord) =
     Move.move coord <| Block.static tile
 
 
@@ -69,23 +71,58 @@ line tile { length, direction } =
         Horizontal ->
             rectangle tile { x = length, y = 1 }
 
+        Diagonal facing ->
+            diagonal facing length tile
+
 
 rectangle : Tile -> { x : Int, y : Int } -> List Tile
-rectangle (Tile coord tileType) opts =
+rectangle (Tile tileType coord) opts =
     let
         x =
             Coord.x coord
 
         y =
             Coord.y coord
-
-        toTiles c =
-            Tile c tileType
     in
-    List.map toTiles <|
+    List.map (Tile tileType) <|
         Coord.productXY
             (List.range x (x + opts.x - 1))
             (List.range y (y + opts.y - 1))
+
+
+diagonal : Facing -> Int -> Tile -> List Tile
+diagonal facing length (Tile tileType coord) =
+    let
+        toDiagonal xs ys =
+            List.map2 Coord.fromXY xs ys
+                |> List.map (Tile tileType)
+
+        x =
+            Coord.x coord
+
+        y =
+            Coord.y coord
+    in
+    case facing of
+        BottomRight ->
+            toDiagonal
+                (List.range x length)
+                (List.range y length)
+
+        TopRight ->
+            toDiagonal
+                (List.range x length)
+                (List.inverseRange y length)
+
+        BottomLeft ->
+            toDiagonal
+                (List.inverseRange x length)
+                (List.range y length)
+
+        TopLeft ->
+            toDiagonal
+                (List.inverseRange x length)
+                (List.inverseRange y length)
 
 
 corner : Tile -> { size : Int, facing : Facing } -> List Tile
@@ -119,22 +156,22 @@ corner tile { size, facing } =
 
 burst : Int -> Int -> Tile
 burst x y =
-    Tile (toCoord x y) (Tile.Burst Nothing)
+    Tile (Tile.Burst Nothing) (toCoord x y)
 
 
 sun : Int -> Int -> Tile
 sun x y =
-    Tile (toCoord x y) Sun
+    Tile Sun (toCoord x y)
 
 
 rain : Int -> Int -> Tile
 rain x y =
-    Tile (toCoord x y) Rain
+    Tile Rain (toCoord x y)
 
 
 seedPod : Int -> Int -> Tile
 seedPod x y =
-    Tile (toCoord x y) SeedPod
+    Tile SeedPod (toCoord x y)
 
 
 sunflower : Int -> Int -> Tile
@@ -149,7 +186,7 @@ chrysanthemum =
 
 seed : Seed -> Int -> Int -> Tile
 seed seed_ x y =
-    Tile (toCoord x y) (Seed seed_)
+    Tile (Seed seed_) (toCoord x y)
 
 
 
@@ -157,13 +194,13 @@ seed seed_ x y =
 
 
 adjustX : Int -> Tile -> Tile
-adjustX n (Tile coord tileType) =
-    Tile (Coord.translateX n coord) tileType
+adjustX n (Tile tileType coord) =
+    Tile tileType (Coord.translateX n coord)
 
 
 adjustY : Int -> Tile -> Tile
-adjustY n (Tile coord tileType) =
-    Tile (Coord.translateY n coord) tileType
+adjustY n (Tile tileType coord) =
+    Tile tileType (Coord.translateY n coord)
 
 
 toCoord : Int -> Int -> Coord
