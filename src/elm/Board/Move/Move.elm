@@ -63,7 +63,9 @@ undoLastMove board =
 
 isValidNextMove : Move -> Board -> Bool
 isValidNextMove move board =
-    isNotWall move && anyChecksPass move board
+    isNotWall move
+        && Check.isNewNeighbour move board
+        && anyChecksPass move board
 
 
 anyChecksPass : Move -> Board -> Bool
@@ -81,7 +83,7 @@ checks =
 
 isValidStandardMove : Move -> Board -> Bool
 isValidStandardMove move board =
-    Check.isNewNeighbour move board && Check.sameActiveTileType move board
+    Check.sameActiveTileType move board
 
 
 

@@ -1,4 +1,4 @@
-module Scene.Level.LineDrag exposing
+module Scene.Level.Board.LineDrag exposing
     ( ViewModel
     , view
     )

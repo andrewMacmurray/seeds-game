@@ -63,7 +63,7 @@ fadeOut =
             , height 20
             , animation "fade-out" 1000 []
             ]
-        , class "absolute top-1 right-1 z-7"
+        , class "absolute top-1 right-1 z-9"
         ]
         [ Icon.cog Color.darkYellow ]
 
@@ -72,12 +72,12 @@ view : Msg msg -> Context -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html
 view msg context sceneMsg sceneSpecificOptions =
     div []
         [ div
-            [ class "fixed pointer right-1 top-1 z-7"
+            [ class "fixed pointer right-1 top-1 z-9"
             , withDisable context.menu
             , style [ animation "fade-in" 500 [] ]
             ]
             [ menuDrawerButton msg context ]
-        , div [ class "fixed z-6 top-0", enableWhenOpen context.menu ]
+        , div [ class "fixed z-8 top-0", enableWhenOpen context.menu ]
             [ overlay msg context
             , drawer msg context sceneMsg sceneSpecificOptions
             ]

@@ -21,13 +21,7 @@ suite =
 validMoveSuite : Test
 validMoveSuite =
     describe "Pod.isValidNextMove"
-        [ test "isNotValid if moves are not neighbours" <|
-            \_ ->
-                board
-                    |> makeMove 0 1
-                    |> checkIsValidNextMove 0 3
-                    |> Expect.equal False
-        , test "isValid if previous and next tiles are pods" <|
+        [ test "isValid if previous and next tiles are pods" <|
             \_ ->
                 board
                     |> makeMove 0 1

@@ -11,7 +11,6 @@ import Board exposing (Board)
 import Board.Block as Block
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Move.Check as Check
 import Board.Tile exposing (State(..), Tile)
 
 
@@ -30,11 +29,8 @@ isValidNextMove move board =
 
         isValidMoveAfterBurst =
             isBurst last && Board.activeMoveType board == Move.tile move
-
-        isNewNeighbour =
-            Check.isNewNeighbour move board
     in
-    (isBurst move || isValidMoveAfterBurst || burstTypeNotSet) && isNewNeighbour
+    isBurst move || isValidMoveAfterBurst || burstTypeNotSet
 
 
 isBurst : Move -> Bool

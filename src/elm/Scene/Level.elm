@@ -38,9 +38,9 @@ import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Scene.Level.Board.Line as Line
+import Scene.Level.Board.LineDrag as LineDrag exposing (ViewModel)
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
-import Scene.Level.LineDrag as LineDrag exposing (ViewModel)
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed exposing (Seed)

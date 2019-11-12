@@ -65,6 +65,14 @@ div {
   z-index: 7;
 }
 
+.z-8 {
+  z-index: 8;
+}
+
+.z-9 {
+  z-index: 9;
+}
+
 .f7 {
   font-size: var(--font-size-7);
 }

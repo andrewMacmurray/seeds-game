@@ -50,14 +50,8 @@ isValidNextMove move board =
 
         isNextSeedPodMove =
             isActiveSeedPodMove && isSeedPodMove
-
-        isMatchingMove =
-            twoSeedPods || isFirstSeedMove || isNextSeedMove || isNextSeedPodMove
-
-        isNewNeighbour =
-            Check.isNewNeighbour move board
     in
-    isMatchingMove && isNewNeighbour
+    twoSeedPods || isFirstSeedMove || isNextSeedMove || isNextSeedPodMove
 
 
 isSeed : Move -> Bool
