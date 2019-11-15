@@ -14,7 +14,7 @@ import Config.Level as Level exposing (WorldConfig)
 import Config.World as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation
-import Css.Color as Color exposing (rgb)
+import Css.Color as Color exposing (Color)
 import Css.Style exposing (..)
 import Css.Transition as Transition
 import Exit exposing (continue, exit)
@@ -27,6 +27,7 @@ import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
 import Seed exposing (Seed(..))
+import Svg exposing (Svg)
 import Task exposing (Task)
 import Utils.Delay exposing (after)
 import View.Flower as Flower
@@ -50,7 +51,7 @@ type alias Model =
 
 type Msg
     = ScrollToCurrentCompletedWorld
-    | DomNoOp (Result Dom.Error ())
+    | WorldScrolledToView (Result Dom.Error ())
     | SelectFlower Seed
     | ShowFlower
     | HideFlower
@@ -112,7 +113,7 @@ update msg model =
         ScrollToCurrentCompletedWorld ->
             continue model [ scrollToCurrentCompletedWorld model.context.progress ]
 
-        DomNoOp _ ->
+        WorldScrolledToView _ ->
             continue model []
 
         SelectFlower seed ->
@@ -137,7 +138,7 @@ scrollToCurrentCompletedWorld progress =
         |> (currentCompletedWorldSeedType >> Seed.name)
         |> Dom.getElement
         |> Task.andThen scrollWorldToView
-        |> Task.attempt DomNoOp
+        |> Task.attempt WorldScrolledToView
 
 
 scrollWorldToView : Dom.Element -> Task Dom.Error ()
@@ -176,7 +177,7 @@ view : Model -> Html Msg
 view model =
     div [ class "w-100 z-1" ]
         [ initialOverlay model.context.window
-        , div [ class "z-7 absolute top-0" ] [ renderSelectedFlower model ]
+        , div [ class "z-9 absolute top-0" ] [ renderSelectedFlower model ]
         , div
             [ id "flowers"
             , style [ height <| toFloat model.context.window.height ]
@@ -216,7 +217,7 @@ backToLevelsButton =
         [ button
             [ style
                 [ color Color.white
-                , backgroundColor <| rgb 251 214 74
+                , backgroundColor <| Color.rgb 251 214 74
                 , paddingHorizontal 20
                 , paddingVertical 10
                 , borderNone
@@ -318,6 +319,19 @@ sized size element =
     div [ style [ width size, height size ] ] [ element ]
 
 
+
+-- Selected Flower
+
+
+type alias SelectedFlower msg =
+    { hidden : Svg msg
+    , visible : Svg msg
+    , background : Color
+    , description : String
+    }
+
+
+renderSelectedFlower : Model -> Html Msg
 renderSelectedFlower model =
     let
         window =
@@ -370,6 +384,7 @@ renderSelectedFlower model =
             span [] []
 
 
+renderFlowerLayerText : SelectedFlower msg -> Html msg
 renderFlowerLayerText flowerLayer =
     p
         [ style
@@ -386,6 +401,7 @@ renderFlowerLayerText flowerLayer =
         [ text flowerLayer.description ]
 
 
+renderFlowerBackdrop : Window -> SelectedFlower msg -> FlowerVisibility -> Html msg
 renderFlowerBackdrop window flowerLayer visibility =
     case visibility of
         Entering ->
@@ -411,6 +427,7 @@ renderFlowerBackdrop window flowerLayer visibility =
                 []
 
 
+getFlowerLayer : Seed -> Window -> SelectedFlower msg
 getFlowerLayer seed window =
     let
         description =
@@ -497,7 +514,7 @@ flowerDescription seed =
             "Sunflowers are native to North America but bloom across the world. During growth their bright yellow flowers turn to face the sun. Their seeds are an important food source for both humans and animals."
 
         Chrysanthemum ->
-            "Chrysanthemums are native to Aisa and northeastern Europe, with the largest variety in China. They bloom early in Autumn, in many different colours and shapes. The Ancient Chinese used Chrysanthemum roots in pain relief medicine."
+            "Chrysanthemums are native to Asia and Northeastern Europe, with the largest variety in China. They bloom early in Autumn, in many different colours and shapes. The Ancient Chinese used Chrysanthemum roots in pain relief medicine."
 
         Cornflower ->
             "Cornflowers are a wildflower native to Europe. In the past their bright blue heads could be seen amongst fields of corn. They are now endangered in their natural habitat from Agricultural intensification."
