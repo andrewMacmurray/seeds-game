@@ -1,4 +1,4 @@
-module Scene.Level.TopBar exposing
+module Scene.Level.View.TopBar exposing
     ( ViewModel
     , scoreIcon
     , view
@@ -14,7 +14,7 @@ import Css.Transition exposing (transitionAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
+import Scene.Level.View.Board.Style as Board
 import Svg exposing (Svg)
 import View.Icon.RainBank exposing (rainBankFull)
 import View.Icon.SunBank exposing (sunBankFull)
@@ -23,12 +23,20 @@ import View.Seed as Seed
 import Window exposing (Window)
 
 
+
+-- Model
+
+
 type alias ViewModel =
     { window : Window
     , remainingMoves : Int
     , tileSettings : List Tile.Setting
     , scores : Scores.Scores
     }
+
+
+
+-- View
 
 
 view : ViewModel -> Html msg

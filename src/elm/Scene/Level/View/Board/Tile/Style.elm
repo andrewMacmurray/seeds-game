@@ -1,4 +1,4 @@
-module Scene.Level.Board.Tile.Style exposing
+module Scene.Level.View.Board.Tile.Style exposing
     ( background
     , baseClasses
     , burstStyles

@@ -37,12 +37,12 @@ import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Scene.Level.Board.Line as Line
-import Scene.Level.Board.LineDrag as LineDrag exposing (ViewModel)
-import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile as Tile
-import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
+import Scene.Level.View.Board.Line as Line
+import Scene.Level.View.Board.LineDrag as LineDrag exposing (ViewModel)
+import Scene.Level.View.Board.Style as Board
+import Scene.Level.View.Board.Tile as Tile
+import Scene.Level.View.TopBar as TopBar
 import Seed exposing (Seed)
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
@@ -70,7 +70,7 @@ type alias Model =
 
 
 type Msg
-    = BoardGenerated Level.LevelConfig Board
+    = BoardGenerated Level.Config Board
     | StartTutorial
     | NextTutorialStep
     | HideTutorialStep
@@ -160,7 +160,7 @@ canRestartLevel model =
 -- Init
 
 
-init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
+init : Level.Config -> Context -> ( Model, Cmd Msg )
 init config context =
     initialState config context
         |> withCmds
@@ -169,7 +169,7 @@ init config context =
             ]
 
 
-initialState : Level.LevelConfig -> Context -> Model
+initialState : Level.Config -> Context -> Model
 initialState { tileSettings, boardSize, moves, tutorial } context =
     { context = context
     , tutorial = tutorial
@@ -438,12 +438,12 @@ updateBoard f model =
 -- Init Board
 
 
-generateBoard : Level.LevelConfig -> Model -> Cmd Msg
+generateBoard : Level.Config -> Model -> Cmd Msg
 generateBoard config { boardSize } =
     Generate.board (BoardGenerated config) config.tileSettings boardSize
 
 
-initBoard : Level.LevelConfig -> Board -> HasBoard model -> HasBoard model
+initBoard : Level.Config -> Board -> HasBoard model -> HasBoard model
 initBoard config board model =
     model
         |> updateBoard (always board)

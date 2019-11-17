@@ -84,7 +84,7 @@ type Msg
     | GardenMsg Garden.Msg
     | InitIntro
     | InitHub Level.Id
-    | InitLevel Level.LevelConfig
+    | InitLevel Level.Config
     | InitRetry
     | InitSummary
     | InitGarden
@@ -351,7 +351,7 @@ handleStartLevel model level =
 -- Level
 
 
-initLevel : Level.LevelConfig -> Model -> ( Model, Cmd Msg )
+initLevel : Level.Config -> Model -> ( Model, Cmd Msg )
 initLevel config =
     initScene Level LevelMsg <| Level.init config
 

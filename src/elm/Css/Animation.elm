@@ -4,6 +4,7 @@ module Css.Animation exposing
     , Option
     , Property
     , animation
+    , backgroundColor
     , count
     , cubicBezier
     , delay
@@ -18,6 +19,7 @@ module Css.Animation exposing
     , transform
     )
 
+import Css.Color exposing (Color)
 import Css.Style as Style exposing (Style)
 import Css.Transform exposing (Transform)
 import Css.Unit exposing (cubicBezier_, ms, pc)
@@ -174,6 +176,11 @@ transform =
 opacity : Float -> Property
 opacity =
     Property << Style.opacity
+
+
+backgroundColor : Color -> Property
+backgroundColor =
+    Property << Style.backgroundColor
 
 
 

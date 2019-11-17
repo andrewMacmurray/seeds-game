@@ -1,4 +1,4 @@
-module Scene.Level.Board.Line exposing
+module Scene.Level.View.Board.Line exposing
     ( ViewModel
     , view
     )
@@ -9,7 +9,7 @@ import Css.Style as Style exposing (Style, marginAuto, styles)
 import Css.Transform exposing (..)
 import Css.Transition as Transition
 import Html exposing (Html, div, span)
-import Scene.Level.Board.Tile.Style as Tile
+import Scene.Level.View.Board.Tile.Style as Tile
 import Seed exposing (Seed)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)

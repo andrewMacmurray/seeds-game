@@ -1,6 +1,7 @@
 module View.Animation exposing (animations)
 
-import Css.Animation as Animation exposing (frame, keyframes, opacity, transform)
+import Css.Animation as Animation exposing (backgroundColor, frame, keyframes, opacity, transform)
+import Css.Color as Color
 import Css.Transform exposing (rotateZ, scale, translateX, translateY)
 import Html exposing (Html)
 

@@ -1,4 +1,4 @@
-module Scene.Level.Board.Tile.Leaving exposing (ViewModel, styles)
+module Scene.Level.View.Board.Tile.Leaving exposing (ViewModel, styles)
 
 import Board
 import Board.Block as Block
@@ -10,7 +10,7 @@ import Css.Transform exposing (scale, translate)
 import Css.Transition exposing (delay, transitionAll)
 import Dict
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
+import Scene.Level.View.Board.Style as Board
 import Window exposing (Window)
 
 

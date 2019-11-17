@@ -63,7 +63,7 @@ seedType =
     Level.seedType all
 
 
-levelConfig : Level.Id -> LevelConfig
+levelConfig : Level.Id -> Config
 levelConfig =
     getLevel
         >> Maybe.withDefault Level.default

@@ -24,6 +24,7 @@ module Css.Color exposing
     , lightGreyYellow
     , lightOrange
     , lightYellow
+    , lighterGold
     , meadowGreen
     , mediumGreen
     , midnightBlue
@@ -159,6 +160,11 @@ gold =
 lightGold : Color
 lightGold =
     rgb 255 199 19
+
+
+lighterGold : Color
+lighterGold =
+    rgb 255 211 0
 
 
 lightGreyYellow : Color

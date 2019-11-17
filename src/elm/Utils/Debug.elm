@@ -1,6 +1,6 @@
 module Utils.Debug exposing (goToLevel)
 
-import Config.Level as Level exposing (LevelConfig)
+import Config.Level as Level exposing (Config)
 import Config.World as World
 import Ports
 import Utils.Delay as Delay
@@ -10,7 +10,7 @@ import Utils.Delay as Delay
 -- Debug
 
 
-goToLevel : Int -> Int -> (LevelConfig -> msg) -> Cmd msg
+goToLevel : Int -> Int -> (Config -> msg) -> Cmd msg
 goToLevel world level msg =
     Cmd.batch
         [ Delay.trigger <| msg <| World.levelConfig <| Level.idFromRaw_ world level

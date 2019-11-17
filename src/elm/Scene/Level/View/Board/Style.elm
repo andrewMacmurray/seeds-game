@@ -1,4 +1,4 @@
-module Scene.Level.Board.Style exposing
+module Scene.Level.View.Board.Style exposing
     ( ViewModel
     , fullWidth
     , height
@@ -14,7 +14,7 @@ module Scene.Level.Board.Style exposing
 import Board
 import Board.Tile as Tile exposing (State(..), Tile(..))
 import Css.Style as Style exposing (..)
-import Scene.Level.Board.Tile.Style as TileStyle
+import Scene.Level.View.Board.Tile.Style as TileStyle
 import Window exposing (Window)
 
 

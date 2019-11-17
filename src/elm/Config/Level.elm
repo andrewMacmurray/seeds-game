@@ -1,8 +1,8 @@
 module Config.Level exposing
     ( Cache
+    , Config
     , Id
     , Level
-    , LevelConfig
     , World
     , WorldConfig
     , Worlds
@@ -84,7 +84,7 @@ type alias Levels =
 
 
 type Level
-    = Level LevelConfig
+    = Level Config
 
 
 type alias LevelInitConfig =
@@ -96,7 +96,7 @@ type alias LevelInitConfig =
     }
 
 
-type alias LevelConfig =
+type alias Config =
     { tileSettings : List Tile.Setting
     , startTiles : List Start.Tile
     , walls : List Wall.Config
@@ -300,7 +300,7 @@ completed (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId > target.levelId)
 
 
-config : Level -> LevelConfig
+config : Level -> Config
 config (Level l) =
     l
 

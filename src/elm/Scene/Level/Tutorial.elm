@@ -28,8 +28,8 @@ import Css.Style as Style
 import Html exposing (Html)
 import Html.Attributes as Attribute
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile.Style as Tile
+import Scene.Level.View.Board.Style as Board
+import Scene.Level.View.Board.Tile.Style as Tile
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
 import Utils.Svg exposing (..)
@@ -70,14 +70,6 @@ type Highlight
     | RemainingMoves
     | SeedBank
     | NoHighlight
-
-
-type alias ViewModel =
-    { window : Window
-    , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
-    , tutorial : Tutorial
-    }
 
 
 
@@ -224,6 +216,14 @@ highlightMultiple =
 
 
 -- View
+
+
+type alias ViewModel =
+    { window : Window
+    , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
+    , tutorial : Tutorial
+    }
 
 
 type alias InternalViewModel =

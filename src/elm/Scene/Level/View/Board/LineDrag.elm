@@ -1,4 +1,4 @@
-module Scene.Level.Board.LineDrag exposing
+module Scene.Level.View.Board.LineDrag exposing
     ( ViewModel
     , view
     )
@@ -11,8 +11,8 @@ import Css.Style as Style
 import Html exposing (Html, span)
 import Level.Setting.Tile as Tile
 import Pointer exposing (Pointer)
-import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile.Style exposing (..)
+import Scene.Level.View.Board.Style as Board
+import Scene.Level.View.Board.Tile.Style exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (height_, width_, windowViewBox_)

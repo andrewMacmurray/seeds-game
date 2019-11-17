@@ -1,4 +1,4 @@
-module Scene.Level.Board.Tile exposing (view)
+module Scene.Level.View.Board.Tile exposing (view)
 
 import Board
 import Board.Block as Block exposing (Block)
@@ -8,8 +8,8 @@ import Css.Style as Style exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Tile.Leaving as Leaving
-import Scene.Level.Board.Tile.Style as Tile
+import Scene.Level.View.Board.Tile.Leaving as Leaving
+import Scene.Level.View.Board.Tile.Style as Tile
 import View.Icon.Burst as Burst
 import View.Seed as Seed
 import Window exposing (Window)
