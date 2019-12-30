@@ -29,7 +29,7 @@ module Board.Tile exposing
     , removeBearing
     , scale
     , seedType
-    , setActiveToStatic
+    , setBurstActivatedToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToLeaving
@@ -57,7 +57,7 @@ type Tile
     = Rain
     | Sun
     | Seed Seed.Seed
-    | SeedPod
+    | Pod
     | Burst (Maybe Tile)
 
 
@@ -72,7 +72,7 @@ type State
     | Falling Tile Distance
     | Entering Tile
     | Growing Tile MoveOrder
-    | Active Tile
+    | BurstActivated Tile
     | Releasing Tile MoveOrder
     | Empty
 
@@ -243,7 +243,7 @@ setToDragging moveOrder_ tileState =
         Static tileType ->
             Dragging tileType moveOrder_ Head
 
-        Active tileType ->
+        BurstActivated tileType ->
             Dragging tileType moveOrder_ Head
 
         x ->
@@ -253,7 +253,7 @@ setToDragging moveOrder_ tileState =
 growLeavingBurstToSeed : Seed.Seed -> State -> State
 growLeavingBurstToSeed seed tileState =
     case tileState of
-        Leaving (Burst (Just SeedPod)) moveOrder_ ->
+        Leaving (Burst (Just Pod)) moveOrder_ ->
             Growing (Seed seed) moveOrder_
 
         x ->
@@ -284,16 +284,16 @@ setToActive : State -> State
 setToActive tileState =
     case tileState of
         Static tileType ->
-            Active tileType
+            BurstActivated tileType
 
         x ->
             x
 
 
-setActiveToStatic : State -> State
-setActiveToStatic tileState =
+setBurstActivatedToStatic : State -> State
+setBurstActivatedToStatic tileState =
     case tileState of
-        Active tileType ->
+        BurstActivated tileType ->
             Static tileType
 
         x ->
@@ -419,8 +419,8 @@ setDraggingToStatic tileState =
 setDraggingToGrowing : State -> State
 setDraggingToGrowing tileState =
     case tileState of
-        Dragging SeedPod order _ ->
-            Growing SeedPod order
+        Dragging Pod order _ ->
+            Growing Pod order
 
         x ->
             x
@@ -488,7 +488,7 @@ get tileState =
         Growing tile _ ->
             Just tile
 
-        Active tile ->
+        BurstActivated tile ->
             Just tile
 
         Releasing tile _ ->
@@ -507,8 +507,8 @@ hash tileType =
         Sun ->
             "Sun"
 
-        SeedPod ->
-            "SeedPod"
+        Pod ->
+            "Pod"
 
         Seed seed ->
             Seed.name seed

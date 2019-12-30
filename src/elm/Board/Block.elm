@@ -23,7 +23,7 @@ module Board.Block exposing
     , moveOrder
     , releaseDraggingSeeds
     , seedType
-    , setActiveToStatic
+    , setBurstActivatedToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
     , setDraggingToLeaving
@@ -34,7 +34,7 @@ module Board.Block exposing
     , setLeavingToEmpty
     , setReleasingToStatic
     , setStaticToFirstMove
-    , setToActive
+    , setToActivatedByBurst
     , setToDragging
     , setToFalling
     , static
@@ -188,14 +188,14 @@ setReleasingToStatic =
     map Tile.setReleasingToStatic
 
 
-setToActive : Block -> Block
-setToActive =
+setToActivatedByBurst : Block -> Block
+setToActivatedByBurst =
     map Tile.setToActive
 
 
-setActiveToStatic : Block -> Block
-setActiveToStatic =
-    map Tile.setActiveToStatic
+setBurstActivatedToStatic : Block -> Block
+setBurstActivatedToStatic =
+    map Tile.setBurstActivatedToStatic
 
 
 clearBearing : Block -> Block

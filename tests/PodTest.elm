@@ -102,4 +102,4 @@ c =
 
 p : Tile
 p =
-    SeedPod
+    Pod

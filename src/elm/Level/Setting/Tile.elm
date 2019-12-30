@@ -3,9 +3,9 @@ module Level.Setting.Tile exposing
     , Setting
     , TargetScore(..)
     , burst
+    , pod
     , rain
     , seed
-    , seedPod
     , sun
     )
 
@@ -47,9 +47,9 @@ seed seed_ prob targetScore =
     Setting (Seed seed_) prob <| Just targetScore
 
 
-seedPod : Probability -> Setting
-seedPod prob =
-    Setting SeedPod prob Nothing
+pod : Probability -> Setting
+pod prob =
+    Setting Pod prob Nothing
 
 
 burst : Probability -> Setting

@@ -96,7 +96,7 @@ view infoWindow content_ =
                     [ class "pa3 br3 tc relative"
                     , style
                         [ animation "elastic-bounce-in" 2000 [ linear ]
-                        , background seedPodGradient
+                        , background podGradient
                         , color white
                         , width 380
                         ]
@@ -109,7 +109,7 @@ view infoWindow content_ =
                 [ div
                     [ class "pa3 br3 tc relative"
                     , style
-                        [ background seedPodGradient
+                        [ background podGradient
                         , color white
                         , width 380
                         , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]

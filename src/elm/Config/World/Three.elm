@@ -36,7 +36,7 @@ levels =
                 Cornflower
                 (Probability 20)
                 (TargetScore 80)
-            , seedPod
+            , pod
                 (Probability 40)
             , burst
                 (Probability 5)
@@ -59,7 +59,7 @@ levels =
             , rain
                 (Probability 25)
                 (TargetScore 20)
-            , seedPod
+            , pod
                 (Probability 25)
             ]
         }
@@ -84,7 +84,7 @@ levels =
             , rain
                 (Probability 25)
                 (TargetScore 30)
-            , seedPod
+            , pod
                 (Probability 25)
             , burst
                 (Probability 10)

@@ -25,7 +25,7 @@ type alias ViewModel =
     , tileSettings : List Tile.Setting
     , board : Board
     , isDragging : Bool
-    , isSeedPodMove : Bool
+    , isPodMove : Bool
     , pointer : Pointer
     }
 
@@ -72,8 +72,8 @@ lineDrag model =
 
 strokeColor : ViewModel -> Color.Color
 strokeColor model =
-    if model.isSeedPodMove then
-        strokeColors SeedPod
+    if model.isPodMove then
+        strokeColors Pod
 
     else
         Board.activeMoveType model.board

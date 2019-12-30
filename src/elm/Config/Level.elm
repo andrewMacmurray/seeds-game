@@ -209,7 +209,7 @@ default =
             , Tile.sun
                 (Probability 25)
                 (TargetScore 30)
-            , Tile.seedPod
+            , Tile.pod
                 (Probability 25)
             ]
         }

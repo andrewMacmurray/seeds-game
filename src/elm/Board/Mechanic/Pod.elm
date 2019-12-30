@@ -27,31 +27,34 @@ isValidNextMove move board =
         activeSeed =
             Board.activeSeed board
 
-        isActiveSeedPodMove =
-            Board.activeMoveType board == Just SeedPod
+        isActivePodMove =
+            Board.activeMoveType board == Just Pod
 
         moveType =
             Move.tile move
 
-        isSeedPodMove =
-            moveType == Just SeedPod
+        isPodMove =
+            moveType == Just Pod
 
-        twoSeedPods =
-            isSeedPodMove && sameTileType
+        twoPods =
+            isPodMove && sameTileType
 
         isFirstSeedMove =
-            isSeed move && activeSeed == Nothing && isActiveSeedPodMove
+            isSeed move && activeSeed == Nothing && isActivePodMove
 
         isNextSeedMove =
-            moveType == activeSeed && isActiveSeedPodMove
+            moveType == activeSeed && isActivePodMove
 
         sameTileType =
             Check.sameActiveTileType move board
 
-        isNextSeedPodMove =
-            isActiveSeedPodMove && isSeedPodMove
+        isNextPodMove =
+            isActivePodMove && isPodMove
     in
-    twoSeedPods || isFirstSeedMove || isNextSeedMove || isNextSeedPodMove
+    twoPods
+        || isFirstSeedMove
+        || isNextSeedMove
+        || isNextPodMove
 
 
 isSeed : Move -> Bool
@@ -79,7 +82,7 @@ generateNewSeeds msg seedType board settings =
 
 shouldGrow : Board -> Bool
 shouldGrow board =
-    Board.activeMoveType board == Just SeedPod
+    Board.activeMoveType board == Just Pod
 
 
 growPods : Board -> Board

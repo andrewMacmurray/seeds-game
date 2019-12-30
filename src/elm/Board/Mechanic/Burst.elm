@@ -44,7 +44,7 @@ isBurst =
 
 drag : Board.Size -> Board -> Board
 drag boardSize =
-    handleAddBurstType >> addActiveTiles boardSize
+    handleAddBurstType >> addBurstActivatedTiles boardSize
 
 
 handleAddBurstType : Board -> Board
@@ -57,8 +57,8 @@ handleAddBurstType board =
             Board.updateBlocks Block.clearBurstType board
 
 
-addActiveTiles : Board.Size -> Board -> Board
-addActiveTiles boardSize board =
+addBurstActivatedTiles : Board.Size -> Board -> Board
+addBurstActivatedTiles boardSize board =
     let
         radius =
             burstRadius board
@@ -85,20 +85,20 @@ addActiveTiles boardSize board =
                 |> List.filter nonBurstingMove
                 |> List.map Move.coord
 
-        updateBlockToActive block =
+        updateBlockToActivated block =
             if activeMoveType == Block.tile block then
-                Block.setToActive block
+                Block.setToActivatedByBurst block
 
             else
                 block
 
-        updateToActive coord =
-            Board.updateAt coord updateBlockToActive
+        updateToActivated coord =
+            Board.updateAt coord updateBlockToActivated
 
         updateToStatic coord =
-            Board.updateAt coord Block.setActiveToStatic
+            Board.updateAt coord Block.setBurstActivatedToStatic
     in
-    List.foldl updateToActive board burstAreaCoordinates
+    List.foldl updateToActivated board burstAreaCoordinates
         |> (\updatedBoard -> List.foldl updateToStatic updatedBoard nonBurstCoords)
 
 
@@ -125,9 +125,9 @@ burst board =
         withMoveOrder coord =
             Coord.x coord + 1 * (Coord.y coord * 8)
 
-        updateActiveBlockToDragging coord block =
+        updateActivatedBlockToDragging coord block =
             case Block.tileState block of
-                Active _ ->
+                BurstActivated _ ->
                     Block.setToDragging (withMoveOrder coord) block
 
                 _ ->
@@ -137,7 +137,7 @@ burst board =
             Board.updateAt coord Block.setDraggingToLeaving
 
         updatedDraggingBoard =
-            Board.update updateActiveBlockToDragging board
+            Board.update updateActivatedBlockToDragging board
     in
     burstCoords
         |> List.foldl updateBurstsToLeaving updatedDraggingBoard

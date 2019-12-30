@@ -154,7 +154,7 @@ moveTracerStyles move =
             [ Animation.animation "bulge-fade-2" 800 [ Animation.ease ]
             ]
 
-        Tile.Active _ ->
+        Tile.BurstActivated _ ->
             [ Animation.animation "bulge-fade" 800 [ Animation.ease, Animation.infinite ]
             ]
 
@@ -187,13 +187,13 @@ draggingStyles isBursting move =
 
 
 
--- SeedPod
+-- Pod
 
 
 growingStyles : Move -> List Style
 growingStyles move =
     case Move.tileState move of
-        Tile.Growing Tile.SeedPod _ ->
+        Tile.Growing Tile.Pod _ ->
             [ transform [ scale 4 ]
             , transitionAll 400 [ delay <| modBy 5 (Block.growingOrder <| Move.block move) * 70 ]
             , opacity 0
@@ -256,7 +256,7 @@ strokeColors tile =
         Tile.Sun ->
             Color.gold
 
-        Tile.SeedPod ->
+        Tile.Pod ->
             Color.green
 
         Tile.Seed seed ->
@@ -275,7 +275,7 @@ lighterStrokeColor tile =
         Tile.Sun ->
             Color.rgb 249 221 79
 
-        Tile.SeedPod ->
+        Tile.Pod ->
             Color.rgb 157 229 106
 
         Tile.Seed seed ->
@@ -342,8 +342,8 @@ tileBackground_ tile =
         Tile.Sun ->
             [ backgroundColor Color.gold ]
 
-        Tile.SeedPod ->
-            [ Style.background Color.seedPodGradient ]
+        Tile.Pod ->
+            [ Style.background Color.podGradient ]
 
         Tile.Seed _ ->
             []
@@ -361,7 +361,7 @@ tileSize_ tile =
         Tile.Sun ->
             18
 
-        Tile.SeedPod ->
+        Tile.Pod ->
             26
 
         Tile.Seed _ ->

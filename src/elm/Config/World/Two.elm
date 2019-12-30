@@ -34,7 +34,7 @@ levels =
                 Chrysanthemum
                 (Probability 5)
                 (TargetScore 50)
-            , seedPod
+            , pod
                 (Probability 80)
             ]
         }
@@ -52,7 +52,7 @@ levels =
                 Sunflower
                 (Probability 5)
                 (TargetScore 50)
-            , seedPod
+            , pod
                 (Probability 80)
             ]
         }
@@ -73,7 +73,7 @@ levels =
                 Chrysanthemum
                 (Probability 25)
                 (TargetScore 30)
-            , seedPod
+            , pod
                 (Probability 25)
             , burst
                 (Probability 6)
@@ -96,7 +96,7 @@ levels =
                 Chrysanthemum
                 (Probability 25)
                 (TargetScore 30)
-            , seedPod
+            , pod
                 (Probability 5)
             , burst
                 (Probability 6)
@@ -118,7 +118,7 @@ levels =
             , sun
                 (Probability 20)
                 (TargetScore 20)
-            , seedPod
+            , pod
                 (Probability 40)
             , burst
                 (Probability 5)
@@ -138,7 +138,7 @@ levels =
                 Chrysanthemum
                 (Probability 25)
                 (TargetScore 35)
-            , seedPod
+            , pod
                 (Probability 60)
             ]
         }
@@ -192,7 +192,7 @@ l1Tutorial =
 
 l1StartTiles : List Start.Tile
 l1StartTiles =
-    Start.line (Start.seedPod 3 7) { length = 4, direction = Start.Horizontal }
+    Start.line (Start.pod 3 7) { length = 4, direction = Start.Horizontal }
 
 
 l2Tutorial : Tutorial.Tutorial
@@ -207,7 +207,7 @@ l2Tutorial =
 l2StartTiles : List Start.Tile
 l2StartTiles =
     List.concat
-        [ Start.square (Start.seedPod 1 1) { size = 8 }
+        [ Start.square (Start.pod 1 1) { size = 8 }
         , [ Start.sunflower 5 4
           , Start.chrysanthemum 2 3
           , Start.sunflower 6 7
@@ -219,10 +219,10 @@ l2StartTiles =
 l4StartTiles : List Start.Tile
 l4StartTiles =
     List.concat
-        [ Start.line (Start.seedPod 1 2) { length = 7, direction = Start.Diagonal Start.BottomRight }
-        , Start.line (Start.seedPod 1 3) { length = 7, direction = Start.Diagonal Start.BottomRight }
-        , Start.line (Start.seedPod 2 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
-        , Start.line (Start.seedPod 3 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        [ Start.line (Start.pod 1 2) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.pod 1 3) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.pod 2 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
+        , Start.line (Start.pod 3 1) { length = 7, direction = Start.Diagonal Start.BottomRight }
         ]
 
 
@@ -251,9 +251,9 @@ l5StartTiles =
         , [ Start.burst 3 3
           , Start.burst 6 6
           ]
-        , Start.square (Start.seedPod 4 4) { size = 2 }
-        , Start.square (Start.seedPod 4 1) { size = 2 }
-        , Start.square (Start.seedPod 4 7) { size = 2 }
+        , Start.square (Start.pod 4 4) { size = 2 }
+        , Start.square (Start.pod 4 1) { size = 2 }
+        , Start.square (Start.pod 4 7) { size = 2 }
         ]
 
 

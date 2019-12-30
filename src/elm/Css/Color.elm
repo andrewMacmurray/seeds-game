@@ -31,11 +31,11 @@ module Css.Color exposing
     , orange
     , petalOrange
     , pinkRed
+    , podGradient
     , purple
     , rainBlue
     , rgb
     , rgba
-    , seedPodGradient
     , silver
     , skyGreen
     , softRed
@@ -59,13 +59,13 @@ type alias Color =
 -- Gradients
 
 
-seedPodGradient : Color
-seedPodGradient =
-    linearGradient seedPodGradient_
+podGradient : Color
+podGradient =
+    linearGradient podGradient_
 
 
-seedPodGradient_ : String
-seedPodGradient_ =
+podGradient_ : String
+podGradient_ =
     String.join ", "
         [ deg 90
         , lightGreen

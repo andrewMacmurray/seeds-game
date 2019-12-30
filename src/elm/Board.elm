@@ -14,7 +14,7 @@ module Board exposing
     , fromTiles
     , isActiveMove
     , isEmpty
-    , isSeedPodMove
+    , isPodMove
     , lastMove
     , moves
     , place
@@ -146,8 +146,8 @@ activeMoves =
 
 activeMoveType : Board -> Maybe Tile
 activeMoveType board =
-    if isSeedPodMove board then
-        Just SeedPod
+    if isPodMove board then
+        Just Pod
 
     else
         draggingMoveType board
@@ -174,11 +174,11 @@ draggingMoveType =
         >> Maybe.andThen Move.tile
 
 
-isSeedPodMove : Board -> Bool
-isSeedPodMove =
+isPodMove : Board -> Bool
+isPodMove =
     activeMoves
         >> List.map Move.tile
-        >> List.member (Just SeedPod)
+        >> List.member (Just Pod)
 
 
 filterBursts : Board -> Board

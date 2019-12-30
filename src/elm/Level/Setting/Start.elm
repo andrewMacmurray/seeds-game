@@ -7,9 +7,9 @@ module Level.Setting.Start exposing
     , corner
     , line
     , move
+    , pod
     , rain
     , rectangle
-    , seedPod
     , square
     , sun
     , sunflower
@@ -169,9 +169,9 @@ rain x y =
     Tile Rain (toCoord x y)
 
 
-seedPod : Int -> Int -> Tile
-seedPod x y =
-    Tile SeedPod (toCoord x y)
+pod : Int -> Int -> Tile
+pod x y =
+    Tile Pod (toCoord x y)
 
 
 sunflower : Int -> Int -> Tile

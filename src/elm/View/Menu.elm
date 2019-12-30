@@ -135,7 +135,7 @@ drawer msg context sceneMsg sceneMenuOptions =
     in
     div
         [ style
-            [ Style.background Color.seedPodGradient
+            [ Style.background Color.podGradient
             , height <| toFloat context.window.height
             , color Color.white
             , width drawerWidth

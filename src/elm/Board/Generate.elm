@@ -33,7 +33,7 @@ constantSeed msg board_ seed =
 
 toRandomGrowingTiles : (List Tile -> msg) -> Board -> Generator Tile -> Cmd msg
 toRandomGrowingTiles msg board_ =
-    Random.list (numberOfGrowingSeedPods board_) >> Random.generate msg
+    Random.list (numberOfGrowingPods board_) >> Random.generate msg
 
 
 constantSeedGenerator : Seed -> Generator Tile
@@ -51,8 +51,8 @@ filterSeedSettings =
     List.filter (.tileType >> Tile.isSeed)
 
 
-numberOfGrowingSeedPods : Board -> Int
-numberOfGrowingSeedPods =
+numberOfGrowingPods : Board -> Int
+numberOfGrowingPods =
     Board.filterBlocks Block.isGrowing >> Board.size
 
 
@@ -61,17 +61,17 @@ numberOfGrowingSeedPods =
 
 
 type Setting
-    = All
-    | Filtered Tile
+    = AllTileTypes
+    | AllExcept Tile
 
 
 enteringTiles : (List Tile -> msg) -> Setting -> Board -> List Tile.Setting -> Cmd msg
 enteringTiles msg setting board_ tileSettings =
     case setting of
-        All ->
+        AllTileTypes ->
             generateEntering msg board_ tileSettings
 
-        Filtered tile ->
+        AllExcept tile ->
             filteredEnteringTiles msg tile board_ tileSettings
 
 
@@ -163,7 +163,7 @@ tileProbability tileSettings n =
     tileSettings
         |> List.foldl (evalProbability n) ( Nothing, 0 )
         |> Tuple.first
-        |> Maybe.withDefault SeedPod
+        |> Maybe.withDefault Pod
 
 
 evalProbability : Int -> Tile.Setting -> ( Maybe Tile, Int ) -> ( Maybe Tile, Int )
