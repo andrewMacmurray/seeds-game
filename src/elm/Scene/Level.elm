@@ -45,9 +45,11 @@ import Scene.Level.View.Board.Style as Board
 import Scene.Level.View.Board.Tile as Tile
 import Scene.Level.View.TopBar as TopBar
 import Seed exposing (Seed)
+import Time
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
+import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
 
 
@@ -165,7 +167,7 @@ canRestartLevel model =
 init : Level.Config -> Context -> ( Model, Cmd Msg )
 init config context =
     initialState config context
-        |> withCmds
+        |> andThenWithCmds
             [ generateBoard config
             , handleStartTutorial
             ]
@@ -178,7 +180,7 @@ initialState { tileSettings, boardSize, moves, tutorial } context =
     , board = Board.fromMoves []
     , scores = Scores.init tileSettings
     , isDragging = False
-    , challenge = Challenge.timeLimit 3 30
+    , challenge = hardcodedChallenge context.currentTime
     , remainingMoves = moves
     , tileSettings = tileSettings
     , boardSize = boardSize
@@ -188,11 +190,9 @@ initialState { tileSettings, boardSize, moves, tutorial } context =
     }
 
 
-withCmds : List (model -> Cmd msg) -> model -> ( model, Cmd msg )
-withCmds toCmds model =
-    ( model
-    , Cmd.batch <| List.map (\f -> f model) toCmds
-    )
+hardcodedChallenge : Time.Posix -> Challenge
+hardcodedChallenge =
+    Challenge.timeLimit 3 30 >> Challenge.adjustStartTimeBy 3
 
 
 handleStartTutorial : Model -> Cmd Msg

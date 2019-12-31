@@ -1,7 +1,6 @@
 module Lives exposing
     ( Cache
     , Lives
-    , TimeTillNextLife
     , decrement
     , fromCache
     , max
@@ -17,6 +16,8 @@ import Css.Transform exposing (scale)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Time exposing (posixToMillis)
+import Utils.Time.Clock as Clock exposing (Clock)
+import Utils.Time.Interval as Interval
 import View.Icon.Heart as Heart
 
 
@@ -80,26 +81,13 @@ max =
 -- Time till next life
 
 
-type alias TimeTillNextLife =
-    { minutes : Int
-    , seconds : Int
-    }
-
-
-timeTillNextLife : Lives -> Maybe TimeTillNextLife
+timeTillNextLife : Lives -> Maybe Clock
 timeTillNextLife (Lives cache) =
-    let
-        minutes =
-            modBy max <| cache.timeTillNextLife // minute
-
-        seconds =
-            modBy 60 <| cache.timeTillNextLife // second
-    in
     if cache.timeTillNextLife == 0 then
         Nothing
 
     else
-        Just <| TimeTillNextLife minutes seconds
+        Just (Clock.fromMillis cache.timeTillNextLife)
 
 
 
@@ -116,24 +104,12 @@ fromValidCache now cache =
 
 diffTimes : Time.Posix -> Cache -> Int
 diffTimes now cache =
-    decrementAboveZero
-        (posixToMillis now - cache.lastPlayed)
-        cache.timeTillNextLife
+    decrementAboveZero (posixToMillis now - cache.lastPlayed) cache.timeTillNextLife
 
 
 recoveryInterval : Int
 recoveryInterval =
-    5 * minute
-
-
-minute : Int
-minute =
-    60 * second
-
-
-second : Int
-second =
-    1000
+    max * Interval.minute
 
 
 decrementAboveZero : Int -> Int -> Int

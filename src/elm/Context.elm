@@ -15,6 +15,7 @@ module Context exposing
     , setCurrentLevel
     , setWindow
     , showLoadingScreen
+    , updateCurrentTime
     , updateLives
     )
 
@@ -32,6 +33,7 @@ type alias Context =
     , loadingScreen : Maybe Background
     , progress : Progress
     , lives : Lives
+    , currentTime : Time.Posix
     , successMessageIndex : Int
     , menu : Menu
     }
@@ -85,6 +87,15 @@ cacheCurrentLives context =
     context.lives
         |> Lives.toCache
         |> cacheLives
+
+
+
+-- Time
+
+
+updateCurrentTime : Time.Posix -> Context -> Context
+updateCurrentTime time context =
+    { context | currentTime = time }
 
 
 

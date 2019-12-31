@@ -23,8 +23,9 @@ import Scene.Level as Level
 import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
-import Time exposing (millisToPosix)
+import Time
 import Utils.Delay as Delay exposing (trigger)
+import Utils.Update exposing (andThenWithCmd, withCmds)
 import View.Animation exposing (animations)
 import View.Loading exposing (loadingScreen)
 import View.Menu as Menu
@@ -96,6 +97,7 @@ type Msg
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
+    | CurrentTimeReceived Time.Posix
     | GoToHub Level.Id
 
 
@@ -108,9 +110,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> Return.map TitleMsg initialState
-        |> withCmds
-            [ bounceKeyframes flags.window
-            ]
+        |> withCmds [ bounceKeyframes flags.window ]
 
 
 initialState : Title.Model -> Model
@@ -125,15 +125,11 @@ initialContext flags =
     { window = flags.window
     , loadingScreen = Nothing
     , progress = Progress.fromCache flags.level
-    , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
+    , lives = Lives.fromCache (Time.millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
+    , currentTime = Time.millisToPosix flags.now
     , menu = Context.Closed
     }
-
-
-withCmds : List (Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
-withCmds cmds ( model, cmd ) =
-    ( model, Cmd.batch (cmd :: cmds) )
 
 
 
@@ -272,6 +268,9 @@ update msg ({ scene, backdrop } as model) =
 
         ( UpdateLives now, _, _ ) ->
             updateLives now model
+
+        ( CurrentTimeReceived now, _, _ ) ->
+            ( updateContext (Context.updateCurrentTime now) model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -582,15 +581,8 @@ goToHubReachedLevel =
 
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )
-updateLives now model =
-    model
-        |> updateContext (Context.updateLives now)
-        |> andCmd saveCurrentLives
-
-
-andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
-andCmd cmdF model =
-    ( model, cmdF model )
+updateLives now =
+    updateContext (Context.updateLives now) >> andThenWithCmd saveCurrentLives
 
 
 saveCurrentLives : Model -> Cmd Msg
@@ -640,6 +632,7 @@ subscriptions model =
         [ onResize WindowSize
         , updateLivesSubscription model
         , sceneSubscriptions model
+        , currentTimeSubscription model
         ]
 
 
@@ -651,6 +644,16 @@ updateLivesSubscription model =
 
         _ ->
             Time.every 5000 UpdateLives
+
+
+currentTimeSubscription : Model -> Sub Msg
+currentTimeSubscription model =
+    case model.scene of
+        Level _ ->
+            Time.every 100 CurrentTimeReceived
+
+        _ ->
+            Time.every 1000 CurrentTimeReceived
 
 
 sceneSubscriptions : Model -> Sub Msg

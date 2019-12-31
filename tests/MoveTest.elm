@@ -1,15 +1,8 @@
-module MoveTest exposing (suite)
+module MoveTest exposing (surroundingCoordinatesSpec)
 
 import Board.Coord as Coord exposing (Coord)
 import Expect
 import Test exposing (..)
-
-
-suite : Test
-suite =
-    describe "Move"
-        [ surroundingCoordinatesSpec
-        ]
 
 
 surroundingCoordinatesSpec : Test

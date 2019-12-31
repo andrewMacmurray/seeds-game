@@ -33,6 +33,7 @@ import Sine
 import Task exposing (Task)
 import Utils.Attribute as Attribute
 import Utils.Delay exposing (sequence)
+import Utils.Time.Clock as Clock exposing (Clock)
 import View.Icon.Heart as Heart
 import View.Icon.Triangle exposing (triangle)
 import View.Menu as Menu
@@ -223,9 +224,9 @@ renderCountDown lives =
                 ]
 
 
-renderTime : Lives.TimeTillNextLife -> String
-renderTime { minutes, seconds } =
-    String.fromInt minutes ++ ":" ++ renderSecond seconds
+renderTime : Clock -> String
+renderTime clock =
+    String.fromInt (Clock.minutes clock) ++ ":" ++ renderSecond (Clock.seconds clock)
 
 
 renderSecond : Int -> String

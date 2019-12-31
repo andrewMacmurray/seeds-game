@@ -1,16 +1,9 @@
-module ProgressTest exposing (suite)
+module ProgressTest exposing (currentLevelCompleteSpec)
 
 import Config.Level as Levels
 import Expect exposing (..)
 import Level.Progress as Progress
 import Test exposing (..)
-
-
-suite : Test
-suite =
-    describe "Progress"
-        [ currentLevelCompleteSpec
-        ]
 
 
 currentLevelCompleteSpec : Test

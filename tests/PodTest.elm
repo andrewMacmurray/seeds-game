@@ -1,4 +1,4 @@
-module PodTest exposing (suite)
+module PodTest exposing (validMoveSuite)
 
 import Board
 import Board.Coord as Coord
@@ -9,13 +9,6 @@ import Board.Tile exposing (Tile(..))
 import Expect
 import Seed exposing (Seed(..))
 import Test exposing (..)
-
-
-suite : Test
-suite =
-    describe "Pod"
-        [ validMoveSuite
-        ]
 
 
 validMoveSuite : Test
