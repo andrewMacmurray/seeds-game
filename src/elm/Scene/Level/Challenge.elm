@@ -1,15 +1,19 @@
 module Scene.Level.Challenge exposing
     ( Challenge(..)
+    , MovesRemaining
     , TimeRemaining
     , adjustStartTimeBy
+    , clock
     , decrementTime
     , failed
     , moveLimit
+    , percentTimeRemaining
     , timeLimit
     )
 
 import Time
 import Utils.Time as Time
+import Utils.Time.Clock as Clock exposing (Clock)
 
 
 
@@ -17,15 +21,20 @@ import Utils.Time as Time
 
 
 type Challenge
-    = MoveLimit Int
+    = MoveLimit MovesRemaining
     | TimeLimit TimeRemaining
 
 
 type TimeRemaining
     = TimeRemaining
         { currentTime : Time.Posix
+        , initialMillis : Int
         , remainingMillis : Int
         }
+
+
+type alias MovesRemaining =
+    Int
 
 
 
@@ -48,6 +57,7 @@ initTimeRemaining : Time.Posix -> Int -> TimeRemaining
 initTimeRemaining startTime millis =
     TimeRemaining
         { currentTime = startTime
+        , initialMillis = millis
         , remainingMillis = millis
         }
 
@@ -64,6 +74,20 @@ failed challenge =
 
         TimeLimit (TimeRemaining { remainingMillis }) ->
             remainingMillis <= 0
+
+
+clock : TimeRemaining -> Clock
+clock (TimeRemaining r) =
+    Clock.fromMillis r.remainingMillis
+
+
+percentTimeRemaining : TimeRemaining -> Int
+percentTimeRemaining (TimeRemaining r) =
+    let
+        percent =
+            toFloat r.remainingMillis / toFloat r.initialMillis
+    in
+    round (percent * 100)
 
 
 
@@ -92,8 +116,9 @@ decrementTimeRemaining newTime (TimeRemaining r) =
             r.remainingMillis - Time.differenceInMillis newTime r.currentTime
     in
     TimeRemaining
-        { remainingMillis = newRemainingMillis
-        , currentTime = newTime
+        { r
+            | remainingMillis = newRemainingMillis
+            , currentTime = newTime
         }
 
 

@@ -1,8 +1,7 @@
 module Utils.Time.Clock exposing
     ( Clock
     , fromMillis
-    , minutes
-    , seconds
+    , render
     )
 
 import Utils.Time.Interval as Interval
@@ -14,6 +13,12 @@ import Utils.Time.Interval as Interval
 
 type Clock
     = Clock Int
+
+
+type alias Output =
+    { minutes : String
+    , seconds : String
+    }
 
 
 
@@ -33,6 +38,17 @@ fromMillis n =
 -- Query
 
 
+render : Clock -> Output
+render clock =
+    { minutes = String.fromInt (minutes clock)
+    , seconds = renderSecond (seconds clock)
+    }
+
+
+
+-- Helpers
+
+
 minutes : Clock -> Int
 minutes (Clock millis) =
     modBy 60 <| millis // Interval.minute
@@ -41,3 +57,12 @@ minutes (Clock millis) =
 seconds : Clock -> Int
 seconds (Clock millis) =
     modBy 60 <| millis // Interval.second
+
+
+renderSecond : Int -> String
+renderSecond n =
+    if n < 10 then
+        "0" ++ String.fromInt n
+
+    else
+        String.fromInt n

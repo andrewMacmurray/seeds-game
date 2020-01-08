@@ -217,25 +217,11 @@ renderCountDown lives =
         Nothing ->
             p [ class "ma1 mt0" ] [ text "full life" ]
 
-        Just t ->
+        Just clock ->
             div []
                 [ p [ style [ marginTop -2 ], class "dib ma1 mt0" ] [ text "Next life in: " ]
-                , p [ style [ color pinkRed ], class "dib ma1 mt0" ] [ text <| renderTime t ]
+                , p [ style [ color pinkRed ], class "dib ma1 mt0" ] [ text <| renderTime clock ]
                 ]
-
-
-renderTime : Clock -> String
-renderTime clock =
-    String.fromInt (Clock.minutes clock) ++ ":" ++ renderSecond (Clock.seconds clock)
-
-
-renderSecond : Int -> String
-renderSecond n =
-    if n < 10 then
-        "0" ++ String.fromInt n
-
-    else
-        String.fromInt n
 
 
 
@@ -311,6 +297,15 @@ renderWaitForNextLife context =
         , div [ style [ width 40, height 40 ] ] [ Heart.beating ]
         ]
     ]
+
+
+renderTime : Clock -> String
+renderTime clock =
+    let
+        { minutes, seconds } =
+            Clock.render clock
+    in
+    minutes ++ ":" ++ seconds
 
 
 infoIcons : Level.Level -> Html msg

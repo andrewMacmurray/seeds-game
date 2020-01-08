@@ -4,18 +4,21 @@ module Scene.Level.View.TopBar exposing
     , view
     )
 
-import Board.Scores as Scores
+import Board.Scores as Scores exposing (Scores)
 import Board.Tile as Tile exposing (Tile)
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
-import Css.Style exposing (..)
+import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (transitionAll)
+import Css.Transition as Transition exposing (transition, transitionAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
+import Scene.Level.Challenge as Challenge exposing (Challenge)
+import Scene.Level.Sky as Sky
 import Scene.Level.View.Board.Style as Board
 import Svg exposing (Svg)
+import Utils.Time.Clock as Clock
 import View.Icon.RainBank exposing (rainBankFull)
 import View.Icon.SunBank exposing (sunBankFull)
 import View.Icon.Tick exposing (tickBackground)
@@ -29,9 +32,9 @@ import Window exposing (Window)
 
 type alias ViewModel =
     { window : Window
-    , remainingMoves : Int
+    , challenge : Challenge
     , tileSettings : List Tile.Setting
-    , scores : Scores.Scores
+    , scores : Scores
     }
 
 
@@ -45,8 +48,8 @@ view model =
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
         , style
             [ height Board.topBarHeight
-            , color gold
-            , backgroundColor washedYellow
+            , topBarTextColor model.challenge
+            , topBarBackground model.challenge
             ]
         ]
         [ div
@@ -56,7 +59,7 @@ view model =
                 ]
             , class "flex items-center justify-center relative"
             ]
-            [ remainingMoves model.remainingMoves
+            [ renderChallenge model.challenge
             , div
                 [ style
                     [ marginTop -16
@@ -65,10 +68,35 @@ view model =
                     ]
                 , class "flex justify-center"
                 ]
-              <|
-                List.map (renderScore model) (Scores.tileTypes model.tileSettings)
+                (List.map (renderScore model) (Scores.tileTypes model.tileSettings))
             ]
         ]
+
+
+topBarTextColor : Challenge -> Style
+topBarTextColor challenge =
+    case challenge of
+        Challenge.TimeLimit timeRemaining ->
+            Style.compose
+                [ color <| Sky.textColor timeRemaining
+                , transitionAll 3000 [ Transition.linear ]
+                ]
+
+        Challenge.MoveLimit _ ->
+            color gold
+
+
+topBarBackground : Challenge -> Style
+topBarBackground challenge =
+    case challenge of
+        Challenge.TimeLimit timeRemaining ->
+            Style.compose
+                [ backgroundColor <| Sky.alternateColor timeRemaining
+                , transitionAll 3000 [ Transition.linear ]
+                ]
+
+        Challenge.MoveLimit _ ->
+            backgroundColor washedYellow
 
 
 renderScore : ViewModel -> Tile -> Html msg
@@ -93,7 +121,49 @@ renderScore model tileType =
         ]
 
 
-remainingMoves : Int -> Html msg
+
+-- Challenge
+
+
+renderChallenge : Challenge -> Html msg
+renderChallenge challenge =
+    case challenge of
+        Challenge.MoveLimit moves ->
+            remainingMoves moves
+
+        Challenge.TimeLimit time ->
+            remainingTime time
+
+
+remainingTime : Challenge.TimeRemaining -> Html msg
+remainingTime timeRemaining =
+    div
+        [ style [ left -13 ], class "absolute top-1" ]
+        [ div
+            [ style
+                [ width 20
+                , height 20
+                , paddingAll 17
+                ]
+            ]
+            [ p [ class "ma0 f5 tracked-mega" ]
+                [ text (showTime timeRemaining) ]
+            ]
+        ]
+
+
+showTime : Challenge.TimeRemaining -> String
+showTime timeRemaining =
+    let
+        { minutes, seconds } =
+            timeRemaining
+                |> Challenge.clock
+                |> Clock.render
+    in
+    minutes ++ ":" ++ seconds
+
+
+remainingMoves : Challenge.MovesRemaining -> Html msg
 remainingMoves moves =
     div
         [ style [ left 8 ], class "absolute top-1" ]
@@ -134,16 +204,16 @@ moveCounterColor moves =
         pinkRed
 
 
-scoreContent : Tile -> Scores.Scores -> Html msg
+scoreContent : Tile -> Scores -> Html msg
 scoreContent tileType scores =
-    if Scores.getScoreFor tileType scores == Just 0 then
+    if Scores.getFor tileType scores == Just 0 then
         tickFadeIn tileType scores
 
     else
-        text <| Scores.toString tileType scores
+        text <| scoreFor tileType scores
 
 
-tickFadeIn : Tile -> Scores.Scores -> Html msg
+tickFadeIn : Tile -> Scores -> Html msg
 tickFadeIn tileType scores =
     div [ class "relative" ]
         [ div
@@ -161,8 +231,15 @@ tickFadeIn tileType scores =
                 , animation "fade-out" 500 [ ease ]
                 ]
             ]
-            [ text <| Scores.toString tileType scores ]
+            [ text <| scoreFor tileType scores ]
         ]
+
+
+scoreFor : Tile -> Scores -> String
+scoreFor tileType scores =
+    Scores.getFor tileType scores
+        |> Maybe.map String.fromInt
+        |> Maybe.withDefault ""
 
 
 scoreIcon : Tile -> Float -> Html msg

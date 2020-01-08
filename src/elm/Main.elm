@@ -24,6 +24,7 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time
+import Utils.Debug
 import Utils.Delay as Delay exposing (trigger)
 import Utils.Update exposing (andThenWithCmd, withCmds)
 import View.Animation exposing (animations)
@@ -110,7 +111,10 @@ init flags =
     initialContext flags
         |> Title.init
         |> Return.map TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window ]
+        |> withCmds
+            [ bounceKeyframes flags.window
+            , Utils.Debug.goToLevel 1 7 InitLevel
+            ]
 
 
 initialState : Title.Model -> Model
@@ -661,6 +665,9 @@ sceneSubscriptions model =
     case model.scene of
         Title titleModel ->
             Sub.map TitleMsg <| Title.subscriptions titleModel
+
+        Level levelModel ->
+            Sub.map LevelMsg <| Level.subscriptions levelModel
 
         _ ->
             Sub.none

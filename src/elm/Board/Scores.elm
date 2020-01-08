@@ -4,10 +4,9 @@ module Board.Scores exposing
     , addScoreFromMoves
     , allComplete
     , collectible
-    , getScoreFor
+    , getFor
     , init
     , tileTypes
-    , toString
     )
 
 import Board exposing (Board)
@@ -99,15 +98,8 @@ allComplete (Scores scores) =
     Dict.foldl (\_ v b -> b && v.current == v.target) True scores
 
 
-toString : Tile -> Scores -> String
-toString tileType scores =
-    getScoreFor tileType scores
-        |> Maybe.map String.fromInt
-        |> Maybe.withDefault ""
-
-
-getScoreFor : Tile -> Scores -> Maybe Int
-getScoreFor tileType =
+getFor : Tile -> Scores -> Maybe Int
+getFor tileType =
     getScore tileType >> Maybe.map (\{ target, current } -> target - current)
 
 

@@ -5,6 +5,7 @@ module Scene.Level exposing
     , getContext
     , init
     , menuOptions
+    , subscriptions
     , update
     , updateContext
     , view
@@ -27,6 +28,7 @@ import Config.Level as Level
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style as Style exposing (..)
+import Css.Transition as Transition exposing (transition)
 import Dict exposing (Dict)
 import Exit exposing (continue, exitWith)
 import Html exposing (Attribute, Html, div, p, span, text)
@@ -38,6 +40,7 @@ import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Scene.Level.Challenge as Challenge exposing (Challenge)
+import Scene.Level.Sky as Sky
 import Scene.Level.Tutorial as Tutorial
 import Scene.Level.View.Board.Line as Line
 import Scene.Level.View.Board.LineDrag as LineDrag exposing (ViewModel)
@@ -75,6 +78,7 @@ type alias Model =
 
 type Msg
     = BoardGenerated Level.Config Board
+    | TimeElapsed Time.Posix
     | StartTutorial
     | NextTutorialStep
     | HideTutorialStep
@@ -192,7 +196,7 @@ initialState { tileSettings, boardSize, moves, tutorial } context =
 
 hardcodedChallenge : Time.Posix -> Challenge
 hardcodedChallenge =
-    Challenge.timeLimit 3 30 >> Challenge.adjustStartTimeBy 3
+    Challenge.timeLimit 0 40 >> Challenge.adjustStartTimeBy 3
 
 
 handleStartTutorial : Model -> Cmd Msg
@@ -209,6 +213,9 @@ update msg model =
     case msg of
         BoardGenerated config board ->
             continue (initBoard config board model) []
+
+        TimeElapsed time ->
+            continue { model | challenge = Challenge.decrementTime time model.challenge } []
 
         StartTutorial ->
             continue { model | tutorial = Tutorial.showStep model.tutorial } []
@@ -447,11 +454,10 @@ generateBoard config { boardSize } =
 
 
 initBoard : Level.Config -> Board -> HasBoard model -> HasBoard model
-initBoard config board model =
-    model
-        |> updateBoard (always board)
-        |> updateBoard (addStartTiles config.startTiles)
-        |> updateBoard (Wall.addToBoard config.walls)
+initBoard config board =
+    updateBoard (always board)
+        >> updateBoard (addStartTiles config.startTiles)
+        >> updateBoard (Wall.addToBoard config.walls)
 
 
 addStartTiles : List Start.Tile -> Board -> Board
@@ -708,6 +714,20 @@ handleRestartPrompt model =
 
 
 
+-- Subscriptions
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    case model.challenge of
+        Challenge.TimeLimit _ ->
+            Time.every 100 TimeElapsed
+
+        Challenge.MoveLimit _ ->
+            Sub.none
+
+
+
 -- View
 
 
@@ -724,6 +744,7 @@ view model =
         , currentMoveOverlay model
         , lineDrag model
         , renderBoard model
+        , backdrop model
         , moveCaptureArea
         ]
 
@@ -756,6 +777,27 @@ moveCaptureArea =
 lineDrag : Model -> Html msg
 lineDrag =
     lineDragViewModel >> LineDrag.view
+
+
+
+-- Backdrop
+
+
+backdrop : Model -> Html msg
+backdrop model =
+    case model.challenge of
+        Challenge.TimeLimit timeRemaining ->
+            div
+                [ class "z-1 w-100 h-100 top-0 left-0 fixed"
+                , style
+                    [ backgroundColor <| Sky.color timeRemaining
+                    , transition "background" 3000 [ Transition.linear ]
+                    ]
+                ]
+                []
+
+        Challenge.MoveLimit _ ->
+            span [] []
 
 
 
@@ -995,7 +1037,7 @@ topBarViewModel model =
     { window = model.context.window
     , tileSettings = model.tileSettings
     , scores = model.scores
-    , remainingMoves = model.remainingMoves
+    , challenge = model.challenge
     }
 
 
