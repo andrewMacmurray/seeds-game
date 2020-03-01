@@ -592,7 +592,7 @@ handleStartMove : Move -> Pointer -> Model -> Model
 handleStartMove move pointer model =
     { model
         | isDragging = True
-        , board = Move.drag move model.board
+        , board = Move.drag model.boardSize move model.board
         , pointer = pointer
         , tutorial = Tutorial.hideStep model.tutorial
     }
@@ -611,9 +611,7 @@ checkMoveFromPosition pointer model =
 handleCheckMove : Move -> Model -> Model
 handleCheckMove move model =
     if model.isDragging then
-        model
-            |> updateBoard (Move.drag move)
-            |> updateBoard (Burst.drag model.boardSize)
+        updateBoard (Move.drag model.boardSize move) model
 
     else
         model

@@ -13,16 +13,16 @@ import Board.Move.Check as Check
 -- Drag
 
 
-drag : Move -> Board -> Board
-drag curr board =
+drag : Board.Size -> Move -> Board -> Board
+drag boardSize move board =
     if isFirstMove board then
-        makeFirstMove curr board
+        makeFirstMove move board
 
-    else if isValidNextMove curr board then
-        Bearing.add curr board
-
-    else if shouldUndoMove curr board then
+    else if shouldUndoMove move board then
         undoLastMove board
+
+    else if isValidNextMove move board then
+        Bearing.add move board |> Burst.drag boardSize
 
     else
         board
