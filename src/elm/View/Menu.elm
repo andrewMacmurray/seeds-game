@@ -116,7 +116,7 @@ drawer msg context sceneMsg sceneMenuOptions =
             240
 
         renderSceneButton =
-            renderOption >> Html.map sceneMsg >> onClickCloseMenu msg
+            renderOption >> Html.map sceneMsg
 
         drawerOffset =
             case context.menu of
@@ -142,7 +142,6 @@ drawer msg context sceneMsg sceneMenuOptions =
             , drawerOffset
             , transitionAll 300 []
             ]
-        , onPointerUp msg.close
         , attribute "touch-action" "none"
         , class "absolute right-0 top-0 flex flex-column items-center justify-center"
         ]
@@ -150,9 +149,15 @@ drawer msg context sceneMsg sceneMenuOptions =
             [ List.map renderSceneButton sceneMenuOptions
             , [ div [ style [ marginTop resetButtonMargin ] ] [ menuButtonBorder msg.resetData "Reset Data" ]
               , attributionLink
+              , closeMenuCaptureArea msg
               ]
             ]
         )
+
+
+closeMenuCaptureArea : Msg msg -> Html msg
+closeMenuCaptureArea msg =
+    div [ class "w-100 h-100 z-6 absolute top-0 left-0", onPointerUp msg.close ] []
 
 
 attributionLink : Html msg
@@ -174,11 +179,6 @@ withDisable menu =
 
         _ ->
             Attribute.empty
-
-
-onClickCloseMenu : Msg msg -> Html msg -> Html msg
-onClickCloseMenu msg button =
-    div [ onClick msg.close ] [ button ]
 
 
 renderOption : Option msg -> Html msg
@@ -205,7 +205,7 @@ menuButtonSolid msg textColor bgColor content =
             , width 150
             , color textColor
             ]
-        , class "outline-0 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
+        , class "outline-0 relative z-8 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
         , onClick msg
         ]
         [ text content ]
@@ -220,7 +220,7 @@ menuButtonBorder msg content =
             , backgroundColor Color.transparent
             , color Color.white
             ]
-        , class "outline-0 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
+        , class "outline-0 relative z-8 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
         , onClick msg
         ]
         [ text content ]
