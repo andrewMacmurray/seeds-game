@@ -32,7 +32,7 @@ type alias Msg msg =
 
 
 
--- Menu Options
+-- Menu Option
 
 
 type Option msg
@@ -47,11 +47,11 @@ type alias Config msg =
 
 option : msg -> String -> Option msg
 option msg text =
-    Config msg text |> Option
+    Option (Config msg text)
 
 
 
--- Views
+-- View
 
 
 fadeOut : Html msg

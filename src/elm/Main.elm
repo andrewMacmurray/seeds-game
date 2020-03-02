@@ -15,7 +15,6 @@ import Html.Keyed as Keyed
 import Level.Progress as Progress exposing (Progress)
 import Lives
 import Ports exposing (..)
-import Return
 import Scene.Garden as Garden
 import Scene.Hub as Hub
 import Scene.Intro as Intro
@@ -25,6 +24,7 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Delay as Delay exposing (trigger)
+import Utils.Update exposing (updateModel, updateWith, withCmds)
 import View.Animation exposing (animations)
 import View.Loading exposing (loadingScreen)
 import View.Menu as Menu
@@ -107,10 +107,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     initialContext flags
         |> Title.init
-        |> Return.map TitleMsg initialState
-        |> withCmds
-            [ bounceKeyframes flags.window
-            ]
+        |> updateWith TitleMsg initialState
+        |> withCmds [ bounceKeyframes flags.window ]
 
 
 initialState : Title.Model -> Model
@@ -129,11 +127,6 @@ initialContext flags =
     , successMessageIndex = flags.randomMessageIndex
     , menu = Context.Closed
     }
-
-
-withCmds : List (Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
-withCmds cmds ( model, cmd ) =
-    ( model, Cmd.batch (cmd :: cmds) )
 
 
 
@@ -245,7 +238,7 @@ update msg ({ scene, backdrop } as model) =
             initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
-            ( model, Context.generateBackground RandomBackground )
+            ( updateContext Context.closeMenu model, Context.generateBackground RandomBackground )
 
         ( RandomBackground bgColor, _, _ ) ->
             ( updateContext (Context.showLoadingScreen bgColor) model, Cmd.none )
@@ -305,7 +298,7 @@ exitTitle model destination =
 
 initIntro : Model -> ( Model, Cmd Msg )
 initIntro =
-    initScene Intro IntroMsg Intro.init
+    initScene Intro IntroMsg Intro.init >> closeMenu
 
 
 updateIntro : Intro.Msg -> Intro.Model -> Model -> ( Model, Cmd Msg )
@@ -324,7 +317,7 @@ exitIntro model _ =
 
 initHub : Level.Id -> Model -> ( Model, Cmd Msg )
 initHub level =
-    initScene Hub HubMsg <| Hub.init level
+    initScene Hub HubMsg (Hub.init level) >> closeMenu
 
 
 updateHub : Hub.Msg -> Hub.Model -> Model -> ( Model, Cmd Msg )
@@ -353,7 +346,7 @@ handleStartLevel model level =
 
 initLevel : Level.LevelConfig -> Model -> ( Model, Cmd Msg )
 initLevel config =
-    initScene Level LevelMsg <| Level.init config
+    initScene Level LevelMsg (Level.init config) >> closeMenu
 
 
 updateLevel : Level.Msg -> Level.Model -> Model -> ( Model, Cmd Msg )
@@ -412,7 +405,9 @@ levelLose model =
 
 initRetry : Model -> ( Model, Cmd Msg )
 initRetry =
-    copyCurrentSceneToBackdrop >> initScene Retry RetryMsg Retry.init
+    copyCurrentSceneToBackdrop
+        >> initScene Retry RetryMsg Retry.init
+        >> closeMenu
 
 
 updateRetry : Retry.Msg -> Retry.Model -> Model -> ( Model, Cmd Msg )
@@ -436,7 +431,9 @@ exitRetry model destination =
 
 initSummary : Model -> ( Model, Cmd Msg )
 initSummary =
-    copyCurrentSceneToBackdrop >> initScene Summary SummaryMsg Summary.init
+    copyCurrentSceneToBackdrop
+        >> initScene Summary SummaryMsg Summary.init
+        >> closeMenu
 
 
 updateSummary : Summary.Msg -> Summary.Model -> Model -> ( Model, Cmd Msg )
@@ -460,7 +457,7 @@ exitSummary model destination =
 
 initGarden : Model -> ( Model, Cmd Msg )
 initGarden =
-    initScene Garden GardenMsg Garden.init
+    initScene Garden GardenMsg Garden.init >> closeMenu
 
 
 updateGarden : Garden.Msg -> Garden.Model -> Model -> ( Model, Cmd Msg )
@@ -509,14 +506,14 @@ load :
     (Model -> Scene -> Model)
     -> (subModel -> Scene)
     -> (subMsg -> msg)
-    -> (Context -> Return.Return subMsg subModel)
+    -> (Context -> ( subModel, Cmd subMsg ))
     -> Model
     -> ( Model, Cmd msg )
 load toModel toScene msg initScene_ model =
     getContext model
         |> Context.closeMenu
         |> initScene_
-        |> Return.map msg (toScene >> toModel model)
+        |> updateWith msg (toScene >> toModel model)
 
 
 composeScene : (subModel -> Scene) -> (Model -> Scene -> Model) -> (subModel -> Model -> Model)
@@ -591,6 +588,11 @@ updateLives now model =
 andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
 andCmd cmdF model =
     ( model, cmdF model )
+
+
+closeMenu : ( Model, Cmd msg ) -> ( Model, Cmd msg )
+closeMenu =
+    updateModel (updateContext Context.closeMenu)
 
 
 saveCurrentLives : Model -> Cmd Msg

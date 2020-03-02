@@ -280,10 +280,10 @@ update msg model =
             continue { model | infoWindow = InfoWindow.hidden } []
 
         PromptRestart ->
-            continue model [ handleRestartPrompt model ]
+            continue (updateContext Context.closeMenu model) [ handleRestartPrompt model ]
 
         PromptExit ->
-            continue model [ handleExitPrompt model ]
+            continue (updateContext Context.closeMenu model) [ handleExitPrompt model ]
 
         LevelWon ->
             exitWith Win model

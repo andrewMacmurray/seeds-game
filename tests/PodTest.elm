@@ -59,7 +59,7 @@ validMoveSuite =
 
 makeMove : Coord.X -> Coord.Y -> Board.Board -> Board.Board
 makeMove x y board_ =
-    Move.drag (moveFromCoord x y board_) board_
+    Move.drag boardSize (moveFromCoord x y board_) board_
 
 
 checkIsValidNextMove : Coord.X -> Coord.Y -> Board.Board -> Bool
@@ -80,7 +80,7 @@ moveFromCoord x y board_ =
 
 board : Board.Board
 board =
-    Board.fromTiles { x = 4, y = 4 }
+    Board.fromTiles boardSize
         (List.concat
             [ [ s, p, c, p ]
             , [ p, s, s, p ]
@@ -88,6 +88,11 @@ board =
             , [ p, s, p, s ]
             ]
         )
+
+
+boardSize : Board.Size
+boardSize =
+    { x = 4, y = 4 }
 
 
 s : Tile
