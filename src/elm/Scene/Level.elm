@@ -238,7 +238,7 @@ update msg model =
             continue model [ generateSeedType seedType model.board model.tileSettings ]
 
         AddGrowingSeeds seeds ->
-            continue (updateBoard (Pod.growSeeds seeds) model) []
+            continue (updateBoard (Pod.growSeeds seeds model.tileSettings) model) []
 
         ResetGrowingSeeds ->
             continue (updateBoard Pod.reset model) []

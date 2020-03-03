@@ -6,10 +6,12 @@ module Level.Setting.Tile exposing
     , rain
     , seed
     , seedPod
+    , seedSettings
+    , sortByProbability
     , sun
     )
 
-import Board.Tile exposing (Tile(..))
+import Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
 
 
@@ -29,7 +31,7 @@ type Probability
 
 
 
--- Settings
+-- Construct
 
 
 rain : Probability -> TargetScore -> Setting
@@ -55,3 +57,22 @@ seedPod prob =
 burst : Probability -> Setting
 burst prob =
     Setting (Burst Nothing) prob Nothing
+
+
+
+-- Query
+
+
+seedSettings : List Setting -> List Setting
+seedSettings =
+    List.filter (.tileType >> Tile.isSeed)
+
+
+sortByProbability : List Setting -> List Setting
+sortByProbability =
+    List.sortBy (.probability >> unwrapProbability_)
+
+
+unwrapProbability_ : Probability -> Int
+unwrapProbability_ (Probability n) =
+    n

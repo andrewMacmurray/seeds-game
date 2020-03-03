@@ -12,7 +12,7 @@ import Board.Block as Block exposing (Block(..))
 import Board.Generate as Generate
 import Board.Move as Move exposing (Move)
 import Board.Move.Check as Check
-import Board.Tile exposing (State(..), Tile(..))
+import Board.Tile as Tile exposing (State(..), Tile(..))
 import Level.Setting.Tile as Tile
 import Seed exposing (Seed(..))
 
@@ -87,11 +87,11 @@ growPods =
     Board.updateBlocks Block.setDraggingToGrowing >> releaseDraggingSeeds
 
 
-growSeeds : List Tile -> Board -> Board
-growSeeds seeds board =
+growSeeds : List Tile -> List Tile.Setting -> Board -> Board
+growSeeds seeds settings board =
     board
         |> addGrowingSeeds seeds
-        |> growLeavingBurstsToSeeds (activeSeedType board)
+        |> growLeavingBurstsToSeeds (growingSeedType settings board)
         |> resetReleasingSeeds
 
 
@@ -105,9 +105,26 @@ releaseDraggingSeeds =
     Board.updateBlocks Block.releaseDraggingSeeds
 
 
-activeSeedType : Board -> Seed
-activeSeedType =
-    Board.activeSeedType >> Maybe.withDefault Sunflower
+growingSeedType : List Tile.Setting -> Board -> Seed
+growingSeedType settings =
+    Board.growingSeedType
+        >> fallbackToHighestProbabilitySeed settings
+        >> Maybe.withDefault Sunflower
+
+
+fallbackToHighestProbabilitySeed : List Tile.Setting -> Maybe Seed -> Maybe Seed
+fallbackToHighestProbabilitySeed settings seed =
+    case seed of
+        Nothing ->
+            settings
+                |> Tile.seedSettings
+                |> Tile.sortByProbability
+                |> List.head
+                |> Maybe.map .tileType
+                |> Maybe.andThen Tile.seedType
+
+        _ ->
+            seed
 
 
 resetReleasingSeeds : Board -> Board

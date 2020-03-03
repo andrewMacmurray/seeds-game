@@ -19,7 +19,7 @@ drag boardSize move board =
         makeFirstMove move board
 
     else if shouldUndoMove move board then
-        undoLastMove board
+        undoLastMove board |> Burst.drag boardSize
 
     else if isValidNextMove move board then
         Bearing.add move board |> Burst.drag boardSize

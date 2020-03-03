@@ -43,12 +43,7 @@ constantSeedGenerator =
 
 seedTypeGenerator : List Tile.Setting -> Generator Tile
 seedTypeGenerator =
-    filterSeedSettings >> tileGenerator
-
-
-filterSeedSettings : List Tile.Setting -> List Tile.Setting
-filterSeedSettings =
-    List.filter (.tileType >> Tile.isSeed)
+    Tile.seedSettings >> tileGenerator
 
 
 numberOfGrowingSeedPods : Board -> Int

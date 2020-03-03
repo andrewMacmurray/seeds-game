@@ -12,6 +12,7 @@ module Board exposing
     , findBlockAt
     , fromMoves
     , fromTiles
+    , growingSeedType
     , isActiveMove
     , isEmpty
     , isSeedPodMove
@@ -158,13 +159,29 @@ activeSeedType =
     activeSeed >> Maybe.andThen Tile.seedType
 
 
+growingSeedType : Board -> Maybe Seed
+growingSeedType =
+    releasingMoves
+        >> firstSeedTileFromMoves
+        >> Maybe.andThen Tile.seedType
+
+
 activeSeed : Board -> Maybe Tile
 activeSeed =
-    activeMoves
-        >> List.map Move.block
+    activeMoves >> firstSeedTileFromMoves
+
+
+firstSeedTileFromMoves : List Move -> Maybe Tile
+firstSeedTileFromMoves =
+    List.map Move.block
         >> List.filter Block.isSeed
         >> List.head
         >> Maybe.andThen Block.tile
+
+
+releasingMoves : Board -> List Move
+releasingMoves =
+    filterBlocks Block.isReleasing >> moves
 
 
 draggingMoveType : Board -> Maybe Tile
