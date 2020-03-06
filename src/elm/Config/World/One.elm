@@ -16,8 +16,8 @@ world =
         { seed = Sunflower
         , backdropColor = Color.yellow
         , textColor = Color.darkYellow
-        , textCompleteColor = Color.yellow
-        , textBackgroundColor = Color.lightBrown
+        , textCompleteColor = Color.white
+        , textBackgroundColor = Color.darkBrown
         }
         levels
 

@@ -14,10 +14,10 @@ world : Level.World
 world =
     Level.world
         { seed = Chrysanthemum
-        , backdropColor = Color.gold
+        , backdropColor = Color.rgb 255 163 0
         , textColor = Color.white
-        , textCompleteColor = Color.yellow
-        , textBackgroundColor = Color.softRed
+        , textCompleteColor = Color.white
+        , textBackgroundColor = Color.rgb 198 53 124
         }
         levels
 
