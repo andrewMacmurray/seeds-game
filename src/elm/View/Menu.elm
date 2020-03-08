@@ -164,7 +164,7 @@ attributionLink : Html msg
 attributionLink =
     a
         [ style [ color Color.white ]
-        , class "absolute db bottom-1 left-1 f7 ma0 no-underline"
+        , class "absolute db bottom-1 z-9 left-1 f7 ma0 no-underline"
         , href "https://github.com/andrewMacmurray/seeds-game"
         , target "_blank"
         ]
@@ -205,7 +205,7 @@ menuButtonSolid msg textColor bgColor content =
             , width 150
             , color textColor
             ]
-        , class "outline-0 relative z-8 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
+        , class "outline-0 relative z-9 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
         , onClick msg
         ]
         [ text content ]
@@ -220,7 +220,7 @@ menuButtonBorder msg content =
             , backgroundColor Color.transparent
             , color Color.white
             ]
-        , class "outline-0 relative z-8 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
+        , class "outline-0 relative z-9 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
         , onClick msg
         ]
         [ text content ]

@@ -10,10 +10,10 @@ module Scene.Retry exposing
     )
 
 import Context exposing (Context)
-import Css.Animation exposing (animation, delay, ease, linear)
+import Css.Animation
 import Css.Color as Color
 import Css.Style as Style exposing (..)
-import Css.Transform exposing (..)
+import Css.Transform
 import Css.Unit exposing (pc)
 import Exit exposing (continue, exitWith)
 import Html exposing (..)
@@ -94,7 +94,7 @@ view model =
         [ style
             [ height <| toFloat model.window.height
             , background Color.washedYellow
-            , animation "fade-in" 1000 [ linear ]
+            , Css.Animation.animation "fade-in" 1000 [ Css.Animation.linear ]
             ]
         , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
         ]
@@ -106,15 +106,15 @@ view model =
             , div [ style [ color Color.darkYellow ] ]
                 [ p [ class "mt3" ] [ text "You lost a life ..." ]
                 , p
-                    [ style [ animation "fade-in" 1000 [ delay 2500, ease ] ]
+                    [ style [ Css.Animation.animation "fade-in" 1000 [ Css.Animation.delay 2500, Css.Animation.ease ] ]
                     , class "o-0"
                     ]
                     [ text "But don't feel disheartened" ]
                 ]
             , div
                 [ style
-                    [ animation "bounce-up" 1500 [ delay 3000, linear ]
-                    , transform [ translate 0 (toFloat <| model.window.height + 100) ]
+                    [ Css.Animation.animation "bounce-up" 1500 [ Css.Animation.delay 3000, Css.Animation.linear ]
+                    , transform [ Css.Transform.translate 0 (toFloat <| model.window.height + 100) ]
                     ]
                 ]
                 [ tryAgain model ]
