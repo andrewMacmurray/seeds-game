@@ -258,8 +258,9 @@ renderInfoWindow { infoWindow, context } =
             InfoWindow.view infoWindow <| div [] <| infoContent context level
 
 
+handleStartLevel : Context -> Level.Id -> Attribute Msg
 handleStartLevel context level =
-    Attribute.applyIf (Lives.remaining context.lives > 0) <| onClick <| StartLevel level
+    Attribute.applyIf (Lives.remaining context.lives > 0) (onClick <| StartLevel level)
 
 
 infoContent : Context -> Level.Id -> List (Html msg)

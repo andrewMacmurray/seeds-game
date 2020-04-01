@@ -37,6 +37,7 @@ module Css.Style exposing
     , pointer
     , property
     , renderStyles_
+    , right
     , rightAuto
     , rightPill
     , showIf
@@ -250,6 +251,11 @@ bottom n =
 left : Float -> Style
 left n =
     property "left" <| px n
+
+
+right : Float -> Style
+right n =
+    property "right" <| px n
 
 
 color : String -> Style

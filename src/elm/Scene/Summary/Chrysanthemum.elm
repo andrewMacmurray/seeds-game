@@ -42,14 +42,22 @@ view visibility window =
         [ windowViewBox_ window
         , class "fixed z-1 top-0"
         ]
-        [ hills "#E268C4" "#F09AEF" "#F08D42" -550 1500 visibility window
-        , hills "#E65D8F" "#9665B4" "#BC65D8" -440 1200 visibility window
-        , hills "#FFA538" "#623D79" "#DB4D73" -330 900 visibility window
-        , hills "#E268C4" "#F09AEF" "#F08D42" -220 600 visibility window
-        , hills "#E65D8F" "#9665B4" "#BC65D8" -110 300 visibility window
-        , hills "#FFA538" "#623D79" "#DB4D73" 0 0 visibility window
+        [ hills "#E268C4" "#F09AEF" -550 1500 visibility window
+        , hills red "#9665B4" -440 1200 visibility window
+        , hills "#FFA538" "#623D79" -330 900 visibility window
+        , hills "#E268C4" "#F09AEF" -220 600 visibility window
+        , hills darkPink "#9665B4" -110 300 visibility window
+        , hills "#FFA538" "#623D79" 0 0 visibility window
         , flowers visibility window
         ]
+
+
+red =
+    Color.rgb 226 64 64
+
+
+darkPink =
+    Color.rgb 218 37 131
 
 
 flowers : Visibility -> Window -> Svg msg
@@ -66,14 +74,11 @@ flowers visibility window =
                 ]
 
 
-hills : Color -> Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
-hills left center right offset delay visibility window =
+hills : Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
+hills left right offset delay visibility window =
     let
         curve =
-            ifNarrow window 1.6 2
-
-        centerOffset =
-            ifNarrow window 75 50
+            ifNarrow window 1.6 1.3
 
         y =
             case visibility of
@@ -98,9 +103,6 @@ hills left center right offset delay visibility window =
     in
     Svg.g []
         [ Hills.doubleLayerWithCurve curve window left right |> translateStyles (delay + 500)
-        , Hills.singleLayerWithCurve curve window center
-            |> translated 0 centerOffset
-            |> translateStyles delay
         ]
 
 

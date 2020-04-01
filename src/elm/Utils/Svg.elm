@@ -2,6 +2,7 @@ module Utils.Svg exposing
     ( Point
     , cx_
     , cy_
+    , embed
     , height_
     , point
     , points_
@@ -20,9 +21,15 @@ module Utils.Svg exposing
 
 import Css.Style as Style
 import Css.Transform as Transform
+import Html exposing (Html)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 import Window exposing (Window)
+
+
+embed : Html msg -> Svg.Svg msg
+embed el =
+    Svg.foreignObject [ width "100%", height "100%" ] [ el ]
 
 
 windowViewBox_ : Window -> Attribute msg

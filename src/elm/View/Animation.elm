@@ -1,16 +1,15 @@
 module View.Animation exposing (animations)
 
-import Css.Animation as Animation exposing (frame, keyframes, opacity, transform)
+import Css.Animation exposing (frame, keyframes, opacity, transform)
 import Css.Transform exposing (rotateZ, scale, translateX, translateY)
 import Html exposing (Html)
 
 
 animations : Html msg
 animations =
-    Animation.embed
+    Css.Animation.embed
         [ fadeOut
         , fadeIn
-        , hoverBig
         , fadeInOut
         , fadeSlideDown
         , slideDownScaleOut
@@ -22,7 +21,6 @@ animations =
         , shake
         , bulgeFade
         , bulge
-        , bulgeMini
         , bulgeElastic
         , bulgeElasticBig
         , bulgeSmall
@@ -115,14 +113,6 @@ hover =
         ]
 
 
-hoverBig =
-    keyframes "hover-big"
-        [ frame 0 [ toY 0 ]
-        , frame 50 [ toY -20 ]
-        , frame 100 [ toY 0 ]
-        ]
-
-
 bulgeFade =
     keyframes "bulge-fade"
         [ frame 0
@@ -191,17 +181,6 @@ bulgeSmall =
         ]
 
 
-bulgeMini =
-    keyframes "bulge-mini"
-        [ frame 0
-            [ opacity 0, toScale 0.5 ]
-        , frame 50
-            [ opacity 1, toScale 1.03 ]
-        , frame 100
-            [ opacity 1, toScale 1 ]
-        ]
-
-
 heartbeat =
     keyframes "heartbeat"
         [ frame 0 [ toScale 1 ]
@@ -235,16 +214,16 @@ scaleIn =
         ]
 
 
-toScale : Float -> Animation.Property
+toScale : Float -> Css.Animation.Property
 toScale n =
     transform [ scale n ]
 
 
-toY : Float -> Animation.Property
+toY : Float -> Css.Animation.Property
 toY n =
     transform [ translateY n ]
 
 
-toX : Float -> Animation.Property
+toX : Float -> Css.Animation.Property
 toX n =
     transform [ translateX n ]

@@ -3,7 +3,6 @@ module View.Landscape.RollingHills exposing
     , doubleLayer
     , doubleLayerWithCurve
     , element
-    , singleLayerWithCurve
     )
 
 import Css.Color exposing (Color)
@@ -25,16 +24,6 @@ type alias Element msg =
 doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
 doubleLayer =
     doubleLayerWithCurve_ 1
-
-
-singleLayerWithCurve : Float -> Window -> Color -> Svg msg
-singleLayerWithCurve curve window color =
-    hillFullScreen window
-        { color = color
-        , elements = []
-        , side = Center
-        , curve = curve
-        }
 
 
 doubleLayerWithCurve : Float -> Window -> Color -> Color -> Svg msg

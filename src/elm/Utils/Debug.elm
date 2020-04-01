@@ -1,4 +1,4 @@
-module Utils.Debug exposing (goToLevel)
+module Utils.Debug exposing (goToLevel, setProgress)
 
 import Config.Level as Level exposing (LevelConfig)
 import Config.World as World

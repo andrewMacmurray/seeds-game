@@ -32,6 +32,8 @@ import Task exposing (Task)
 import Utils.Delay exposing (after)
 import View.Flower as Flower
 import View.Icon.Cross exposing (cross)
+import View.Icon.Sprite.Bee as Bee
+import View.Icon.Sprite.Butterfly as Butterfly
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
@@ -183,7 +185,11 @@ view model =
             , style [ height <| toFloat model.context.window.height ]
             , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
             ]
-            [ div [ style [ marginTop 50, marginBottom 125 ], class "flex flex-column items-center" ] <| allFlowers model.context.progress
+            [ div
+                [ style [ marginTop 50, marginBottom 125 ]
+                , class "flex flex-column items-center overflow-hidden"
+                ]
+                (allFlowers model.context.progress)
             ]
         , backToLevelsButton
         ]
@@ -217,7 +223,7 @@ backToLevelsButton =
         [ button
             [ style
                 [ color Color.white
-                , backgroundColor <| Color.rgb 251 214 74
+                , backgroundColor Color.darkBrown
                 , paddingHorizontal 20
                 , paddingVertical 10
                 , borderNone
@@ -306,6 +312,7 @@ flowers seed =
         [ div [ style [ marginRight spacing.offsetX ] ] [ flower spacing.small seed ]
         , div [ style [ marginBottom spacing.offsetY ], class "relative" ] [ flower spacing.large seed ]
         , div [ style [ marginLeft spacing.offsetX ], class "relative" ] [ flower spacing.small seed ]
+        , sprites seed
         ]
 
 
@@ -317,6 +324,31 @@ flower size =
 sized : Float -> Html msg -> Html msg
 sized size element =
     div [ style [ width size, height size ] ] [ element ]
+
+
+sprites : Seed -> Html msg
+sprites seed =
+    case seed of
+        Sunflower ->
+            div [ class "absolute", style [ top 0, left 0 ] ]
+                [ div [ style [ left 70, top 100, right 0 ], class "absolute" ] [ Butterfly.resting 0 ]
+                , div [ style [ left 120, top 30, right 0 ], class "absolute" ] [ Butterfly.resting 0 ]
+                , div [ style [ left 150, top 120, right 0, width 30, height 30 ], class "absolute" ] [ Butterfly.resting 0.5 ]
+                ]
+
+        Chrysanthemum ->
+            div [ class "absolute", style [ top -160, left 0 ] ]
+                [ Bee.animate
+                    [ ( 0, div [ style [ left 30, top 100, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
+                    , ( 0.5, div [ style [ left 0, top 80, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
+                    , ( 0.7, div [ style [ left 60, top 60, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
+                    , ( 1.3, div [ style [ left -70, top 125, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
+                    , ( 1.6, div [ style [ left 130, top 135, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
+                    ]
+                ]
+
+        _ ->
+            span [] []
 
 
 
