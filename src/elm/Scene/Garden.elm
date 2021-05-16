@@ -13,27 +13,30 @@ import Browser.Dom as Dom
 import Config.Level as Level exposing (WorldConfig)
 import Config.World as Worlds
 import Context exposing (Context)
-import Css.Animation as Animation
-import Css.Color as Color exposing (Color)
-import Css.Style exposing (..)
-import Css.Transition as Transition
+import Element exposing (..)
+import Element.Animations as Animations
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events exposing (onClick)
+import Element.Input as Input
+import Element.Palette as Palette
+import Element.Scale as Scale
+import Element.Text as Text
 import Exit exposing (continue, exit)
-import Html exposing (Html, button, div, p, span, text)
-import Html.Attributes exposing (class, id)
-import Html.Events exposing (onClick)
-import Html.Keyed as Keyed
+import Html exposing (Html)
+import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
+import Scene.Garden.Sunflower as Sunflower
 import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
 import Seed exposing (Seed(..))
-import Svg exposing (Svg)
+import Simple.Animation as Animation exposing (Animation)
 import Task exposing (Task)
+import Utils.Animated as Animated
 import Utils.Delay exposing (after)
+import Utils.Element as Element
 import View.Flower as Flower
-import View.Icon.Cross exposing (cross)
-import View.Icon.Sprite.Bee as Bee
-import View.Icon.Sprite.Butterfly as Butterfly
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
@@ -53,7 +56,7 @@ type alias Model =
 
 type Msg
     = ScrollToCurrentCompletedWorld
-    | WorldScrolledToView (Result Dom.Error ())
+    | WorldScrolledToView
     | SelectFlower Seed
     | ShowFlower
     | HideFlower
@@ -115,7 +118,7 @@ update msg model =
         ScrollToCurrentCompletedWorld ->
             continue model [ scrollToCurrentCompletedWorld model.context.progress ]
 
-        WorldScrolledToView _ ->
+        WorldScrolledToView ->
             continue model []
 
         SelectFlower seed ->
@@ -140,16 +143,17 @@ scrollToCurrentCompletedWorld progress =
         |> (currentCompletedWorldSeedType >> Seed.name)
         |> Dom.getElement
         |> Task.andThen scrollWorldToView
-        |> Task.attempt WorldScrolledToView
+        |> Task.attempt (always WorldScrolledToView)
 
 
 scrollWorldToView : Dom.Element -> Task Dom.Error ()
-scrollWorldToView { element, viewport } =
-    let
-        yOffset =
-            element.y - viewport.height / 2 + element.height / 2
-    in
-    Dom.setViewportOf "flowers" 0 yOffset
+scrollWorldToView el =
+    Dom.setViewportOf "flowers" 0 (worldYOffset el)
+
+
+worldYOffset : Dom.Element -> Float
+worldYOffset { element, viewport } =
+    element.y - viewport.height / 2 + element.height / 2
 
 
 currentCompletedWorldSeedType : Progress -> Seed
@@ -177,82 +181,128 @@ worldComplete progress levelKeys =
 
 view : Model -> Html Msg
 view model =
-    div [ class "w-100 z-1" ]
-        [ initialOverlay model.context.window
-        , div [ class "z-9 absolute top-0" ] [ renderSelectedFlower model ]
-        , div
-            [ id "flowers"
-            , style [ height <| toFloat model.context.window.height ]
-            , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
+    layout
+        [ inFront backToLevelsButton
+        , inFront initialOverlay
+        , inFront (viewSelectedFlower model)
+        ]
+        (el
+            [ width fill
+            , height fill
+            , centerX
             ]
-            [ div
-                [ style [ marginTop 50, marginBottom 125 ]
-                , class "flex flex-column items-center overflow-hidden"
-                ]
-                (allFlowers model.context.progress)
+            (allFlowers model.context.progress)
+        )
+
+
+layout : List (Attribute msg) -> Element msg -> Html msg
+layout attrs =
+    Element.layoutWith layoutOptions
+        ([ width fill
+         , height fill
+         , Element.style "position" "absolute"
+         , Element.style "z-index" "1"
+         , Text.fonts
+         ]
+            ++ attrs
+        )
+
+
+layoutOptions : { options : List Option }
+layoutOptions =
+    { options =
+        [ Element.focusStyle
+            { borderColor = Nothing
+            , backgroundColor = Nothing
+            , shadow = Nothing
+            }
+        ]
+    }
+
+
+initialOverlay : Element msg
+initialOverlay =
+    Animated.el fadeOut
+        [ width fill
+        , height fill
+        , Background.color Palette.lightYellow
+        , Element.disableTouch
+        ]
+        (el
+            [ centerX
+            , centerY
             ]
-        , backToLevelsButton
+            (Animated.el fadeIn [] gardenText)
+        )
+
+
+gardenText : Element msg
+gardenText =
+    Text.text [ Text.wideSpaced, Text.large ] "GARDEN"
+
+
+fadeOut : Animation
+fadeOut =
+    Animations.fadeOut 1500
+        [ Animation.delay 3000
+        , Animation.linear
         ]
 
 
-initialOverlay : Window -> Html msg
-initialOverlay window =
-    div
-        [ style
-            [ background Color.lightYellow
-            , height <| toFloat window.height
-            , Animation.animation "fade-out" 1500 [ Animation.linear, Animation.delay 3000 ]
-            ]
-        , class "w-100 ttu tracked-ultra f3 z-7 fixed flex items-center justify-center touch-disabled"
-        ]
-        [ p
-            [ style
-                [ color Color.darkYellow
-                , opacity 0
-                , marginBottom 80
-                , Animation.animation "fade-in" 1000 [ Animation.linear, Animation.delay 500 ]
-                ]
-            ]
-            [ text "Garden" ]
-        ]
+fadeIn : Animation
+fadeIn =
+    Animations.fadeIn 1500 [ Animation.linear ]
 
 
-backToLevelsButton : Html Msg
+backToLevelsButton : Element Msg
 backToLevelsButton =
-    div [ style [ bottom 40 ], class "fixed tc left-0 right-0 z-5 center" ]
-        [ button
-            [ style
-                [ color Color.white
-                , backgroundColor Color.darkBrown
-                , paddingHorizontal 20
-                , paddingVertical 10
-                , borderNone
-                ]
-            , onClick ExitToHub
-            , class "pointer br4 f7 outline-0 tracked-mega"
-            ]
-            [ text "BACK TO LEVELS" ]
+    el [ alignBottom, centerX, paddingXY 0 Scale.extraLarge ]
+        (Input.button []
+            { onPress = Just ExitToHub
+            , label = buttonLabel "BACK TO LEVELS"
+            }
+        )
+
+
+buttonLabel : String -> Element msg
+buttonLabel text =
+    el
+        [ Background.color Palette.darkBrown
+        , paddingXY Scale.medium Scale.small
+        , Border.rounded 20
         ]
+        (Text.text
+            [ Text.color Palette.white
+            , Text.spaced
+            , Text.small
+            ]
+            text
+        )
 
 
-allFlowers : Progress -> List (Html Msg)
+allFlowers : Progress -> Element Msg
 allFlowers progress =
-    Worlds.list
-        |> List.reverse
-        |> List.map (worldFlowers progress)
+    column
+        [ paddingXY Scale.medium (Scale.extraLarge * 2)
+        , spacing (Scale.extraLarge * 2)
+        , centerX
+        , alignBottom
+        ]
+        (Worlds.list
+            |> List.reverse
+            |> List.map (worldFlowers progress)
+        )
 
 
-worldFlowers : Progress -> ( WorldConfig, List Level.Id ) -> Html Msg
+worldFlowers : Progress -> ( WorldConfig, List Level.Id ) -> Element Msg
 worldFlowers progress ( { seed }, levelKeys ) =
     if worldComplete progress levelKeys then
-        div
-            [ id <| Seed.name seed
-            , style
-                [ marginTop 50
-                , marginBottom 50
-                ]
-            , class "relative pointer"
-            , onClick <| SelectFlower seed
+        column
+            [ seedId seed
+            , centerX
+            , onClick (SelectFlower seed)
+            , pointer
+            , spacing Scale.medium
             ]
             [ flowers seed
             , seeds seed
@@ -260,282 +310,181 @@ worldFlowers progress ( { seed }, levelKeys ) =
             ]
 
     else
-        div
-            [ id <| Seed.name seed
-            , style [ marginTop 75, marginBottom 75 ]
+        column
+            [ seedId seed
+            , centerX
             ]
             [ unfinishedWorldSeeds
-            , p
-                [ style [ color Color.lightGray ]
-                , class "f6 tc"
-                ]
-                [ text "..." ]
+            , Text.text [ centerX ] "..."
             ]
 
 
-unfinishedWorldSeeds : Html msg
+seedId : Seed -> Attribute msg
+seedId seed =
+    htmlAttribute (Html.Attributes.id (Seed.name seed))
+
+
+unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
-    div [ class "flex items-end justify-center" ]
-        [ sized 20 greyedOutSeed
-        , sized 30 greyedOutSeed
-        , sized 20 greyedOutSeed
+    row [ spacing 5, centerX ]
+        [ sized 20 (html greyedOutSeed)
+        , sized 30 (html greyedOutSeed)
+        , sized 20 (html greyedOutSeed)
         ]
 
 
-flowerName : Seed -> Html msg
+flowerName : Seed -> Element msg
 flowerName seed =
-    p [ style [ color Color.darkYellow ], class "tc ttu tracked-ultra" ]
-        [ text <| Seed.name seed ]
+    Text.text [ Text.wideSpaced, centerX ] (String.toUpper (Seed.name seed))
 
 
-seeds : Seed -> Html msg
+seeds : Seed -> Element msg
 seeds seed =
-    div [ style [ marginTop -20, marginBottom 30 ], class "flex items-end justify-center" ]
-        [ renderSeed 20 seed
+    row [ centerX, moveUp 20 ]
+        [ el [ alignBottom ] (renderSeed 20 seed)
         , renderSeed 30 seed
-        , renderSeed 20 seed
+        , el [ alignBottom ] (renderSeed 20 seed)
         ]
 
 
-renderSeed : Float -> Seed -> Html msg
+renderSeed : Int -> Seed -> Element msg
 renderSeed size =
-    sized size << Seed.view
+    sized size << html << Seed.view
 
 
-flowers : Seed -> Html msg
+flowers : Seed -> Element msg
 flowers seed =
     let
-        spacing =
-            flowerSpacing seed
+        config =
+            flowerConfig seed
     in
-    div [ class "flex items-end justify-center relative" ]
-        [ div [ style [ marginRight spacing.offsetX ] ] [ flower spacing.small seed ]
-        , div [ style [ marginBottom spacing.offsetY ], class "relative" ] [ flower spacing.large seed ]
-        , div [ style [ marginLeft spacing.offsetX ], class "relative" ] [ flower spacing.small seed ]
-        , sprites seed
+    row [ moveDown config.seedOffset ]
+        [ el [ alignBottom, moveRight config.offsetX ] (flower config.small seed)
+        , el [ alignBottom, moveUp config.offsetY ] (flower config.large seed)
+        , el [ alignBottom, moveLeft config.offsetX ] (flower config.small seed)
         ]
 
 
-flower : Float -> Seed -> Html msg
+flower : Int -> Seed -> Element msg
 flower size =
-    sized size << Flower.view
+    el [ width (px size) ] << html << Flower.view
 
 
-sized : Float -> Html msg -> Html msg
-sized size element =
-    div [ style [ width size, height size ] ] [ element ]
-
-
-sprites : Seed -> Html msg
-sprites seed =
-    case seed of
-        Sunflower ->
-            div [ class "absolute", style [ top 0, left 0 ] ]
-                [ div [ style [ left 70, top 100, right 0 ], class "absolute" ] [ Butterfly.resting 0 ]
-                , div [ style [ left 120, top 30, right 0 ], class "absolute" ] [ Butterfly.resting 0 ]
-                , div [ style [ left 150, top 120, right 0, width 30, height 30 ], class "absolute" ] [ Butterfly.resting 0.5 ]
-                ]
-
-        Chrysanthemum ->
-            div [ class "absolute", style [ top -160, left 0 ] ]
-                [ Bee.animate
-                    [ ( 0, div [ style [ left 30, top 100, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
-                    , ( 0.5, div [ style [ left 0, top 80, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
-                    , ( 0.7, div [ style [ left 60, top 60, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
-                    , ( 1.3, div [ style [ left -70, top 125, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
-                    , ( 1.6, div [ style [ left 130, top 135, right 0, opacity 0 ], class "absolute" ] [ Bee.bee ] )
-                    ]
-                ]
-
-        _ ->
-            span [] []
+sized : Int -> Element msg -> Element msg
+sized size =
+    el [ width (px size), height (px size) ]
 
 
 
 -- Selected Flower
 
 
+viewSelectedFlower : Model -> Element Msg
+viewSelectedFlower model =
+    Sunflower.view
+
+
+viewFlowerDescription : String -> Element msg
+viewFlowerDescription text =
+    Animated.el (Animations.fadeIn 1000 [ Animation.delay 1500 ])
+        [ width fill
+        , centerX
+        , centerY
+        , alignBottom
+        ]
+        (Text.text [ Text.color Palette.white ] text)
+
+
 type alias SelectedFlower msg =
-    { hidden : Svg msg
-    , visible : Svg msg
+    { hidden : Element msg
+    , visible : Element msg
     , background : Color
     , description : String
     }
 
 
-renderSelectedFlower : Model -> Html Msg
-renderSelectedFlower model =
-    let
-        window =
-            model.context.window
-
-        flowerLayer =
-            getFlowerLayer model.selectedFlower window
-
-        visibility =
-            model.flowerVisibility
-    in
-    case visibility of
-        Entering ->
-            Keyed.node "div"
-                []
-                [ ( "flowers", flowerLayer.hidden )
-                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
-                ]
-
-        Visible ->
-            Keyed.node "div"
-                [ style
-                    [ windowDimensions window
-                    ]
-                , class "relative flex items-center justify-center"
-                ]
-                [ ( "clear"
-                  , div
-                        [ onClick HideFlower
-                        , style [ width 20, height 20, opacity 0, Animation.animation "fade-in" 500 [ Animation.delay 500 ] ]
-                        , class "absolute top-1 right-1 z-7 pointer"
-                        ]
-                        [ cross ]
-                  )
-                , ( "flowers", flowerLayer.visible )
-                , ( "text", renderFlowerLayerText flowerLayer )
-                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
-                ]
-
-        Leaving ->
-            Keyed.node "div"
-                [ style [ Animation.animation "fade-out" 800 [ Animation.linear ] ]
-                , class "touch-disabled"
-                ]
-                [ ( "flowers", flowerLayer.visible )
-                , ( "backdrop", renderFlowerBackdrop window flowerLayer visibility )
-                ]
-
-        Hidden ->
-            span [] []
-
-
-renderFlowerLayerText : SelectedFlower msg -> Html msg
-renderFlowerLayerText flowerLayer =
-    p
-        [ style
-            [ color Color.white
-            , lineHeight 2
-            , marginTop 150
-            , maxWidth 350
-            , paddingHorizontal 10
-            , opacity 0
-            , Animation.animation "fade-in" 1000 [ Animation.delay 1500 ]
-            ]
-        , class "f6 tracked absolute z-7"
-        ]
-        [ text flowerLayer.description ]
-
-
-renderFlowerBackdrop : Window -> SelectedFlower msg -> FlowerVisibility -> Html msg
-renderFlowerBackdrop window flowerLayer visibility =
-    case visibility of
-        Entering ->
-            div
-                [ style
-                    [ windowDimensions window
-                    , opacity 0
-                    , Transition.transition "opacity" 1000 [ Transition.linear, Transition.delay 500 ]
-                    , backgroundColor flowerLayer.background
-                    ]
-                ]
-                []
-
-        _ ->
-            div
-                [ style
-                    [ backgroundColor flowerLayer.background
-                    , windowDimensions window
-                    , opacity 1
-                    , Transition.transition "opacity" 1000 [ Transition.linear, Transition.delay 500 ]
-                    ]
-                ]
-                []
-
-
-getFlowerLayer : Seed -> Window -> SelectedFlower msg
-getFlowerLayer seed window =
+selectedFlower : Seed -> Window -> SelectedFlower msg
+selectedFlower seed window =
     let
         description =
             flowerDescription seed
     in
     case seed of
         Sunflower ->
-            { hidden = Sunflower.hidden window
-            , visible = Sunflower.visible window
-            , background = Sunflower.background
+            { hidden = html (Sunflower.hidden window)
+            , visible = html (Sunflower.visible window)
+            , background = Sunflower.background_
             , description = description
             }
 
         Chrysanthemum ->
-            { hidden = Chrysanthemum.hidden window
-            , visible = Chrysanthemum.visible window
-            , background = Chrysanthemum.background
+            { hidden = html (Chrysanthemum.hidden window)
+            , visible = html (Chrysanthemum.visible window)
+            , background = Chrysanthemum.background_
             , description = description
             }
 
         Cornflower ->
-            { hidden = Cornflower.hidden window
-            , visible = Cornflower.visible window
-            , background = Cornflower.background
+            { hidden = html (Cornflower.hidden window)
+            , visible = html (Cornflower.visible window)
+            , background = Cornflower.background_
             , description = description
             }
 
         _ ->
-            { hidden = Sunflower.hidden window
-            , visible = Sunflower.visible window
-            , background = Sunflower.background
+            { hidden = html (Sunflower.hidden window)
+            , visible = html (Sunflower.visible window)
+            , background = Sunflower.background_
             , description = description
             }
 
 
 
--- Config
+---- Config
 
 
-type alias FlowerSpacing =
-    { large : Float
-    , small : Float
-    , offsetX : Float
-    , offsetY : Float
+type alias FlowerConfig number =
+    { large : number
+    , small : number
+    , offsetX : number
+    , offsetY : number
+    , seedOffset : number
     }
 
 
-flowerSpacing : Seed -> FlowerSpacing
-flowerSpacing seed =
+flowerConfig : Seed -> FlowerConfig number
+flowerConfig seed =
     case seed of
         Sunflower ->
             { large = 150
             , small = 80
-            , offsetX = -30
-            , offsetY = 20
+            , offsetX = 25
+            , offsetY = 25
+            , seedOffset = 20
             }
 
         Chrysanthemum ->
             { large = 120
             , small = 80
-            , offsetX = 0
-            , offsetY = 30
+            , offsetX = 10
+            , offsetY = 50
+            , seedOffset = 0
             }
 
         Cornflower ->
             { large = 170
             , small = 100
-            , offsetX = -45
+            , offsetX = 45
             , offsetY = 20
+            , seedOffset = 20
             }
 
         _ ->
             { large = 150
             , small = 80
-            , offsetX = 30
+            , offsetX = Scale.small
             , offsetY = 20
+            , seedOffset = 0
             }
 
 

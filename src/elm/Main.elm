@@ -675,26 +675,26 @@ view model =
         [ animations
         , loadingScreen <| getContext model
         , menu model.scene
-        , renderStage
-            [ renderScene model.scene
-            , renderBackrop model.backdrop
+        , stage
+            [ viewScene model.scene
+            , viewBackdrop model.backdrop
             ]
         , background
         ]
 
 
-renderStage : List (List ( String, Html msg )) -> Html msg
-renderStage =
+stage : List (List ( String, Html msg )) -> Html msg
+stage =
     Keyed.node "div" [] << List.concat
 
 
-renderBackrop : Maybe Scene -> List ( String, Html Msg )
-renderBackrop =
-    Maybe.map renderScene >> Maybe.withDefault []
+viewBackdrop : Maybe Scene -> List ( String, Html Msg )
+viewBackdrop =
+    Maybe.map viewScene >> Maybe.withDefault []
 
 
-renderScene : Scene -> List ( String, Html Msg )
-renderScene scene =
+viewScene : Scene -> List ( String, Html Msg )
+viewScene scene =
     case scene of
         Hub model ->
             [ ( "hub", Hub.view model |> Html.map HubMsg ) ]
