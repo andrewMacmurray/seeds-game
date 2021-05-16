@@ -42,7 +42,7 @@ div {
 }
 
 .touch-disabled {
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .momentum-scroll {

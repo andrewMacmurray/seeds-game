@@ -1,5 +1,6 @@
 module Scene.Summary.Cornflower exposing
     ( background
+    , background_
     , hidden
     , visible
     )
@@ -8,6 +9,7 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
+import Element
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
@@ -29,6 +31,11 @@ hidden =
 background : Color
 background =
     Color.rgb 16 154 217
+
+
+background_ : Element.Color
+background_ =
+    Element.rgb 16 154 217
 
 
 type Visibility
