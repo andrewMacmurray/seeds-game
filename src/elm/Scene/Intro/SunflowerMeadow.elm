@@ -3,13 +3,15 @@ module Scene.Intro.SunflowerMeadow exposing
     , view
     )
 
-import Css.Animation as Animation
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Transition as Transition
+import Element.Animations as Animations
 import Html exposing (Html, div)
+import Simple.Animation as Animation exposing (Animation)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Animated as Animated
 import Utils.Svg exposing (..)
 import View.Flower.Sunflower as Sunflower
 import View.Landscape.RollingHills as Hills
@@ -127,20 +129,19 @@ sunflower window state delay =
             Svg.g [] []
 
 
+animateSunflower : Window -> Int -> Svg msg
 animateSunflower window delay =
     case Window.size window of
         Window.Small ->
-            Svg.g
-                [ Style.svgStyle
-                    [ Animation.animation "fade-in"
-                        1000
-                        [ Animation.delay <| (delay * 150) // 100
-                        , Animation.linear
-                        ]
-                    , Style.opacity 0
-                    ]
-                ]
-                [ Sunflower.static ]
+            Animated.g (fadeIn delay) [] [ Sunflower.static ]
 
         _ ->
             Sunflower.animated delay
+
+
+fadeIn : Int -> Animation
+fadeIn delay =
+    Animations.fadeIn 1000
+        [ Animation.linear
+        , Animation.delay ((delay * 150) // 100)
+        ]

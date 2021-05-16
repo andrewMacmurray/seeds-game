@@ -108,7 +108,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window, trigger InitGarden ]
+        |> withCmds [ bounceKeyframes flags.window ]
 
 
 initialState : Title.Model -> Model
