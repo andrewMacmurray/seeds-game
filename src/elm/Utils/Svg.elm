@@ -2,7 +2,6 @@ module Utils.Svg exposing
     ( Point
     , cx_
     , cy_
-    , embed
     , height_
     , point
     , points_
@@ -11,6 +10,7 @@ module Utils.Svg exposing
     , ry_
     , scaled
     , strokeWidth_
+    , transformOrigin_
     , translated
     , viewBox_
     , width_
@@ -21,15 +21,10 @@ module Utils.Svg exposing
 
 import Css.Style as Style
 import Css.Transform as Transform
-import Html exposing (Html)
+import Css.Unit exposing (px)
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 import Window exposing (Window)
-
-
-embed : Html msg -> Svg.Svg msg
-embed el =
-    Svg.foreignObject [ width "100%", height "100%" ] [ el ]
 
 
 windowViewBox_ : Window -> Attribute msg
@@ -116,3 +111,8 @@ strokeWidth_ =
 viewBox_ : Float -> Float -> Float -> Float -> Attribute msg
 viewBox_ x y w h =
     viewBox <| String.join " " <| List.map String.fromFloat [ x, y, w, h ]
+
+
+transformOrigin_ : Float -> Float -> String
+transformOrigin_ x y =
+    "transform-origin: " ++ px x ++ " " ++ px y
