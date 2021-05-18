@@ -1,6 +1,5 @@
 module Scene.Summary.Sunflower exposing
     ( background
-    , background_
     , hidden
     , visible
     )
@@ -9,8 +8,6 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (delay)
-import Element
-import Element.Palette as Palette
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
@@ -37,11 +34,6 @@ hidden =
 background : Color
 background =
     Color.meadowGreen
-
-
-background_ : Element.Color
-background_ =
-    Palette.meadowGreen
 
 
 view : Visibility -> Window -> Svg msg

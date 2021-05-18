@@ -1,7 +1,20 @@
-module Utils.Element exposing (disableTouch, style)
+module Utils.Element exposing
+    ( disableTouch
+    , style
+    , visibleIf
+    )
 
-import Element exposing (Attribute)
+import Element exposing (Attribute, alpha)
 import Html.Attributes
+
+
+visibleIf : Bool -> Attribute msg
+visibleIf condition =
+    if condition then
+        alpha 1
+
+    else
+        alpha 0
 
 
 disableTouch : Attribute msg

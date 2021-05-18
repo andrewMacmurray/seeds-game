@@ -2,6 +2,7 @@ module Utils.Svg exposing
     ( Point
     , cx_
     , cy_
+    , fill_
     , height_
     , point
     , points_
@@ -14,6 +15,7 @@ module Utils.Svg exposing
     , translated
     , viewBox_
     , width_
+    , window
     , windowViewBox_
     , x_
     , y_
@@ -22,14 +24,33 @@ module Utils.Svg exposing
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Unit exposing (px)
-import Svg exposing (Attribute)
+import Element
+import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Color as Color
 import Window exposing (Window)
 
 
+window : Window -> List (Attribute msg) -> List (Svg msg) -> Svg msg
+window w attrs =
+    Svg.svg
+        (List.append
+            [ windowViewBox_ w
+            , width_ (toFloat w.width)
+            , height_ (toFloat w.height)
+            ]
+            attrs
+        )
+
+
+fill_ : Element.Color -> Attribute msg
+fill_ color =
+    Svg.Attributes.fill (Color.toString color)
+
+
 windowViewBox_ : Window -> Attribute msg
-windowViewBox_ window =
-    viewBox_ 0 0 (toFloat window.width) (toFloat window.height)
+windowViewBox_ w =
+    viewBox_ 0 0 (toFloat w.width) (toFloat w.height)
 
 
 translated : Float -> Float -> Svg.Svg msg -> Svg.Svg msg
@@ -70,10 +91,12 @@ cy_ =
     cy << String.fromFloat
 
 
+height_ : Float -> Attribute msg
 height_ =
     height << String.fromFloat
 
 
+width_ : Float -> Attribute msg
 width_ =
     width << String.fromFloat
 
