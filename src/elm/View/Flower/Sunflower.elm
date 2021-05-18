@@ -19,11 +19,7 @@ static : Svg msg
 static =
     Svg.svg [ viewBox_ 0 0 vw vh, width "100%" ]
         [ Svg.g [] petals_
-        , Svg.path
-            [ d "M117 91c0 13-12 25-27 25-16 0-28-12-28-25 0-14 12-25 28-25 15 0 27 11 27 25"
-            , fill "#8A5D3B"
-            ]
-            []
+        , Svg.path core_ []
         ]
 
 
@@ -34,11 +30,6 @@ static =
 animated : Animation.Millis -> Svg msg
 animated delay =
     Svg.svg [ viewBox_ 0 0 vw vh, width "100%" ] (petals delay ++ [ core delay ])
-
-
-duration : Animation.Millis
-duration =
-    Animation.duration (bloomPetal 12 0)
 
 
 
@@ -100,16 +91,19 @@ growCore delay =
 
 core : Animation.Millis -> Svg msg
 core delay =
-    Animated.path (growCore delay)
-        [ d "M393.4 296c0 33.7-30.3 61-67.6 61s-67.5-27.3-67.5-61 30.2-61 67.5-61 67.6 27.3 67.6 61"
-        , fill "#8a5d3b"
-        , style (transformOrigin_ (vw / 2 - 10) (vh / 2 + 10))
-        ]
-        []
+    Animated.path (growCore delay) core_ []
+
+
+core_ : List (Svg.Attribute msg)
+core_ =
+    [ d "M393.4 296c0 33.7-30.3 61-67.6 61s-67.5-27.3-67.5-61 30.2-61 67.5-61 67.6 27.3 67.6 61"
+    , fill "#8a5d3b"
+    , style (transformOrigin_ (vw / 2 - 10) (vh / 2 + 10))
+    ]
 
 
 
--- Helpers
+-- Config
 
 
 vw : number

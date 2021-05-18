@@ -3,15 +3,17 @@ module Element.Text exposing
     , fonts
     , large
     , medium
+    , paragraph
     , small
     , spaced
     , text
     , wideSpaced
     )
 
-import Element exposing (Attribute, Element)
+import Element exposing (Attribute, Element, spacing)
 import Element.Font as Font
 import Element.Palette as Palette
+import Element.Scale as Scale
 
 
 
@@ -21,6 +23,17 @@ import Element.Palette as Palette
 text : List (Attribute msg) -> String -> Element msg
 text attrs t =
     Element.el (medium :: darkYellow :: attrs) (Element.text t)
+
+
+paragraph : List (Attribute msg) -> String -> Element msg
+paragraph attrs t =
+    Element.paragraph
+        (spacing Scale.small
+            :: medium
+            :: darkYellow
+            :: attrs
+        )
+        [ Element.text t ]
 
 
 

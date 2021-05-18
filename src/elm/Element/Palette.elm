@@ -123,23 +123,57 @@ chocolate =
     rgb255 57 35 21
 
 
-mediumGreen : Color
-mediumGreen =
-    rgb255 78 168 59
+
+-- Green
 
 
-green : Color
-green =
-    rgb255 113 175 68
+green1 : Color
+green1 =
+    rgb255 29 78 52
 
 
-lightGreen : Color
-lightGreen =
-    rgb255 119 193 66
+green2 : Color
+green2 =
+    rgb255 24 95 57
 
 
-skyGreen : Color
-skyGreen =
+green3 : Color
+green3 =
+    rgb255 29 113 69
+
+
+green4 : Color
+green4 =
+    rgb255 31 141 82
+
+
+green5 : Color
+green5 =
+    rgb255 37 168 98
+
+
+green6 : Color
+green6 =
+    rgb255 51 177 109
+
+
+green7 : Color
+green7 =
+    rgb255 25 181 88
+
+
+green8 : Color
+green8 =
+    rgb255 91 201 120
+
+
+green9 : Color
+green9 =
+    rgb255 142 243 167
+
+
+green10 : Color
+green10 =
     rgb255 164 255 186
 
 
@@ -148,9 +182,8 @@ meadowGreen =
     rgb255 91 201 120
 
 
-firrGreen : Color
-firrGreen =
-    rgb255 93 136 61
+
+-- Blue
 
 
 lightBlue : Color

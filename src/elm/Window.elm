@@ -4,6 +4,8 @@ module Window exposing
     , Window
     , padding
     , size
+    , vh
+    , vw
     , width
     )
 
@@ -44,6 +46,7 @@ size window =
         Large
 
 
+width : Window -> Width
 width window =
     if window.width >= 980 then
         Wide
@@ -53,6 +56,16 @@ width window =
 
     else
         Narrow
+
+
+vw : Window -> Float
+vw window =
+    toFloat window.width
+
+
+vh : Window -> Float
+vh window =
+    toFloat window.height
 
 
 

@@ -27,9 +27,6 @@ import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Sunflower as Sunflower
-import Scene.Summary.Chrysanthemum as Chrysanthemum
-import Scene.Summary.Cornflower as Cornflower
-import Scene.Summary.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
 import Task exposing (Task)
@@ -40,7 +37,6 @@ import View.Flower as Flower
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
-import Window exposing (Window)
 
 
 
@@ -57,16 +53,14 @@ type alias Model =
 type Msg
     = ScrollToCurrentCompletedWorld
     | WorldScrolledToView
-    | SelectFlower Seed
-    | ShowFlower
-    | HideFlower
+    | FlowerClicked Seed
+    | HideFlowerClicked
     | ClearFlower
     | ExitToHub
 
 
 type FlowerVisibility
     = Hidden
-    | Entering
     | Leaving
     | Visible
 
@@ -121,13 +115,10 @@ update msg model =
         WorldScrolledToView ->
             continue model []
 
-        SelectFlower seed ->
-            continue { model | selectedFlower = seed, flowerVisibility = Entering } [ after 100 ShowFlower ]
+        FlowerClicked seed ->
+            continue { model | selectedFlower = seed, flowerVisibility = Visible } []
 
-        ShowFlower ->
-            continue { model | flowerVisibility = Visible } []
-
-        HideFlower ->
+        HideFlowerClicked ->
             continue { model | flowerVisibility = Leaving } [ after 1000 ClearFlower ]
 
         ClearFlower ->
@@ -300,7 +291,7 @@ worldFlowers progress ( { seed }, levelKeys ) =
         column
             [ seedId seed
             , centerX
-            , onClick (SelectFlower seed)
+            , onClick (FlowerClicked seed)
             , pointer
             , spacing Scale.medium
             ]
@@ -381,62 +372,23 @@ sized size =
 
 viewSelectedFlower : Model -> Element Msg
 viewSelectedFlower model =
-    Sunflower.view
+    case model.flowerVisibility of
+        Hidden ->
+            none
 
+        Leaving ->
+            Sunflower.view
+                { window = model.context.window
+                , visible = False
+                , onHide = HideFlowerClicked
+                }
 
-viewFlowerDescription : String -> Element msg
-viewFlowerDescription text =
-    Animated.el (Animations.fadeIn 1000 [ Animation.delay 1500 ])
-        [ width fill
-        , centerX
-        , centerY
-        , alignBottom
-        ]
-        (Text.text [ Text.color Palette.white ] text)
-
-
-type alias SelectedFlower msg =
-    { hidden : Element msg
-    , visible : Element msg
-    , background : Color
-    , description : String
-    }
-
-
-selectedFlower : Seed -> Window -> SelectedFlower msg
-selectedFlower seed window =
-    let
-        description =
-            flowerDescription seed
-    in
-    case seed of
-        Sunflower ->
-            { hidden = html (Sunflower.hidden window)
-            , visible = html (Sunflower.visible window)
-            , background = Sunflower.background_
-            , description = description
-            }
-
-        Chrysanthemum ->
-            { hidden = html (Chrysanthemum.hidden window)
-            , visible = html (Chrysanthemum.visible window)
-            , background = Chrysanthemum.background_
-            , description = description
-            }
-
-        Cornflower ->
-            { hidden = html (Cornflower.hidden window)
-            , visible = html (Cornflower.visible window)
-            , background = Cornflower.background_
-            , description = description
-            }
-
-        _ ->
-            { hidden = html (Sunflower.hidden window)
-            , visible = html (Sunflower.visible window)
-            , background = Sunflower.background_
-            , description = description
-            }
+        Visible ->
+            Sunflower.view
+                { window = model.context.window
+                , visible = True
+                , onHide = HideFlowerClicked
+                }
 
 
 
@@ -456,9 +408,9 @@ flowerConfig : Seed -> FlowerConfig number
 flowerConfig seed =
     case seed of
         Sunflower ->
-            { large = 150
-            , small = 80
-            , offsetX = 25
+            { large = 180
+            , small = 100
+            , offsetX = 45
             , offsetY = 25
             , seedOffset = 20
             }

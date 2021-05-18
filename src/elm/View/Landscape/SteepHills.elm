@@ -53,10 +53,9 @@ layer : Window -> Float -> Hill msg -> Hill msg -> Svg msg
 layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightStyles, rightElements ) =
     let
         center =
-            Point2d.fromCoordinates
-                ( toFloat window.width / 2
-                , toFloat window.height / 2
-                )
+            Point2d.pixels
+                (toFloat window.width / 2)
+                (toFloat window.height / 2)
 
         yAxis =
             Axis2d.withDirection Direction2d.y center
