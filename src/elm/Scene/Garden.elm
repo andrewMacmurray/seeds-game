@@ -17,7 +17,6 @@ import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
 import Element.Border as Border
-import Element.Events exposing (onClick)
 import Element.Input as Input
 import Element.Palette as Palette
 import Element.Scale as Scale
@@ -31,6 +30,7 @@ import Scene.Garden.Flower as GardenFlower
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
+import Svg exposing (Svg)
 import Task exposing (Task)
 import Utils.Animated as Animated
 import Utils.Delay exposing (after)
@@ -39,6 +39,7 @@ import View.Flower as Flower
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
+import Window exposing (Window)
 
 
 
@@ -176,7 +177,6 @@ view : Model -> Html Msg
 view model =
     layout
         [ inFront backToLevelsButton
-        , inFront initialOverlay
         , inFront (viewSelectedFlower model)
         ]
         (el
@@ -184,7 +184,7 @@ view model =
             , height fill
             , centerX
             ]
-            (allFlowers model.context.progress)
+            (allFlowers model.context)
         )
 
 
@@ -275,34 +275,38 @@ buttonLabel text =
         )
 
 
-allFlowers : Progress -> Element Msg
-allFlowers progress =
+allFlowers : Context -> Element Msg
+allFlowers context =
     column
-        [ paddingXY Scale.medium (Scale.extraLarge * 2)
-        , spacing (Scale.extraLarge * 2)
-        , centerX
+        [ centerX
         , alignBottom
         ]
         (Worlds.list
+            |> List.indexedMap (worldFlowers context)
             |> List.reverse
-            |> List.map (worldFlowers progress)
         )
 
 
-worldFlowers : Progress -> ( WorldConfig, List Level.Id ) -> Element Msg
-worldFlowers progress ( { seed }, levelKeys ) =
-    if worldComplete progress levelKeys then
-        column
-            [ seedId seed
-            , centerX
-            , onClick (ViewFlowerClicked seed)
-            , pointer
-            , spacing Scale.medium
+worldFlowers : Context -> Int -> ( WorldConfig, List Level.Id ) -> Element Msg
+worldFlowers context index ( { seed }, levelKeys ) =
+    if worldComplete context.progress levelKeys then
+        el
+            [ width fill
+            , moveDown (toFloat index * 200)
+            , inFront
+                (column
+                    [ seedId seed
+                    , centerX
+                    , centerY
+                    , spacing Scale.medium
+                    ]
+                    [ flowers seed
+                    , seeds seed
+                    , flowerName seed
+                    ]
+                )
             ]
-            [ flowers seed
-            , seeds seed
-            , flowerName seed
-            ]
+            (html (hills seed context.window))
 
     else
         column
@@ -330,7 +334,12 @@ unfinishedWorldSeeds =
 
 flowerName : Seed -> Element msg
 flowerName seed =
-    Text.text [ Text.wideSpaced, centerX ] (String.toUpper (Seed.name seed))
+    Text.text
+        [ Text.color Palette.white
+        , Text.wideSpaced
+        , centerX
+        ]
+        (String.toUpper (Seed.name seed))
 
 
 seeds : Seed -> Element msg
@@ -400,6 +409,19 @@ viewFlower seed =
             Sunflower.view
 
 
+hills : Seed -> Window -> Svg msg
+hills seed =
+    case seed of
+        Sunflower ->
+            Sunflower.hills
+
+        Chrysanthemum ->
+            Chrysanthemum.hills
+
+        _ ->
+            Sunflower.hills
+
+
 visibleConfig : Model -> Seed -> GardenFlower.Config Msg
 visibleConfig model seed =
     { window = model.context.window
@@ -463,19 +485,3 @@ flowerConfig seed =
             , offsetY = 20
             , seedOffset = 0
             }
-
-
-flowerDescription : Seed -> String
-flowerDescription seed =
-    case seed of
-        Sunflower ->
-            "Sunflowers are native to North America but bloom across the world. During growth their bright yellow flowers turn to face the sun. Their seeds are an important food source for both humans and animals."
-
-        Chrysanthemum ->
-            "Chrysanthemums are native to Asia and Northeastern Europe, with the largest variety in China. They bloom early in Autumn, in many different colours and shapes. The Ancient Chinese used Chrysanthemum roots in pain relief medicine."
-
-        Cornflower ->
-            "Cornflowers are a wildflower native to Europe. In the past their bright blue heads could be seen amongst fields of corn. They are now endangered in their natural habitat from Agricultural intensification."
-
-        _ ->
-            ""

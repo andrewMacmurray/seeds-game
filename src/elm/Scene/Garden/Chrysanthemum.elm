@@ -1,4 +1,4 @@
-module Scene.Garden.Chrysanthemum exposing (view)
+module Scene.Garden.Chrysanthemum exposing (hills, view)
 
 import Angle
 import Arc2d exposing (Arc2d)
@@ -7,11 +7,11 @@ import Element.Palette as Palette
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
 import Point2d
+import Polygon2d
 import Scene.Garden.Flower as Flower
 import Simple.Animation as Animation
 import Svg exposing (Svg)
-import Triangle2d exposing (Triangle2d)
-import Utils.Geometry as Geometry
+import Utils.Geometry as Geometry exposing (down)
 import Utils.Svg as Svg
 import View.Flower.Chrysanthemum as Chrysanthemum
 import Window exposing (Window, vh, vw)
@@ -62,14 +62,7 @@ hills window =
         []
         [ roundHill Palette.pinkRed window
         , Geometry.mirror window (roundHill Palette.orange window)
-        , centerRound window
-        , framingHill Palette.darkRed window
-        , Geometry.mirror window (framingHill Palette.darkRed window)
         ]
-
-
-centerRound w =
-    Svg.arc2d [ Svg.fill_ Palette.gold ] (centerRound_ w)
 
 
 centerRound_ w =
@@ -83,35 +76,25 @@ centerPoint w =
     Arc2d.pointOn (centerRound_ w) 0.5
 
 
-framingHill color window =
-    Svg.triangle2d [ Svg.fill_ color ] (framingHill_ window)
-
-
-framingHill_ window =
-    Triangle2d.from
-        (Point2d.pixels 0 (vh window - (vh window / 4)))
-        (Point2d.pixels (vw window / 3) (vh window))
-        (Point2d.pixels 0 (vh window))
-
-
 roundHill color window =
     Svg.g []
         [ Svg.arc2d [ Svg.fill_ color ] (roundHill_ window)
-        , Svg.triangle2d [ Svg.fill_ color ] (roundHillBase_ window)
         ]
 
 
 roundHill_ : Window -> Arc2d Pixels coordinates
 roundHill_ window =
-    Arc2d.from
-        (Point2d.pixels -300 (vh window - 200))
-        (centerPoint window)
-        (Angle.degrees 90)
+    Arc2d.translateBy (down -300)
+        (Arc2d.from
+            (Point2d.pixels -300 (vh window - 200))
+            (centerPoint window)
+            (Angle.degrees 90)
+        )
 
 
-roundHillBase_ : Window -> Triangle2d Pixels coordinates
 roundHillBase_ window =
-    Triangle2d.from
-        (Point2d.pixels -300 (vh window - 200))
-        (centerPoint window)
-        (Point2d.pixels 0 (vh window))
+    Polygon2d.singleLoop
+        [ Point2d.pixels -302 (vh window - 202)
+        , centerPoint window
+        , centerPoint window |> Point2d.translateBy (down 100)
+        ]
