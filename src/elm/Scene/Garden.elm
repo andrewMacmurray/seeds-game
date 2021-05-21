@@ -292,7 +292,7 @@ worldFlowers context index ( { seed }, levelKeys ) =
     if worldComplete context.progress levelKeys then
         el
             [ width fill
-            , moveDown (toFloat index * 200)
+            , moveDown (toFloat index * 240)
             , inFront
                 (column
                     [ seedId seed
@@ -337,6 +337,7 @@ flowerName seed =
     Text.text
         [ Text.color Palette.white
         , Text.wideSpaced
+        , Text.bold
         , centerX
         ]
         (String.toUpper (Seed.name seed))

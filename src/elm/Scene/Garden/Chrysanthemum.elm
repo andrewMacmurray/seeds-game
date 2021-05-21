@@ -2,12 +2,12 @@ module Scene.Garden.Chrysanthemum exposing (hills, view)
 
 import Angle
 import Arc2d exposing (Arc2d)
+import Circle2d
 import Element exposing (..)
 import Element.Palette as Palette
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
 import Point2d
-import Polygon2d
 import Scene.Garden.Flower as Flower
 import Simple.Animation as Animation
 import Svg exposing (Svg)
@@ -60,8 +60,13 @@ hills : Window -> Svg msg
 hills window =
     Svg.window window
         []
-        [ roundHill Palette.pinkRed window
-        , Geometry.mirror window (roundHill Palette.orange window)
+        [ middleHill -100 window Palette.purple
+        , roundHill 0 Palette.pinkRed window
+        , Geometry.mirror window (roundHill 0 Palette.orange window)
+        , middleHill 0 window Palette.darkPurple
+        , roundHill 300 Palette.gold window
+        , Geometry.mirror window (roundHill 300 Palette.darkRed window)
+        , middleHill 300 window Palette.lightGold
         ]
 
 
@@ -76,25 +81,25 @@ centerPoint w =
     Arc2d.pointOn (centerRound_ w) 0.5
 
 
-roundHill color window =
-    Svg.g []
-        [ Svg.arc2d [ Svg.fill_ color ] (roundHill_ window)
-        ]
+middleHill y w c =
+    Svg.circle2d [ Svg.fill_ c ] (middleHill_ y w)
 
 
-roundHill_ : Window -> Arc2d Pixels coordinates
-roundHill_ window =
-    Arc2d.translateBy (down -300)
-        (Arc2d.from
-            (Point2d.pixels -300 (vh window - 200))
-            (centerPoint window)
-            (Angle.degrees 90)
+roundHill y color window =
+    Svg.circle2d [ Svg.fill_ color ] (roundHill_ y window)
+
+
+middleHill_ y w =
+    Circle2d.translateBy (down y)
+        (Circle2d.atPoint
+            (Point2d.pixels (vw w / 2) (vh w - 60))
+            (Pixels.pixels 500)
         )
 
 
-roundHillBase_ window =
-    Polygon2d.singleLoop
-        [ Point2d.pixels -302 (vh window - 202)
-        , centerPoint window
-        , centerPoint window |> Point2d.translateBy (down 100)
-        ]
+roundHill_ y w =
+    Circle2d.translateBy (down y)
+        (Circle2d.atPoint
+            (Point2d.pixels (vw w / 6) 500)
+            (Pixels.pixels 500)
+        )

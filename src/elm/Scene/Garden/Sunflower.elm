@@ -161,5 +161,5 @@ hill2 y window =
 
 axis w =
     Axis2d.withDirection
-        (Direction2d.degrees -30)
+        (Direction2d.degrees -26)
         (Point2d.pixels (vw w / 2) (vh w - 450))
