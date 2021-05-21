@@ -1,5 +1,6 @@
 module Element.Text exposing
-    ( color
+    ( bold
+    , color
     , fonts
     , large
     , medium
@@ -34,6 +35,11 @@ paragraph attrs t =
             :: attrs
         )
         [ Element.text t ]
+
+
+bold : Attribute msg
+bold =
+    Font.bold
 
 
 

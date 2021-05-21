@@ -216,6 +216,11 @@ purple =
     rgb255 173 81 126
 
 
+darkPurple : Color
+darkPurple =
+    rgb255 98 61 121
+
+
 silver : Color
 silver =
     rgb255 226 226 226
