@@ -1,6 +1,5 @@
 module Scene.Summary.Chrysanthemum exposing
     ( background
-    , background_
     , hidden
     , visible
     )
@@ -9,8 +8,6 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
-import Element
-import Element.Palette as Palette
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
@@ -32,11 +29,6 @@ hidden =
 background : Color
 background =
     Color.purple
-
-
-background_ : Element.Color
-background_ =
-    Palette.purple
 
 
 type Visibility

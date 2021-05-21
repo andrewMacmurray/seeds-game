@@ -26,6 +26,8 @@ import Exit exposing (continue, exit)
 import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
+import Scene.Garden.Chrysanthemum as Chrysanthemum
+import Scene.Garden.Flower as GardenFlower
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
@@ -45,24 +47,23 @@ import View.Seed.Mono exposing (greyedOutSeed)
 
 type alias Model =
     { context : Context
-    , selectedFlower : Seed
-    , flowerVisibility : FlowerVisibility
+    , flower : SelectedFlower
     }
 
 
 type Msg
     = ScrollToCurrentCompletedWorld
     | WorldScrolledToView
-    | FlowerClicked Seed
-    | HideFlowerClicked
+    | ViewFlowerClicked Seed
+    | HideFlowerClicked Seed
     | ClearFlower
     | ExitToHub
 
 
-type FlowerVisibility
+type SelectedFlower
     = Hidden
-    | Leaving
-    | Visible
+    | Leaving Seed
+    | Visible Seed
 
 
 
@@ -91,14 +92,15 @@ menuOptions =
 
 init : Context -> ( Model, Cmd Msg )
 init context =
-    ( initialState context, after 500 ScrollToCurrentCompletedWorld )
+    ( initialState context
+    , after 500 ScrollToCurrentCompletedWorld
+    )
 
 
 initialState : Context -> Model
 initialState context =
     { context = context
-    , selectedFlower = Sunflower
-    , flowerVisibility = Hidden
+    , flower = Hidden
     }
 
 
@@ -115,14 +117,14 @@ update msg model =
         WorldScrolledToView ->
             continue model []
 
-        FlowerClicked seed ->
-            continue { model | selectedFlower = seed, flowerVisibility = Visible } []
+        ViewFlowerClicked seed ->
+            continue { model | flower = Visible seed } []
 
-        HideFlowerClicked ->
-            continue { model | flowerVisibility = Leaving } [ after 1000 ClearFlower ]
+        HideFlowerClicked seed ->
+            continue { model | flower = Leaving seed } [ after 1000 ClearFlower ]
 
         ClearFlower ->
-            continue { model | flowerVisibility = Hidden } []
+            continue { model | flower = Hidden } []
 
         ExitToHub ->
             exit model
@@ -242,7 +244,9 @@ fadeOut =
 
 fadeIn : Animation
 fadeIn =
-    Animations.fadeIn 1500 [ Animation.linear ]
+    Animations.fadeIn 1500
+        [ Animation.linear
+        ]
 
 
 backToLevelsButton : Element Msg
@@ -291,7 +295,7 @@ worldFlowers progress ( { seed }, levelKeys ) =
         column
             [ seedId seed
             , centerX
-            , onClick (FlowerClicked seed)
+            , onClick (ViewFlowerClicked seed)
             , pointer
             , spacing Scale.medium
             ]
@@ -372,27 +376,48 @@ sized size =
 
 viewSelectedFlower : Model -> Element Msg
 viewSelectedFlower model =
-    case model.flowerVisibility of
+    case model.flower of
         Hidden ->
             none
 
-        Leaving ->
+        Leaving seed ->
+            viewFlower seed (hiddenConfig model seed)
+
+        Visible seed ->
+            viewFlower seed (visibleConfig model seed)
+
+
+viewFlower : Seed -> GardenFlower.Config msg -> Element msg
+viewFlower seed =
+    case seed of
+        Sunflower ->
             Sunflower.view
-                { window = model.context.window
-                , visible = False
-                , onHide = HideFlowerClicked
-                }
 
-        Visible ->
+        Chrysanthemum ->
+            Chrysanthemum.view
+
+        _ ->
             Sunflower.view
-                { window = model.context.window
-                , visible = True
-                , onHide = HideFlowerClicked
-                }
+
+
+visibleConfig : Model -> Seed -> GardenFlower.Config Msg
+visibleConfig model seed =
+    { window = model.context.window
+    , isVisible = True
+    , onHide = HideFlowerClicked seed
+    }
+
+
+hiddenConfig : Model -> Seed -> GardenFlower.Config Msg
+hiddenConfig model seed =
+    { window = model.context.window
+    , isVisible = False
+    , onHide = HideFlowerClicked seed
+    }
 
 
 
----- Config
+-- Config
 
 
 type alias FlowerConfig number =
