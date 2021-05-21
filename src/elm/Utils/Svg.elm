@@ -50,7 +50,7 @@ fill_ color =
 
 windowViewBox_ : Window -> Attribute msg
 windowViewBox_ w =
-    viewBox_ 0 0 (toFloat w.width) (toFloat w.height)
+    viewBox_ 0 -30 (toFloat w.width) (toFloat w.height)
 
 
 translated : Float -> Float -> Svg.Svg msg -> Svg.Svg msg

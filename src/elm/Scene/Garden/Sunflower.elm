@@ -1,16 +1,16 @@
-module Scene.Garden.Sunflower exposing (view)
+module Scene.Garden.Sunflower exposing (hills, view)
 
+import Axis2d
+import Direction2d
 import Element exposing (..)
 import Element.Palette as Palette
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
+import Polygon2d
 import Scene.Garden.Flower as Flower
-import Simple.Animation as Animation exposing (Animation)
-import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Triangle2d exposing (Triangle2d)
-import Utils.Animated as Animated
 import Utils.Geometry exposing (down, mirror)
 import Utils.Svg as Svg
 import View.Flower.Sunflower as Sunflower
@@ -45,15 +45,14 @@ view model =
 flowers : Element msg
 flowers =
     row [ centerX ]
-        [ el [ width (px 125), alignBottom, moveRight 70 ] (sunflower 2200)
-        , el [ width (px 250), moveUp 50 ] (sunflower 2000)
-        , el [ width (px 125), alignBottom, moveLeft 70 ] (sunflower 2400)
+        [ el [ width (px 125), alignBottom, moveRight 70 ] sunflower
+        , el [ width (px 250), moveUp 50 ] sunflower
+        , el [ width (px 125), alignBottom, moveLeft 70 ] sunflower
         ]
 
 
-sunflower : Animation.Millis -> Element msg
 sunflower =
-    html << Sunflower.animated
+    html Sunflower.static
 
 
 hills : Window -> Svg msg
@@ -63,7 +62,7 @@ hills window =
 
 genHills : Window -> Svg msg
 genHills window =
-    List.range 0 8
+    List.range 0 4
         |> List.map cycleHillColors
         |> List.indexedMap toHillConfig
         |> List.map (toHillPair window)
@@ -74,26 +73,21 @@ genHills window =
 
 toHillPair : Window -> HillConfig -> List (Svg msg)
 toHillPair window config =
-    [ fadeInHill config.delay
-        (mirrored
-            { offset = config.offset
-            , color = config.left
-            }
-            window
-        )
-    , fadeInHill config.delay
-        (hill
-            { offset = config.offset
-            , color = config.right
-            }
-            window
-        )
+    [ hill
+        { offset = config.offset
+        , color = config.right
+        }
+        window
+    , mirrored
+        { offset = config.offset
+        , color = config.left
+        }
+        window
     ]
 
 
 type alias HillConfig =
-    { delay : Animation.Millis
-    , offset : Float
+    { offset : Float
     , left : Color
     , right : Color
     }
@@ -101,8 +95,7 @@ type alias HillConfig =
 
 toHillConfig : Int -> ( Color, Color ) -> HillConfig
 toHillConfig i ( left, right ) =
-    { offset = 750 - toFloat (i * 130)
-    , delay = i * 300
+    { offset = 750 - toFloat (i * 200)
     , left = left
     , right = right
     }
@@ -121,20 +114,6 @@ cycleHillColors i =
             ( Palette.green1, Palette.green6 )
 
 
-fadeInHill : Animation.Millis -> Svg msg -> Svg msg
-fadeInHill delay h =
-    Animated.g
-        (Animation.fromTo
-            { duration = 2000
-            , options = [ Animation.delay delay ]
-            }
-            [ P.opacity 0 ]
-            [ P.opacity 1 ]
-        )
-        []
-        [ h ]
-
-
 mirrored : { a | offset : Float, color : Color } -> Window -> Svg msg
 mirrored options window =
     mirror window (hill options window)
@@ -142,7 +121,7 @@ mirrored options window =
 
 hill : { a | offset : Float, color : Element.Color } -> Window -> Svg msg
 hill { offset, color } window =
-    Svg.triangle2d [ Svg.fill_ color ] (hill_ offset window)
+    Svg.polygon2d [ Svg.fill_ color ] (hill2 offset window)
 
 
 hill_ : Float -> Window -> Triangle2d Pixels coordinates
@@ -153,3 +132,34 @@ hill_ y window =
             (Point2d.pixels (vw window / 2 + 600) (vh window))
             (Point2d.pixels 0 (vh window))
         )
+
+
+
+-- Hills 2
+
+
+hill2 y window =
+    let
+        ax =
+            axis window
+
+        p1 =
+            Point2d.along ax (Pixels.pixels 1000)
+
+        p2 =
+            Point2d.along ax (Pixels.pixels -1000)
+    in
+    Polygon2d.translateBy (down y)
+        (Polygon2d.singleLoop
+            [ p1
+            , p2
+            , p2 |> Point2d.translateBy (down 300)
+            , p1 |> Point2d.translateBy (down 300)
+            ]
+        )
+
+
+axis w =
+    Axis2d.withDirection
+        (Direction2d.degrees -30)
+        (Point2d.pixels (vw w / 2) (vh w - 450))
