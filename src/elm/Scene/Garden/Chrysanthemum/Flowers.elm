@@ -1,35 +1,56 @@
 module Scene.Garden.Chrysanthemum.Flowers exposing (flowers)
 
 import Element exposing (..)
+import Scene.Garden.Chrysanthemum.Sprites as Bee
+import Simple.Animation as Animation
 import View.Flower.Chrysanthemum as Chrysanthemum
 
 
 flowers : Element msg
 flowers =
     row []
-        [ el [ moveDown 25, moveRight 0 ]
-            (flower
-                { size = 75
-                , delay = 200
-                }
-            )
-        , el [ moveUp 45 ]
-            (flower
-                { size = 125
-                , delay = 0
-                }
-            )
-        , el [ moveDown 25, moveLeft 0 ]
-            (flower
-                { size = 75
-                , delay = 400
-                }
-            )
+        [ el
+            [ moveDown 25
+            , moveRight 0
+            , bee { x = 0, y = -16, delay = 1600 }
+            ]
+            (flower 75)
+        , el
+            [ moveUp 45
+            , bee { x = 0, y = 15, delay = 0 }
+            , bee { x = -25, y = -5, delay = 500 }
+            , bee { x = 25, y = -25, delay = 700 }
+            ]
+            (flower 125)
+        , el
+            [ moveDown 25
+            , moveLeft 0
+            , bee { x = 0, y = -5, delay = 1200 }
+            ]
+            (flower 75)
         ]
 
 
-flower options =
-    el
-        [ width (px options.size)
-        ]
-        (html Chrysanthemum.static)
+type alias BeeOptions =
+    { x : Float
+    , y : Float
+    , delay : Animation.Millis
+    }
+
+
+bee : BeeOptions -> Attribute msg
+bee options =
+    inFront
+        (el
+            [ centerX
+            , centerY
+            , moveRight options.x
+            , moveDown options.y
+            ]
+            (Bee.bee { delay = options.delay })
+        )
+
+
+flower : Int -> Element msg
+flower size =
+    el [ width (px size) ] (html Chrysanthemum.static)
