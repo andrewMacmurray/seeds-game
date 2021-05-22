@@ -99,5 +99,6 @@ axis w =
         (Point2d.pixels (vw w / 2) (vh w / 2))
 
 
+apply : a -> (a -> b) -> b
 apply =
     (|>)

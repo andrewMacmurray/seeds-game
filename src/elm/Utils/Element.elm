@@ -1,20 +1,16 @@
 module Utils.Element exposing
     ( disableTouch
+    , maybe
     , style
-    , visibleIf
     )
 
-import Element exposing (Attribute, alpha)
+import Element exposing (Attribute, Element)
 import Html.Attributes
 
 
-visibleIf : Bool -> Attribute msg
-visibleIf condition =
-    if condition then
-        alpha 1
-
-    else
-        alpha 0
+maybe : (a -> Element msg) -> Maybe a -> Element msg
+maybe toElement =
+    Maybe.map toElement >> Maybe.withDefault Element.none
 
 
 disableTouch : Attribute msg

@@ -26,6 +26,7 @@ import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Hills as Hills
+import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
 import Task exposing (Task)
@@ -340,15 +341,20 @@ renderSeed size =
 
 flowers : Seed -> Element msg
 flowers seed =
-    let
-        config =
-            flowerConfig seed
-    in
-    row [ moveDown config.seedOffset ]
-        [ el [ alignBottom, moveRight config.offsetX ] (flower config.small seed)
-        , el [ alignBottom, moveUp config.offsetY ] (flower config.large seed)
-        , el [ alignBottom, moveLeft config.offsetX ] (flower config.small seed)
-        ]
+    case seed of
+        Sunflower ->
+            Sunflower.flowers
+
+        _ ->
+            let
+                config =
+                    flowerConfig seed
+            in
+            row [ moveDown config.seedOffset ]
+                [ el [ alignBottom, moveRight config.offsetX ] (flower config.small seed)
+                , el [ alignBottom, moveUp config.offsetY ] (flower config.large seed)
+                , el [ alignBottom, moveLeft config.offsetX ] (flower config.small seed)
+                ]
 
 
 flower : Int -> Seed -> Element msg
