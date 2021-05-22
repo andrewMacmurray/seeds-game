@@ -227,7 +227,11 @@ fadeIn =
 
 backToLevelsButton : Element Msg
 backToLevelsButton =
-    el [ alignBottom, centerX, paddingXY 0 Scale.extraLarge ]
+    el
+        [ alignBottom
+        , centerX
+        , paddingXY 0 Scale.extraLarge
+        ]
         (Input.button []
             { onPress = Just ExitToHub
             , label = buttonLabel "BACK TO LEVELS"
@@ -238,12 +242,13 @@ backToLevelsButton =
 buttonLabel : String -> Element msg
 buttonLabel text =
     el
-        [ Background.color Palette.darkBrown
+        [ Background.color Palette.white
         , paddingXY Scale.medium Scale.small
         , Border.rounded 20
         ]
         (Text.text
-            [ Text.color Palette.white
+            [ Text.color Palette.black
+            , Text.bold
             , Text.spaced
             , Text.small
             ]
@@ -261,13 +266,13 @@ allFlowers context =
         , behindContent (html (Hills.view context))
         ]
         (Worlds.list
-            |> List.indexedMap (worldFlowers context)
+            |> List.map (worldFlowers context)
             |> List.reverse
         )
 
 
-worldFlowers : Context -> Int -> ( WorldConfig, List Level.Id ) -> Element Msg
-worldFlowers context index ( { seed }, levelKeys ) =
+worldFlowers : Context -> ( WorldConfig, List Level.Id ) -> Element Msg
+worldFlowers context ( { seed }, levelKeys ) =
     if worldComplete context.progress levelKeys then
         el [ width fill, height (px context.window.height) ]
             (column

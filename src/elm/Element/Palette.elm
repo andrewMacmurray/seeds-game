@@ -241,22 +241,115 @@ pink7 =
 
 
 
+-- Yellow
+
+
+yellow1 : Color
+yellow1 =
+    rgb255 82 79 3
+
+
+yellow2 : Color
+yellow2 =
+    rgb255 142 130 23
+
+
+yellow3 : Color
+yellow3 =
+    rgb255 175 158 12
+
+
+yellow4 : Color
+yellow4 =
+    rgb255 178 187 28
+
+
+yellow5 : Color
+yellow5 =
+    rgb255 206 201 26
+
+
+yellow6 : Color
+yellow6 =
+    rgb255 217 210 22
+
+
+yellow7 : Color
+yellow7 =
+    rgb255 255 241 0
+
+
+yellow8 : Color
+yellow8 =
+    rgb255 250 250 61
+
+
+yellow9 : Color
+yellow9 =
+    rgb255 250 250 101
+
+
+yellow10 : Color
+yellow10 =
+    rgb255 250 250 144
+
+
+
 -- Blue
 
 
-lightBlue : Color
-lightBlue =
+blue1 : Color
+blue1 =
+    rgb255 7 28 65
+
+
+blue2 : Color
+blue2 =
+    rgb255 12 43 94
+
+
+blue3 : Color
+blue3 =
+    rgb255 25 68 146
+
+
+blue4 : Color
+blue4 =
+    rgb255 13 105 165
+
+
+blue5 : Color
+blue5 =
     rgb255 38 170 224
 
 
-rainBlue : Color
-rainBlue =
-    rgb255 97 188 255
+blue6 : Color
+blue6 =
+    rgb255 97 181 239
 
 
-darkBlue : Color
-darkBlue =
-    rgb255 7 28 65
+blue7 : Color
+blue7 =
+    rgb255 50 187 236
+
+
+blue8 : Color
+blue8 =
+    rgb255 92 222 255
+
+
+blue9 : Color
+blue9 =
+    rgb255 134 228 253
+
+
+blue10 : Color
+blue10 =
+    rgb255 160 230 250
+
+
+
+-- Util
 
 
 blueGrey : Color
