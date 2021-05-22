@@ -11,7 +11,7 @@ flowers : Element msg
 flowers =
     row []
         [ el [ moveDown 50, moveRight 50 ]
-            (sunflower
+            (flower
                 { size = 100
                 , delay = 200
                 , restingButterfly = Just { x = 70, y = 65 }
@@ -19,7 +19,7 @@ flowers =
                 }
             )
         , el [ moveUp 20 ]
-            (sunflower
+            (flower
                 { size = 200
                 , delay = 0
                 , restingButterfly = Just { x = 50, y = 80 }
@@ -27,7 +27,7 @@ flowers =
                 }
             )
         , el [ moveDown 50, moveLeft 50 ]
-            (sunflower
+            (flower
                 { size = 100
                 , delay = 400
                 , restingButterfly = Nothing
@@ -45,8 +45,8 @@ type alias Options =
     }
 
 
-sunflower : Options -> Element msg
-sunflower options =
+flower : Options -> Element msg
+flower options =
     el
         [ width (px options.size)
         , inFront (Element.maybe (restingButterfly options) options.restingButterfly)
@@ -83,7 +83,3 @@ restingButterfly options position =
         , moveDown position.y
         ]
         (Butterfly.resting options.delay)
-
-
-toButterfly f =
-    Maybe.map f >> Maybe.withDefault none

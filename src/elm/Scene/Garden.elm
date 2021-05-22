@@ -25,6 +25,7 @@ import Exit exposing (continue, exit)
 import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
+import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Hills as Hills
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
@@ -344,6 +345,9 @@ flowers seed =
     case seed of
         Sunflower ->
             Sunflower.flowers
+
+        Chrysanthemum ->
+            Chrysanthemum.flowers
 
         _ ->
             let
