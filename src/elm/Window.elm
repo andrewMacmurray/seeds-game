@@ -6,6 +6,7 @@ module Window exposing
     , size
     , vh
     , vw
+    , whenNarrow
     , width
     )
 
@@ -66,6 +67,16 @@ vw window =
 vh : Window -> Float
 vh window =
     toFloat window.height
+
+
+whenNarrow : a -> a -> Window -> a
+whenNarrow a b window =
+    case width window of
+        Narrow ->
+            a
+
+        _ ->
+            b
 
 
 
