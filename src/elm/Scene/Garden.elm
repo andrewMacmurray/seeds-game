@@ -25,12 +25,9 @@ import Exit exposing (continue, exit)
 import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
-import Scene.Garden.Chrysanthemum as Chrysanthemum
-import Scene.Garden.Flower as GardenFlower
-import Scene.Garden.Sunflower as Sunflower
+import Scene.Garden.Hills as Hills
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
-import Svg exposing (Svg)
 import Task exposing (Task)
 import Utils.Animated as Animated
 import Utils.Delay exposing (after)
@@ -48,23 +45,13 @@ import Window exposing (Window)
 
 type alias Model =
     { context : Context
-    , flower : SelectedFlower
     }
 
 
 type Msg
     = ScrollToCurrentCompletedWorld
     | WorldScrolledToView
-    | ViewFlowerClicked Seed
-    | HideFlowerClicked Seed
-    | ClearFlower
     | ExitToHub
-
-
-type SelectedFlower
-    = Hidden
-    | Leaving Seed
-    | Visible Seed
 
 
 
@@ -101,7 +88,6 @@ init context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , flower = Hidden
     }
 
 
@@ -117,15 +103,6 @@ update msg model =
 
         WorldScrolledToView ->
             continue model []
-
-        ViewFlowerClicked seed ->
-            continue { model | flower = Visible seed } []
-
-        HideFlowerClicked seed ->
-            continue { model | flower = Leaving seed } [ after 1000 ClearFlower ]
-
-        ClearFlower ->
-            continue { model | flower = Hidden } []
 
         ExitToHub ->
             exit model
@@ -177,7 +154,6 @@ view : Model -> Html Msg
 view model =
     layout
         [ inFront backToLevelsButton
-        , inFront (viewSelectedFlower model)
         ]
         (el
             [ width fill
@@ -280,6 +256,9 @@ allFlowers context =
     column
         [ centerX
         , alignBottom
+        , width fill
+        , height fill
+        , behindContent (html (Hills.view context))
         ]
         (Worlds.list
             |> List.indexedMap (worldFlowers context)
@@ -290,32 +269,29 @@ allFlowers context =
 worldFlowers : Context -> Int -> ( WorldConfig, List Level.Id ) -> Element Msg
 worldFlowers context index ( { seed }, levelKeys ) =
     if worldComplete context.progress levelKeys then
-        el
-            [ width fill
-            , moveDown (toFloat index * 240)
-            , inFront
-                (column
-                    [ seedId seed
-                    , centerX
-                    , centerY
-                    , spacing Scale.medium
-                    ]
-                    [ flowers seed
-                    , seeds seed
-                    , flowerName seed
-                    ]
-                )
-            ]
-            (html (hills seed context.window))
+        el [ width fill, height (px context.window.height) ]
+            (column
+                [ seedId seed
+                , centerX
+                , centerY
+                , spacing Scale.medium
+                ]
+                [ flowers seed
+                , seeds seed
+                , flowerName seed
+                ]
+            )
 
     else
-        column
-            [ seedId seed
-            , centerX
-            ]
-            [ unfinishedWorldSeeds
-            , Text.text [ centerX ] "..."
-            ]
+        el [ width fill, height (px context.window.height) ]
+            (column
+                [ seedId seed
+                , centerX
+                ]
+                [ unfinishedWorldSeeds
+                , Text.text [ centerX ] "..."
+                ]
+            )
 
 
 seedId : Seed -> Attribute msg
@@ -378,65 +354,6 @@ flower size =
 sized : Int -> Element msg -> Element msg
 sized size =
     el [ width (px size), height (px size) ]
-
-
-
--- Selected Flower
-
-
-viewSelectedFlower : Model -> Element Msg
-viewSelectedFlower model =
-    case model.flower of
-        Hidden ->
-            none
-
-        Leaving seed ->
-            viewFlower seed (hiddenConfig model seed)
-
-        Visible seed ->
-            viewFlower seed (visibleConfig model seed)
-
-
-viewFlower : Seed -> GardenFlower.Config msg -> Element msg
-viewFlower seed =
-    case seed of
-        Sunflower ->
-            Sunflower.view
-
-        Chrysanthemum ->
-            Chrysanthemum.view
-
-        _ ->
-            Sunflower.view
-
-
-hills : Seed -> Window -> Svg msg
-hills seed =
-    case seed of
-        Sunflower ->
-            Sunflower.hills
-
-        Chrysanthemum ->
-            Chrysanthemum.hills
-
-        _ ->
-            Sunflower.hills
-
-
-visibleConfig : Model -> Seed -> GardenFlower.Config Msg
-visibleConfig model seed =
-    { window = model.context.window
-    , isVisible = True
-    , onHide = HideFlowerClicked seed
-    }
-
-
-hiddenConfig : Model -> Seed -> GardenFlower.Config Msg
-hiddenConfig model seed =
-    { window = model.context.window
-    , isVisible = False
-    , onHide = HideFlowerClicked seed
-    }
 
 
 

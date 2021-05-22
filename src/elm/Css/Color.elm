@@ -288,7 +288,7 @@ midnightBlue =
 
 purple : Color
 purple =
-    rgb 173 81 126
+    rgb 167 29 96
 
 
 silver : Color

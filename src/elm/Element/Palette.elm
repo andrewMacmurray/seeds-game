@@ -177,9 +177,67 @@ green10 =
     rgb255 164 255 186
 
 
-meadowGreen : Color
-meadowGreen =
-    rgb255 91 201 120
+
+-- Purple
+
+
+purple1 : Color
+purple1 =
+    rgb255 51 26 66
+
+
+purple2 : Color
+purple2 =
+    rgb255 98 61 121
+
+
+purple3 : Color
+purple3 =
+    rgb255 122 71 153
+
+
+purple4 : Color
+purple4 =
+    rgb255 146 80 186
+
+
+purple5 : Color
+purple5 =
+    rgb255 165 68 224
+
+
+purple6 : Color
+purple6 =
+    rgb255 190 104 241
+
+
+purple7 : Color
+purple7 =
+    rgb255 204 130 248
+
+
+purple8 : Color
+purple8 =
+    rgb255 211 150 248
+
+
+purple9 : Color
+purple9 =
+    rgb255 233 185 255
+
+
+purple10 : Color
+purple10 =
+    rgb255 238 214 253
+
+
+
+-- Pink
+
+
+pink7 : Color
+pink7 =
+    rgb255 170 64 159
 
 
 
@@ -209,16 +267,6 @@ blueGrey =
 midnightBlue : Color
 midnightBlue =
     rgb255 6 24 35
-
-
-purple : Color
-purple =
-    rgb255 173 81 126
-
-
-darkPurple : Color
-darkPurple =
-    rgb255 98 61 121
 
 
 silver : Color
