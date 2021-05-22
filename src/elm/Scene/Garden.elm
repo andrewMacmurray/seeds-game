@@ -26,6 +26,7 @@ import Html exposing (Html)
 import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Chrysanthemum as Chrysanthemum
+import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Hills as Hills
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
@@ -34,7 +35,6 @@ import Task exposing (Task)
 import Utils.Animated as Animated
 import Utils.Delay exposing (after)
 import Utils.Element as Element
-import View.Flower as Flower
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
@@ -332,72 +332,13 @@ flowers seed =
         Chrysanthemum ->
             Chrysanthemum.flowers
 
+        Cornflower ->
+            Cornflower.flowers
+
         _ ->
-            let
-                config =
-                    flowerConfig seed
-            in
-            row [ moveDown config.seedOffset ]
-                [ el [ alignBottom, moveRight config.offsetX ] (flower config.small seed)
-                , el [ alignBottom, moveUp config.offsetY ] (flower config.large seed)
-                , el [ alignBottom, moveLeft config.offsetX ] (flower config.small seed)
-                ]
-
-
-flower : Int -> Seed -> Element msg
-flower size =
-    el [ width (px size) ] << html << Flower.view
+            Sunflower.flowers
 
 
 sized : Int -> Element msg -> Element msg
 sized size =
     el [ width (px size), height (px size) ]
-
-
-
--- Config
-
-
-type alias FlowerConfig number =
-    { large : number
-    , small : number
-    , offsetX : number
-    , offsetY : number
-    , seedOffset : number
-    }
-
-
-flowerConfig : Seed -> FlowerConfig number
-flowerConfig seed =
-    case seed of
-        Sunflower ->
-            { large = 180
-            , small = 100
-            , offsetX = 45
-            , offsetY = 25
-            , seedOffset = 20
-            }
-
-        Chrysanthemum ->
-            { large = 120
-            , small = 80
-            , offsetX = 10
-            , offsetY = 50
-            , seedOffset = 0
-            }
-
-        Cornflower ->
-            { large = 170
-            , small = 100
-            , offsetX = 45
-            , offsetY = 20
-            , seedOffset = 20
-            }
-
-        _ ->
-            { large = 150
-            , small = 80
-            , offsetX = Scale.small
-            , offsetY = 20
-            , seedOffset = 0
-            }
