@@ -5,6 +5,7 @@ module Config.Level exposing
     , LevelConfig
     , World
     , WorldConfig
+    , WorldWithLevels
     , Worlds
     , completed
     , config
@@ -103,6 +104,12 @@ type alias LevelConfig =
     , boardSize : Board.Size
     , moves : Int
     , tutorial : Tutorial.Tutorial
+    }
+
+
+type alias WorldWithLevels =
+    { world : WorldConfig
+    , levels : List Id
     }
 
 
@@ -335,19 +342,19 @@ getWorldSizeFromIndex_ worlds_ i =
     getWorld_ (idFromRaw_ i 1) worlds_ |> Maybe.map worldSize
 
 
-worldsList : Worlds -> List ( WorldConfig, List Id )
+worldsList : Worlds -> List WorldWithLevels
 worldsList worlds_ =
     worlds_
         |> unboxWorlds_
         |> Dict.toList
-        |> List.map configWithKeys
+        |> List.map worldWithLevels
 
 
-configWithKeys : ( Int, World ) -> ( WorldConfig, List Id )
-configWithKeys ( worldIndex, world_ ) =
-    ( worldConfig world_
-    , levelKeys worldIndex <| unboxLevels_ world_
-    )
+worldWithLevels : ( Int, World ) -> WorldWithLevels
+worldWithLevels ( worldIndex, world_ ) =
+    { world = worldConfig world_
+    , levels = levelKeys worldIndex <| unboxLevels_ world_
+    }
 
 
 levelKeys : Int -> Levels -> List Id

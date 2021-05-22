@@ -1,6 +1,7 @@
 module Level.Progress exposing
     ( Progress
     , clearCurrentLevel
+    , currentCompletedSeed
     , currentLevel
     , currentLevelComplete
     , currentLevelSeedType
@@ -14,11 +15,13 @@ module Level.Progress exposing
     , resources
     , setCurrentLevel
     , toCache
+    , worldComplete
     )
 
 import Board.Scores as Score
 import Board.Tile as Tile exposing (Tile)
 import Config.Level as Level
+import Config.World as Worlds
 import Dict exposing (Dict)
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Seed exposing (Seed)
@@ -103,6 +106,25 @@ reachedLevel (Progress progress) =
 currentLevel : Progress -> Maybe Level.Id
 currentLevel (Progress progress) =
     progress.current
+
+
+worldComplete : List Level.Id -> Progress -> Bool
+worldComplete levels progress =
+    levels
+        |> List.reverse
+        |> List.head
+        |> Maybe.map (\l -> Level.completed (reachedLevel progress) l)
+        |> Maybe.withDefault False
+
+
+currentCompletedSeed : Progress -> Seed
+currentCompletedSeed progress =
+    Worlds.list
+        |> List.filter (\world -> worldComplete world.levels progress)
+        |> List.reverse
+        |> List.head
+        |> Maybe.map (.world >> .seed)
+        |> Maybe.withDefault Seed.Sunflower
 
 
 currentWorldComplete : Level.Worlds -> Progress -> Bool
