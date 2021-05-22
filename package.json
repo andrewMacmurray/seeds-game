@@ -38,9 +38,5 @@
     "postcss-import": "^12.0.1",
     "tachyons-custom": "^4.9.8",
     "typescript": "^3.9.9"
-  },
-  "dependencies": {
-    "@webcomponents/webcomponentsjs": "^2.5.0",
-    "gsap": "^3.6.1"
   }
 }
