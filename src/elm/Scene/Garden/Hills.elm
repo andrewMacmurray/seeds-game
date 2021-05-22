@@ -1,4 +1,4 @@
-module Scene.Garden.Hills exposing (..)
+module Scene.Garden.Hills exposing (view)
 
 import Config.Level as Level
 import Config.World as Worlds
@@ -6,30 +6,30 @@ import Context exposing (Context)
 import Level.Progress as Progress
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
-import Scene.Garden.Shape as Shape
+import Scene.Garden.Shape as Shape exposing (Shape)
 import Scene.Garden.Sunflower as Sunflower
-import Seed
+import Seed exposing (Seed)
 import Svg exposing (Svg)
 import Utils.Svg as Svg
-import Window exposing (vh, vw)
+import Window exposing (Window, vh, vw)
 
 
 view : Context -> Svg msg
-view ({ window } as context) =
-    let
-        h =
-            vh window
-
-        w =
-            vw window
-    in
-    Svg.svg
-        [ Svg.viewBox_ 0 0 w (h * toFloat (List.length Worlds.list))
-        ]
+view context =
+    Svg.svg [ viewBox context.window ]
         (Worlds.list
             |> List.reverse
             |> List.indexedMap (toHills context)
         )
+
+
+viewBox : Window -> Svg.Attribute msg
+viewBox window =
+    Svg.viewBox_
+        0
+        0
+        (vw window)
+        (vh window * toFloat (List.length Worlds.list))
 
 
 toHills : Context -> Int -> Level.WorldWithLevels -> Svg msg
@@ -43,6 +43,7 @@ toHills context index { world, levels } =
         Svg.g [] []
 
 
+getHill : Window -> Seed -> Shape
 getHill window seed =
     case seed of
         Seed.Sunflower ->

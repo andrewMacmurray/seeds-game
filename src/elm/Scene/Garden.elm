@@ -292,9 +292,9 @@ seedId seed =
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
     row [ spacing 5, centerX ]
-        [ sized 20 (html greyedOutSeed)
-        , sized 30 (html greyedOutSeed)
-        , sized 20 (html greyedOutSeed)
+        [ el [ alignBottom ] (sized 30 (html greyedOutSeed))
+        , sized 50 (html greyedOutSeed)
+        , el [ alignBottom ] (sized 30 (html greyedOutSeed))
         ]
 
 
