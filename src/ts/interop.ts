@@ -10,7 +10,8 @@ export function bindPorts({
   generateBounceKeyframes,
   cacheProgress,
   cacheLives,
-  clearCache_
+  clearCache_,
+  scrollToCenter,
 }: Elm.Main.App["ports"]) {
   const { introMusic } = Audio.preload();
 
@@ -23,12 +24,12 @@ export function bindPorts({
     Audio.longFade(introMusic);
   });
 
-  generateBounceKeyframes.subscribe(tileSize => {
+  generateBounceKeyframes.subscribe((tileSize) => {
     const styleNode = document.getElementById("generated-styles");
     styleNode.textContent = Bounce.generateKeyframes(tileSize);
   });
 
-  cacheProgress.subscribe(progress => {
+  cacheProgress.subscribe((progress) => {
     Cache.setProgress(progress);
   });
 
@@ -37,7 +38,11 @@ export function bindPorts({
     window.location.reload();
   });
 
-  cacheLives.subscribe(times => {
+  cacheLives.subscribe((times) => {
     Cache.setLives(times);
+  });
+
+  scrollToCenter.subscribe((id) => {
+    document.getElementById(id).scrollIntoView({ block: "center" });
   });
 }

@@ -9,7 +9,6 @@ module Scene.Garden exposing
     , view
     )
 
-import Browser.Dom as Dom
 import Config.Level as Level exposing (WorldConfig)
 import Config.World as Worlds
 import Context exposing (Context)
@@ -23,15 +22,14 @@ import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exit)
 import Html exposing (Html)
-import Html.Attributes
 import Level.Progress as Progress exposing (Progress)
+import Ports.Scroll as Scroll
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Hills as Hills
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
-import Task exposing (Task)
 import Utils.Animated as Animated
 import Utils.Delay exposing (after)
 import Utils.Element as Element
@@ -52,7 +50,6 @@ type alias Model =
 
 type Msg
     = ScrollToCurrentCompletedWorld
-    | WorldScrolledToView
     | ExitToHub
 
 
@@ -103,30 +100,15 @@ update msg model =
         ScrollToCurrentCompletedWorld ->
             continue model [ scrollToCurrentCompletedWorld model.context.progress ]
 
-        WorldScrolledToView ->
-            continue model []
-
         ExitToHub ->
             exit model
 
 
-scrollToCurrentCompletedWorld : Progress -> Cmd Msg
+scrollToCurrentCompletedWorld : Progress -> Cmd msg
 scrollToCurrentCompletedWorld =
     Progress.currentCompletedSeed
         >> Seed.name
-        >> Dom.getElement
-        >> Task.andThen scrollWorldToView
-        >> Task.attempt (always WorldScrolledToView)
-
-
-scrollWorldToView : Dom.Element -> Task Dom.Error ()
-scrollWorldToView el =
-    Dom.setViewportOf "flowers" 0 (worldYOffset el)
-
-
-worldYOffset : Dom.Element -> Float
-worldYOffset { element, viewport } =
-    element.y - viewport.height / 2 + element.height / 2
+        >> Scroll.toCenter
 
 
 
@@ -137,6 +119,7 @@ view : Model -> Html Msg
 view model =
     layout
         [ inFront backToLevelsButton
+        , inFront initialOverlay
         ]
         (el
             [ width fill
@@ -259,10 +242,10 @@ worldFlowers context { world, levels } =
     if Progress.worldComplete levels context.progress then
         el [ width fill, height (px context.window.height) ]
             (column
-                [ seedId world.seed
-                , centerX
+                [ centerX
                 , centerY
                 , spacing Scale.medium
+                , seedId world.seed
                 ]
                 [ flowers world.seed
                 , seeds world.seed
@@ -286,7 +269,7 @@ worldFlowers context { world, levels } =
 
 seedId : Seed -> Attribute msg
 seedId seed =
-    htmlAttribute (Html.Attributes.id (Seed.name seed))
+    Element.id (Seed.name seed)
 
 
 unfinishedWorldSeeds : Element msg
