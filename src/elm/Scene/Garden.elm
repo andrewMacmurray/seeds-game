@@ -301,7 +301,7 @@ unfinishedWorldSeeds =
 flowerName : Seed -> Element msg
 flowerName seed =
     Text.text
-        [ Text.color Palette.white
+        [ Text.color (textColor seed)
         , Text.wideSpaced
         , Text.bold
         , centerX
@@ -337,6 +337,22 @@ flowers seed =
 
         _ ->
             Sunflower.flowers
+
+
+textColor : Seed -> Color
+textColor seed =
+    case seed of
+        Sunflower ->
+            Palette.white
+
+        Chrysanthemum ->
+            Palette.purple9
+
+        Cornflower ->
+            Palette.yellow1
+
+        _ ->
+            Palette.white
 
 
 sized : Int -> Element msg -> Element msg

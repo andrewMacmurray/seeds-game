@@ -14,18 +14,18 @@ import Window exposing (Window, vh, vw)
 
 shape : Window -> Shape
 shape window =
-    List.range 0 7
+    List.range 0 3
         |> List.map cycleColors
         |> List.indexedMap toHills
         |> List.concatMap (apply window)
         |> Shape.group
-        |> Shape.moveDown (Window.whenNarrow -250 -125 window)
+        |> Shape.moveDown (Window.whenNarrow -250 -80 window)
 
 
 toHills : Int -> ( Color, Color ) -> Window -> List Shape
 toHills i ( l, r ) =
     hillPair
-        { offset = toFloat i * 100
+        { offset = toFloat i * 150
         , left = l
         , right = r
         }
@@ -95,7 +95,7 @@ point w =
 axis : Window -> Axis2d Pixels coordinates
 axis w =
     Axis2d.withDirection
-        (Direction2d.degrees 45)
+        (Direction2d.degrees 50)
         (Point2d.pixels (vw w / 2) (vh w / 2))
 
 
