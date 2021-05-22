@@ -3,9 +3,7 @@ module Config.World exposing
     , getLevel
     , levelConfig
     , list
-    , next
     , number
-    , previous
     , seedType
     )
 
@@ -43,19 +41,9 @@ number =
     Level.number all
 
 
-list : List ( WorldConfig, List Level.Id )
+list : List Level.WorldWithLevels
 list =
     Level.worldsList all
-
-
-next : Level.Id -> Level.Id
-next =
-    Level.next all
-
-
-previous : Level.Id -> Level.Id
-previous =
-    Level.previous all
 
 
 seedType : Level.Id -> Maybe Seed

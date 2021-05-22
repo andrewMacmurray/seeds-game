@@ -111,12 +111,12 @@ update msg model =
 
 
 scrollToCurrentCompletedWorld : Progress -> Cmd Msg
-scrollToCurrentCompletedWorld progress =
-    progress
-        |> (currentCompletedWorldSeedType >> Seed.name)
-        |> Dom.getElement
-        |> Task.andThen scrollWorldToView
-        |> Task.attempt (always WorldScrolledToView)
+scrollToCurrentCompletedWorld =
+    Progress.currentCompletedSeed
+        >> Seed.name
+        >> Dom.getElement
+        >> Task.andThen scrollWorldToView
+        >> Task.attempt (always WorldScrolledToView)
 
 
 scrollWorldToView : Dom.Element -> Task Dom.Error ()
@@ -127,25 +127,6 @@ scrollWorldToView el =
 worldYOffset : Dom.Element -> Float
 worldYOffset { element, viewport } =
     element.y - viewport.height / 2 + element.height / 2
-
-
-currentCompletedWorldSeedType : Progress -> Seed
-currentCompletedWorldSeedType progress =
-    Worlds.list
-        |> List.filter (\( _, keys ) -> worldComplete progress keys)
-        |> List.reverse
-        |> List.head
-        |> Maybe.map (Tuple.first >> .seed)
-        |> Maybe.withDefault Sunflower
-
-
-worldComplete : Progress -> List Level.Id -> Bool
-worldComplete progress levelKeys =
-    levelKeys
-        |> List.reverse
-        |> List.head
-        |> Maybe.map (\l -> Level.completed (Progress.reachedLevel progress) l)
-        |> Maybe.withDefault False
 
 
 
@@ -273,30 +254,32 @@ allFlowers context =
         )
 
 
-worldFlowers : Context -> ( WorldConfig, List Level.Id ) -> Element Msg
-worldFlowers context ( { seed }, levelKeys ) =
-    if worldComplete context.progress levelKeys then
+worldFlowers : Context -> Level.WorldWithLevels -> Element Msg
+worldFlowers context { world, levels } =
+    if Progress.worldComplete levels context.progress then
         el [ width fill, height (px context.window.height) ]
             (column
-                [ seedId seed
+                [ seedId world.seed
                 , centerX
                 , centerY
                 , spacing Scale.medium
                 ]
-                [ flowers seed
-                , seeds seed
-                , flowerName seed
+                [ flowers world.seed
+                , seeds world.seed
+                , flowerName world.seed
                 ]
             )
 
     else
         el [ width fill, height (px context.window.height) ]
             (column
-                [ seedId seed
+                [ seedId world.seed
+                , spacing Scale.medium
                 , centerX
+                , centerY
                 ]
                 [ unfinishedWorldSeeds
-                , Text.text [ centerX ] "..."
+                , Text.text [ centerX ] "These seeds need saving..."
                 ]
             )
 

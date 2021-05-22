@@ -403,12 +403,12 @@ renderWorlds model =
     List.map (renderWorld model) <| List.reverse Worlds.list
 
 
-renderWorld : Model -> ( Level.WorldConfig, List Level.Id ) -> Html Msg
-renderWorld model ( config, levels ) =
-    div [ style [ backgroundColor config.backdropColor ], class "pa5 flex" ]
+renderWorld : Model -> Level.WorldWithLevels -> Html Msg
+renderWorld model { world, levels } =
+    div [ style [ backgroundColor world.backdropColor ], class "pa5 flex" ]
         [ div
             [ style [ width 300 ], class "center" ]
-            (List.reverse levels |> List.indexedMap (renderLevel model config))
+            (List.reverse levels |> List.indexedMap (renderLevel model world))
         ]
 
 
