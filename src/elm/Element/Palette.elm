@@ -188,7 +188,7 @@ purple1 =
 
 purple2 : Color
 purple2 =
-    rgb255 98 61 121
+    rgb255 73 24 101
 
 
 purple3 : Color
@@ -261,7 +261,7 @@ yellow3 =
 
 yellow4 : Color
 yellow4 =
-    rgb255 178 187 28
+    rgb255 220 200 18
 
 
 yellow5 : Color
@@ -281,7 +281,7 @@ yellow7 =
 
 yellow8 : Color
 yellow8 =
-    rgb255 250 250 61
+    rgb255 255 253 20
 
 
 yellow9 : Color
@@ -291,7 +291,7 @@ yellow9 =
 
 yellow10 : Color
 yellow10 =
-    rgb255 250 250 144
+    rgb255 255 255 94
 
 
 
