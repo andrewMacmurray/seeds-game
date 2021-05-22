@@ -1,5 +1,6 @@
 module Utils.Element exposing
     ( disableTouch
+    , id
     , maybe
     , style
     )
@@ -11,6 +12,11 @@ import Html.Attributes
 maybe : (a -> Element msg) -> Maybe a -> Element msg
 maybe toElement =
     Maybe.map toElement >> Maybe.withDefault Element.none
+
+
+id : String -> Attribute msg
+id =
+    Element.htmlAttribute << Html.Attributes.id
 
 
 disableTouch : Attribute msg
