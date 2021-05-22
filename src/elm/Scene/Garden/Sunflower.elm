@@ -18,7 +18,7 @@ import Window exposing (Window, vh, vw)
 
 hills : Window -> Shape
 hills window =
-    List.range 0 4
+    List.range 0 5
         |> List.map cycleHillColors
         |> List.indexedMap toHillConfig
         |> List.map (toHillPair window)
@@ -51,7 +51,7 @@ type alias HillConfig =
 
 toHillConfig : Int -> ( Color, Color ) -> HillConfig
 toHillConfig i ( left, right ) =
-    { offset = 750 - toFloat (i * 240)
+    { offset = 750 - toFloat (i * 180)
     , left = left
     , right = right
     }

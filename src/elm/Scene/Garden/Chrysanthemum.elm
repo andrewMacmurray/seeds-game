@@ -14,14 +14,14 @@ import Window exposing (Window, vh, vw)
 
 hills : Window -> Shape
 hills window =
-    Shape.moveDown (Window.whenNarrow 130 80 window)
+    Shape.moveDown (Window.whenNarrow 130 120 window)
         (Shape.group
             [ roundHill -200 Palette.purple1 window
             , Shape.mirror (roundHill -200 Palette.purple2 window)
-            , middleHill -250 window Palette.purple8
+            , middleHill -280 window Palette.purple8
             , roundHill 0 Palette.purple3 window
             , Shape.mirror (roundHill 0 Palette.purple4 window)
-            , middleHill -100 window Palette.purple1
+            , middleHill -150 window Palette.purple1
             , roundHill 300 Palette.purple9 window
             , Shape.mirror (roundHill 300 Palette.purple7 window)
             , middleHill 250 window Palette.purple3

@@ -19,7 +19,7 @@ hills window =
         |> List.indexedMap toHills
         |> List.concatMap (apply window)
         |> Shape.group
-        |> Shape.moveDown -120
+        |> Shape.moveDown (Window.whenNarrow -250 -125 window)
 
 
 toHills : Int -> ( Color, Color ) -> Window -> List Shape
@@ -58,11 +58,22 @@ cycleColors i =
 
 hillPair : { offset : Float, left : Color, right : Color } -> Window -> List Shape
 hillPair { offset, left, right } window =
-    [ hill { fill = right, offset = offset } window
-    , Shape.mirror (hill { fill = left, offset = offset } window)
+    [ hill
+        { fill = right
+        , offset = offset
+        }
+        window
+    , Shape.mirror
+        (hill
+            { fill = left
+            , offset = offset
+            }
+            window
+        )
     ]
 
 
+hill : { fill : Color, offset : Float } -> Window -> Shape
 hill { fill, offset } w =
     Shape.circle { fill = fill } (hill_ offset w)
 
