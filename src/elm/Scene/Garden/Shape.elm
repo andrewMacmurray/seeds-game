@@ -1,11 +1,20 @@
-module Scene.Garden.Shape exposing (..)
+module Scene.Garden.Shape exposing
+    ( Shape
+    , circle
+    , group
+    , hideIf
+    , mirror
+    , moveDown
+    , polygon
+    , view
+    )
 
 import Circle2d exposing (Circle2d)
 import Element exposing (Color)
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
 import Polygon2d exposing (Polygon2d)
-import Svg
+import Svg exposing (Svg)
 import Utils.Geometry as Geometry
 import Utils.Svg as Svg
 import Window exposing (Window)
@@ -22,16 +31,23 @@ type Shape
 
 
 type alias Polygon_ =
-    { shape : Polygon2d Pixels Coords
-    , fill : Color
-    , mirror : Bool
-    }
+    Shape_ (Polygon2d Pixels Coords)
 
 
 type alias Circle_ =
-    { shape : Circle2d Pixels Coords
-    , fill : Color
+    Shape_ (Circle2d Pixels Coords)
+
+
+type alias Shape_ shape =
+    { shape : shape
+    , attributes : Attributes
+    }
+
+
+type alias Attributes =
+    { fill : Color
     , mirror : Bool
+    , hide : Bool
     }
 
 
@@ -49,21 +65,27 @@ group =
 
 
 polygon : { fill : Color } -> Polygon2d Pixels Coords -> Shape
-polygon { fill } p =
+polygon options p =
     Polygon
         { shape = p
-        , fill = fill
-        , mirror = False
+        , attributes = defaultAttributes options
         }
 
 
 circle : { fill : Color } -> Circle2d Pixels Coords -> Shape
-circle { fill } c =
+circle options c =
     Circle
         { shape = c
-        , fill = fill
-        , mirror = False
+        , attributes = defaultAttributes options
         }
+
+
+defaultAttributes : { fill : Color } -> Attributes
+defaultAttributes options =
+    { fill = options.fill
+    , mirror = False
+    , hide = False
+    }
 
 
 
@@ -71,16 +93,22 @@ circle { fill } c =
 
 
 mirror : Shape -> Shape
-mirror shape =
-    case shape of
-        Polygon p ->
-            Polygon { p | mirror = True }
+mirror =
+    updateAttributes (\a -> { a | mirror = True })
 
-        Circle c ->
-            Circle { c | mirror = True }
 
-        Group shapes ->
-            Group (List.map mirror shapes)
+hideIf : Bool -> Shape -> Shape
+hideIf condition =
+    if condition then
+        hide
+
+    else
+        identity
+
+
+hide : Shape -> Shape
+hide =
+    updateAttributes (\a -> { a | hide = True })
 
 
 moveDown : Float -> Shape -> Shape
@@ -96,6 +124,24 @@ moveDown y shape =
             Group (List.map (moveDown y) shapes)
 
 
+updateAttributes : (Attributes -> Attributes) -> Shape -> Shape
+updateAttributes f shape =
+    case shape of
+        Polygon p ->
+            Polygon (updateAttributes_ f p)
+
+        Circle c ->
+            Circle (updateAttributes_ f c)
+
+        Group shapes ->
+            Group (List.map mirror shapes)
+
+
+updateAttributes_ : (Attributes -> Attributes) -> Shape_ shape -> Shape_ shape
+updateAttributes_ f shape =
+    { shape | attributes = f shape.attributes }
+
+
 
 -- View
 
@@ -104,19 +150,37 @@ view : Window -> Shape -> Svg.Svg msg
 view window shape =
     case shape of
         Polygon p ->
-            withMirror p window (Svg.polygon2d [ Svg.fill_ p.fill ] p.shape)
+            Svg.polygon2d [ fill p ] p.shape
+                |> withMirror p window
+                |> applyHidden p
 
         Circle c ->
-            withMirror c window (Svg.circle2d [ Svg.fill_ c.fill ] c.shape)
+            Svg.circle2d [ fill c ] c.shape
+                |> withMirror c window
+                |> applyHidden c
 
         Group shapes ->
             Svg.g [] (List.map (view window) shapes)
 
 
-withMirror : { a | mirror : Bool } -> Window -> Svg.Svg msg -> Svg.Svg msg
-withMirror options window s =
-    if options.mirror then
+fill : Shape_ shape -> Svg.Attribute msg
+fill shape =
+    Svg.fill_ shape.attributes.fill
+
+
+withMirror : Shape_ shape -> Window -> Svg msg -> Svg msg
+withMirror shape window s =
+    if shape.attributes.mirror then
         Geometry.mirror window s
+
+    else
+        s
+
+
+applyHidden : Shape_ shape -> Svg msg -> Svg msg
+applyHidden shape s =
+    if shape.attributes.hide then
+        Svg.g [] []
 
     else
         s
