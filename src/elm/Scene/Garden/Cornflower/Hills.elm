@@ -75,13 +75,23 @@ hill_ offset w =
     Circle2d.translateBy (Geometry.down offset)
         (Circle2d.atPoint
             (point w)
-            (Pixels.pixels (vw w / 1.75))
+            (Pixels.pixels (vw w / radiusFactor w))
         )
+
+
+radiusFactor : Window -> Float
+radiusFactor =
+    Window.whenNarrow 1.2 1.75
 
 
 point : Window -> Point2d Pixels coordinates
 point w =
-    Point2d.along (axis w) (Pixels.pixels (vw w / 2))
+    Point2d.along (axis w) (Pixels.pixels (vw w / pointFactor w))
+
+
+pointFactor : Window -> Float
+pointFactor =
+    Window.whenNarrow 1.4 2
 
 
 axis : Window -> Axis2d Pixels coordinates
