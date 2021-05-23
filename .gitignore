@@ -13,7 +13,6 @@ coverage
 node_modules
 .npm
 .node_repl_history
-package-lock.json
 
 .firebase
 
