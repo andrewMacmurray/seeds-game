@@ -107,16 +107,30 @@ view model =
             , moveUp 20
             ]
             [ el [] (html (Lives.view model.lives))
-            , column
-                [ centerX
-                , spacing Scale.medium
-                ]
-                [ Text.text [ centerX, Text.large ] "You lost a life..."
-                , Animated.el fadeInText [ centerX ] (Text.text [ Text.large ] "But don't feel disheartened")
-                ]
+            , tryAgainText
             , Animated.el (bounceInButton model.window) [ centerX ] tryAgain
             ]
         )
+
+
+tryAgainText : Element msg
+tryAgainText =
+    column
+        [ centerX
+        , spacing Scale.medium
+        ]
+        [ largeText "You lost a life..."
+        , Animated.el fadeInText [ centerX ] (largeText "But don't feel disheartened")
+        ]
+
+
+tryAgain : Element Msg
+tryAgain =
+    buttonWithCancel
+        { onCancel = ReturnToHubClicked
+        , onClick = RestartLevelClicked
+        , text = "Try Again?"
+        }
 
 
 fadeInScene : Animation
@@ -139,11 +153,22 @@ bounceInButton window =
         [ P.y 0 ]
 
 
-tryAgain : Element Msg
-tryAgain =
+
+-- Cancelable Button
+
+
+type alias ButtonOptions msg =
+    { onCancel : msg
+    , onClick : msg
+    , text : String
+    }
+
+
+buttonWithCancel : ButtonOptions msg -> Element msg
+buttonWithCancel options =
     row []
         [ el
-            [ onClick ReturnToHubClicked
+            [ onClick options.onCancel
             , Background.color Palette.green6
             , pointer
             , paddingEach
@@ -156,7 +181,7 @@ tryAgain =
             ]
             (Text.text [ Text.color Palette.white ] "X")
         , el
-            [ onClick RestartLevelClicked
+            [ onClick options.onClick
             , pointer
             , Background.color Palette.green2
             , paddingEach
@@ -167,5 +192,14 @@ tryAgain =
                 }
             , Border.roundEach { corners | bottomRight = 40, topRight = 40 }
             ]
-            (Text.text [ Text.color Palette.white ] "Try Again?")
+            (Text.text [ Text.color Palette.white ] options.text)
         ]
+
+
+
+-- Text
+
+
+largeText : String -> Element msg
+largeText =
+    Text.text [ centerX, Text.large ]
