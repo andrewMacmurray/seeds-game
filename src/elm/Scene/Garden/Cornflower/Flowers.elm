@@ -8,7 +8,7 @@ import View.Flower.Cornflower as Cornflower
 
 flowers : Element msg
 flowers =
-    column [ centerX, height (px 300) ]
+    column [ centerX ]
         [ el
             [ moveDown 80
             , moveRight 10
