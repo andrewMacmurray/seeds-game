@@ -3,7 +3,7 @@ module Scene.Garden.Hills exposing (view)
 import Config.Level as Level
 import Config.World as Worlds
 import Context exposing (Context)
-import Level.Progress as Progress
+import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Shape as Shape exposing (Shape)
@@ -34,13 +34,15 @@ viewBox window =
 
 toHills : Context -> Int -> Level.WorldWithLevels -> Svg msg
 toHills context index { world, levels } =
-    if Progress.worldComplete levels context.progress then
-        getHill context.window world.seed
-            |> Shape.moveDown (toFloat index * vh context.window)
-            |> Shape.view context.window
+    getHill context.window world.seed
+        |> Shape.moveDown (toFloat index * vh context.window)
+        |> Shape.hideIf (isIncomplete levels context.progress)
+        |> Shape.view context.window
 
-    else
-        Svg.g [] []
+
+isIncomplete : List Level.Id -> Progress -> Bool
+isIncomplete levels =
+    Progress.worldComplete levels >> not
 
 
 getHill : Window -> Seed -> Shape
