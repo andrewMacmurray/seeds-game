@@ -15,7 +15,6 @@ module Board exposing
     , growingSeedType
     , isActiveMove
     , isEmpty
-    , isSeedPodMove
     , lastMove
     , moves
     , place

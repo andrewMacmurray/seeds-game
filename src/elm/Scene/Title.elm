@@ -30,7 +30,7 @@ import View.Menu as Menu
 import View.Seed.Circle exposing (chrysanthemum)
 import View.Seed.Mono exposing (rose)
 import View.Seed.Twin exposing (lupin, marigold, sunflower)
-import Window exposing (Window)
+import Window
 
 
 
@@ -49,7 +49,7 @@ type Msg
     | PlayIntro
     | GetBannerHeight
     | ReceiveBannerHeight (Result Dom.Error Float)
-    | IntroMusicPlaying Bool
+    | IntroMusicPlaying
     | GoToIntro
     | GoToHub
     | GoToGarden
@@ -119,7 +119,7 @@ update msg model =
         PlayIntro ->
             continue (updateContext Context.disableMenu model) [ playIntroMusic () ]
 
-        IntroMusicPlaying _ ->
+        IntroMusicPlaying ->
             continue model
                 [ sequence
                     [ ( 0, FadeSeeds )
@@ -165,7 +165,7 @@ bannerId =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ introMusicPlaying IntroMusicPlaying
+        [ introMusicPlaying (always IntroMusicPlaying)
         , Browser.Events.onResize (\_ _ -> GetBannerHeight)
         ]
 

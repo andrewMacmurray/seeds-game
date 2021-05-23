@@ -25,3 +25,5 @@ jobs:
       - run: npm ci
       - name: Run Unit Tests
         run: npm test
+      - name: Review Check
+        run: npm run review:check

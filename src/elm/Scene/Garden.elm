@@ -9,7 +9,7 @@ module Scene.Garden exposing
     , view
     )
 
-import Config.Level as Level exposing (WorldConfig)
+import Config.Level as Level
 import Config.World as Worlds
 import Context exposing (Context)
 import Element exposing (..)
@@ -36,7 +36,6 @@ import Utils.Element as Element
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
-import Window exposing (Window)
 
 
 

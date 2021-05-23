@@ -5,9 +5,9 @@ import Direction2d
 import Element exposing (..)
 import Element.Palette as Palette
 import Pixels exposing (Pixels)
-import Point2d exposing (Point2d)
+import Point2d
 import Polygon2d exposing (Polygon2d)
-import Scene.Garden.Shape as Shape exposing (Shape)
+import Shape exposing (Shape)
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 

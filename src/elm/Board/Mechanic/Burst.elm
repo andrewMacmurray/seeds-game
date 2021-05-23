@@ -11,7 +11,7 @@ import Board exposing (Board)
 import Board.Block as Block
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
-import Board.Tile exposing (State(..), Tile)
+import Board.Tile exposing (State(..))
 
 
 
@@ -123,7 +123,7 @@ burst board =
             coordinates board
 
         withMoveOrder coord =
-            Coord.x coord + 1 * (Coord.y coord * 8)
+            Coord.x coord + (Coord.y coord * 8)
 
         updateActiveBlockToDragging coord block =
             case Block.tileState block of

@@ -28,18 +28,13 @@ module Css.Color exposing
     , mediumGreen
     , midnightBlue
     , orange
-    , petalOrange
     , pinkRed
     , purple
     , rainBlue
     , rgb
-    , rgba
     , seedPodGradient
     , silver
     , skyGreen
-    , softRed
-    , sunflowerOffYellow
-    , sunflowerYellow
     , transparent
     , transparentGray
     , washedYellow
@@ -81,7 +76,7 @@ gradientStop stopColor percent =
 
 linearGradient : String -> String
 linearGradient x =
-    String.join "" [ "linear-gradient(", x, ")" ]
+    String.concat [ "linear-gradient(", x, ")" ]
 
 
 rgba : Int -> Int -> Int -> Float -> Color
@@ -121,11 +116,6 @@ crimson =
     rgb 237 31 36
 
 
-softRed : Color
-softRed =
-    rgb 235 76 72
-
-
 pinkRed : Color
 pinkRed =
     rgb 255 116 116
@@ -134,11 +124,6 @@ pinkRed =
 fadedOrange : Color
 fadedOrange =
     rgb 247 179 113
-
-
-petalOrange : Color
-petalOrange =
-    rgb 255 204 71
 
 
 lightOrange : Color
@@ -174,16 +159,6 @@ darkYellow =
 brownYellow : Color
 brownYellow =
     rgb 105 88 35
-
-
-sunflowerYellow : Color
-sunflowerYellow =
-    rgb 255 241 0
-
-
-sunflowerOffYellow : Color
-sunflowerOffYellow =
-    rgb 226 227 24
 
 
 yellow : Color

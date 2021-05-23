@@ -14,7 +14,7 @@ import Board exposing (Board)
 import Board.Block as Block exposing (Block)
 import Board.Coord exposing (Coord)
 import Board.Falling exposing (..)
-import Board.Generate as Generate exposing (..)
+import Board.Generate as Generate
 import Board.Mechanic.Burst as Burst
 import Board.Mechanic.Pod as Pod
 import Board.Move as Move exposing (Move)
@@ -38,12 +38,12 @@ import Level.Setting.Tile as Tile
 import Lives
 import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
 import Scene.Level.Board.Line as Line
-import Scene.Level.Board.LineDrag as LineDrag exposing (ViewModel)
+import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
-import Seed exposing (Seed)
+import Seed
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)

@@ -6,7 +6,7 @@ import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
-import Utils.Svg as Svg exposing (..)
+import Utils.Svg exposing (..)
 
 
 static : Svg msg

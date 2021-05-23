@@ -1,4 +1,4 @@
-module View.Seed.Circle exposing (chrysanthemum, circle)
+module View.Seed.Circle exposing (chrysanthemum)
 
 import Css.Color exposing (orange, purple)
 import Svg exposing (..)

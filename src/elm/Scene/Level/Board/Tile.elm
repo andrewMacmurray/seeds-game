@@ -162,17 +162,3 @@ leavingViewModel model =
 
 
 -- Debug
-
-
-debugCoord : Move -> Html msg
-debugCoord move =
-    let
-        x =
-            Move.x move |> String.fromInt
-
-        y =
-            Move.y move |> String.fromInt
-    in
-    div
-        [ class "absolute flex justify-center tc left-0 right-0 f7" ]
-        [ text ("x" ++ x ++ "y" ++ y) ]

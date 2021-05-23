@@ -19,10 +19,8 @@ module Board.Block exposing
     , isSeed
     , isWall
     , leavingOrder
-    , map
     , moveOrder
     , releaseDraggingSeeds
-    , seedType
     , setActiveToStatic
     , setDraggingBurstType
     , setDraggingToGrowing
@@ -127,11 +125,6 @@ isCurrentMove =
 tile : Block -> Maybe Tile
 tile =
     fold Tile.get Nothing
-
-
-seedType : Block -> Maybe Seed
-seedType =
-    fold (Tile.get >> Maybe.andThen Tile.seedType) Nothing
 
 
 tileState : Block -> Tile.State

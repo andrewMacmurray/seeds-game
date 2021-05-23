@@ -13,7 +13,6 @@ module Scene.Level.Board.Tile.Style exposing
     , moveTracerStyles
     , position
     , releasingStyles
-    , seedStrokeColors
     , size
     , strokeColors
     , wallStyles

@@ -5,7 +5,7 @@ module Scene.Intro.DyingLandscape exposing
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Transform as Transform exposing (translateY)
+import Css.Transform as Transform
 import Css.Transition as Transition exposing (delay, linear, transition)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)

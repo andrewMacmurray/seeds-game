@@ -4,7 +4,6 @@ module Lives exposing
     , TimeTillNextLife
     , decrement
     , fromCache
-    , max
     , remaining
     , timeTillNextLife
     , toCache

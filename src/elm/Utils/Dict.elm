@@ -1,6 +1,5 @@
 module Utils.Dict exposing
-    ( find
-    , findValue
+    ( findValue
     , indexedDictFrom
     , insertWith
     , mapValues

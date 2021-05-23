@@ -1,4 +1,4 @@
-module Scene.Garden.Shape exposing
+module Shape exposing
     ( Shape
     , circle
     , group

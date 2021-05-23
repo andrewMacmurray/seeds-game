@@ -11,7 +11,7 @@ module Scene.Hub exposing
     )
 
 import Board.Scores as Scores
-import Board.Tile as Tile exposing (Tile(..))
+import Board.Tile exposing (Tile(..))
 import Browser.Dom as Dom
 import Config.Level as Level
 import Config.World as Worlds
@@ -38,7 +38,6 @@ import View.Icon.Triangle exposing (triangle)
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
-import Window exposing (Window)
 
 
 
@@ -61,7 +60,7 @@ type Msg
     | StartLevel Level.Id
     | ExitToLevel Level.Id
     | ExitToGarden
-    | DomNoOp (Result Dom.Error ())
+    | ScrolledToLevel
 
 
 type Destination
@@ -140,7 +139,7 @@ update msg model =
         ClearCurrentLevel ->
             continue { model | context = Context.clearCurrentLevel model.context } []
 
-        DomNoOp _ ->
+        ScrolledToLevel ->
             continue model []
 
         StartLevel level ->
@@ -169,7 +168,7 @@ scrollHubToLevel level =
     Level.toStringId level
         |> Dom.getElement
         |> Task.andThen scrollLevelToView
-        |> Task.attempt DomNoOp
+        |> Task.attempt (always ScrolledToLevel)
 
 
 scrollLevelToView : Dom.Element -> Task Dom.Error ()

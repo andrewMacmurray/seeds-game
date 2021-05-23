@@ -23,7 +23,7 @@ ms n =
 
 cubicBezier_ : Float -> Float -> Float -> Float -> String
 cubicBezier_ a b c d =
-    String.join ""
+    String.concat
         [ "cubic-bezier("
         , String.fromFloat a
         , ","

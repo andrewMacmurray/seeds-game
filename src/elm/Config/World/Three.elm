@@ -109,6 +109,4 @@ l1Walls =
 
 l2StartingTiles : List Start.Tile
 l2StartingTiles =
-    List.concat
-        [ Start.square (Start.burst 4 4) { size = 2 }
-        ]
+    Start.square (Start.burst 4 4) { size = 2 }

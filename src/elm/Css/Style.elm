@@ -3,11 +3,8 @@ module Css.Style exposing
     , applyIf
     , background
     , backgroundColor
-    , backgroundImage
     , border
     , borderNone
-    , borderRadiusBottomLeft
-    , borderRadiusTopLeft
     , bottom
     , classes
     , color
@@ -18,7 +15,6 @@ module Css.Style exposing
     , left
     , leftAuto
     , leftPill
-    , lineHeight
     , marginAuto
     , marginBottom
     , marginLeft
@@ -37,7 +33,6 @@ module Css.Style exposing
     , pointer
     , property
     , renderStyles_
-    , right
     , rightAuto
     , rightPill
     , showIf
@@ -51,17 +46,15 @@ module Css.Style exposing
     , transformOrigin
     , transformOriginPx
     , width
-    , windowDimensions
     )
 
 import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
 import Css.Unit exposing (..)
-import Html exposing (Attribute, Html)
+import Html
 import Html.Attributes
 import Svg
 import Svg.Attributes
-import Window exposing (Window)
 
 
 type Style
@@ -253,11 +246,6 @@ left n =
     property "left" <| px n
 
 
-right : Float -> Style
-right n =
-    property "right" <| px n
-
-
 color : String -> Style
 color c =
     property "color" c
@@ -309,11 +297,6 @@ borderRadiusTopLeft n =
     property "border-top-left-radius" <| px n
 
 
-backgroundImage : String -> Style
-backgroundImage url =
-    property "background-image" <| "url(" ++ url ++ ")"
-
-
 backgroundColor : String -> Style
 backgroundColor =
     property "background-color"
@@ -322,14 +305,6 @@ backgroundColor =
 background : String -> Style
 background =
     property "background"
-
-
-windowDimensions : Window -> Style
-windowDimensions window =
-    compose
-        [ width <| toFloat window.width
-        , height <| toFloat window.height
-        ]
 
 
 size : Float -> List Style
@@ -367,11 +342,6 @@ opacity o =
 stroke : String -> Style
 stroke =
     property "stroke"
-
-
-lineHeight : Float -> Style
-lineHeight n =
-    property "line-height" <| String.fromFloat n
 
 
 pointer : Style

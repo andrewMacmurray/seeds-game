@@ -13,7 +13,7 @@ import Html.Attributes exposing (class)
 import Seed exposing (Seed(..))
 import Utils.Attribute as Attribute
 import View.Seed as Seed
-import Window exposing (Window, size)
+import Window exposing (Window)
 
 
 type State

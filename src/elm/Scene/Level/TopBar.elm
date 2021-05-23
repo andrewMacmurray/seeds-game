@@ -1,6 +1,5 @@
 module Scene.Level.TopBar exposing
     ( ViewModel
-    , scoreIcon
     , view
     )
 

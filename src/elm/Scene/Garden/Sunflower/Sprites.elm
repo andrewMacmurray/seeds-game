@@ -85,7 +85,7 @@ type alias Options =
 
 
 butterfly : Options -> Element msg
-butterfly ({ color, size, speed } as options) =
+butterfly ({ color, size } as options) =
     el
         [ Element.width Element.fill
         , Element.inFront

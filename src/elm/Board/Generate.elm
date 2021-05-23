@@ -10,8 +10,8 @@ module Board.Generate exposing
 import Board exposing (Board)
 import Board.Block as Block exposing (Block(..))
 import Board.Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (State(..), Tile(..))
+import Board.Move as Move
+import Board.Tile exposing (State(..), Tile(..))
 import Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
 import Seed exposing (Seed)

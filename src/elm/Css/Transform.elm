@@ -1,9 +1,6 @@
 module Css.Transform exposing
     ( Transform
-    , fromTransform
     , render
-    , rotateX
-    , rotateY
     , rotateZ
     , scale
     , translate
@@ -21,8 +18,6 @@ type Transform
     | TranslateY Float
     | TranslateZ Float
     | Scale Float
-    | RotateX Float
-    | RotateY Float
     | RotateZ Float
 
 
@@ -62,16 +57,6 @@ translateZ =
     TranslateZ
 
 
-rotateX : Float -> Transform
-rotateX =
-    RotateX
-
-
-rotateY : Float -> Transform
-rotateY =
-    RotateY
-
-
 rotateZ : Float -> Transform
 rotateZ =
     RotateZ
@@ -82,12 +67,6 @@ fromTransform ts =
     case ts of
         RotateZ n ->
             rotate_ "Z" n
-
-        RotateX n ->
-            rotate_ "X" n
-
-        RotateY n ->
-            rotate_ "Y" n
 
         Scale n ->
             scale_ n
@@ -135,17 +114,6 @@ rotate_ axis n =
     join [ "rotate", axis, "(", deg n, ")" ]
 
 
-svgTranslate : Float -> Float -> String
-svgTranslate x y =
-    join
-        [ "translate("
-        , String.fromFloat x
-        , " "
-        , String.fromFloat y
-        , ")"
-        ]
-
-
 join : List String -> String
 join =
-    String.join ""
+    String.concat

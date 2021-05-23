@@ -7,7 +7,6 @@ module Board.Wall exposing
     , toCoords
     , w
     , walls
-    , withColor
     )
 
 import Board exposing (Board)

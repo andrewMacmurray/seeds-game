@@ -1,4 +1,4 @@
-module Scene.Garden.Cornflower.Sprites exposing (..)
+module Scene.Garden.Cornflower.Sprites exposing (ladybird)
 
 import Element exposing (Element)
 import Simple.Animation as Animation exposing (Animation)

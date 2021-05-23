@@ -9,6 +9,8 @@
     "dev": "npm run css-build && parcel src/index.html",
     "build": "npm run css-build && parcel build src/index.html",
     "css-build": "postcss src/css/main.css --output assets/style.min.css",
+    "review": "elm-review --fix-all",
+    "review:check": "elm-review",
     "test": "elm-test"
   },
   "repository": {
@@ -26,8 +28,10 @@
     "autoprefixer": "^9.8.6",
     "bounce.js": "^0.8.2",
     "elm": "^0.19.1-5",
+    "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
     "elm-live": "^4.0.2",
+    "elm-review": "^2.5.1",
     "elm-test": "^0.19.1-revision7",
     "firebase-tools": "^9.11.0",
     "howler": "^2.2.1",

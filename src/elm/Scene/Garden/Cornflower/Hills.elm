@@ -7,7 +7,7 @@ import Element exposing (Color)
 import Element.Palette as Palette
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
-import Scene.Garden.Shape as Shape exposing (Shape)
+import Shape exposing (Shape)
 import Utils.Function exposing (apply)
 import Utils.Geometry as Geometry
 import Window exposing (Window, vh, vw)

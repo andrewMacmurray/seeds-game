@@ -5,10 +5,10 @@ module Scene.Summary.Sunflower exposing
     )
 
 import Css.Color as Color exposing (Color)
-import Css.Style as Style exposing (Style)
+import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition exposing (delay)
-import Svg exposing (Attribute, Svg)
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
 import View.Flower.Sunflower as Sunflower

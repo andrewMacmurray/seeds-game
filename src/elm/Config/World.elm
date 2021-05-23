@@ -4,14 +4,12 @@ module Config.World exposing
     , levelConfig
     , list
     , number
-    , seedType
     )
 
 import Config.Level as Level exposing (..)
 import Config.World.One as One
 import Config.World.Three as Three
 import Config.World.Two as Two
-import Seed exposing (Seed)
 
 
 
@@ -44,11 +42,6 @@ number =
 list : List Level.WorldWithLevels
 list =
     Level.worldsList all
-
-
-seedType : Level.Id -> Maybe Seed
-seedType =
-    Level.seedType all
 
 
 levelConfig : Level.Id -> LevelConfig

@@ -2,7 +2,6 @@ port module Ports exposing
     ( cacheLives
     , cacheProgress
     , clearCache
-    , clearCache_
     , fadeMusic
     , generateBounceKeyframes
     , introMusicPlaying

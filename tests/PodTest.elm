@@ -1,6 +1,6 @@
 module PodTest exposing (suite)
 
-import Board
+import Board exposing (Board)
 import Board.Coord as Coord
 import Board.Mechanic.Pod as Pod
 import Board.Move as Move
@@ -78,16 +78,19 @@ moveFromCoord x y board_ =
         |> Maybe.withDefault Move.empty
 
 
-board : Board.Board
+board : Board
 board =
-    Board.fromTiles boardSize
-        (List.concat
-            [ [ s, p, c, p ]
-            , [ p, s, s, p ]
-            , [ p, p, s, s ]
-            , [ p, s, p, s ]
-            ]
-        )
+    toBoard
+        [ [ s, p, c, p ]
+        , [ p, s, s, p ]
+        , [ p, p, s, s ]
+        , [ p, s, p, s ]
+        ]
+
+
+toBoard : List (List Tile) -> Board
+toBoard =
+    Board.fromTiles boardSize << List.concat
 
 
 boardSize : Board.Size

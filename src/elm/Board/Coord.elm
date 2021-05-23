@@ -8,7 +8,6 @@ module Board.Coord exposing
     , isLeft
     , isRight
     , productXY
-    , square
     , surrounding
     , translateX
     , translateY
@@ -33,13 +32,6 @@ type alias X =
 
 
 -- Construct
-
-
-square : { a | x : Int, y : Int, size : Int } -> List Coord
-square options =
-    productXY
-        (List.range options.x (options.x + options.size - 1))
-        (List.range options.y (options.y + options.size - 1))
 
 
 productXY : List X -> List Y -> List Coord

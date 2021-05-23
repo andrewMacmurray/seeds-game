@@ -3,7 +3,7 @@ module Scene.Garden.Chrysanthemum.Sprites exposing (bee)
 import Element exposing (Element)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
-import Svg exposing (Svg)
+import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg exposing (..)

@@ -5,7 +5,7 @@ module Pointer exposing
     , onPointerUp
     )
 
-import Html exposing (Attribute, Html)
+import Html exposing (Attribute)
 import Html.Events exposing (on, stopPropagationOn)
 import Json.Decode as Json exposing (Decoder, field, float)
 

@@ -1,7 +1,6 @@
 module Scene.Level.Board.Style exposing
     ( ViewModel
     , fullWidth
-    , height
     , marginTop
     , offsetBottom
     , offsetLeft

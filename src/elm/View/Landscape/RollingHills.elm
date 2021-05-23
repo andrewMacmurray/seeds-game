@@ -64,7 +64,6 @@ type alias Hill msg =
 
 type Side
     = Left
-    | Center
     | Right
 
 
@@ -94,7 +93,7 @@ hillFullScreen window hillConfig =
         , width_ w
         , height_ 3000
         ]
-        [ Svg.g [] <| [ hill hillConfig.color r cx cy ] ++ elements
+        [ Svg.g [] <| hill hillConfig.color r cx cy :: elements
         ]
 
 
@@ -117,9 +116,6 @@ sideToCx window side =
     case side of
         Left ->
             0
-
-        Center ->
-            toFloat window.width / 2
 
         Right ->
             toFloat window.width
