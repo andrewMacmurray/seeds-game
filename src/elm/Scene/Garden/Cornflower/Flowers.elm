@@ -2,6 +2,7 @@ module Scene.Garden.Cornflower.Flowers exposing (flowers)
 
 import Element exposing (..)
 import Scene.Garden.Cornflower.Sprites as Ladybird
+import Simple.Animation as Animation
 import View.Flower.Cornflower as Cornflower
 
 
@@ -23,6 +24,15 @@ flowers =
         ]
 
 
+type alias Ladybird =
+    { angle : Float
+    , x : Float
+    , y : Float
+    , delay : Animation.Millis
+    }
+
+
+ladybird : Ladybird -> Attribute msg
 ladybird { angle, x, y, delay } =
     inFront
         (el
