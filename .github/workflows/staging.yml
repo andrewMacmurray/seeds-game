@@ -1,0 +1,24 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-staging:
+    env:
+      FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.elm
+            ~/.npm
+            **/elm-stuff
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run deploy-staging:ci

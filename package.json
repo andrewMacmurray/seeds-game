@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A connect the dots game with seeds",
   "scripts": {
-    "deploy-production": "npm run build && firebase deploy -P production",
+    "deploy-production": "npm run build && firebase deploy -P production --token $FIREBASE_TOKEN",
+    "deploy-staging:ci": "npm run build && firebase deploy -P staging --token $FIREBASE_TOKEN",
     "deploy-staging": "npm run build && firebase deploy -P staging",
     "dev": "npm run css-build && parcel src/index.html",
     "build": "npm run css-build && parcel build src/index.html",
