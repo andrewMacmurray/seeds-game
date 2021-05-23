@@ -17,6 +17,7 @@ import Element.Animations as Animations
 import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
+import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
@@ -116,7 +117,7 @@ scrollToCurrentCompletedWorld =
 
 view : Model -> Html Msg
 view model =
-    layout
+    Layout.view
         [ inFront backToLevelsButton
         , inFront initialOverlay
         ]
@@ -129,38 +130,12 @@ view model =
         )
 
 
-layout : List (Attribute msg) -> Element msg -> Html msg
-layout attrs =
-    Element.layoutWith layoutOptions
-        ([ width fill
-         , height fill
-         , Element.style "position" "absolute"
-         , Element.style "z-index" "1"
-         , Element.class "overflow-y-scroll momentum-scroll"
-         , Text.fonts
-         ]
-            ++ attrs
-        )
-
-
-layoutOptions : { options : List Option }
-layoutOptions =
-    { options =
-        [ Element.focusStyle
-            { borderColor = Nothing
-            , backgroundColor = Nothing
-            , shadow = Nothing
-            }
-        ]
-    }
-
-
 initialOverlay : Element msg
 initialOverlay =
     Animated.el fadeOut
         [ width fill
         , height fill
-        , Background.color Palette.lightYellow
+        , Background.color Palette.background1_
         , Element.disableTouch
         ]
         (el

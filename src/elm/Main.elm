@@ -108,7 +108,10 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window ]
+        |> withCmds
+            [ bounceKeyframes flags.window
+            , trigger InitRetry
+            ]
 
 
 initialState : Title.Model -> Model

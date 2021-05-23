@@ -203,7 +203,7 @@ renderTopBar model =
         [ style [ background washedYellow ]
         , class "w-100 fixed z-3 top-0 tc pa1 pa2-ns"
         ]
-        [ div [ style [ transform [ scale 0.5 ] ] ] <| Lives.view model.context.lives
+        [ div [ style [ transform [ scale 0.5 ] ] ] [ Lives.view model.context.lives ]
         , div [ style [ color darkYellow ], class "f7" ]
             [ renderCountDown model.context.lives ]
         ]

@@ -25,7 +25,6 @@ module Css.Color exposing
     , lightOrange
     , lightYellow
     , meadowGreen
-    , mediumGreen
     , midnightBlue
     , orange
     , pinkRed
@@ -204,11 +203,6 @@ darkBrown =
 chocolate : Color
 chocolate =
     rgb 57 35 21
-
-
-mediumGreen : Color
-mediumGreen =
-    rgb 78 168 59
 
 
 green : Color

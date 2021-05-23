@@ -10,17 +10,24 @@ module Scene.Retry exposing
     )
 
 import Context exposing (Context)
-import Css.Animation
-import Css.Color as Color
-import Css.Style as Style exposing (..)
-import Css.Transform
-import Css.Unit exposing (pc)
+import Element exposing (..)
+import Element.Animation as Animation
+import Element.Animations as Animations
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events exposing (onClick)
+import Element.Layout as Layout
+import Element.Palette as Palette
+import Element.Scale as Scale exposing (corners)
+import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
 import Lives
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Utils.Animated as Animated
 import Utils.Delay exposing (after)
+import Window exposing (Window, vh)
 
 
 
@@ -33,8 +40,8 @@ type alias Model =
 
 type Msg
     = DecrementLives
-    | RestartLevel
-    | ReturnToHub
+    | RestartLevelClicked
+    | ReturnToHubClicked
 
 
 type Destination
@@ -77,10 +84,10 @@ update msg model =
         DecrementLives ->
             continue (updateContext Context.decrementLife model) []
 
-        RestartLevel ->
+        RestartLevelClicked ->
             exitWith ToLevel model
 
-        ReturnToHub ->
+        ReturnToHubClicked ->
             exitWith ToHub model
 
 
@@ -90,67 +97,75 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div
-        [ style
-            [ height <| toFloat model.window.height
-            , background Color.washedYellow
-            , Css.Animation.animation "fade-in" 1000 [ Css.Animation.linear ]
-            ]
-        , class "fixed z-5 flex justify-center items-center w-100 top-0 left-0"
+    Layout.view
+        [ Palette.background2
         ]
-        [ div
-            [ style [ Style.property "margin-top" <| pc -8 ]
-            , class "tc"
+        (Animated.column fadeInScene
+            [ centerX
+            , centerY
+            , spacing Scale.large
+            , moveUp 20
             ]
-            [ div [] <| Lives.view model.lives
-            , div [ style [ color Color.darkYellow ] ]
-                [ p [ class "mt3" ] [ text "You lost a life ..." ]
-                , p
-                    [ style [ Css.Animation.animation "fade-in" 1000 [ Css.Animation.delay 2500, Css.Animation.ease ] ]
-                    , class "o-0"
-                    ]
-                    [ text "But don't feel disheartened" ]
+            [ el [] (html (Lives.view model.lives))
+            , column
+                [ centerX
+                , spacing Scale.medium
                 ]
-            , div
-                [ style
-                    [ Css.Animation.animation "bounce-up" 1500 [ Css.Animation.delay 3000, Css.Animation.linear ]
-                    , transform [ Css.Transform.translate 0 (toFloat <| model.window.height + 100) ]
-                    ]
+                [ Text.text [ centerX, Text.large ] "You lost a life..."
+                , Animated.el fadeInText [ centerX ] (Text.text [ Text.large ] "But don't feel disheartened")
                 ]
-                [ tryAgain model ]
+            , Animated.el (bounceInButton model.window) [ centerX ] tryAgain
             ]
-        ]
+        )
 
 
-tryAgain : Model -> Html Msg
-tryAgain _ =
-    div [ style [ marginTop 50 ], class "pointer" ]
-        [ div
-            [ style
-                [ background Color.lightGreen
-                , color Color.white
-                , paddingLeft 25
-                , paddingRight 20
-                , paddingTop 15
-                , paddingBottom 15
-                , leftPill
-                ]
-            , class "dib"
-            , onClick ReturnToHub
+fadeInScene : Animation
+fadeInScene =
+    Animations.fadeIn 1000 [ Animation.linear ]
+
+
+fadeInText : Animation
+fadeInText =
+    Animations.fadeIn 1000 [ Animation.delay 2500 ]
+
+
+bounceInButton : Window -> Animation
+bounceInButton window =
+    Animation.fromTo
+        { duration = 600
+        , options = [ Animation.springy, Animation.delay 3000 ]
+        }
+        [ P.y (vh window / 2 - 20) ]
+        [ P.y 0 ]
+
+
+tryAgain : Element Msg
+tryAgain =
+    row []
+        [ el
+            [ onClick ReturnToHubClicked
+            , Background.color Palette.green6
+            , pointer
+            , paddingEach
+                { left = Scale.medium + Scale.small
+                , right = Scale.medium
+                , top = Scale.medium
+                , bottom = Scale.medium
+                }
+            , Border.roundEach { corners | bottomLeft = 40, topLeft = 40 }
             ]
-            [ p [ class "ma0" ] [ text "X" ] ]
-        , div
-            [ style
-                [ background Color.mediumGreen
-                , color Color.white
-                , paddingLeft 25
-                , paddingRight 20
-                , paddingTop 15
-                , paddingBottom 15
-                , rightPill
-                ]
-            , class "dib"
-            , onClick RestartLevel
+            (Text.text [ Text.color Palette.white ] "X")
+        , el
+            [ onClick RestartLevelClicked
+            , pointer
+            , Background.color Palette.green2
+            , paddingEach
+                { left = Scale.medium
+                , right = Scale.medium + Scale.small
+                , top = Scale.medium
+                , bottom = Scale.medium
+                }
+            , Border.roundEach { corners | bottomRight = 40, topRight = 40 }
             ]
-            [ p [ class "ma0" ] [ text "Try again?" ] ]
+            (Text.text [ Text.color Palette.white ] "Try Again?")
         ]
