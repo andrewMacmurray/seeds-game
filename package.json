@@ -28,6 +28,7 @@
     "elm": "^0.19.1-5",
     "elm-hot": "^1.1.6",
     "elm-live": "^4.0.2",
+    "elm-test": "^0.19.1-revision7",
     "firebase-tools": "^9.11.0",
     "howler": "^2.2.1",
     "node-elm-compiler": "^5.0.6",
