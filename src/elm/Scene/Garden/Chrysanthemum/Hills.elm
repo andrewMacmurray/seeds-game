@@ -8,25 +8,56 @@ import Element.Palette as Palette
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Scene.Garden.Shape as Shape exposing (Shape)
+import Utils.Function exposing (apply)
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 
 
 shape : Window -> Shape
 shape window =
-    Shape.moveDown (Window.whenNarrow 130 120 window)
-        (Shape.group
-            [ roundHill -200 Palette.purple1 window
-            , Shape.mirror (roundHill -200 Palette.purple2 window)
-            , middleHill -280 window Palette.purple8
-            , roundHill 0 Palette.purple3 window
-            , Shape.mirror (roundHill 0 Palette.purple4 window)
-            , middleHill -150 window Palette.purple1
-            , roundHill 300 Palette.purple9 window
-            , Shape.mirror (roundHill 300 Palette.purple7 window)
-            , middleHill 250 window Palette.purple3
-            ]
-        )
+    [ hillTrio
+        { offset = -250
+        , adjustHills = 125
+        , left = Palette.purple1
+        , middle = Palette.purple8
+        , right = Palette.purple2
+        }
+    , hillTrio
+        { offset = -100
+        , adjustHills = 200
+        , left = Palette.purple3
+        , middle = Palette.purple1
+        , right = Palette.purple4
+        }
+    , hillTrio
+        { offset = 250
+        , adjustHills = 50
+        , left = Palette.purple9
+        , middle = Palette.purple3
+        , right = Palette.purple7
+        }
+    ]
+        |> List.map (apply window)
+        |> List.concat
+        |> Shape.group
+        |> Shape.moveDown (Window.whenNarrow 130 120 window)
+
+
+type alias HillTrio =
+    { offset : Float
+    , adjustHills : Float
+    , left : Color
+    , middle : Color
+    , right : Color
+    }
+
+
+hillTrio : HillTrio -> Window -> List Shape
+hillTrio { offset, adjustHills, left, middle, right } window =
+    [ roundHill (offset + adjustHills) left window
+    , Shape.mirror (roundHill (offset + adjustHills) right window)
+    , middleHill offset window middle
+    ]
 
 
 middleHill : Float -> Window -> Color -> Shape
@@ -37,6 +68,7 @@ middleHill y w c =
 roundHill : Float -> Color -> Window -> Shape
 roundHill y color window =
     Shape.circle { fill = color } (roundHill_ y window)
+        |> Shape.hideIf (Window.isNarrow window)
 
 
 middleHill_ : Float -> Window -> Circle2d Pixels coordinates

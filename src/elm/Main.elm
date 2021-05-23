@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Board.Tile as Tile
 import Browser
-import Browser.Events exposing (onResize)
+import Browser.Events as Browser
 import Config.Level as Level
 import Config.World as Worlds
 import Context exposing (Context)
@@ -108,7 +108,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window ]
+        |> withCmds [ bounceKeyframes flags.window, trigger InitGarden ]
 
 
 initialState : Title.Model -> Model
@@ -639,7 +639,7 @@ shouldIncrement context =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ onResize WindowSize
+        [ Browser.onResize WindowSize
         , updateLivesSubscription model
         , sceneSubscriptions model
         ]

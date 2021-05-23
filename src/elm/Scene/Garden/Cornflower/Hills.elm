@@ -8,6 +8,7 @@ import Element.Palette as Palette
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Scene.Garden.Shape as Shape exposing (Shape)
+import Utils.Function exposing (apply)
 import Utils.Geometry as Geometry
 import Window exposing (Window, vh, vw)
 
@@ -97,8 +98,3 @@ axis w =
     Axis2d.withDirection
         (Direction2d.degrees 50)
         (Point2d.pixels (vw w / 2) (vh w / 2))
-
-
-apply : a -> (a -> b) -> b
-apply =
-    (|>)

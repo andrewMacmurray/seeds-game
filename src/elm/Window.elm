@@ -2,8 +2,10 @@ module Window exposing
     ( Size(..)
     , Width(..)
     , Window
+    , isNarrow
     , padding
     , size
+    , updateHeight
     , vh
     , vw
     , whenNarrow
@@ -77,6 +79,25 @@ whenNarrow a b window =
 
         _ ->
             b
+
+
+isNarrow : Window -> Bool
+isNarrow window =
+    case width window of
+        Narrow ->
+            True
+
+        _ ->
+            False
+
+
+
+-- Update
+
+
+updateHeight : Int -> Window -> Window
+updateHeight h window =
+    { window | height = h }
 
 
 

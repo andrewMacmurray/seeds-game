@@ -9,16 +9,8 @@ import View.Flower.Sunflower as Sunflower
 
 flowers : Element msg
 flowers =
-    row []
-        [ el [ moveDown 50, moveRight 50 ]
-            (flower
-                { size = 100
-                , delay = 200
-                , restingButterfly = Just { x = 70, y = 65 }
-                , hoveringButterfly = Just { x = 0, y = 0 }
-                }
-            )
-        , el [ moveUp 20 ]
+    column [ height (px 225) ]
+        [ el [ moveDown 50 ]
             (flower
                 { size = 200
                 , delay = 0
@@ -26,14 +18,24 @@ flowers =
                 , hoveringButterfly = Just { x = 120, y = 10 }
                 }
             )
-        , el [ moveDown 50, moveLeft 50 ]
-            (flower
-                { size = 100
-                , delay = 400
-                , restingButterfly = Nothing
-                , hoveringButterfly = Just { x = 75, y = 0 }
-                }
-            )
+        , row []
+            [ el [ moveLeft 50 ]
+                (flower
+                    { size = 100
+                    , delay = 200
+                    , restingButterfly = Just { x = 70, y = 65 }
+                    , hoveringButterfly = Just { x = 0, y = 0 }
+                    }
+                )
+            , el [ moveRight 50 ]
+                (flower
+                    { size = 100
+                    , delay = 400
+                    , restingButterfly = Nothing
+                    , hoveringButterfly = Just { x = 75, y = 0 }
+                    }
+                )
+            ]
         ]
 
 

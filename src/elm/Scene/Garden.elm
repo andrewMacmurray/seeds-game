@@ -45,6 +45,7 @@ import Window exposing (Window)
 
 type alias Model =
     { context : Context
+    , heightSnapshot : Int
     }
 
 
@@ -64,13 +65,18 @@ getContext model =
 
 updateContext : (Context -> Context) -> Model -> Model
 updateContext f model =
-    { model | context = f model.context }
+    { model | context = f model.context |> adjustWindow model }
 
 
 menuOptions : List (Menu.Option Msg)
 menuOptions =
     [ Menu.option ExitToHub "Levels"
     ]
+
+
+adjustWindow : Model -> Context -> Context
+adjustWindow model context =
+    { context | window = Window.updateHeight model.heightSnapshot context.window }
 
 
 
@@ -87,6 +93,7 @@ init context =
 initialState : Context -> Model
 initialState context =
     { context = context
+    , heightSnapshot = context.window.height
     }
 
 
