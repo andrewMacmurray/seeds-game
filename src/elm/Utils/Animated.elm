@@ -1,6 +1,6 @@
-module Utils.Animated exposing (el, g, path)
+module Utils.Animated exposing (column, el, g, path)
 
-import Element
+import Element exposing (Element)
 import Simple.Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Svg exposing (Svg)
@@ -11,17 +11,22 @@ import Svg.Attributes
 -- Elm UI
 
 
-el : Animation -> List (Element.Attribute msg) -> Element.Element msg -> Element.Element msg
+el : Animation -> List (Element.Attribute msg) -> Element msg -> Element msg
 el =
     ui_ Element.el
 
 
+column : Animation -> List (Element.Attribute msg) -> List (Element msg) -> Element msg
+column =
+    ui_ Element.column
+
+
 ui_ :
-    (List (Element.Attribute msg) -> children -> Element.Element msg)
+    (List (Element.Attribute msg) -> children -> Element msg)
     -> Animation
     -> List (Element.Attribute msg)
     -> children
-    -> Element.Element msg
+    -> Element msg
 ui_ =
     Animated.ui
         { html = Element.html

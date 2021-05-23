@@ -1,5 +1,7 @@
 module Element.Scale exposing
-    ( extraLarge
+    ( corners
+    , extraLarge
+    , large
     , medium
     , small
     )
@@ -15,6 +17,19 @@ medium =
     20
 
 
+large : number
+large =
+    40
+
+
 extraLarge : number
 extraLarge =
     80
+
+
+corners =
+    { bottomLeft = 0
+    , bottomRight = 0
+    , topLeft = 0
+    , topRight = 0
+    }

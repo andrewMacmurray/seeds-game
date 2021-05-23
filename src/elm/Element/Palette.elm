@@ -1,6 +1,7 @@
 module Element.Palette exposing (..)
 
-import Element exposing (Color, rgb255, rgba255)
+import Element exposing (Attribute, Color, rgb255, rgba255)
+import Element.Background as Background
 
 
 darkRed : Color
@@ -86,16 +87,6 @@ yellow =
 blockYellow : Color
 blockYellow =
     rgb255 246 224 111
-
-
-lightYellow : Color
-lightYellow =
-    rgb255 255 251 179
-
-
-washedYellow : Color
-washedYellow =
-    rgb255 255 254 224
 
 
 greyYellow : Color
@@ -346,6 +337,30 @@ blue9 =
 blue10 : Color
 blue10 =
     rgb255 160 230 250
+
+
+
+-- Background
+
+
+background1 : Attribute msg
+background1 =
+    Background.color background1_
+
+
+background1_ : Color
+background1_ =
+    rgb255 255 251 179
+
+
+background2 : Attribute msg
+background2 =
+    Background.color background2_
+
+
+background2_ : Color
+background2_ =
+    rgb255 255 254 224
 
 
 

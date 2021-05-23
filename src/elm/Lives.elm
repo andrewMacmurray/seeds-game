@@ -159,11 +159,12 @@ type alias ViewModel =
     }
 
 
-view : Lives -> List (Html msg)
+view : Lives -> Html msg
 view lives =
     List.range 1 max
         |> List.map (viewModel (remaining lives))
         |> List.map heart
+        |> div []
 
 
 viewModel : Int -> Int -> ViewModel
