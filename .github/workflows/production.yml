@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy-staging:
+  deploy-production:
     env:
       FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
     runs-on: ubuntu-latest
