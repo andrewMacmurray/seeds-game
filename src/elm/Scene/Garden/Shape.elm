@@ -134,7 +134,7 @@ updateAttributes f shape =
             Circle (updateAttributes_ f c)
 
         Group shapes ->
-            Group (List.map mirror shapes)
+            Group (List.map (updateAttributes f) shapes)
 
 
 updateAttributes_ : (Attributes -> Attributes) -> Shape_ shape -> Shape_ shape
