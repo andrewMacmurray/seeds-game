@@ -5,7 +5,6 @@ module Window exposing
     , isNarrow
     , padding
     , size
-    , updateHeight
     , vh
     , vw
     , whenNarrow
@@ -89,15 +88,6 @@ isNarrow window =
 
         _ ->
             False
-
-
-
--- Update
-
-
-updateHeight : Int -> Window -> Window
-updateHeight h window =
-    { window | height = h }
 
 
 

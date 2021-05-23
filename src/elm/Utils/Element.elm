@@ -1,5 +1,6 @@
 module Utils.Element exposing
-    ( disableTouch
+    ( class
+    , disableTouch
     , id
     , maybe
     , style
