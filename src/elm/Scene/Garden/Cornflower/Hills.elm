@@ -15,7 +15,7 @@ import Window exposing (Window, vh, vw)
 
 shape : Window -> Shape
 shape window =
-    List.range 0 3
+    List.range 0 4
         |> List.map cycleColors
         |> List.indexedMap toHills
         |> List.concatMap (apply window)
@@ -34,7 +34,7 @@ toHills i ( l, r ) =
 
 cycleColors : Int -> ( Color, Color )
 cycleColors i =
-    case modBy 8 i of
+    case modBy 4 i of
         0 ->
             ( Palette.yellow7, Palette.yellow6 )
 
@@ -44,17 +44,8 @@ cycleColors i =
         2 ->
             ( Palette.yellow7, Palette.yellow8 )
 
-        3 ->
-            ( Palette.yellow3, Palette.yellow5 )
-
-        4 ->
-            ( Palette.yellow1, Palette.yellow2 )
-
-        5 ->
-            ( Palette.yellow3, Palette.yellow4 )
-
         _ ->
-            ( Palette.yellow8, Palette.yellow10 )
+            ( Palette.yellow3, Palette.yellow5 )
 
 
 hillPair : { offset : Float, left : Color, right : Color } -> Window -> List Shape
