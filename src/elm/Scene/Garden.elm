@@ -15,8 +15,7 @@ import Context exposing (Context)
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
-import Element.Border as Border
-import Element.Input as Input
+import Element.Button as Button
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
@@ -173,27 +172,13 @@ backToLevelsButton =
         , centerX
         , paddingXY 0 Scale.extraLarge
         ]
-        (Input.button []
-            { onPress = Just ExitToHub
-            , label = buttonLabel "BACK TO LEVELS"
-            }
-        )
-
-
-buttonLabel : String -> Element msg
-buttonLabel text =
-    el
-        [ Background.color Palette.white
-        , paddingXY Scale.medium Scale.small
-        , Border.rounded 20
-        ]
-        (Text.text
-            [ Text.color Palette.black
-            , Text.bold
-            , Text.spaced
-            , Text.small
+        (Button.button
+            [ Button.white
+            , Button.small
             ]
-            text
+            { onClick = ExitToHub
+            , label = "BACK TO LEVELS"
+            }
         )
 
 

@@ -20,7 +20,6 @@ module Css.Style exposing
     , marginLeft
     , marginRight
     , marginTop
-    , maxWidth
     , none
     , opacity
     , paddingAll
@@ -317,11 +316,6 @@ size n =
 width : Float -> Style
 width n =
     property "width" <| px n
-
-
-maxWidth : Float -> Style
-maxWidth n =
-    property "max-width" <| px n
 
 
 height : Float -> Style

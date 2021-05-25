@@ -11,26 +11,25 @@ module Scene.Title exposing
     , view
     )
 
-import Browser.Dom as Dom
-import Browser.Events
-import Config.Level as Level
 import Context exposing (Context)
-import Css.Animation exposing (animation, delay, linear)
-import Css.Color as Color
-import Css.Style exposing (..)
+import Element exposing (..)
+import Element.Animations as Animations
+import Element.Button as Button
+import Element.Layout as Layout
+import Element.Scale as Scale
+import Element.Text as Text
 import Exit exposing (continue, exitWith)
-import Html exposing (..)
-import Html.Attributes exposing (class, id)
-import Html.Events exposing (onClick)
+import Html exposing (Html)
 import Level.Progress as Progress
 import Ports exposing (introMusicPlaying, playIntroMusic)
-import Task
+import Simple.Animation as Animation
+import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
+import Utils.Element exposing (verticalGap)
 import View.Menu as Menu
 import View.Seed.Circle exposing (chrysanthemum)
 import View.Seed.Mono exposing (rose)
 import View.Seed.Twin exposing (lupin, marigold, sunflower)
-import Window
 
 
 
@@ -39,16 +38,13 @@ import Window
 
 type alias Model =
     { context : Context
-    , fadeDirection : FadeDirection
-    , bannerHeight : Float
+    , fade : FadeDirection
     }
 
 
 type Msg
     = FadeSeeds
     | PlayIntro
-    | GetBannerHeight
-    | ReceiveBannerHeight (Result Dom.Error Float)
     | IntroMusicPlaying
     | GoToIntro
     | GoToHub
@@ -93,16 +89,13 @@ menuOptions =
 
 init : Context -> ( Model, Cmd Msg )
 init context =
-    ( initialState context
-    , getBannerHeight
-    )
+    ( initialState context, Cmd.none )
 
 
 initialState : Context -> Model
 initialState context =
     { context = context
-    , fadeDirection = Appearing
-    , bannerHeight = 0
+    , fade = Appearing
     }
 
 
@@ -114,7 +107,7 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         FadeSeeds ->
-            continue { model | fadeDirection = Disappearing } []
+            continue { model | fade = Disappearing } []
 
         PlayIntro ->
             continue (updateContext Context.disableMenu model) [ playIntroMusic () ]
@@ -127,15 +120,6 @@ update msg model =
                     ]
                 ]
 
-        GetBannerHeight ->
-            continue model [ getBannerHeight ]
-
-        ReceiveBannerHeight (Ok height) ->
-            continue { model | bannerHeight = height } []
-
-        ReceiveBannerHeight (Err _) ->
-            continue model []
-
         GoToIntro ->
             exitWith ToIntro model
 
@@ -146,28 +130,13 @@ update msg model =
             exitWith ToGarden model
 
 
-getBannerHeight : Cmd Msg
-getBannerHeight =
-    Dom.getElement bannerId
-        |> Task.map (.element >> .height)
-        |> Task.attempt ReceiveBannerHeight
-
-
-bannerId : String
-bannerId =
-    "banner"
-
-
 
 -- Subscriptions
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.batch
-        [ introMusicPlaying (always IntroMusicPlaying)
-        , Browser.Events.onResize (\_ _ -> GetBannerHeight)
-        ]
+    introMusicPlaying (always IntroMusicPlaying)
 
 
 
@@ -175,68 +144,107 @@ subscriptions _ =
 
 
 view : Model -> Html Msg
-view { context, fadeDirection, bannerHeight } =
-    div
-        [ class "absolute left-0 right-0 z-1 tc"
-        , id bannerId
-        , style [ bottom <| (toFloat context.window.height - bannerHeight) / 2 + 50 ]
-        ]
-        [ div [] [ seeds fadeDirection ]
-        , p
-            [ styles
-                [ [ color Color.darkYellow, marginTop 45 ]
-                , fadeInStyles fadeDirection 1500 500
-                , fadeOutStyles fadeDirection 1000 500
-                ]
-            , class "f3 tracked-mega"
-            ]
-            [ text "seeds" ]
-        , button
-            [ styles
-                [ [ borderNone
-                  , marginTop 15
-                  , color Color.white
-                  , backgroundColor Color.lightOrange
-                  ]
-                , fadeInStyles fadeDirection 800 2500
-                , fadeOutStyles fadeDirection 1000 0
-                ]
-            , class "outline-0 br4 pv2 ph3 f5 pointer sans-serif tracked-mega"
-            , handleStart <| Progress.reachedLevel context.progress
-            ]
-            [ text "PLAY" ]
-        ]
-
-
-handleStart : Level.Id -> Attribute Msg
-handleStart progress =
-    if progress == Level.empty then
-        onClick PlayIntro
-
-    else
-        onClick GoToHub
-
-
-seeds : FadeDirection -> Html msg
-seeds fadeDirection =
-    div
-        [ style
-            [ maxWidth 450
-            , paddingLeft Window.padding
-            , paddingRight Window.padding
-            ]
-        , class "flex center"
-        ]
-        (List.map3 (fadeSeeds fadeDirection)
-            (seedEntranceDelays 500)
-            (seedExitDelays 500)
-            [ chrysanthemum
-            , marigold
-            , sunflower
-            , lupin
-            , rose
+view model =
+    Layout.view []
+        (column [ height fill, width fill ]
+            [ titleBanner model
+            , verticalGap 1
             ]
         )
+
+
+titleBanner : Model -> Element Msg
+titleBanner model =
+    el [ centerX, height fill, paddingXY Scale.medium 0 ]
+        (column
+            [ centerX
+            , spacing (Scale.large + Scale.small)
+            , alignBottom
+            , moveDown 60
+            ]
+            [ seeds model
+            , column [ centerX, spacing Scale.large ]
+                [ titleText model
+                , playButton model
+                ]
+            ]
+        )
+
+
+titleText : Model -> Element msg
+titleText model =
+    case model.fade of
+        Appearing ->
+            fadeIn { duration = 1000, delay = 500 } [ centerX ] titleText_
+
+        Disappearing ->
+            fadeOut { duration = 1000, delay = 0 } [ centerX ] titleText_
+
+
+titleText_ : Element msg
+titleText_ =
+    Text.text
+        [ Text.large
+        , Text.wideSpaced
+        , centerX
+        ]
+        "seeds"
+
+
+playButton : Model -> Element Msg
+playButton model =
+    case model.fade of
+        Appearing ->
+            fadeIn { duration = 800, delay = 2500 } [ centerX ] (playButton_ model)
+
+        Disappearing ->
+            fadeOut { duration = 1500, delay = 0 } [ centerX ] (playButton_ model)
+
+
+playButton_ : Model -> Element Msg
+playButton_ model =
+    el [ centerX ]
+        (Button.button [ Button.orange ]
+            { label = "Play"
+            , onClick = action model
+            }
+        )
+
+
+action : Model -> Msg
+action model =
+    if Progress.isFirstPlay model.context.progress then
+        PlayIntro
+
+    else
+        GoToHub
+
+
+seeds : Model -> Element msg
+seeds model =
+    row
+        [ spacing Scale.medium
+        , height fill
+        , width (fill |> maximum 400)
+        , paddingXY Scale.medium 0
+        ]
+        (List.map3
+            (fadeSeed model.fade)
+            (seedEntranceDelays 500)
+            (seedExitDelays 500)
+            allSeeds
+        )
+
+
+allSeeds : List (Element msg)
+allSeeds =
+    List.map seed
+        [ chrysanthemum
+        , marigold
+        , sunflower
+        , lupin
+        , rose
+        ]
 
 
 seedEntranceDelays : Int -> List Int
@@ -249,51 +257,50 @@ seedExitDelays interval =
     List.map ((*) interval) [ 0, 1, 2, 1, 0 ]
 
 
-fadeSeeds : FadeDirection -> Int -> Int -> Html msg -> Html msg
-fadeSeeds direction entranceDelay exitDelay seed =
-    div
-        [ styles
-            [ fadeInStyles direction 1000 entranceDelay
-            , fadeOutStyles direction 1000 exitDelay
-            ]
-        , class "mh2"
-        ]
-        [ seed ]
-
-
-fadeOutStyles : FadeDirection -> Int -> Int -> List Style
-fadeOutStyles direction duration delay =
-    case direction of
-        Disappearing ->
-            [ fade direction duration delay
-            , opacity 1
-            ]
-
-        Appearing ->
-            []
-
-
-fadeInStyles : FadeDirection -> Int -> Int -> List Style
-fadeInStyles direction duration delay =
+fadeSeed : FadeDirection -> Int -> Int -> Element msg -> Element msg
+fadeSeed direction entranceDelay exitDelay seed_ =
     case direction of
         Appearing ->
-            [ fade direction duration delay
-            , opacity 0
+            fadeIn { delay = entranceDelay, duration = 1000 }
+                [ centerX
+                , width fill
+                ]
+                seed_
+
+        Disappearing ->
+            fadeOut { delay = exitDelay, duration = 1000 }
+                [ centerX
+                , width fill
+                ]
+                seed_
+
+
+seed : Html msg -> Element msg
+seed =
+    html >> el [ width fill ]
+
+
+type alias Fade =
+    { delay : Animation.Millis
+    , duration : Animation.Millis
+    }
+
+
+fadeIn : Fade -> List (Attribute msg) -> Element msg -> Element msg
+fadeIn fade =
+    Animated.el
+        (Animations.fadeIn fade.duration
+            [ Animation.linear
+            , Animation.delay fade.delay
             ]
-
-        Disappearing ->
-            []
+        )
 
 
-fade : FadeDirection -> Int -> Int -> Style
-fade direction duration delayMs =
-    let
-        fadeAnimation name =
-            animation name duration [ delay delayMs, linear ]
-    in
-    case direction of
-        Appearing ->
-            fadeAnimation "fade-in"
-
-        Disappearing ->
-            fadeAnimation "fade-out"
+fadeOut : Fade -> List (Attribute msg) -> Element msg -> Element msg
+fadeOut fade =
+    Animated.el
+        (Animations.fadeOut fade.duration
+            [ Animation.linear
+            , Animation.delay fade.delay
+            ]
+        )

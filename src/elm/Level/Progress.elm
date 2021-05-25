@@ -8,6 +8,7 @@ module Level.Progress exposing
     , currentWorldComplete
     , fromCache
     , handleIncrement
+    , isFirstPlay
     , percentComplete
     , pointsFromPreviousLevel
     , reachedLevel
@@ -58,7 +59,7 @@ fromCache : Maybe Level.Cache -> Progress
 fromCache cachedLevel =
     cachedLevel
         |> Maybe.map Level.fromCache
-        |> Maybe.withDefault Level.empty
+        |> Maybe.withDefault Level.first
         |> fromLevel
 
 
@@ -106,6 +107,11 @@ reachedLevel (Progress progress) =
 currentLevel : Progress -> Maybe Level.Id
 currentLevel (Progress progress) =
     progress.current
+
+
+isFirstPlay : Progress -> Bool
+isFirstPlay progress =
+    reachedLevel progress == Level.first
 
 
 worldComplete : List Level.Id -> Progress -> Bool

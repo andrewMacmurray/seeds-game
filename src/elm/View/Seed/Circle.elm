@@ -1,7 +1,7 @@
 module View.Seed.Circle exposing (chrysanthemum)
 
 import Css.Color exposing (orange, purple)
-import Svg exposing (..)
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
@@ -12,13 +12,10 @@ chrysanthemum =
 
 circle : ( String, String ) -> Svg msg
 circle ( bgColor, circleColor ) =
-    svg
-        [ x "0px"
-        , y "0px"
-        , width "124.5px"
-        , height "193.5px"
+    Svg.svg
+        [ width "100%"
+        , height "100%"
         , viewBox "0 0 124.5 193.5"
-        , Svg.Attributes.style "width: 100%; height: 100%"
         ]
         [ Svg.path
             [ fill bgColor

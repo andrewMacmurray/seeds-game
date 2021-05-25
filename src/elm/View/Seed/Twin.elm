@@ -6,7 +6,7 @@ module View.Seed.Twin exposing
     )
 
 import Css.Color as Color exposing (Color)
-import Svg exposing (..)
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
@@ -30,20 +30,12 @@ lupin =
     twin ( Color.crimson, Color.brown )
 
 
-
---coolLookingSeed =
---    twin ( Color.midnightBlue, Color.orange )
-
-
 twin : ( Color, Color ) -> Svg msg
 twin ( left, right ) =
-    svg
-        [ x "0px"
-        , y "0px"
-        , width "124.5px"
-        , height "193.5px"
+    Svg.svg
+        [ width "100%"
+        , height "100%"
         , viewBox "0 0 124.5 193.5"
-        , Svg.Attributes.style "width: 100%; height: 100%"
         ]
         [ Svg.path
             [ fill left

@@ -22,7 +22,6 @@ module Css.Color exposing
     , lightGray
     , lightGreen
     , lightGreyYellow
-    , lightOrange
     , lightYellow
     , meadowGreen
     , midnightBlue
@@ -123,11 +122,6 @@ pinkRed =
 fadedOrange : Color
 fadedOrange =
     rgb 247 179 113
-
-
-lightOrange : Color
-lightOrange =
-    rgb 238 124 51
 
 
 orange : Color

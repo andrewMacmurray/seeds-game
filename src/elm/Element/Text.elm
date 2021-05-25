@@ -3,6 +3,7 @@ module Element.Text exposing
     , color
     , fonts
     , large
+    , medium
     , small
     , spaced
     , text
@@ -48,7 +49,7 @@ spaced =
 
 large : Element.Attr decorative msg
 large =
-    Font.size 20
+    Font.size 22
 
 
 medium : Element.Attr decorative msg

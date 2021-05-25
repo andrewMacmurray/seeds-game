@@ -10,7 +10,7 @@ module Config.Level exposing
     , completed
     , config
     , default
-    , empty
+    , first
     , fromCache
     , getLevel
     , getLevels
@@ -129,8 +129,8 @@ toCache key =
     }
 
 
-empty : Id
-empty =
+first : Id
+first =
     idFromRaw_ 1 1
 
 

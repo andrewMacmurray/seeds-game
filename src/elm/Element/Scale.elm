@@ -14,7 +14,7 @@ small =
 
 medium : number
 medium =
-    20
+    16
 
 
 large : number

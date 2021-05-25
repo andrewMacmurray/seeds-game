@@ -4,6 +4,7 @@ module Utils.Element exposing
     , id
     , maybe
     , style
+    , verticalGap
     )
 
 import Element exposing (Attribute, Element)
@@ -18,6 +19,11 @@ maybe toElement =
 id : String -> Attribute msg
 id =
     Element.htmlAttribute << Html.Attributes.id
+
+
+verticalGap : Int -> Element msg
+verticalGap size =
+    Element.el [ Element.height (Element.fillPortion size) ] Element.none
 
 
 disableTouch : Attribute msg

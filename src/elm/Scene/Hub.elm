@@ -244,7 +244,7 @@ renderInfoWindow : Model -> Html Msg
 renderInfoWindow { infoWindow, context } =
     let
         level =
-            InfoWindow.content infoWindow |> Maybe.withDefault Level.empty
+            InfoWindow.content infoWindow |> Maybe.withDefault Level.first
     in
     case InfoWindow.state infoWindow of
         InfoWindow.Hidden ->
