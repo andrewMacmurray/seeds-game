@@ -416,4 +416,4 @@ worldId_ (Id { worldId }) =
 
 idFromRaw_ : Int -> Int -> Id
 idFromRaw_ worldId levelId =
-    Id <| Cache worldId levelId
+    Id (Cache worldId levelId)

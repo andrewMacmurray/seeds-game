@@ -20,14 +20,21 @@ import Utils.Delay as Delay
 goToLevel : Int -> Int -> (LevelConfig -> msg) -> Cmd msg
 goToLevel world level msg =
     Cmd.batch
-        [ Delay.trigger <| msg <| World.levelConfig <| Level.idFromRaw_ world level
+        [ Delay.trigger (msg (levelConfig world level))
         , setProgress world level
         ]
 
 
+levelConfig : Int -> Int -> LevelConfig
+levelConfig world =
+    Level.idFromRaw_ world >> World.levelConfig
+
+
 setProgress : Int -> Int -> Cmd msg
 setProgress world level =
-    Ports.cacheProgress <| Level.toCache <| Level.idFromRaw_ world level
+    Level.idFromRaw_ world level
+        |> Level.toCache
+        |> Ports.cacheProgress
 
 
 

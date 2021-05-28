@@ -108,7 +108,10 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window ]
+        |> withCmds
+            [ bounceKeyframes flags.window
+            , trigger (InitHub (Level.idFromRaw_ 1 2))
+            ]
 
 
 initialState : Title.Model -> Model
