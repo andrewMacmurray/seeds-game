@@ -1,8 +1,9 @@
-module InfoWindow exposing
-    ( InfoWindow
-    , State(..)
+module Info exposing
+    ( State
+    , Visibility(..)
     , content
     , hidden
+    , isHidden
     , leaving
     , state
     , view
@@ -18,15 +19,15 @@ import Window
 
 
 
--- Info Window
+-- Info
 
 
-type InfoWindow content
-    = WithContent State content
+type State content
+    = WithContent Visibility content
     | Empty
 
 
-type State
+type Visibility
     = Visible
     | Leaving
     | Hidden
@@ -36,12 +37,12 @@ type State
 -- Construct
 
 
-visible : content -> InfoWindow content
+visible : content -> State content
 visible =
     WithContent Visible
 
 
-leaving : InfoWindow content -> InfoWindow content
+leaving : State content -> State content
 leaving infoWindow =
     case infoWindow of
         WithContent _ content_ ->
@@ -51,7 +52,7 @@ leaving infoWindow =
             Empty
 
 
-hidden : InfoWindow content
+hidden : State content
 hidden =
     Empty
 
@@ -60,9 +61,9 @@ hidden =
 -- Query
 
 
-content : InfoWindow content -> Maybe content
-content infoWindow =
-    case infoWindow of
+content : State content -> Maybe content
+content modal =
+    case modal of
         WithContent _ c ->
             Just c
 
@@ -70,9 +71,9 @@ content infoWindow =
             Nothing
 
 
-state : InfoWindow content -> State
-state infoWindow =
-    case infoWindow of
+state : State content -> Visibility
+state modal =
+    case modal of
         WithContent state_ _ ->
             state_
 
@@ -80,18 +81,28 @@ state infoWindow =
             Hidden
 
 
+isHidden : State content -> Bool
+isHidden modal =
+    case state modal of
+        Hidden ->
+            True
+
+        _ ->
+            False
+
+
 
 -- View
 
 
-view : InfoWindow a -> Html msg -> Html msg
-view infoWindow content_ =
-    case state infoWindow of
+view : State a -> Html msg -> Html msg
+view modal content_ =
+    case state modal of
         Hidden ->
             span [] []
 
         Visible ->
-            infoContainer_ infoWindow
+            infoContainer_ modal
                 [ div
                     [ class "pa3 br3 tc relative"
                     , style
@@ -105,7 +116,7 @@ view infoWindow content_ =
                 ]
 
         Leaving ->
-            infoContainer_ infoWindow
+            infoContainer_ modal
                 [ div
                     [ class "pa3 br3 tc relative"
                     , style
@@ -119,7 +130,7 @@ view infoWindow content_ =
                 ]
 
 
-infoContainer_ : InfoWindow a -> List (Html msg) -> Html msg
+infoContainer_ : State a -> List (Html msg) -> Html msg
 infoContainer_ infoWindow =
     let
         containerStyles =

@@ -24,7 +24,7 @@ import Exit exposing (continue, exitWith)
 import Html exposing (..)
 import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
-import InfoWindow exposing (..)
+import Info
 import Level.Progress as Progress
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Lives
@@ -46,14 +46,14 @@ import View.Seed.Mono exposing (greyedOutSeed)
 
 type alias Model =
     { context : Context
-    , infoWindow : InfoWindow Level.Id
+    , info : Info.State Level.Id
     }
 
 
 type Msg
     = ShowLevelInfo Level.Id
     | HideLevelInfo
-    | SetInfoState (InfoWindow Level.Id)
+    | SetInfoState (Info.State Level.Id)
     | SetCurrentLevel Level.Id
     | ScrollHubTo Level.Id
     | ClearCurrentLevel
@@ -105,7 +105,7 @@ init level context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , infoWindow = InfoWindow.hidden
+    , info = Info.hidden
     }
 
 
@@ -117,16 +117,16 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetInfoState infoWindow ->
-            continue { model | infoWindow = infoWindow } []
+            continue { model | info = infoWindow } []
 
         ShowLevelInfo levelProgress ->
-            continue { model | infoWindow = InfoWindow.visible levelProgress } []
+            continue { model | info = Info.visible levelProgress } []
 
         HideLevelInfo ->
             continue model
                 [ sequence
-                    [ ( 0, SetInfoState <| InfoWindow.leaving model.infoWindow )
-                    , ( 1000, SetInfoState <| InfoWindow.hidden )
+                    [ ( 0, SetInfoState (Info.leaving model.info) )
+                    , ( 1000, SetInfoState Info.hidden )
                     ]
                 ]
 
@@ -146,8 +146,8 @@ update msg model =
             continue model
                 [ sequence
                     [ ( 0, SetCurrentLevel level )
-                    , ( 10, SetInfoState <| InfoWindow.leaving model.infoWindow )
-                    , ( 600, SetInfoState <| InfoWindow.hidden )
+                    , ( 10, SetInfoState (Info.leaving model.info) )
+                    , ( 600, SetInfoState Info.hidden )
                     , ( 100, ExitToLevel level )
                     ]
                 ]
@@ -184,7 +184,7 @@ view : Model -> Html Msg
 view model =
     div [ handleHideInfo model ]
         [ renderTopBar model
-        , renderInfoWindow model
+        , renderInfo model
         , div
             [ id "hub"
             , style
@@ -237,24 +237,24 @@ renderSecond n =
 
 
 
--- Info Window
+-- Info
 
 
-renderInfoWindow : Model -> Html Msg
-renderInfoWindow { infoWindow, context } =
+renderInfo : Model -> Html Msg
+renderInfo { info, context } =
     let
         level =
-            InfoWindow.content infoWindow |> Maybe.withDefault Level.first
+            Info.content info |> Maybe.withDefault Level.first
     in
-    case InfoWindow.state infoWindow of
-        InfoWindow.Hidden ->
+    case Info.state info of
+        Info.Hidden ->
             span [] []
 
-        InfoWindow.Visible ->
-            InfoWindow.view infoWindow <| div [ handleStartLevel context level ] <| infoContent context level
+        Info.Visible ->
+            Info.view info <| div [ handleStartLevel context level ] <| infoContent context level
 
-        InfoWindow.Leaving ->
-            InfoWindow.view infoWindow <| div [] <| infoContent context level
+        Info.Leaving ->
+            Info.view info <| div [] <| infoContent context level
 
 
 handleStartLevel : Context -> Level.Id -> Attribute Msg
@@ -385,8 +385,8 @@ renderWeather color =
 
 handleHideInfo : Model -> Attribute Msg
 handleHideInfo model =
-    case InfoWindow.state model.infoWindow of
-        InfoWindow.Visible ->
+    case Info.state model.info of
+        Info.Visible ->
             onClick HideLevelInfo
 
         _ ->
@@ -441,7 +441,7 @@ renderLevel model config index level =
         , id <| Level.toStringId level
         ]
         [ currentLevelPointer isCurrentLevel
-        , renderLevelIcon level config.seed model
+        , levelIcon level config.seed model
         , renderNumber levelNumber hasReachedLevel config
         ]
 
@@ -493,15 +493,23 @@ renderNumber visibleLevelNumber hasReachedLevel config =
 
 showInfo : Level.Id -> Model -> Attribute Msg
 showInfo level model =
-    let
-        shouldShowInfo =
-            Level.reached (Progress.reachedLevel model.context.progress) level && InfoWindow.state model.infoWindow == Hidden
-    in
-    Attribute.applyIf shouldShowInfo <| onClick <| ShowLevelInfo level
+    Attribute.applyIf
+        (levelButtonIsActive level model)
+        (onClick (ShowLevelInfo level))
 
 
-renderLevelIcon : Level.Id -> Seed -> Model -> Html msg
-renderLevelIcon level seed model =
+levelButtonIsActive : Level.Id -> Model -> Bool
+levelButtonIsActive level model =
+    levelReached level model && Info.isHidden model.info
+
+
+levelReached : Level.Id -> Model -> Bool
+levelReached level model =
+    Level.reached (Progress.reachedLevel model.context.progress) level
+
+
+levelIcon : Level.Id -> Seed -> Model -> Html msg
+levelIcon level seed model =
     if Level.completed (Progress.reachedLevel model.context.progress) level then
         Seed.view seed
 
