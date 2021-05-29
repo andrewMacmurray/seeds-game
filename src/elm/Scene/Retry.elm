@@ -147,7 +147,7 @@ bounceInButton : Window -> Animation
 bounceInButton window =
     Animation.fromTo
         { duration = 600
-        , options = [ Animation.springy, Animation.delay 3000 ]
+        , options = [ Animation.springy1, Animation.delay 3000 ]
         }
         [ P.y (vh window / 2 - 20) ]
         [ P.y 0 ]

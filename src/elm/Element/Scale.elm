@@ -1,10 +1,16 @@
 module Element.Scale exposing
     ( corners
     , extraLarge
+    , extraSmall
     , large
     , medium
     , small
     )
+
+
+extraSmall : number
+extraSmall =
+    5
 
 
 small : number

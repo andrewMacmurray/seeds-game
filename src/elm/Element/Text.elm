@@ -7,6 +7,7 @@ module Element.Text exposing
     , small
     , spaced
     , text
+    , white
     , wideSpaced
     )
 
@@ -74,6 +75,11 @@ darkYellow =
 color : Element.Color -> Element.Attr decorative msg
 color =
     Font.color
+
+
+white : Element.Attr decorative msg
+white =
+    color Palette.white
 
 
 

@@ -34,9 +34,9 @@ getLevel =
     Level.getLevel all
 
 
-number : Level.Id -> Maybe Int
+number : Level.Id -> Int
 number =
-    Level.number all
+    Level.number all >> Maybe.withDefault 1
 
 
 list : List Level.WorldWithLevels

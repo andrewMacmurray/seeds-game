@@ -3,7 +3,7 @@ module Config.World.Three exposing (world)
 import Board.Coord exposing (Coord)
 import Board.Wall as Wall exposing (..)
 import Config.Level as Level
-import Css.Color as Color
+import Element.Palette as Palette
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
@@ -13,10 +13,10 @@ world : Level.World
 world =
     Level.world
         { seed = Cornflower
-        , backdropColor = "#1f4a77"
-        , textColor = Color.white
-        , textCompleteColor = Color.white
-        , textBackgroundColor = "rgb(0, 182, 255)"
+        , backdropColor = Palette.blue2
+        , textColor = Palette.white
+        , textCompleteColor = Palette.white
+        , textBackgroundColor = Palette.blue5
         }
         levels
 

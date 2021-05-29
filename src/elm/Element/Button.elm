@@ -1,6 +1,8 @@
 module Element.Button exposing
     ( Option
     , button
+    , decorative
+    , gold
     , orange
     , small
     , white
@@ -26,6 +28,7 @@ type Option
 
 type Color
     = Orange
+    | Gold
     | White
 
 
@@ -47,6 +50,11 @@ orange =
     Color Orange
 
 
+gold : Option
+gold =
+    Color Gold
+
+
 white : Option
 white =
     Color White
@@ -61,16 +69,22 @@ small =
 -- Combined
 
 
+type alias Combined_ msg =
+    { label : String
+    , onClick : Maybe msg
+    }
+
+
 type alias Button_ msg =
     { label : String
-    , onClick : msg
+    , onClick : Maybe msg
     , color : Color
     , fill : Fill
     , size : Size
     }
 
 
-defaults : String -> msg -> Button_ msg
+defaults : String -> Maybe msg -> Button_ msg
 defaults label msg =
     { label = label
     , onClick = msg
@@ -80,9 +94,9 @@ defaults label msg =
     }
 
 
-combineOptions : { label : String, onClick : msg } -> List Option -> Button_ msg
-combineOptions btn =
-    List.foldl combineOption (defaults btn.label btn.onClick)
+combineOptions : List Option -> Combined_ msg -> Button_ msg
+combineOptions options btn =
+    List.foldl combineOption (defaults btn.label btn.onClick) options
 
 
 combineOption : Option -> Button_ msg -> Button_ msg
@@ -107,7 +121,30 @@ type alias Button msg =
 
 button : List Option -> Button msg -> Element msg
 button options btn =
-    toElement (combineOptions btn options)
+    toElement
+        (combineOptions options
+            { onClick = Just btn.onClick
+            , label = btn.label
+            }
+        )
+
+
+
+-- Decorative
+
+
+type alias Decorative =
+    String
+
+
+decorative : List Option -> Decorative -> Element msg
+decorative options label =
+    toElement
+        (combineOptions options
+            { onClick = Nothing
+            , label = label
+            }
+        )
 
 
 
@@ -117,7 +154,7 @@ button options btn =
 toElement : Button_ msg -> Element msg
 toElement button_ =
     Input.button (attributes button_)
-        { onPress = Just button_.onClick
+        { onPress = button_.onClick
         , label = toLabel button_
         }
 
@@ -138,6 +175,9 @@ toBackground button_ =
 
         White ->
             Palette.white
+
+        Gold ->
+            Palette.lightGold
 
 
 toColor : Button_ msg -> Element.Color

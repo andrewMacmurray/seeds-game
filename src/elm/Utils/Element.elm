@@ -1,6 +1,8 @@
 module Utils.Element exposing
-    ( class
+    ( applyIf
+    , class
     , disableTouch
+    , empty
     , id
     , maybe
     , style
@@ -29,6 +31,20 @@ verticalGap size =
 disableTouch : Attribute msg
 disableTouch =
     class "touch-disabled"
+
+
+applyIf : Bool -> Attribute msg -> Attribute msg
+applyIf condition attr =
+    if condition then
+        attr
+
+    else
+        empty
+
+
+empty : Attribute msg
+empty =
+    class ""
 
 
 style : String -> String -> Attribute msg

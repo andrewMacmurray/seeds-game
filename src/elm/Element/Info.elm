@@ -1,18 +1,21 @@
 module Element.Info exposing
     ( State
-    , Visibility(..)
-    , content
     , hidden
     , isHidden
+    , isVisible
     , leaving
-    , state
     , view
     , visible
     )
 
 import Element exposing (..)
+import Element.Animation as Animation
+import Element.Border as Border
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Utils.Animated as Animated
 import Utils.Background as Background
 
 
@@ -20,129 +23,105 @@ import Utils.Background as Background
 -- Info
 
 
-type State content
-    = WithContent Visibility content
-    | Empty
-
-
-type Visibility
-    = Visible
-    | Leaving
+type State a
+    = Visible Direction a
     | Hidden
+
+
+type Direction
+    = Appearing
+    | Leaving
 
 
 
 -- Construct
 
 
-visible : content -> State content
+visible : a -> State a
 visible =
-    WithContent Visible
+    Visible Appearing
 
 
-leaving : State content -> State content
+leaving : State a -> State a
 leaving infoWindow =
     case infoWindow of
-        WithContent _ content_ ->
-            WithContent Leaving content_
+        Visible _ content_ ->
+            Visible Leaving content_
 
-        Empty ->
-            Empty
-
-
-hidden : State content
-hidden =
-    Empty
-
-
-
--- Query
-
-
-content : State content -> Maybe content
-content modal =
-    case modal of
-        WithContent _ c ->
-            Just c
-
-        Empty ->
-            Nothing
-
-
-state : State content -> Visibility
-state modal =
-    case modal of
-        WithContent state_ _ ->
-            state_
-
-        Empty ->
+        Hidden ->
             Hidden
 
 
-isHidden : State content -> Bool
-isHidden modal =
-    case state modal of
-        Hidden ->
+hidden : State a
+hidden =
+    Hidden
+
+
+isVisible : State a -> Bool
+isVisible info =
+    case info of
+        Visible _ _ ->
             True
 
-        _ ->
+        Hidden ->
             False
+
+
+isHidden : State a -> Bool
+isHidden =
+    isVisible >> not
 
 
 
 -- View
 
 
-view : State a -> Element msg -> Element msg
-view modal content_ =
-    case state modal of
+type alias View a msg =
+    { content : a -> Element msg
+    , info : State a
+    }
+
+
+view : View a msg -> Element msg
+view config =
+    case config.info of
+        Visible direction x ->
+            infoContainer_ direction (config.content x)
+
         Hidden ->
             none
 
-        Visible ->
-            infoContainer_ content_
 
-        --[ div
-        --    [ class "pa3 br3 tc relative"
-        --    , style
-        --        [ animation "elastic-bounce-in" 2000 [ linear ]
-        --        , background seedPodGradient
-        --        , color white
-        --        , width 380
-        --        ]
-        --    ]
-        --    [ content_ ]
-        --]
-        Leaving ->
-            infoContainer_ content_
-
-
-
---[ div
---    [ class "pa3 br3 tc relative"
---    , style
---        [ background seedPodGradient
---        , color white
---        , width 380
---        , animation "exit-down" 700 [ cubicBezier 0.93 -0.36 0.57 0.96 ]
---        ]
---    ]
---    [ content_ ]
---]
-
-
-infoContainer_ =
-    el
+infoContainer_ : Direction -> Element msg -> Element msg
+infoContainer_ direction =
+    Animated.el (animate direction)
         [ centerX
         , centerY
-        , padding Scale.medium
+        , padding Scale.large
+        , Border.rounded 8
+        , width (fill |> maximum 380)
         , Background.split
-            ( Palette.lime4
-            , Palette.lime5
+            ( Palette.lime5
+            , Palette.lime4
             )
         ]
 
 
-infoContainerBaseClasses : String
-infoContainerBaseClasses =
-    "pointer fixed top-0 bottom-0 left-0 right-0 flex items-center justify-center z-5"
+animate : Direction -> Animation
+animate direction =
+    case direction of
+        Appearing ->
+            Animation.fromTo
+                { duration = 800
+                , options = [ Animation.springy2 ]
+                }
+                [ P.opacity 0, P.y -300 ]
+                [ P.opacity 1 ]
+
+        Leaving ->
+            Animation.fromTo
+                { duration = 600
+                , options = [ Animation.easeInBack ]
+                }
+                [ P.y 0, P.opacity 1 ]
+                [ P.y 300, P.opacity 0 ]

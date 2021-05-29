@@ -3,7 +3,8 @@ module Config.World.Two exposing (world)
 import Board.Coord as Coord exposing (Coord)
 import Board.Wall exposing (..)
 import Config.Level as Level
-import Css.Color as Color
+import Element
+import Element.Palette as Palette
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Scene.Level.Tutorial as Tutorial
@@ -14,10 +15,10 @@ world : Level.World
 world =
     Level.world
         { seed = Chrysanthemum
-        , backdropColor = Color.rgb 255 163 0
-        , textColor = Color.white
-        , textCompleteColor = Color.white
-        , textBackgroundColor = Color.rgb 198 53 124
+        , backdropColor = Element.rgb255 255 163 0
+        , textColor = Palette.white
+        , textCompleteColor = Palette.white
+        , textBackgroundColor = Element.rgb255 198 53 124
         }
         levels
 

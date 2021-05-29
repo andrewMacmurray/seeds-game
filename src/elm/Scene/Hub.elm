@@ -10,11 +10,20 @@ module Scene.Hub exposing
     , view
     )
 
+import Board.Scores as Scores
+import Board.Tile as Tile
 import Browser.Dom as Dom
 import Config.Level as Level
+import Config.World as Worlds
 import Context exposing (Context)
 import Countdown
 import Element exposing (..)
+import Element.Animations as Animations
+import Element.Background as Background
+import Element.Button as Button
+import Element.Dot as Dot
+import Element.Events exposing (onClick)
+import Element.Icon.Triangle as Triangle
 import Element.Info as Info
 import Element.Layout as Layout
 import Element.Palette as Palette
@@ -22,10 +31,18 @@ import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Html exposing (Html)
+import Level.Progress as Progress
+import Level.Setting.Tile as Tile exposing (TargetScore)
 import Lives exposing (Lives)
+import Seed exposing (Seed)
+import Sine
 import Task exposing (Task)
+import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
+import Utils.Element as Element
 import View.Menu as Menu
+import View.Seed as Seed
+import View.Seed.Mono exposing (greyedOutSeed)
 
 
 
@@ -39,13 +56,13 @@ type alias Model =
 
 
 type Msg
-    = ShowLevelInfo Level.Id
-    | HideLevelInfo
+    = LevelClicked Level.Id
+    | DismissInfoClicked
     | SetInfoState (Info.State Level.Id)
     | SetCurrentLevel Level.Id
     | ScrollHubTo Level.Id
     | ClearCurrentLevel
-    | StartLevel Level.Id
+    | PlayLevelClicked Level.Id
     | ExitToLevel Level.Id
     | ExitToGarden
     | ScrolledToLevel
@@ -93,7 +110,7 @@ init level context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , info = Info.visible (Level.idFromRaw_ 1 2)
+    , info = Info.hidden
     }
 
 
@@ -107,10 +124,10 @@ update msg model =
         SetInfoState infoWindow ->
             continue { model | info = infoWindow } []
 
-        ShowLevelInfo levelProgress ->
+        LevelClicked levelProgress ->
             continue { model | info = Info.visible levelProgress } []
 
-        HideLevelInfo ->
+        DismissInfoClicked ->
             continue model
                 [ sequence
                     [ ( 0, SetInfoState (Info.leaving model.info) )
@@ -130,7 +147,7 @@ update msg model =
         ScrolledToLevel ->
             continue model []
 
-        StartLevel level ->
+        PlayLevelClicked level ->
             continue model
                 [ sequence
                     [ ( 0, SetCurrentLevel level )
@@ -168,27 +185,10 @@ view : Model -> Html Msg
 view model =
     Layout.view
         [ inFront (topBar model)
+        , handleDismiss model
         , inFront (viewInfo model)
         ]
-        none
-
-
-
---    div [ handleHideInfo model ]
---        [ renderTopBar model
---        , renderInfo model
---        , div
---            [ id "hub"
---            , style
---                [ height <| toFloat model.context.window.height
---                , paddingTop 60
---                ]
---            , class "w-100 fixed overflow-y-scroll momentum-scroll z-2"
---            ]
---            (renderWorlds model)
---        ]
---
---
+        (renderWorlds model)
 
 
 topBar : Model -> Element msg
@@ -222,277 +222,243 @@ countdown lives =
 
 viewInfo : Model -> Element Msg
 viewInfo { info, context } =
-    let
-        level =
-            Info.content info |> Maybe.withDefault Level.first
-    in
-    case Info.state info of
-        Info.Hidden ->
+    Info.view
+        { content = infoContent context
+        , info = info
+        }
+
+
+infoContent : Context -> Level.Id -> Element Msg
+infoContent context level =
+    if Lives.remaining context.lives > 0 then
+        column
+            [ spacing (Scale.medium + Scale.small)
+            , onClick (PlayLevelClicked level)
+            , centerX
+            ]
+            [ Text.text [ Text.white, centerX, Text.spaced ] (levelLabel level)
+            , levelIcons level
+            , el [ centerX ] (Button.decorative [ Button.gold ] "PLAY")
+            ]
+
+    else
+        renderWaitForNextLife context
+
+
+levelIcons : Level.Id -> Element msg
+levelIcons =
+    Worlds.getLevel
+        >> Maybe.map infoIcons
+        >> Maybe.withDefault none
+
+
+levelLabel : Level.Id -> String
+levelLabel level =
+    "Level " ++ String.fromInt (Worlds.number level)
+
+
+renderWaitForNextLife : Context -> Element msg
+renderWaitForNextLife context =
+    none
+
+
+infoIcons : Level.Level -> Element msg
+infoIcons =
+    Level.config
+        >> .tileSettings
+        >> List.filter Scores.collectible
+        >> List.map renderIcon
+        >> infoIconContainer
+
+
+infoIconContainer : List (Element msg) -> Element msg
+infoIconContainer =
+    row [ spacing Scale.large, centerX ]
+
+
+renderIcon : Tile.Setting -> Element msg
+renderIcon setting =
+    column [ spacing Scale.small ]
+        [ el [ height (px 55), centerX ] (el [ alignBottom ] (tileIcon setting))
+        , el [ centerX ] (renderTargetScore setting.targetScore)
+        ]
+
+
+tileIcon : Tile.Setting -> Element msg
+tileIcon setting =
+    case setting.tileType of
+        Tile.Rain ->
+            renderWeather Palette.blue5
+
+        Tile.Sun ->
+            renderWeather Palette.orange
+
+        Tile.Seed seed ->
+            seedIcon seed
+
+        _ ->
             none
 
-        Info.Visible ->
-            Info.view info (Text.text [] "Visible")
 
-        Info.Leaving ->
-            Info.view info (Text.text [] "Leaving")
+seedIcon : Seed -> Element msg
+seedIcon seed =
+    el
+        [ width (px 35)
+        , height (px 53)
+        ]
+        (html (Seed.view seed))
+
+
+renderTargetScore : Maybe TargetScore -> Element msg
+renderTargetScore ts =
+    case ts of
+        Just (Tile.TargetScore t) ->
+            Text.text [ Text.white ] (String.fromInt t)
+
+        Nothing ->
+            none
+
+
+renderWeather : Color -> Element msg
+renderWeather color =
+    el [ paddingXY 0 Scale.extraSmall ]
+        (Dot.solid
+            { size = 25
+            , color = color
+            }
+        )
+
+
+handleDismiss : Model -> Attribute Msg
+handleDismiss model =
+    if Info.isVisible model.info then
+        onClick DismissInfoClicked
+
+    else
+        Element.empty
 
 
 
---handleStartLevel : Context -> Level.Id -> Attribute Msg
---handleStartLevel context level =
---    Attribute.applyIf (Lives.remaining context.lives > 0) (onClick <| StartLevel level)
---
---
---infoContent : Context -> Level.Id -> List (Html msg)
---infoContent context level =
---    if Lives.remaining context.lives > 0 then
---        let
---            levelText =
---                Worlds.number level
---                    |> Maybe.map String.fromInt
---                    |> Maybe.map ((++) "Level ")
---                    |> Maybe.withDefault ""
---
---            icons =
---                Worlds.getLevel level
---                    |> Maybe.map infoIcons
---                    |> Maybe.withDefault (span [] [])
---        in
---        [ p [ style [ marginTop 20 ], class "f5 tracked" ] [ text levelText ]
---        , icons
---        , p
---            [ style
---                [ backgroundColor gold
---                , marginBottom 20
---                , marginTop 15
---                ]
---            , class "tracked-mega pv2 ph3 dib br4"
---            ]
---            [ text "PLAY" ]
---        ]
---
---    else
---        renderWaitForNextLife context
---
---
---renderWaitForNextLife : Context -> List (Html msg)
---renderWaitForNextLife context =
---    let
---        timeTillNextLife =
---            Lives.timeTillNextLife context.lives
---                |> Maybe.map renderTime
---                |> Maybe.withDefault ""
---    in
---    [ div [ style [ paddingTop 50, paddingBottom 40 ], class "tracked f4 flex flex-column items-center" ]
---        [ p [ class "ma0" ] [ text "Next life in" ]
---        , p [ style [ color <| rgb 255 226 92, marginTop 25, marginBottom 30 ] ]
---            [ text timeTillNextLife
---            ]
---        , div [ style [ width 40, height 40 ] ] [ Heart.beating ]
---        ]
---    ]
---
---
---infoIcons : Level.Level -> Html msg
---infoIcons level =
---    Level.config level
---        |> .tileSettings
---        |> List.filter Scores.collectible
---        |> List.map renderIcon
---        |> infoIconsContainer
---
---
---infoIconsContainer : List (Html msg) -> Html msg
---infoIconsContainer =
---    div
---        [ style
---            [ marginTop 25
---            , marginBottom 15
---            ]
---        , class "flex justify-center items-end"
---        ]
---
---
---renderIcon : Tile.Setting -> Html msg
---renderIcon { targetScore, tileType } =
---    let
---        tileIcon =
---            case tileType of
---                Rain ->
---                    renderWeather lightBlue
---
---                Sun ->
---                    renderWeather orange
---
---                Seed seed ->
---                    div [ style [ width 35, height 53 ] ] [ Seed.view seed ]
---
---                _ ->
---                    span [] []
---    in
---    div [ class "dib mh3" ]
---        [ div [ class "center flex flex-column" ]
---            [ tileIcon
---            , renderTargetScore targetScore
---            ]
---        ]
---
---
---renderTargetScore : Maybe TargetScore -> Html msg
---renderTargetScore ts =
---    case ts of
---        Just (TargetScore t) ->
---            p [ style [ marginTop 10 ], class "f6 mb0" ] [ text <| String.fromInt t ]
---
---        Nothing ->
---            span [] []
---
---
---renderWeather : String -> Html msg
---renderWeather color =
---    div
---        [ style
---            [ width 25
---            , height 25
---            , marginLeft 2.5
---            , marginRight 2.5
---            , marginBottom 5
---            , background color
---            ]
---        , classes [ "br-100" ]
---        ]
---        []
---
---
---handleHideInfo : Model -> Attribute Msg
---handleHideInfo model =
---    case Info.state model.info of
---        Info.Visible ->
---            onClick HideLevelInfo
---
---        _ ->
---            Attribute.empty
---
---
---
----- Worlds
---
---
---renderWorlds : Model -> List (Html Msg)
---renderWorlds model =
---    List.map (renderWorld model) <| List.reverse Worlds.list
---
---
---renderWorld : Model -> Level.WorldWithLevels -> Html Msg
---renderWorld model { world, levels } =
---    div [ style [ backgroundColor world.backdropColor ], class "pa5 flex" ]
---        [ div
---            [ style [ width 300 ], class "center" ]
---            (List.reverse levels |> List.indexedMap (renderLevel model world))
---        ]
---
---
---renderLevel : Model -> Level.WorldConfig -> Int -> Level.Id -> Html Msg
---renderLevel model config index level =
---    let
---        reachedLevel =
---            Progress.reachedLevel model.context.progress
---
---        levelNumber =
---            Worlds.number level |> Maybe.withDefault 1
---
---        hasReachedLevel =
---            Level.reached reachedLevel level
---
---        isCurrentLevel =
---            level == reachedLevel
---    in
---    div
---        [ styles
---            [ [ width 35
---              , marginTop 50
---              , marginBottom 50
---              , color config.textColor
---              , Style.applyIf hasReachedLevel Style.pointer
---              ]
---            , offsetStyles <| index + 1
---            ]
---        , showInfo level model
---        , class "tc relative"
---        , id <| Level.toStringId level
---        ]
---        [ currentLevelPointer isCurrentLevel
---        , levelIcon level config.seed model
---        , renderNumber levelNumber hasReachedLevel config
---        ]
---
---
---currentLevelPointer : Bool -> Html msg
---currentLevelPointer isCurrentLevel =
---    if isCurrentLevel then
---        div
---            [ style
---                [ top -30
---                , animation "hover" 1500 [ ease, infinite ]
---                ]
---            , class "absolute left-0 right-0"
---            ]
---            [ triangle ]
---
---    else
---        span [] []
---
---
---offsetStyles : Int -> List Style
---offsetStyles levelNumber =
---    Sine.wave
---        { center = [ leftAuto, rightAuto ]
---        , right = [ leftAuto ]
---        , left = []
---        }
---        (levelNumber - 1)
---
---
---renderNumber : Int -> Bool -> Level.WorldConfig -> Html Msg
---renderNumber visibleLevelNumber hasReachedLevel config =
---    if hasReachedLevel then
---        div
---            [ style
---                [ backgroundColor config.textBackgroundColor
---                , marginTop 10
---                , width 25
---                , height 25
---                ]
---            , class "br-100 center flex justify-center items-center"
---            ]
---            [ p [ style [ color config.textCompleteColor ], class "f6" ] [ text <| String.fromInt visibleLevelNumber ] ]
---
---    else
---        p [ style [ color config.textColor ] ]
---            [ text <| String.fromInt visibleLevelNumber ]
---
---
---showInfo : Level.Id -> Model -> Attribute Msg
---showInfo level model =
---    Attribute.applyIf
---        (levelButtonIsActive level model)
---        (onClick (ShowLevelInfo level))
---
---
---levelButtonIsActive : Level.Id -> Model -> Bool
---levelButtonIsActive level model =
---    levelReached level model && Info.isHidden model.info
---
---
---levelReached : Level.Id -> Model -> Bool
---levelReached level model =
---    Level.reached (Progress.reachedLevel model.context.progress) level
---
---
---levelIcon : Level.Id -> Seed -> Model -> Html msg
---levelIcon level seed model =
---    if Level.completed (Progress.reachedLevel model.context.progress) level then
---        Seed.view seed
---
---    else
---        greyedOutSeed
+-- Worlds
+
+
+renderWorlds : Model -> Element Msg
+renderWorlds model =
+    List.reverse Worlds.list
+        |> List.map (renderWorld model)
+        |> column [ width fill ]
+
+
+renderWorld : Model -> Level.WorldWithLevels -> Element Msg
+renderWorld model { world, levels } =
+    el
+        [ Background.color world.backdropColor
+        , width fill
+        , padding Scale.large
+        ]
+        (column
+            [ centerX
+            , spacing Scale.large
+            , paddingXY Scale.medium Scale.extraLarge
+            , width (fill |> maximum 300)
+            ]
+            (levels
+                |> List.reverse
+                |> List.indexedMap (toLevelModel model world)
+                |> List.map renderLevel
+            )
+        )
+
+
+type alias LevelModel =
+    { label : String
+    , level : Level.Id
+    , textBackground : Color
+    , textCompleteColor : Color
+    , textColor : Color
+    , index : Int
+    , seed : Seed
+    , clickActive : Bool
+    , hasReachedLevel : Bool
+    , hasCompletedLevel : Bool
+    , isCurrentLevel : Bool
+    }
+
+
+toLevelModel : Model -> Level.WorldConfig -> Int -> Level.Id -> LevelModel
+toLevelModel model config index level =
+    { label = String.fromInt (Worlds.number level)
+    , level = level
+    , index = index
+    , textBackground = config.textBackgroundColor
+    , textCompleteColor = config.textCompleteColor
+    , textColor = config.textColor
+    , seed = config.seed
+    , clickActive = Level.isReached (reachedLevel model) level && Info.isHidden model.info
+    , hasReachedLevel = Level.isReached (reachedLevel model) level
+    , hasCompletedLevel = Level.isCompleted (reachedLevel model) level
+    , isCurrentLevel = level == reachedLevel model
+    }
+
+
+renderLevel : LevelModel -> Element Msg
+renderLevel model =
+    column
+        (List.append (offsetStyles model)
+            [ width (px 35)
+            , above (currentLevelPointer model)
+            , paddingXY 0 Scale.medium
+            , spacing Scale.small
+            , Element.applyIf model.hasReachedLevel pointer
+            , Element.applyIf model.clickActive (onClick (LevelClicked model.level))
+            ]
+        )
+        [ el [] (levelIcon model)
+        , el [ centerX ] (renderNumber model)
+        ]
+
+
+currentLevelPointer : LevelModel -> Element msg
+currentLevelPointer model =
+    if model.isCurrentLevel then
+        Animated.el Animations.hover [ centerX ] Triangle.icon
+
+    else
+        none
+
+
+offsetStyles : LevelModel -> List (Attribute msg)
+offsetStyles model =
+    Sine.wave
+        { center = [ centerX ]
+        , right = [ alignRight ]
+        , left = [ alignLeft ]
+        }
+        model.index
+
+
+renderNumber : LevelModel -> Element Msg
+renderNumber model =
+    if model.hasReachedLevel then
+        Dot.el
+            { size = 25
+            , color = model.textBackground
+            }
+            (Text.text [ Text.color model.textCompleteColor ] model.label)
+
+    else
+        Text.text [ Text.color model.textColor ] model.label
+
+
+levelIcon : LevelModel -> Element msg
+levelIcon model =
+    if model.hasCompletedLevel then
+        html (Seed.view model.seed)
+
+    else
+        html greyedOutSeed
+
+
+reachedLevel : Model -> Level.Id
+reachedLevel model =
+    Progress.reachedLevel model.context.progress
