@@ -11,4 +11,4 @@ view attrs =
 
 attributes : List (Attribute msg) -> List (Attribute msg)
 attributes =
-    List.append [ width fill ]
+    List.append [ width fill, height fill ]

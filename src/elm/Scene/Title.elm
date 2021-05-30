@@ -237,13 +237,20 @@ seeds model =
 
 allSeeds : List (Element msg)
 allSeeds =
-    List.map (apply Seed.fill >> apply [])
+    List.map (apply seedConfig)
         [ Seed.chrysanthemum
         , Seed.marigold
         , Seed.sunflower
         , Seed.lupin
         , Seed.rose
         ]
+
+
+seedConfig : Seed.Options msg
+seedConfig =
+    { size = Seed.fill
+    , attributes = []
+    }
 
 
 seedEntranceDelays : Int -> List Int

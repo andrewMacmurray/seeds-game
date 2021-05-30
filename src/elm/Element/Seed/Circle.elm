@@ -13,9 +13,9 @@ type alias Options =
     }
 
 
-seed : List (Attribute msg) -> Options -> Element msg
-seed attrs options =
-    Icon.view attrs
+seed : Options -> Element msg
+seed options =
+    Icon.view []
         (Svg.svg
             [ width "100%"
             , height "100%"
