@@ -1,6 +1,7 @@
 import * as Bounce from "./bounce";
 import * as Cache from "./cache";
 import * as Audio from "./audio";
+import * as Scroll from "./scroll";
 import { Elm } from "../elm/Main";
 
 export function bindPorts({
@@ -43,6 +44,6 @@ export function bindPorts({
   });
 
   scrollToCenter.subscribe((id) => {
-    document.getElementById(id).scrollIntoView({ block: "center" });
+    Scroll.toCenter(id);
   });
 }

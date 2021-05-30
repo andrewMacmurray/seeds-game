@@ -4,11 +4,11 @@ import Element exposing (..)
 import Svg exposing (Svg)
 
 
-view : List (Attribute msg) -> Svg msg -> Element msg
-view attrs =
-    html >> el (attributes attrs)
+view : List (Svg.Attribute msg) -> List (Svg msg) -> Element msg
+view attrs els =
+    embed (Svg.svg attrs els)
 
 
-attributes : List (Attribute msg) -> List (Attribute msg)
-attributes =
-    List.append [ width fill, height fill ]
+embed : Svg msg -> Element msg
+embed =
+    Element.el [] << Element.html
