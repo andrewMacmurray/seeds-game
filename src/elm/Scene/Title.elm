@@ -17,6 +17,7 @@ import Element.Animations as Animations
 import Element.Button as Button
 import Element.Layout as Layout
 import Element.Scale as Scale
+import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Html exposing (Html)
@@ -26,10 +27,8 @@ import Simple.Animation as Animation
 import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element exposing (verticalGap)
+import Utils.Function exposing (apply)
 import View.Menu as Menu
-import View.Seed.Circle exposing (chrysanthemum)
-import View.Seed.Mono exposing (rose)
-import View.Seed.Twin exposing (lupin, marigold, sunflower)
 
 
 
@@ -238,12 +237,12 @@ seeds model =
 
 allSeeds : List (Element msg)
 allSeeds =
-    List.map seed
-        [ chrysanthemum
-        , marigold
-        , sunflower
-        , lupin
-        , rose
+    List.map (apply Seed.fill >> apply [])
+        [ Seed.chrysanthemum
+        , Seed.marigold
+        , Seed.sunflower
+        , Seed.lupin
+        , Seed.rose
         ]
 
 
@@ -273,11 +272,6 @@ fadeSeed direction entranceDelay exitDelay seed_ =
                 , width fill
                 ]
                 seed_
-
-
-seed : Html msg -> Element msg
-seed =
-    html >> el [ width fill ]
 
 
 type alias Fade =

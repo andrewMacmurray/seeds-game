@@ -9,7 +9,7 @@ import Svg.Attributes exposing (..)
 
 icon : Element msg
 icon =
-    Icon.icon
+    Icon.view []
         (Svg.svg [ height "18", width "18" ]
             [ Svg.path
                 [ d "M9 18l9-18H0z"

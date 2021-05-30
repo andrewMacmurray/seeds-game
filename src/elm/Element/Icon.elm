@@ -1,9 +1,14 @@
-module Element.Icon exposing (icon)
+module Element.Icon exposing (view)
 
-import Element exposing (Element, html)
+import Element exposing (..)
 import Svg exposing (Svg)
 
 
-icon : Svg msg -> Element msg
-icon =
-    html
+view : List (Attribute msg) -> Svg msg -> Element msg
+view attrs =
+    html >> el (attributes attrs)
+
+
+attributes : List (Attribute msg) -> List (Attribute msg)
+attributes =
+    List.append [ width fill ]

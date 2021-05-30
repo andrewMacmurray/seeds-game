@@ -27,6 +27,7 @@ import Element.Info as Info
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Element.Seed as Seed
 import Element.Text as Text
 import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
@@ -42,8 +43,6 @@ import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import View.Icon.Heart as Heart
 import View.Menu as Menu
-import View.Seed as Seed
-import View.Seed.Mono exposing (greyedOutSeed)
 
 
 
@@ -306,12 +305,8 @@ tileIcon setting =
 
 
 seedIcon : Seed -> Element msg
-seedIcon seed =
-    el
-        [ width (px 35)
-        , height (px 53)
-        ]
-        (html (Seed.view seed))
+seedIcon =
+    Seed.view (Seed.size 35) []
 
 
 viewTargetScore : Maybe TargetScore -> Element msg
@@ -453,10 +448,10 @@ renderNumber model =
 levelIcon : LevelModel -> Element msg
 levelIcon model =
     if model.hasCompletedLevel then
-        html (Seed.view model.seed)
+        Seed.view Seed.fill [] model.seed
 
     else
-        html greyedOutSeed
+        Seed.grey Seed.fill []
 
 
 reachedLevel : Model -> Level.Id

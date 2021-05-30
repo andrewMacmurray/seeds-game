@@ -246,6 +246,15 @@ pink7 =
 
 
 
+-- Mauve
+
+
+mauve4 : Color
+mauve4 =
+    rgb255 167 29 96
+
+
+
 -- Yellow
 
 

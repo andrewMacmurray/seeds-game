@@ -14,12 +14,14 @@ toString color =
             Element.toRgb color
     in
     String.concat
-        [ "rgb("
+        [ "rgba("
         , String.fromInt (to255RgbValue c.red)
         , ", "
         , String.fromInt (to255RgbValue c.green)
         , ", "
         , String.fromInt (to255RgbValue c.blue)
+        , ","
+        , String.fromFloat c.alpha
         , ")"
         ]
 
