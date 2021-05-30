@@ -32,7 +32,7 @@ import Exit exposing (continue, exitWith)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
-import InfoWindow exposing (InfoWindow)
+import Info
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
@@ -64,7 +64,7 @@ type alias Model =
     , tileSettings : List Tile.Setting
     , boardSize : Board.Size
     , levelStatus : Status
-    , infoWindow : InfoWindow Info
+    , info : Info.State LevelEndPrompt
     , pointer : Pointer
     }
 
@@ -91,7 +91,7 @@ type Msg
     | ShiftBoard
     | EndMove
     | CheckLevelComplete
-    | ShowInfo Info
+    | ShowInfo LevelEndPrompt
     | HideInfo
     | InfoLeaving
     | InfoHidden
@@ -114,7 +114,7 @@ type Status
     | Exit
 
 
-type Info
+type LevelEndPrompt
     = Success
     | NoMovesLeft
     | RestartAreYouSure
@@ -180,7 +180,7 @@ initialState { tileSettings, boardSize, moves, tutorial } context =
     , tileSettings = tileSettings
     , boardSize = boardSize
     , levelStatus = NotStarted
-    , infoWindow = InfoWindow.hidden
+    , info = Info.hidden
     , pointer = { y = 0, x = 0 }
     }
 
@@ -271,13 +271,13 @@ update msg model =
             continue model [ hideInfoSequence ]
 
         ShowInfo info ->
-            continue { model | infoWindow = InfoWindow.visible info } []
+            continue { model | info = Info.visible info } []
 
         InfoLeaving ->
-            continue { model | infoWindow = InfoWindow.leaving model.infoWindow } []
+            continue { model | info = Info.leaving model.info } []
 
         InfoHidden ->
-            continue { model | infoWindow = InfoWindow.hidden } []
+            continue { model | info = Info.hidden } []
 
         PromptRestart ->
             continue (updateContext Context.closeMenu model) [ handleRestartPrompt model ]
@@ -879,27 +879,27 @@ mapTiles f =
 
 
 renderInfoWindow : Model -> Html Msg
-renderInfoWindow { infoWindow, context } =
-    InfoWindow.content infoWindow
+renderInfoWindow { info, context } =
+    Info.content info
         |> Maybe.map (renderInfoContent context.successMessageIndex)
-        |> Maybe.map (infoContainer infoWindow)
+        |> Maybe.map (infoContainer info)
         |> Maybe.withDefault (span [] [])
 
 
-infoContainer : InfoWindow Info -> Html Msg -> Html Msg
-infoContainer infoWindow rendered =
-    case InfoWindow.content infoWindow of
+infoContainer : Info.State LevelEndPrompt -> Html Msg -> Html Msg
+infoContainer info rendered =
+    case Info.content info of
         Just RestartAreYouSure ->
-            div [ onClick HideInfo ] [ InfoWindow.view infoWindow rendered ]
+            div [ onClick HideInfo ] [ Info.view info rendered ]
 
         Just ExitAreYouSure ->
-            div [ onClick HideInfo ] [ InfoWindow.view infoWindow rendered ]
+            div [ onClick HideInfo ] [ Info.view info rendered ]
 
         _ ->
-            InfoWindow.view infoWindow rendered
+            Info.view info rendered
 
 
-renderInfoContent : Int -> Info -> Html Msg
+renderInfoContent : Int -> LevelEndPrompt -> Html Msg
 renderInfoContent successMessageIndex infoContent =
     case infoContent of
         Success ->

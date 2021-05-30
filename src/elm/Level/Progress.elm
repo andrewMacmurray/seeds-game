@@ -119,7 +119,7 @@ worldComplete levels progress =
     levels
         |> List.reverse
         |> List.head
-        |> Maybe.map (\l -> Level.completed (reachedLevel progress) l)
+        |> Maybe.map (\l -> Level.isCompleted (reachedLevel progress) l)
         |> Maybe.withDefault False
 
 
@@ -142,7 +142,7 @@ currentWorldComplete worlds (Progress { current, reached }) =
 
 currentLevelComplete : Progress -> Maybe Bool
 currentLevelComplete (Progress { current, reached }) =
-    Maybe.map (\level -> Level.completed reached level) current
+    Maybe.map (\level -> Level.isCompleted reached level) current
 
 
 reachedLevelSeedType : Level.Worlds -> Progress -> Maybe Seed
@@ -259,7 +259,7 @@ scoresAtLevel worlds level =
     level
         |> Level.idsForWorld worlds
         |> Maybe.withDefault []
-        |> List.filter (Level.completed level)
+        |> List.filter (Level.isCompleted level)
         |> List.map (Level.getLevel worlds >> Maybe.map tileSettings >> Maybe.withDefault [])
         |> List.concat
         |> totalScoresDict

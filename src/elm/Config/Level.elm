@@ -7,7 +7,6 @@ module Config.Level exposing
     , WorldConfig
     , WorldWithLevels
     , Worlds
-    , completed
     , config
     , default
     , first
@@ -16,16 +15,17 @@ module Config.Level exposing
     , getLevels
     , idFromRaw_
     , idsForWorld
+    , isCompleted
     , isFirstLevelOfWorld
     , isLastLevelOfWorld
+    , isReached
     , level
     , next
     , number
     , previous
-    , reached
     , seedType
     , toCache
-    , toStringId
+    , toString
     , withTutorial
     , world
     , worlds
@@ -34,8 +34,8 @@ module Config.Level exposing
 
 import Board
 import Board.Wall as Wall
-import Css.Color exposing (Color)
 import Dict exposing (Dict)
+import Element exposing (Color)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
 import Scene.Level.Tutorial as Tutorial
@@ -134,8 +134,8 @@ first =
     idFromRaw_ 1 1
 
 
-toStringId : Id -> String
-toStringId key =
+toString : Id -> String
+toString key =
     String.join "-"
         [ "world"
         , String.fromInt <| worldId_ key
@@ -297,13 +297,13 @@ previous worlds_ id =
         idFromRaw_ (worldId_ id) (levelId_ id - 1)
 
 
-reached : Id -> Id -> Bool
-reached (Id current) (Id target) =
+isReached : Id -> Id -> Bool
+isReached (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId >= target.levelId)
 
 
-completed : Id -> Id -> Bool
-completed (Id current) (Id target) =
+isCompleted : Id -> Id -> Bool
+isCompleted (Id current) (Id target) =
     current.worldId > target.worldId || (current.worldId == target.worldId && current.levelId > target.levelId)
 
 
@@ -416,4 +416,4 @@ worldId_ (Id { worldId }) =
 
 idFromRaw_ : Int -> Int -> Id
 idFromRaw_ worldId levelId =
-    Id <| Cache worldId levelId
+    Id (Cache worldId levelId)

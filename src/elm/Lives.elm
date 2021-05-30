@@ -1,7 +1,6 @@
 module Lives exposing
     ( Cache
     , Lives
-    , TimeTillNextLife
     , decrement
     , fromCache
     , remaining
@@ -11,6 +10,7 @@ module Lives exposing
     , view
     )
 
+import Countdown exposing (Countdown)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale)
 import Html exposing (..)
@@ -79,13 +79,7 @@ max =
 -- Time till next life
 
 
-type alias TimeTillNextLife =
-    { minutes : Int
-    , seconds : Int
-    }
-
-
-timeTillNextLife : Lives -> Maybe TimeTillNextLife
+timeTillNextLife : Lives -> Maybe Countdown
 timeTillNextLife (Lives cache) =
     let
         minutes =
@@ -98,7 +92,7 @@ timeTillNextLife (Lives cache) =
         Nothing
 
     else
-        Just <| TimeTillNextLife minutes seconds
+        Just (Countdown.init minutes seconds)
 
 
 

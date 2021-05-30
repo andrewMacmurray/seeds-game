@@ -37,7 +37,6 @@ module Css.Color exposing
     , transparentGray
     , washedYellow
     , white
-    , yellow
     )
 
 import Css.Unit exposing (deg, pc)
@@ -152,11 +151,6 @@ darkYellow =
 brownYellow : Color
 brownYellow =
     rgb 105 88 35
-
-
-yellow : Color
-yellow =
-    rgb 255 234 124
 
 
 blockYellow : Color

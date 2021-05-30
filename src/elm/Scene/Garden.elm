@@ -19,6 +19,7 @@ import Element.Button as Button
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exit)
 import Html exposing (Html)
@@ -34,8 +35,6 @@ import Utils.Animated as Animated
 import Utils.Delay exposing (after)
 import Utils.Element as Element
 import View.Menu as Menu
-import View.Seed as Seed
-import View.Seed.Mono exposing (greyedOutSeed)
 
 
 
@@ -234,10 +233,10 @@ seedId seed =
 
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
-    row [ spacing 5, centerX ]
-        [ el [ alignBottom ] (sized 30 (html greyedOutSeed))
-        , sized 50 (html greyedOutSeed)
-        , el [ alignBottom ] (sized 30 (html greyedOutSeed))
+    row [ spacing Scale.small, centerX ]
+        [ el [ alignBottom ] (Seed.grey (Seed.size 20))
+        , el [ moveDown 2 ] (Seed.grey (Seed.size 30))
+        , el [ alignBottom ] (Seed.grey (Seed.size 20))
         ]
 
 
@@ -254,16 +253,11 @@ flowerName seed =
 
 seeds : Seed -> Element msg
 seeds seed =
-    row [ centerX, moveUp 20 ]
-        [ el [ alignBottom ] (renderSeed 20 seed)
-        , renderSeed 30 seed
-        , el [ alignBottom ] (renderSeed 20 seed)
+    row [ centerX, moveUp 20, spacing Scale.small ]
+        [ el [ alignBottom ] (Seed.view (Seed.size 12) seed)
+        , el [ moveDown 2 ] (Seed.view (Seed.size 20) seed)
+        , el [ alignBottom ] (Seed.view (Seed.size 12) seed)
         ]
-
-
-renderSeed : Int -> Seed -> Element msg
-renderSeed size =
-    sized size << html << Seed.view
 
 
 flowers : Seed -> Element msg
@@ -296,8 +290,3 @@ textColor seed =
 
         _ ->
             Palette.white
-
-
-sized : Int -> Element msg -> Element msg
-sized size =
-    el [ width (px size), height (px size) ]

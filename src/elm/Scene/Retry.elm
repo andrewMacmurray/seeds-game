@@ -13,12 +13,10 @@ import Context exposing (Context)
 import Element exposing (..)
 import Element.Animation as Animation
 import Element.Animations as Animations
-import Element.Background as Background
-import Element.Border as Border
-import Element.Events exposing (onClick)
+import Element.Button.Cancel as Cancel
 import Element.Layout as Layout
 import Element.Palette as Palette
-import Element.Scale as Scale exposing (corners)
+import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Html exposing (..)
@@ -126,7 +124,7 @@ tryAgainText =
 
 tryAgain : Element Msg
 tryAgain =
-    buttonWithCancel
+    Cancel.button
         { onCancel = ReturnToHubClicked
         , onClick = RestartLevelClicked
         , text = "Try Again?"
@@ -147,53 +145,10 @@ bounceInButton : Window -> Animation
 bounceInButton window =
     Animation.fromTo
         { duration = 600
-        , options = [ Animation.springy, Animation.delay 3000 ]
+        , options = [ Animation.springy1, Animation.delay 3000 ]
         }
         [ P.y (vh window / 2 - 20) ]
         [ P.y 0 ]
-
-
-
--- Cancelable Button
-
-
-type alias ButtonOptions msg =
-    { onCancel : msg
-    , onClick : msg
-    , text : String
-    }
-
-
-buttonWithCancel : ButtonOptions msg -> Element msg
-buttonWithCancel options =
-    row []
-        [ el
-            [ onClick options.onCancel
-            , Background.color Palette.green6
-            , pointer
-            , paddingEach
-                { left = Scale.medium + Scale.small
-                , right = Scale.medium
-                , top = Scale.medium
-                , bottom = Scale.medium
-                }
-            , Border.roundEach { corners | bottomLeft = 40, topLeft = 40 }
-            ]
-            (Text.text [ Text.color Palette.white ] "X")
-        , el
-            [ onClick options.onClick
-            , pointer
-            , Background.color Palette.green2
-            , paddingEach
-                { left = Scale.medium
-                , right = Scale.medium + Scale.small
-                , top = Scale.medium
-                , bottom = Scale.medium
-                }
-            , Border.roundEach { corners | bottomRight = 40, topRight = 40 }
-            ]
-            (Text.text [ Text.color Palette.white ] options.text)
-        ]
 
 
 

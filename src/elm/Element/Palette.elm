@@ -169,6 +169,20 @@ green10 =
 
 
 
+-- Lime
+
+
+lime4 : Color
+lime4 =
+    rgb255 113 175 68
+
+
+lime5 : Color
+lime5 =
+    rgb255 119 193 66
+
+
+
 -- Purple
 
 
@@ -229,6 +243,15 @@ purple10 =
 pink7 : Color
 pink7 =
     rgb255 170 64 159
+
+
+
+-- Mauve
+
+
+mauve4 : Color
+mauve4 =
+    rgb255 167 29 96
 
 
 

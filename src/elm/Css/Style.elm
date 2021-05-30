@@ -13,7 +13,6 @@ module Css.Style exposing
     , display
     , height
     , left
-    , leftAuto
     , leftPill
     , marginAuto
     , marginBottom
@@ -29,10 +28,8 @@ module Css.Style exposing
     , paddingRight
     , paddingTop
     , paddingVertical
-    , pointer
     , property
     , renderStyles_
-    , rightAuto
     , rightPill
     , showIf
     , size
@@ -220,16 +217,6 @@ marginAuto =
     property "margin" "auto"
 
 
-leftAuto : Style
-leftAuto =
-    property "margin-left" "auto"
-
-
-rightAuto : Style
-rightAuto =
-    property "margin-right" "auto"
-
-
 top : Float -> Style
 top n =
     property "top" <| px n
@@ -336,11 +323,6 @@ opacity o =
 stroke : String -> Style
 stroke =
     property "stroke"
-
-
-pointer : Style
-pointer =
-    property "cursor" "pointer"
 
 
 disablePointer : Style
