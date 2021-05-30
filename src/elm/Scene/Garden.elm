@@ -234,10 +234,10 @@ seedId seed =
 
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
-    row [ spacing 5, centerX, height fill ]
-        [ el [ alignBottom ] (Seed.grey (Seed.size 12))
-        , Seed.grey (Seed.size 20)
-        , el [ alignBottom ] (Seed.grey (Seed.size 12))
+    row [ spacing Scale.small, centerX ]
+        [ el [ alignBottom ] (Seed.grey (Seed.size 20))
+        , el [ moveDown 2 ] (Seed.grey (Seed.size 30))
+        , el [ alignBottom ] (Seed.grey (Seed.size 20))
         ]
 
 
