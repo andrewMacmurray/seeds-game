@@ -5,11 +5,13 @@ module Utils.Element exposing
     , empty
     , id
     , maybe
+    , onClickIf
     , style
     , verticalGap
     )
 
 import Element exposing (Attribute, Element)
+import Element.Events exposing (onClick)
 import Html.Attributes
 
 
@@ -31,6 +33,11 @@ verticalGap size =
 disableTouch : Attribute msg
 disableTouch =
     class "touch-disabled"
+
+
+onClickIf : Bool -> msg -> Attribute msg
+onClickIf condition msg =
+    applyIf condition (onClick msg)
 
 
 applyIf : Bool -> Attribute msg -> Attribute msg

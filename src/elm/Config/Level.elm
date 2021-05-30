@@ -25,7 +25,7 @@ module Config.Level exposing
     , previous
     , seedType
     , toCache
-    , toStringId
+    , toString
     , withTutorial
     , world
     , worlds
@@ -134,8 +134,8 @@ first =
     idFromRaw_ 1 1
 
 
-toStringId : Id -> String
-toStringId key =
+toString : Id -> String
+toString key =
     String.join "-"
         [ "world"
         , String.fromInt <| worldId_ key

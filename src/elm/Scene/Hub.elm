@@ -12,7 +12,6 @@ module Scene.Hub exposing
 
 import Board.Scores as Scores
 import Board.Tile as Tile
-import Browser.Dom as Dom
 import Config.Level as Level
 import Config.World as Worlds
 import Context exposing (Context)
@@ -34,9 +33,9 @@ import Html exposing (Html)
 import Level.Progress as Progress
 import Level.Setting.Tile as Tile exposing (TargetScore)
 import Lives exposing (Lives)
+import Ports.Scroll as Scroll
 import Seed exposing (Seed)
 import Sine
-import Task exposing (Task)
 import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
@@ -166,15 +165,7 @@ update msg model =
 
 scrollHubToLevel : Level.Id -> Cmd Msg
 scrollHubToLevel level =
-    Level.toStringId level
-        |> Dom.getElement
-        |> Task.andThen scrollLevelToView
-        |> Task.attempt (always ScrolledToLevel)
-
-
-scrollLevelToView : Dom.Element -> Task Dom.Error ()
-scrollLevelToView { element, viewport } =
-    Dom.setViewportOf "hub" 0 <| element.y - viewport.height / 2
+    Scroll.toCenter (Level.toString level)
 
 
 
@@ -370,6 +361,10 @@ renderWorld model { world, levels } =
         )
 
 
+
+-- Levels
+
+
 type alias LevelModel =
     { label : String
     , level : Level.Id
@@ -409,8 +404,9 @@ renderLevel model =
             , above (currentLevelPointer model)
             , paddingXY 0 Scale.medium
             , spacing Scale.small
+            , Element.id (Level.toString model.level)
             , Element.applyIf model.hasReachedLevel pointer
-            , Element.applyIf model.clickActive (onClick (LevelClicked model.level))
+            , Element.onClickIf model.clickActive (LevelClicked model.level)
             ]
         )
         [ el [] (levelIcon model)
