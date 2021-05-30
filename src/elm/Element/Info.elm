@@ -93,18 +93,26 @@ view config =
 
 
 infoContainer_ : Direction -> Element msg -> Element msg
-infoContainer_ direction =
+infoContainer_ direction content =
     Animated.el (animate direction)
         [ centerX
         , centerY
-        , padding Scale.large
-        , Border.rounded 8
-        , width (fill |> maximum 380)
-        , Background.split
-            ( Palette.lime5
-            , Palette.lime4
-            )
+        , paddingXY Scale.medium 0
+        , width (fill |> maximum 400)
         ]
+        (el
+            [ centerX
+            , centerY
+            , padding Scale.large
+            , width fill
+            , Border.rounded 8
+            , Background.split
+                ( Palette.lime5
+                , Palette.lime4
+                )
+            ]
+            content
+        )
 
 
 animate : Direction -> Animation

@@ -28,6 +28,7 @@ import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
+import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
 import Html exposing (Html)
 import Level.Progress as Progress
@@ -39,6 +40,7 @@ import Sine
 import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
+import View.Icon.Heart as Heart
 import View.Menu as Menu
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
@@ -59,7 +61,7 @@ type Msg
     | DismissInfoClicked
     | SetInfoState (Info.State Level.Id)
     | SetCurrentLevel Level.Id
-    | ScrollHubTo Level.Id
+    | ScrollToLevel Level.Id
     | ClearCurrentLevel
     | PlayLevelClicked Level.Id
     | ExitToLevel Level.Id
@@ -100,7 +102,7 @@ init : Level.Id -> Context -> ( Model, Cmd Msg )
 init level context =
     ( initialState context
     , sequence
-        [ ( 1000, ScrollHubTo level )
+        [ ( 1000, ScrollToLevel level )
         , ( 1500, ClearCurrentLevel )
         ]
     )
@@ -120,8 +122,8 @@ initialState context =
 update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetInfoState infoWindow ->
-            continue { model | info = infoWindow } []
+        SetInfoState info ->
+            continue { model | info = info } []
 
         LevelClicked levelProgress ->
             continue { model | info = Info.visible levelProgress } []
@@ -134,8 +136,8 @@ update msg model =
                     ]
                 ]
 
-        ScrollHubTo level ->
-            continue model [ scrollHubToLevel level ]
+        ScrollToLevel level ->
+            continue model [ scrollToLevel level ]
 
         SetCurrentLevel level ->
             continue { model | context = Context.setCurrentLevel level model.context } []
@@ -163,9 +165,9 @@ update msg model =
             exitWith ToGarden model
 
 
-scrollHubToLevel : Level.Id -> Cmd Msg
-scrollHubToLevel level =
-    Scroll.toCenter (Level.toString level)
+scrollToLevel : Level.Id -> Cmd Msg
+scrollToLevel =
+    Scroll.toCenter << Level.toString
 
 
 
@@ -186,7 +188,7 @@ topBar : Model -> Element msg
 topBar model =
     column
         [ width fill
-        , Palette.background1
+        , Palette.background2
         , padding Scale.small
         ]
         [ el [ centerX, scale 0.5 ] (html (Lives.view model.context.lives))
@@ -233,7 +235,7 @@ infoContent context level =
             ]
 
     else
-        renderWaitForNextLife context
+        waitForNextLife context
 
 
 levelIcons : Level.Id -> Element msg
@@ -248,9 +250,21 @@ levelLabel level =
     "Level " ++ String.fromInt (Worlds.number level)
 
 
-renderWaitForNextLife : Context -> Element msg
-renderWaitForNextLife context =
-    none
+waitForNextLife : Context -> Element msg
+waitForNextLife context =
+    column [ centerX, spacing Scale.medium ]
+        [ Text.text [ Text.white, Text.spaced, centerX ] "Next life in "
+        , Text.text [ centerX, Text.color Palette.lightGold ] (countdown_ context)
+        , Element.square 40 [ centerX ] (html Heart.beating)
+        ]
+
+
+countdown_ : Context -> String
+countdown_ =
+    .lives
+        >> Lives.timeTillNextLife
+        >> Maybe.map Countdown.view
+        >> Maybe.withDefault ""
 
 
 infoIcons : Level.Level -> Element msg
@@ -258,7 +272,7 @@ infoIcons =
     Level.config
         >> .tileSettings
         >> List.filter Scores.collectible
-        >> List.map renderIcon
+        >> List.map viewIcon
         >> infoIconContainer
 
 
@@ -267,11 +281,11 @@ infoIconContainer =
     row [ spacing Scale.large, centerX ]
 
 
-renderIcon : Tile.Setting -> Element msg
-renderIcon setting =
+viewIcon : Tile.Setting -> Element msg
+viewIcon setting =
     column [ spacing Scale.small ]
         [ el [ height (px 55), centerX ] (el [ alignBottom ] (tileIcon setting))
-        , el [ centerX ] (renderTargetScore setting.targetScore)
+        , el [ centerX ] (viewTargetScore setting.targetScore)
         ]
 
 
@@ -279,10 +293,10 @@ tileIcon : Tile.Setting -> Element msg
 tileIcon setting =
     case setting.tileType of
         Tile.Rain ->
-            renderWeather Palette.blue5
+            Weather.rain
 
         Tile.Sun ->
-            renderWeather Palette.orange
+            Weather.sun
 
         Tile.Seed seed ->
             seedIcon seed
@@ -300,24 +314,14 @@ seedIcon seed =
         (html (Seed.view seed))
 
 
-renderTargetScore : Maybe TargetScore -> Element msg
-renderTargetScore ts =
+viewTargetScore : Maybe TargetScore -> Element msg
+viewTargetScore ts =
     case ts of
         Just (Tile.TargetScore t) ->
             Text.text [ Text.white ] (String.fromInt t)
 
         Nothing ->
             none
-
-
-renderWeather : Color -> Element msg
-renderWeather color =
-    el [ paddingXY 0 Scale.extraSmall ]
-        (Dot.solid
-            { size = 25
-            , color = color
-            }
-        )
 
 
 handleDismiss : Model -> Attribute Msg
@@ -351,7 +355,7 @@ renderWorld model { world, levels } =
             [ centerX
             , spacing Scale.large
             , paddingXY Scale.medium Scale.extraLarge
-            , width (fill |> maximum 300)
+            , width (fill |> maximum 325)
             ]
             (levels
                 |> List.reverse
