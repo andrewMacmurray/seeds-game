@@ -235,9 +235,9 @@ seedId seed =
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
     row [ spacing 5, centerX, height fill ]
-        [ Seed.grey { size = Seed.size 12, attributes = [ alignBottom ] }
-        , Seed.grey { size = Seed.size 20, attributes = [] }
-        , Seed.grey { size = Seed.size 12, attributes = [ alignBottom ] }
+        [ el [ alignBottom ] (Seed.grey (Seed.size 12))
+        , Seed.grey (Seed.size 20)
+        , el [ alignBottom ] (Seed.grey (Seed.size 12))
         ]
 
 
@@ -255,9 +255,9 @@ flowerName seed =
 seeds : Seed -> Element msg
 seeds seed =
     row [ centerX, moveUp 20, spacing Scale.small ]
-        [ Seed.view { size = Seed.size 12, attributes = [ alignBottom ] } seed
-        , Seed.view { size = Seed.size 20, attributes = [ moveDown 2 ] } seed
-        , Seed.view { size = Seed.size 12, attributes = [ alignBottom ] } seed
+        [ el [ alignBottom ] (Seed.view (Seed.size 12) seed)
+        , el [ moveDown 2 ] (Seed.view (Seed.size 20) seed)
+        , el [ alignBottom ] (Seed.view (Seed.size 12) seed)
         ]
 
 

@@ -306,10 +306,7 @@ tileIcon setting =
 
 seedIcon : Seed -> Element msg
 seedIcon =
-    Seed.view
-        { size = Seed.size 35
-        , attributes = []
-        }
+    Seed.view (Seed.size 35)
 
 
 viewTargetScore : Maybe TargetScore -> Element msg
@@ -451,10 +448,10 @@ renderNumber model =
 levelIcon : LevelModel -> Element msg
 levelIcon model =
     if model.hasCompletedLevel then
-        Seed.view { size = Seed.fill, attributes = [] } model.seed
+        Seed.view Seed.fill model.seed
 
     else
-        Seed.grey { size = Seed.fill, attributes = [] }
+        Seed.grey Seed.fill
 
 
 reachedLevel : Model -> Level.Id

@@ -29,25 +29,28 @@ type Size
     | Pixels Int
 
 
-type alias Options msg =
+type alias Options =
     { size : Size
-    , attributes : List (Attribute msg)
     }
 
 
+fill : Options
 fill =
-    Fill
+    { size = Fill
+    }
 
 
-size =
-    Pixels
+size : Int -> Options
+size n =
+    { size = Pixels n
+    }
 
 
 
 -- View
 
 
-view : Options msg -> Seed -> Element msg
+view : Options -> Seed -> Element msg
 view options seed =
     case seed of
         Seed.Sunflower ->
@@ -73,7 +76,7 @@ view options seed =
 -- Individual
 
 
-grey : Options msg -> Element msg
+grey : Options -> Element msg
 grey =
     sized
         (Mono.seed
@@ -82,7 +85,7 @@ grey =
         )
 
 
-rose : Options msg -> Element msg
+rose : Options -> Element msg
 rose =
     sized
         (Mono.seed
@@ -91,7 +94,7 @@ rose =
         )
 
 
-chrysanthemum : Options msg -> Element msg
+chrysanthemum : Options -> Element msg
 chrysanthemum =
     sized
         (Circle.seed
@@ -101,7 +104,7 @@ chrysanthemum =
         )
 
 
-sunflower : Options msg -> Element msg
+sunflower : Options -> Element msg
 sunflower =
     sized
         (Twin.seed
@@ -111,7 +114,7 @@ sunflower =
         )
 
 
-cornflower : Options msg -> Element msg
+cornflower : Options -> Element msg
 cornflower =
     sized
         (Twin.seed
@@ -121,7 +124,7 @@ cornflower =
         )
 
 
-marigold : Options msg -> Element msg
+marigold : Options -> Element msg
 marigold =
     sized
         (Twin.seed
@@ -131,7 +134,7 @@ marigold =
         )
 
 
-lupin : Options msg -> Element msg
+lupin : Options -> Element msg
 lupin =
     sized
         (Twin.seed
@@ -141,14 +144,9 @@ lupin =
         )
 
 
-sized : Element msg -> Options msg -> Element msg
+sized : Element msg -> Options -> Element msg
 sized el_ options =
-    Element.el (attributes options) el_
-
-
-attributes : Options msg -> List (Attribute msg)
-attributes options =
-    List.append [ toWidth options.size ] options.attributes
+    Element.el [ toWidth options.size ] el_
 
 
 toWidth : Size -> Attribute msg
