@@ -1,7 +1,6 @@
 module Element.Seed exposing
     ( Options
     , chrysanthemum
-    , cornflower
     , fill
     , grey
     , lupin

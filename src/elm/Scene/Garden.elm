@@ -117,8 +117,7 @@ view : Model -> Html Msg
 view model =
     Layout.view
         [ inFront backToLevelsButton
-
-        --, inFront initialOverlay
+        , inFront initialOverlay
         ]
         (el
             [ width fill

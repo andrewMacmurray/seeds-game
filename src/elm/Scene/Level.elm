@@ -32,7 +32,7 @@ import Exit exposing (continue, exitWith)
 import Html exposing (Attribute, Html, div, p, span, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onClick)
-import Info exposing (State)
+import Info
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives

@@ -3,9 +3,7 @@ module Info exposing
     , Visibility(..)
     , content
     , hidden
-    , isHidden
     , leaving
-    , state
     , view
     , visible
     )
@@ -79,16 +77,6 @@ state modal =
 
         Empty ->
             Hidden
-
-
-isHidden : State content -> Bool
-isHidden modal =
-    case state modal of
-        Hidden ->
-            True
-
-        _ ->
-            False
 
 
 

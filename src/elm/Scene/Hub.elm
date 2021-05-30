@@ -65,7 +65,6 @@ type Msg
     | PlayLevelClicked Level.Id
     | ExitToLevel Level.Id
     | ExitToGarden
-    | ScrolledToLevel
 
 
 type Destination
@@ -143,9 +142,6 @@ update msg model =
 
         ClearCurrentLevel ->
             continue { model | context = Context.clearCurrentLevel model.context } []
-
-        ScrolledToLevel ->
-            continue model []
 
         PlayLevelClicked level ->
             continue model

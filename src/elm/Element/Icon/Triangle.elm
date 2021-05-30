@@ -3,7 +3,7 @@ module Element.Icon.Triangle exposing (icon)
 import Css.Color exposing (lightGold)
 import Element exposing (Element)
 import Element.Icon as Icon
-import Svg exposing (Svg)
+import Svg
 import Svg.Attributes exposing (..)
 
 
