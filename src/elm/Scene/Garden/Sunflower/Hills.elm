@@ -1,6 +1,6 @@
 module Scene.Garden.Sunflower.Hills exposing (shape)
 
-import Axis2d
+import Axis2d exposing (Axis2d)
 import Direction2d
 import Element exposing (..)
 import Element.Palette as Palette
@@ -96,12 +96,13 @@ hill_ y window =
         (Polygon2d.singleLoop
             [ p1
             , p2
-            , p2 |> Point2d.translateBy (down 300)
-            , p1 |> Point2d.translateBy (down 300)
+            , Point2d.translateBy (down 300) p2
+            , Point2d.translateBy (down 300) p1
             ]
         )
 
 
+axis : Window -> Axis2d Pixels coordinates
 axis w =
     Axis2d.withDirection
         (Direction2d.degrees -26)

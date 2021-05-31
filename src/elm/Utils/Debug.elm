@@ -1,6 +1,7 @@
 module Utils.Debug exposing
     ( goToLevel
     , move
+    , progress
     , setProgress
     )
 
@@ -9,6 +10,7 @@ import Config.Level as Level exposing (LevelConfig)
 import Config.World as World
 import Html exposing (Html)
 import Html.Attributes
+import Level.Progress as Progress exposing (Progress)
 import Ports
 import Utils.Delay as Delay
 
@@ -27,14 +29,21 @@ goToLevel world level msg =
 
 levelConfig : Int -> Int -> LevelConfig
 levelConfig world =
-    Level.idFromRaw_ world >> World.levelConfig
+    Level.build_ world >> World.levelConfig
 
 
 setProgress : Int -> Int -> Cmd msg
 setProgress world level =
-    Level.idFromRaw_ world level
+    Level.build_ world level
         |> Level.toCache
         |> Ports.cacheProgress
+
+
+progress : Int -> Int -> Progress
+progress world level =
+    Level.build_ world level
+        |> Progress.fromLevel
+        |> Progress.setCurrentLevel (Level.build_ world level)
 
 
 

@@ -26,6 +26,7 @@ module Css.Color exposing
     , meadowGreen
     , midnightBlue
     , orange
+    , petalOrange
     , pinkRed
     , purple
     , rainBlue
@@ -33,6 +34,8 @@ module Css.Color exposing
     , seedPodGradient
     , silver
     , skyGreen
+    , sunflowerOffYellow
+    , sunflowerYellow
     , transparent
     , transparentGray
     , washedYellow
@@ -276,3 +279,18 @@ white =
 black : Color
 black =
     rgb 0 0 0
+
+
+sunflowerYellow : Color
+sunflowerYellow =
+    rgb 255 241 0
+
+
+petalOrange : Color
+petalOrange =
+    rgb 255 204 71
+
+
+sunflowerOffYellow : Color
+sunflowerOffYellow =
+    rgb 226 227 24

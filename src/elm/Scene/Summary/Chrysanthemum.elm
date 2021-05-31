@@ -42,14 +42,17 @@ view visibility window =
         [ windowViewBox_ window
         , class "fixed z-1 top-0"
         ]
-        [ hills "#E268C4" "#F09AEF" -550 1500 visibility window
-        , hills red "#9665B4" -440 1200 visibility window
-        , hills "#FFA538" "#623D79" -330 900 visibility window
-        , hills "#E268C4" "#F09AEF" -220 600 visibility window
-        , hills darkPink "#9665B4" -110 300 visibility window
-        , hills "#FFA538" "#623D79" 0 0 visibility window
-        , flowers visibility window
-        ]
+        (List.concat
+            [ [ hills "#E268C4" "#F09AEF" -550 1500 visibility window
+              , hills red "#9665B4" -440 1200 visibility window
+              , hills "#FFA538" "#623D79" -330 900 visibility window
+              , hills "#E268C4" "#F09AEF" -220 600 visibility window
+              , hills darkPink "#9665B4" -110 300 visibility window
+              , hills "#FFA538" "#623D79" 0 0 visibility window
+              ]
+            , flowers visibility window
+            ]
+        )
 
 
 red =
@@ -60,18 +63,16 @@ darkPink =
     Color.rgb 218 37 131
 
 
-flowers : Visibility -> Window -> Svg msg
 flowers visibility window =
     case visibility of
         Hidden ->
-            Svg.g [] []
+            []
 
         Visible ->
-            Svg.g []
-                [ chrysanthemum window 150 1000
-                , chrysanthemum window 75 1500 |> translated -100 60
-                , chrysanthemum window 75 2000 |> translated 100 60
-                ]
+            [ chrysanthemum window 150 1000
+            , chrysanthemum window 75 1500 |> translated -100 60
+            , chrysanthemum window 75 2000 |> translated 100 60
+            ]
 
 
 hills : Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
@@ -101,9 +102,7 @@ hills left right offset delay visibility window =
                 ]
                 [ el ]
     in
-    Svg.g []
-        [ Hills.doubleLayerWithCurve curve window left right |> translateStyles (delay + 500)
-        ]
+    Hills.doubleLayerWithCurve curve window left right |> translateStyles (delay + 500)
 
 
 ifNarrow : Window -> a -> a -> a

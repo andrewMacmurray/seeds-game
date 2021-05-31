@@ -4,6 +4,7 @@ module Utils.Svg exposing
     , cy_
     , fill_
     , height_
+    , originCenter_
     , point
     , points_
     , r_
@@ -126,3 +127,8 @@ viewBox_ x y w h =
 transformOrigin_ : Float -> Float -> String
 transformOrigin_ x y =
     "transform-origin: " ++ px x ++ " " ++ px y
+
+
+originCenter_ : String
+originCenter_ =
+    "transform-origin: center"

@@ -52,10 +52,12 @@ hills window state =
         ]
 
 
+offsetBy : Window -> State -> Float -> Int -> Svg msg -> Svg msg
 offsetBy window state offset delay el =
     Svg.g [ offsetStyles window state offset delay ] [ el ]
 
 
+offsetStyles : Window -> State -> Float -> Int -> Svg.Attribute msg
 offsetStyles window state offset delay =
     let
         translateY n =
@@ -80,6 +82,7 @@ offsetStyles window state offset delay =
             visibleStyles
 
 
+flowersLeft : Window -> State -> Int -> List (Hills.Element msg)
 flowersLeft window state delay =
     let
         range =
@@ -91,6 +94,7 @@ flowersLeft window state delay =
     ]
 
 
+flowersRight : Window -> State -> Int -> List (Hills.Element msg)
 flowersRight window state delay =
     let
         range =
@@ -114,6 +118,7 @@ windowRange window narrow medium wide =
             wide
 
 
+sunflower : Window -> State -> Int -> Svg msg
 sunflower window state delay =
     case state of
         Blooming ->

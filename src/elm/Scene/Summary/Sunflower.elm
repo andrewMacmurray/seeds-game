@@ -42,23 +42,24 @@ view visibility window =
         [ windowViewBox_ window
         , class "fixed z-1 top-0"
         ]
-        [ Svg.g [] <| generateHills visibility window
-        , flowers visibility window
-        ]
+        (List.concat
+            [ generateHills visibility window
+            , flowers visibility window
+            ]
+        )
 
 
-flowers : Visibility -> Window -> Svg msg
+flowers : Visibility -> Window -> List (Svg msg)
 flowers visibility window =
     case visibility of
         Hidden ->
-            Svg.g [] []
+            []
 
         Visible ->
-            Svg.g []
-                [ sunflower window 200 500 |> translated 0 -40
-                , sunflower window 100 1000 |> translated -100 60
-                , sunflower window 100 1500 |> translated 100 60
-                ]
+            [ sunflower window 200 500 |> translated 0 -40
+            , sunflower window 100 1000 |> translated -100 60
+            , sunflower window 100 1500 |> translated 100 60
+            ]
 
 
 sunflower : Window -> Float -> Int -> Svg msg
