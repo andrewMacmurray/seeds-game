@@ -38,7 +38,7 @@ currentLevelCompleteSpec =
 
 level : Int -> Int -> Levels.Id
 level =
-    Levels.idFromRaw_
+    Levels.build_
 
 
 progress : Int -> Int -> Progress.Progress

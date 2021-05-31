@@ -1,9 +1,9 @@
 module Scene.Garden.Cornflower.Flowers exposing (flowers)
 
 import Element exposing (..)
+import Element.Flower.Cornflower as Cornflower
 import Scene.Garden.Cornflower.Sprites as Ladybird
 import Simple.Animation as Animation
-import View.Flower.Cornflower as Cornflower
 
 
 flowers : Element msg

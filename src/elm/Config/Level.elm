@@ -7,13 +7,13 @@ module Config.Level exposing
     , WorldConfig
     , WorldWithLevels
     , Worlds
+    , build_
     , config
     , default
     , first
     , fromCache
     , getLevel
     , getLevels
-    , idFromRaw_
     , idsForWorld
     , isCompleted
     , isFirstLevelOfWorld
@@ -131,7 +131,7 @@ toCache key =
 
 first : Id
 first =
-    idFromRaw_ 1 1
+    build_ 1 1
 
 
 toString : Id -> String
@@ -275,10 +275,10 @@ isFirstLevelOfWorld id =
 next : Worlds -> Id -> Id
 next worlds_ id =
     if isLastLevelOfWorld worlds_ id then
-        idFromRaw_ (worldId_ id + 1) 1
+        build_ (worldId_ id + 1) 1
 
     else
-        idFromRaw_ (worldId_ id) (levelId_ id + 1)
+        build_ (worldId_ id) (levelId_ id + 1)
 
 
 previous : Worlds -> Id -> Id
@@ -291,10 +291,10 @@ previous worlds_ id =
             lId =
                 getWorldSizeFromIndex_ worlds_ wId |> Maybe.withDefault 1
         in
-        idFromRaw_ wId lId
+        build_ wId lId
 
     else
-        idFromRaw_ (worldId_ id) (levelId_ id - 1)
+        build_ (worldId_ id) (levelId_ id - 1)
 
 
 isReached : Id -> Id -> Bool
@@ -339,7 +339,7 @@ accumulateSize size total =
 
 getWorldSizeFromIndex_ : Worlds -> Int -> Maybe Int
 getWorldSizeFromIndex_ worlds_ i =
-    getWorld_ (idFromRaw_ i 1) worlds_ |> Maybe.map worldSize
+    getWorld_ (build_ i 1) worlds_ |> Maybe.map worldSize
 
 
 worldsList : Worlds -> List WorldWithLevels
@@ -362,7 +362,7 @@ levelKeys worldIndex levels =
     levels
         |> Dict.toList
         |> List.map Tuple.first
-        |> List.map (idFromRaw_ worldIndex)
+        |> List.map (build_ worldIndex)
 
 
 worldSize : World -> Int
@@ -414,6 +414,6 @@ worldId_ (Id { worldId }) =
     worldId
 
 
-idFromRaw_ : Int -> Int -> Id
-idFromRaw_ worldId levelId =
+build_ : Int -> Int -> Id
+build_ worldId levelId =
     Id (Cache worldId levelId)

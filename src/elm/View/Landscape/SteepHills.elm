@@ -8,6 +8,7 @@ module View.Landscape.SteepHills exposing
 import Axis2d
 import Css.Color exposing (Color)
 import Css.Style as Style exposing (Style)
+import Css.Transform as Transform
 import Direction2d
 import Geometry.Svg
 import Point2d
@@ -60,7 +61,7 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
         yAxis =
             Axis2d.withDirection Direction2d.y center
     in
-    Svg.g []
+    Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate 0 0 ] ] ]
         [ hillFullScreen window slope leftColor leftStyles leftElements
         , Geometry.Svg.mirrorAcross yAxis <| hillFullScreen window slope rightColor rightStyles rightElements
         ]

@@ -7,6 +7,7 @@ module Level.Progress exposing
     , currentLevelSeedType
     , currentWorldComplete
     , fromCache
+    , fromLevel
     , handleIncrement
     , isFirstPlay
     , percentComplete

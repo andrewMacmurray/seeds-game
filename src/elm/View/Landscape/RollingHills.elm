@@ -31,9 +31,8 @@ doubleLayerWithCurve curve window left right =
     doubleLayerWithCurve_ curve window ( left, [] ) ( right, [] )
 
 
-doubleLayerWithCurve_ : Float -> Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
 doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =
-    Svg.g []
+    Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate 0 0 ] ] ]
         [ hillFullScreen window
             { color = leftColor
             , elements = leftElements
@@ -93,8 +92,7 @@ hillFullScreen window hillConfig =
         , width_ w
         , height_ 3000
         ]
-        [ Svg.g [] <| hill hillConfig.color r cx cy :: elements
-        ]
+        (hill hillConfig.color r cx cy :: elements)
 
 
 renderElement : Float -> Float -> Float -> Element msg -> Svg msg

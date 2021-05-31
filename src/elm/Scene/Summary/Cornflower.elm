@@ -8,10 +8,10 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
+import Element.Flower.Cornflower as Cornflower
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
-import View.Flower.Cornflower as Cornflower
 import View.Landscape.RollingHills as Hills
 import Window exposing (Window)
 
@@ -39,22 +39,22 @@ type Visibility
 view : Visibility -> Window -> Svg msg
 view visibility window =
     Svg.svg [ windowViewBox_ window, class "fixed z-1 top-0" ]
-        [ hills visibility window
-        , flowers visibility window
-        ]
+        (List.concat
+            [ hills visibility window
+            , flowers visibility window
+            ]
+        )
 
 
-hills : Visibility -> Window -> Svg msg
 hills visibility window =
-    Svg.g []
-        [ hill "#b6b310" "#61cdfe" -600 1200 visibility window
-        , hill "#d9d216" "#90dcff" -500 1000 visibility window
-        , hill "#ECEC1F" "#b9f4ff" -400 800 visibility window
-        , hill "#B6C123" "#61cdfe" -300 600 visibility window
-        , hill "#038298" "#C5C520" -200 400 visibility window
-        , hill "#6bb1ee" "#ECEC1F" -100 200 visibility window
-        , hill "#038298" "#B6C123" 0 0 visibility window
-        ]
+    [ hill "#b6b310" "#61cdfe" -600 1200 visibility window
+    , hill "#d9d216" "#90dcff" -500 1000 visibility window
+    , hill "#ECEC1F" "#b9f4ff" -400 800 visibility window
+    , hill "#B6C123" "#61cdfe" -300 600 visibility window
+    , hill "#038298" "#C5C520" -200 400 visibility window
+    , hill "#6bb1ee" "#ECEC1F" -100 200 visibility window
+    , hill "#038298" "#B6C123" 0 0 visibility window
+    ]
 
 
 hill : Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
@@ -84,18 +84,16 @@ hill left right offset delay visibility window =
     translateStyles <| Hills.doubleLayer window ( left, [] ) ( right, [] )
 
 
-flowers : Visibility -> Window -> Svg msg
 flowers visibility window =
     case visibility of
         Hidden ->
-            Svg.g [] []
+            []
 
         Visible ->
-            Svg.g []
-                [ cornflower window 250 1000 |> translated 0 -35
-                , cornflower window 150 1500 |> translated -120 45
-                , cornflower window 150 2000 |> translated 120 45
-                ]
+            [ cornflower window 250 1000 |> translated 0 -35
+            , cornflower window 150 1500 |> translated -120 45
+            , cornflower window 150 2000 |> translated 120 45
+            ]
 
 
 cornflower : Window -> Float -> Int -> Svg msg
