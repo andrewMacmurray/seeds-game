@@ -41,7 +41,7 @@ animatePetals =
 
 animatePetal : Animation.Millis -> Int -> List (Svg.Attribute msg) -> Svg msg
 animatePetal delay i petal =
-    Animated.path (bloom delay i) (style (Svg.transformOrigin_ 100 100) :: petal) []
+    Animated.path (bloom delay i) (style Svg.originCenter_ :: petal) []
 
 
 bloom : Animation.Millis -> Int -> Animation
