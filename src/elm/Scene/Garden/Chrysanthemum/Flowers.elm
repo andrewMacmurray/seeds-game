@@ -1,9 +1,9 @@
 module Scene.Garden.Chrysanthemum.Flowers exposing (flowers)
 
 import Element exposing (..)
+import Element.Flower.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Chrysanthemum.Sprites as Bee
 import Simple.Animation as Animation
-import View.Flower.Chrysanthemum as Chrysanthemum
 
 
 flowers : Element msg

@@ -1,4 +1,7 @@
-module View.Flower.Cornflower exposing (animated, static)
+module Element.Flower.Cornflower exposing
+    ( animated
+    , static
+    )
 
 import Element.Animation.Bounce as Bounce
 import Simple.Animation as Animation exposing (Animation)

@@ -1,10 +1,10 @@
 module Scene.Garden.Sunflower.Flowers exposing (flowers)
 
 import Element exposing (..)
+import Element.Flower.Sunflower as Sunflower
 import Scene.Garden.Sunflower.Sprites as Butterfly
 import Simple.Animation as Animation
 import Utils.Element as Element
-import View.Flower.Sunflower as Sunflower
 
 
 flowers : Element msg

@@ -1,4 +1,4 @@
-module View.Flower.Sunflower exposing
+module Element.Flower.Sunflower exposing
     ( animated
     , static
     )
