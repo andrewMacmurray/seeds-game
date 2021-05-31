@@ -1,13 +1,11 @@
 module Context exposing
-    ( Background(..)
-    , Context
+    ( Context
     , Menu(..)
     , cacheCurrentLives
     , clearCurrentLevel
     , closeMenu
     , decrementLife
     , disableMenu
-    , generateBackground
     , hideLoadingScreen
     , incrementMessageIndex
     , incrementProgress
@@ -22,14 +20,14 @@ import Config.Level as Level
 import Level.Progress as Progress exposing (Progress)
 import Lives exposing (Lives)
 import Ports exposing (cacheLives)
-import Random
 import Time
+import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import Window exposing (Window)
 
 
 type alias Context =
     { window : Window
-    , loadingScreen : Maybe Background
+    , loadingScreen : LoadingScreen
     , progress : Progress
     , lives : Lives
     , successMessageIndex : Int
@@ -116,21 +114,11 @@ disableMenu context =
 -- Loading Screen
 
 
-type Background
-    = Orange
-    | Blue
-
-
-showLoadingScreen : Background -> Context -> Context
-showLoadingScreen background context =
-    { context | loadingScreen = Just background }
+showLoadingScreen : LoadingScreen -> Context -> Context
+showLoadingScreen loadingScreen context =
+    { context | loadingScreen = loadingScreen }
 
 
 hideLoadingScreen : Context -> Context
 hideLoadingScreen context =
-    { context | loadingScreen = Nothing }
-
-
-generateBackground : (Background -> msg) -> Cmd msg
-generateBackground msg =
-    Random.generate msg <| Random.uniform Orange [ Blue ]
+    { context | loadingScreen = LoadingScreen.hidden }

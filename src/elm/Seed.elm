@@ -1,5 +1,6 @@
 module Seed exposing
     ( Seed(..)
+    , final
     , name
     )
 
@@ -35,3 +36,8 @@ name seed =
 
         Rose ->
             "Rose"
+
+
+final : Seed
+final =
+    Cornflower

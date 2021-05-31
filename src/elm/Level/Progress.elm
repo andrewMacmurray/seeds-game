@@ -146,9 +146,11 @@ currentLevelComplete (Progress { current, reached }) =
     Maybe.map (\level -> Level.isCompleted reached level) current
 
 
-reachedLevelSeedType : Level.Worlds -> Progress -> Maybe Seed
+reachedLevelSeedType : Level.Worlds -> Progress -> Seed
 reachedLevelSeedType worlds (Progress progress) =
-    Level.seedType worlds progress.reached
+    progress.reached
+        |> Level.seedType worlds
+        |> Maybe.withDefault Seed.final
 
 
 currentLevelSeedType : Level.Worlds -> Progress -> Maybe Seed

@@ -26,7 +26,7 @@ import Time exposing (millisToPosix)
 import Utils.Delay as Delay exposing (trigger)
 import Utils.Update exposing (updateModel, updateWith, withCmds)
 import View.Animation exposing (animations)
-import View.Loading exposing (loadingScreen)
+import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -92,7 +92,7 @@ type Msg
     | HideLoadingScreen
     | OpenMenu
     | CloseMenu
-    | RandomBackground Context.Background
+    | LoadingScreenGenerated LoadingScreen
     | ResetData
     | WindowSize Int Int
     | UpdateLives Time.Posix
@@ -121,7 +121,7 @@ initialState titleModel =
 initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
-    , loadingScreen = Nothing
+    , loadingScreen = LoadingScreen.hidden
     , progress = Progress.fromCache flags.level
     , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
@@ -238,10 +238,12 @@ update msg ({ scene, backdrop } as model) =
             initGarden model
 
         ( ShowLoadingScreen, _, _ ) ->
-            ( updateContext Context.closeMenu model, Context.generateBackground RandomBackground )
+            ( updateContext Context.closeMenu model
+            , LoadingScreen.generate LoadingScreenGenerated
+            )
 
-        ( RandomBackground bgColor, _, _ ) ->
-            ( updateContext (Context.showLoadingScreen bgColor) model, Cmd.none )
+        ( LoadingScreenGenerated screen, _, _ ) ->
+            ( updateContext (Context.showLoadingScreen screen) model, Cmd.none )
 
         ( HideLoadingScreen, _, _ ) ->
             ( updateContext Context.hideLoadingScreen model, Cmd.none )
@@ -673,7 +675,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ animations
-        , loadingScreen <| getContext model
+        , LoadingScreen.view (getContext model)
         , menu model.scene
         , stage
             [ viewScene model.scene
