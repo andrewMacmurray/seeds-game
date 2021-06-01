@@ -9,7 +9,7 @@ import Css.Style as Style exposing (Style)
 import Element exposing (..)
 import Html exposing (Html)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Tile.Leaving as Leaving
+import Scene.Level.Board.Tile.Leaving2 as Leaving
 import Scene.Level.Board.Tile.Style as Tile
 import Scene.Level.Board.Tile.Wall as Wall
 import Utils.Element as Element
@@ -28,6 +28,7 @@ type alias Model =
     , withTracer : Bool
     , settings : List Tile.Setting
     , boardSize : Board.Size
+    , move : Move
     }
 
 
@@ -35,60 +36,70 @@ type alias Model =
 -- View
 
 
-view : Model -> Move -> Element msg
-view ({ window } as model) move =
-    column
-        [ width (px (tileWidth window))
-        , height (px (tileHeight window))
-        , moveRight (offsetX window move)
-        , moveDown (offsetY window move)
-        ]
-        [ html (innerTile model.isBursting window move)
-        , Element.showIf model.withTracer (tracer window move)
-        , wall window move
-        ]
-
-
-tracer : Window -> Move -> Element msg
-tracer window move =
-    html
-        (innerTileWithStyles
-            (Tile.moveTracerStyles move)
-            window
-            move
+view : Model -> Element msg
+view ({ window, move } as model) =
+    el (Leaving.attributes (leavingViewModel model) move)
+        (column
+            [ width (px (tileWidth window))
+            , height (px (tileHeight window))
+            , moveRight (offsetX model)
+            , moveDown (offsetY model)
+            , inFront (tracer model)
+            ]
+            [ innerTile model
+            , wall model
+            ]
         )
 
 
-wall : Window -> Move -> Element msg
-wall window move =
+tracer : Model -> Element msg
+tracer model =
+    Element.showIf model.withTracer (tracer_ model)
+
+
+tracer_ : Model -> Element msg
+tracer_ model =
+    innerTileWithStyles
+        (Tile.moveTracerStyles model.move)
+        model
+
+
+wall : Model -> Element msg
+wall model =
     Wall.view
-        { window = window
-        , move = move
+        { window = model.window
+        , move = model.move
         }
 
 
-innerTile : Bool -> Window -> Move -> Html msg
-innerTile isBursting window move =
+type InnerTile
+    = Bursting
+    | Dragging
+
+
+innerTile : Model -> Element msg
+innerTile model =
     innerTileWithStyles
-        (Tile.draggingStyles isBursting move)
-        window
-        move
+        (Tile.draggingStyles model.isBursting model.move)
+        model
 
 
-innerTileWithStyles : List Style -> Window -> Move -> Html msg
-innerTileWithStyles extraStyles window move =
-    Html.div
-        [ Style.styles
-            [ extraStyles
-            , baseTileStyles window move
+innerTileWithStyles : List Style -> Model -> Element msg
+innerTileWithStyles extraStyles model =
+    html
+        (Html.div
+            [ Style.styles
+                [ extraStyles
+                , baseTileStyles model
+                ]
+            , Style.classes Tile.baseClasses
             ]
-        , Style.classes Tile.baseClasses
-        ]
-        [ innerTileElement <| Move.block move ]
+            [ innerTileElement (Move.block model.move) ]
+        )
 
 
-baseTileStyles : Window -> Move -> List Style
-baseTileStyles window move =
+baseTileStyles : Model -> List Style
+baseTileStyles { move, window } =
     let
         block =
             Move.block move
@@ -123,8 +134,9 @@ innerTileElement block =
 
 renderBurst : Block -> Maybe Tile -> Html msg
 renderBurst block tile =
-    Html.div [ Style.style <| Tile.burstStyles block ]
-        [ renderBurst_ tile <| Block.isLeaving block ]
+    Html.div
+        [ Style.style (Tile.burstStyles block) ]
+        [ renderBurst_ tile (Block.isLeaving block) ]
 
 
 renderBurst_ : Maybe Tile -> Bool -> Html msg
@@ -155,12 +167,20 @@ tileHeight window =
     round (Tile.baseSizeY * Tile.scale window)
 
 
-offsetX window =
-    Move.coord >> position window >> .x
+offsetX : Model -> Float
+offsetX model =
+    model.move
+        |> Move.coord
+        |> position model.window
+        |> .x
 
 
-offsetY window =
-    Move.coord >> position window >> .y
+offsetY : Model -> Float
+offsetY model =
+    model.move
+        |> Move.coord
+        |> position model.window
+        |> .y
 
 
 position : Window -> Coord -> { x : Float, y : Float }
@@ -174,7 +194,7 @@ position window coord =
 -- View Models
 
 
-leavingViewModel : Model -> Leaving.ViewModel
+leavingViewModel : Model -> Leaving.Model
 leavingViewModel model =
     { window = model.window
     , boardSize = model.boardSize

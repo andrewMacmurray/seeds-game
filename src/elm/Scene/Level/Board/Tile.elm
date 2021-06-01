@@ -43,7 +43,7 @@ view ({ window } as model) move =
         , class "dib absolute"
         ]
         [ innerTile model.isBursting window move
-        , renderIf model.withTracer <| tracer window move
+        , renderIf model.withTracer (tracer window move)
         , wall window move
         ]
 
@@ -59,10 +59,7 @@ renderIf predicate element =
 
 tracer : Window -> Move -> Html msg
 tracer window move =
-    innerTileWithStyles
-        (Tile.moveTracerStyles move)
-        window
-        move
+    innerTileWithStyles (Tile.moveTracerStyles move) window move
 
 
 wall : Window -> Move -> Html msg
@@ -91,7 +88,7 @@ innerTileWithStyles extraStyles window move =
             ]
         , classes Tile.baseClasses
         ]
-        [ innerTileElement <| Move.block move ]
+        [ innerTileElement (Move.block move) ]
 
 
 baseTileStyles : Window -> Move -> List Style
@@ -152,7 +149,7 @@ renderBurst_ tile isLeaving =
 -- View Models
 
 
-leavingViewModel : Model -> Leaving.ViewModel
+leavingViewModel : Model -> Leaving.Model
 leavingViewModel model =
     { window = model.window
     , boardSize = model.boardSize

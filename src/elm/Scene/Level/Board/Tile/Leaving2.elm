@@ -1,16 +1,16 @@
-module Scene.Level.Board.Tile.Leaving exposing (Model, styles)
+module Scene.Level.Board.Tile.Leaving2 exposing (Model, attributes)
 
 import Board
-import Board.Block as Block
+import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale, translate)
-import Css.Transition exposing (delay, transitionAll)
 import Dict
+import Element exposing (..)
+import Element.Transition as Transition
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
+import Simple.Transition as Transition
 import Window exposing (Window)
 
 
@@ -29,25 +29,41 @@ type alias Model =
 -- Leaving Styles
 
 
-styles : Model -> Move -> List Style
-styles model move =
+attributes : Model -> Move -> List (Attribute msg)
+attributes model move =
     let
         block =
             Move.block move
     in
     if Block.isLeaving block && not (Block.isBurst block) then
-        [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
-        , opacity 0.2
-        , handleExitDirection move model
+        --List.append (handleExitDirection move model)
+        [ transition block
+        , alpha 0.2
         ]
 
     else
         []
 
 
-handleExitDirection : Move -> Model -> Style
+transition : Block -> Attribute msg
+transition block =
+    Transition.all_
+        { duration = 800
+        , options = [ transitionDelay block ]
+        }
+        [ Transition.transform
+        , Transition.opacity
+        ]
+
+
+transitionDelay : Block -> Transition.Option
+transitionDelay block =
+    Transition.delay (modBy 5 (Block.leavingOrder block) * 80)
+
+
+handleExitDirection : Move -> Model -> List (Attribute msg)
 handleExitDirection move model =
-    case Block.tileState <| Move.block move of
+    case Move.tileState move of
         Leaving Rain _ ->
             getLeavingStyle Rain model
 
@@ -58,17 +74,17 @@ handleExitDirection move model =
             getLeavingStyle (Seed seedType) model
 
         _ ->
-            Style.none
+            []
 
 
-getLeavingStyle : Tile -> Model -> Style
+getLeavingStyle : Tile -> Model -> List (Attribute msg)
 getLeavingStyle tileType model =
     newLeavingStyles model
         |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault Style.none
+        |> Maybe.withDefault []
 
 
-newLeavingStyles : Model -> Dict.Dict String Style
+newLeavingStyles : Model -> Dict.Dict String (List (Attribute msg))
 newLeavingStyles model =
     model.tileSettings
         |> Scores.tileTypes
@@ -76,13 +92,13 @@ newLeavingStyles model =
         |> Dict.fromList
 
 
-prepareLeavingStyle : Model -> Int -> Tile -> ( String, Style )
+prepareLeavingStyle : Model -> Int -> Tile -> ( String, List (Attribute msg) )
 prepareLeavingStyle model resourceBankIndex tileType =
     ( Tile.hash tileType
-    , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYDistance model)
-        , scale 0.5
-        ]
+    , [ moveRight (exitXDistance resourceBankIndex model)
+      , moveUp (exitYDistance model)
+      , scale 0.5
+      ]
     )
 
 

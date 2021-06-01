@@ -798,8 +798,8 @@ renderTile model move =
             , settings = model.tileSettings
             , isBursting = Burst.isBursting model.board
             , withTracer = True
+            , move = move
             }
-            move
         )
 
 
@@ -827,8 +827,8 @@ renderCurrentMove model move =
             , settings = model.tileSettings
             , isBursting = Burst.isBursting model.board
             , withTracer = False
+            , move = move
             }
-            move
 
     else
         none
