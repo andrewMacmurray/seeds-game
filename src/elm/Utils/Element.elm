@@ -16,7 +16,6 @@ module Utils.Element exposing
 import Element exposing (..)
 import Element.Events exposing (onClick)
 import Html.Attributes
-import Utils.Unit as Unit
 
 
 maybe : (a -> Element msg) -> Maybe a -> Element msg
