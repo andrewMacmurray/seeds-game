@@ -38,18 +38,21 @@ type alias Model =
 
 view : Model -> Element msg
 view ({ window, move } as model) =
-    el (Leaving.attributes (leavingViewModel model) move)
-        (column
+    column
+        (List.append
             [ width (px (tileWidth window))
             , height (px (tileHeight window))
-            , moveRight (offsetX model)
-            , moveDown (offsetY model)
             , inFront (tracer model)
             ]
-            [ innerTile model
-            , wall model
-            ]
+            (Leaving.attributes (leavingViewModel model)
+                [ moveRight (offsetX model)
+                , moveDown (offsetY model)
+                ]
+            )
         )
+        [ innerTile model
+        , wall model
+        ]
 
 
 tracer : Model -> Element msg
@@ -59,9 +62,7 @@ tracer model =
 
 tracer_ : Model -> Element msg
 tracer_ model =
-    innerTileWithStyles
-        (Tile.moveTracerStyles model.move)
-        model
+    innerTileWithStyles (Tile.moveTracerStyles model.move) model
 
 
 wall : Model -> Element msg
@@ -72,16 +73,9 @@ wall model =
         }
 
 
-type InnerTile
-    = Bursting
-    | Dragging
-
-
 innerTile : Model -> Element msg
 innerTile model =
-    innerTileWithStyles
-        (Tile.draggingStyles model.isBursting model.move)
-        model
+    innerTileWithStyles (Tile.draggingStyles model.isBursting model.move) model
 
 
 innerTileWithStyles : List Style -> Model -> Element msg
@@ -198,5 +192,6 @@ leavingViewModel : Model -> Leaving.Model
 leavingViewModel model =
     { window = model.window
     , boardSize = model.boardSize
-    , tileSettings = model.settings
+    , settings = model.settings
+    , move = model.move
     }
