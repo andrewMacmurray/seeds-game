@@ -11,6 +11,7 @@ module Scene.Intro exposing
 import Context exposing (Context)
 import Element exposing (..)
 import Element.Background as Background
+import Element.Events exposing (onClick)
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
@@ -188,14 +189,15 @@ view model =
         (column
             [ width fill
             , height fill
-            , paddingXY 0 Scale.extraLarge
             ]
-            [ viewText model ]
+            [ sceneText model
+            , skipButton
+            ]
         )
 
 
-viewText : Model -> Element msg
-viewText model =
+sceneText : Model -> Element msg
+sceneText model =
     Text.text
         [ Text.color model.textColor
         , Element.visibleIf model.textVisible
@@ -207,43 +209,18 @@ viewText model =
         model.text
 
 
-
---div
---    [ style
---        [ background model.backdrop
---        , transitionAll 1500 []
---        ]
---    , class "fixed top-0 left-0 w-100 h-100 z-1"
---    ]
---    [ p
---        [ style
---            [ textOffsetTop model.context.window
---            , textOffsetBottom model.context.window
---            , color model.textColor
---            , transitionAll 1000 []
---            , showIf model.textVisible
---            ]
---        , class "tc f3 relative z-2"
---        ]
---        [ text model.text ]
---    , skipButton
---    , renderScene model
---    ]
---skipButton : Html Msg
---skipButton =
---    div [ class "fixed bottom-1 w-100 z-6 flex", style [ opacity 0.6 ] ]
---        [ p
---            [ class "ttu dib center pointer tracked-mega f6"
---            , style
---                [ color Color.white
---                , animation "fade-in" 1000 []
---                ]
---            , onClick IntroComplete
---            ]
---            [ text "skip" ]
---        ]
---
---
+skipButton : Element Msg
+skipButton =
+    Text.text
+        [ padding Scale.large
+        , Text.white
+        , alignBottom
+        , centerX
+        , onClick IntroComplete
+        , pointer
+        , Text.spaced
+        ]
+        "skip"
 
 
 viewScene : Model -> Element Msg
@@ -267,19 +244,3 @@ viewScene_ model =
 
         SunflowerMeadow vis ->
             html (SM.view model.context.window vis)
-
-
-
---textOffsetTop : Window -> Style
---textOffsetTop window =
---    marginTop <| toFloat window.height / 5
---
---
---textOffsetBottom : Window -> Style
---textOffsetBottom window =
---    case Window.width window of
---        Window.Narrow ->
---            marginBottom 50
---
---        _ ->
---            marginBottom 60
