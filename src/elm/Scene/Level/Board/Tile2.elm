@@ -1,15 +1,18 @@
-module Scene.Level.Board.Tile exposing (view)
+module Scene.Level.Board.Tile2 exposing (view)
 
 import Board
 import Board.Block as Block exposing (Block)
+import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
-import Css.Style as Style exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (class)
+import Css.Style as Style exposing (Style)
+import Element exposing (..)
+import Html exposing (Html)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Tile.Leaving as Leaving
 import Scene.Level.Board.Tile.Style as Tile
+import Scene.Level.Board.Tile.Wall as Wall
+import Utils.Element as Element
 import View.Icon.Burst as Burst
 import View.Seed as Seed
 import Window exposing (Window)
@@ -23,7 +26,7 @@ type alias Model =
     { isBursting : Bool
     , window : Window
     , withTracer : Bool
-    , tileSettings : List Tile.Setting
+    , settings : List Tile.Setting
     , boardSize : Board.Size
     }
 
@@ -32,46 +35,36 @@ type alias Model =
 -- View
 
 
-view : Model -> Move -> Html msg
+view : Model -> Move -> Element msg
 view ({ window } as model) move =
-    div
-        [ styles
-            [ Tile.widthHeightStyles window
-            , Tile.coordStyles window (Move.coord move)
-            , Leaving.styles (leavingViewModel model) move
-            ]
-        , class "dib absolute"
+    column
+        [ width (px (tileWidth window))
+        , height (px (tileHeight window))
+        , moveRight (offsetX window move)
+        , moveDown (offsetY window move)
         ]
-        [ innerTile model.isBursting window move
-        , renderIf model.withTracer <| tracer window move
+        [ html (innerTile model.isBursting window move)
+        , Element.showIf model.withTracer (tracer window move)
         , wall window move
         ]
 
 
-renderIf : Bool -> Html msg -> Html msg
-renderIf predicate element =
-    if predicate then
-        element
-
-    else
-        span [] []
-
-
-tracer : Window -> Move -> Html msg
+tracer : Window -> Move -> Element msg
 tracer window move =
-    innerTileWithStyles
-        (Tile.moveTracerStyles move)
-        window
-        move
+    html
+        (innerTileWithStyles
+            (Tile.moveTracerStyles move)
+            window
+            move
+        )
 
 
-wall : Window -> Move -> Html msg
+wall : Window -> Move -> Element msg
 wall window move =
-    div
-        [ style <| Tile.wallStyles window move
-        , class Tile.centerBlock
-        ]
-        []
+    Wall.view
+        { window = window
+        , move = move
+        }
 
 
 innerTile : Bool -> Window -> Move -> Html msg
@@ -84,12 +77,12 @@ innerTile isBursting window move =
 
 innerTileWithStyles : List Style -> Window -> Move -> Html msg
 innerTileWithStyles extraStyles window move =
-    div
-        [ styles
+    Html.div
+        [ Style.styles
             [ extraStyles
             , baseTileStyles window move
             ]
-        , classes Tile.baseClasses
+        , Style.classes Tile.baseClasses
         ]
         [ innerTileElement <| Move.block move ]
 
@@ -105,7 +98,7 @@ baseTileStyles window move =
         , Tile.enteringStyles move
         , Tile.fallingStyles move
         , Tile.releasingStyles move
-        , size <| roundFloat <| Tile.size block * Tile.scale window
+        , Style.size <| roundFloat <| Tile.size block * Tile.scale window
         , Tile.background block
         ]
 
@@ -125,12 +118,12 @@ innerTileElement block =
             renderBurst block tile
 
         _ ->
-            span [] []
+            Html.span [] []
 
 
 renderBurst : Block -> Maybe Tile -> Html msg
 renderBurst block tile =
-    div [ Style.style <| Tile.burstStyles block ]
+    Html.div [ Style.style <| Tile.burstStyles block ]
         [ renderBurst_ tile <| Block.isLeaving block ]
 
 
@@ -149,6 +142,35 @@ renderBurst_ tile isLeaving =
 
 
 
+-- Config
+
+
+tileWidth : Window -> Int
+tileWidth window =
+    round (Tile.baseSizeX * Tile.scale window)
+
+
+tileHeight : Window -> Int
+tileHeight window =
+    round (Tile.baseSizeY * Tile.scale window)
+
+
+offsetX window =
+    Move.coord >> position window >> .x
+
+
+offsetY window =
+    Move.coord >> position window >> .y
+
+
+position : Window -> Coord -> { x : Float, y : Float }
+position window coord =
+    { x = toFloat (Coord.x coord * tileWidth window)
+    , y = toFloat (Coord.y coord * tileHeight window)
+    }
+
+
+
 -- View Models
 
 
@@ -156,5 +178,5 @@ leavingViewModel : Model -> Leaving.ViewModel
 leavingViewModel model =
     { window = model.window
     , boardSize = model.boardSize
-    , tileSettings = model.tileSettings
+    , tileSettings = model.settings
     }

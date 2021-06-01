@@ -5,8 +5,10 @@ module Utils.Element exposing
     , empty
     , id
     , maybe
+    , noZoom
     , onClickIf
     , originBottom
+    , showIf
     , square
     , style
     , verticalGap
@@ -52,9 +54,23 @@ visibleIf condition =
         alpha 0
 
 
+showIf : Bool -> Element msg -> Element msg
+showIf condition el =
+    if condition then
+        el
+
+    else
+        none
+
+
 disableTouch : Attribute msg
 disableTouch =
     class "touch-disabled"
+
+
+noZoom : Attribute msg
+noZoom =
+    style "touch-action" "none"
 
 
 originBottom : Attribute msg

@@ -111,7 +111,7 @@ init flags =
         |> updateWith TitleMsg initialState
         |> withCmds
             [ bounceKeyframes flags.window
-            , Debug.goToLevel 1 9 InitLevel
+            , Debug.goToLevel 1 8 InitLevel
             ]
 
 

@@ -41,7 +41,7 @@ module Board.Block exposing
     )
 
 import Board.Tile as Tile exposing (Tile)
-import Css.Color as Css
+import Element
 import Seed exposing (Seed)
 
 
@@ -50,7 +50,7 @@ import Seed exposing (Seed)
 
 
 type Block
-    = Wall Css.Color
+    = Wall Element.Color
     | Space Tile.State
 
 

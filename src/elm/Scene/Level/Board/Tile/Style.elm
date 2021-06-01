@@ -30,6 +30,7 @@ import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (delay, transitionAll)
 import Seed
+import Utils.Color as Color
 import Window exposing (Window)
 
 
@@ -104,7 +105,7 @@ wallStyles window move =
     in
     case Move.block move of
         Wall color ->
-            [ backgroundColor color
+            [ backgroundColor (Color.toString color)
             , Style.width wallSize
             , Style.height wallSize
             ]

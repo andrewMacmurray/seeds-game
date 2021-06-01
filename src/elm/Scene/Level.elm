@@ -25,29 +25,25 @@ import Board.Tile as Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
 import Config.Level as Level
 import Context exposing (Context)
-import Css.Style as Style exposing (..)
 import Dict exposing (Dict)
-import Element exposing (Element, behindContent, column, html, inFront)
+import Element exposing (..)
 import Element.Button.Cancel as Cancel
 import Element.Info as Info
 import Element.Layout as Layout
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
-import Html exposing (Attribute, Html, div, span)
-import Html.Attributes exposing (attribute, class)
+import Html exposing (Attribute, Html)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
-import Pointer
 import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile as Tile
+import Scene.Level.Board.Tile2 as Tile
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
-import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
@@ -770,97 +766,84 @@ tutorialViewModel model =
 
 renderBoard : Model -> Element Msg
 renderBoard model =
-    html
-        (boardLayout model
-            [ div [ class "relative z-5" ] (renderTiles model)
-            , div [ class "absolute top-0 left-0 z-0" ] (renderLines model)
-            ]
-        )
-
-
-renderTiles : Model -> List (Html Msg)
-renderTiles model =
-    mapTiles (renderTile model) model.board
-
-
-renderTile : Model -> Move -> Html Msg
-renderTile model move =
-    div
-        [ handleMoveEvents model move
-        , class "pointer"
-        , attribute "touch-action" "none"
+    el
+        [ width (px (Board.width (boardViewModel model)))
+        , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
+        , behindContent (renderLines model)
+        , centerX
         ]
-        [ Tile.view
+        (renderTiles model)
+
+
+renderTiles : Model -> Element Msg
+renderTiles model =
+    toFloating (mapTiles (renderTile model) model.board)
+
+
+toFloating : List (Element msg) -> Element msg
+toFloating =
+    List.foldl (\el attrs -> inFront el :: attrs) [] >> (\attrs -> el attrs none)
+
+
+renderTile : Model -> Move -> Element Msg
+renderTile model move =
+    el
+        [ handleMoveEvents model move
+        , pointer
+        , Element.noZoom
+        ]
+        (Tile.view
             { boardSize = model.boardSize
             , window = model.context.window
-            , tileSettings = model.tileSettings
+            , settings = model.tileSettings
             , isBursting = Burst.isBursting model.board
             , withTracer = True
             }
             move
-        ]
+        )
 
 
 currentMoveOverlay : Model -> Element msg
 currentMoveOverlay model =
-    let
-        viewModel =
-            boardViewModel model
-    in
-    html
-        (div
-            [ style
-                [ Style.width (toFloat (Board.width viewModel))
-                , Style.top (toFloat (Board.offsetTop viewModel))
-                ]
-            , class "z-6 touch-disabled absolute left-0 right-0 flex center"
-            ]
-            (currentMoveLayer model)
-        )
+    el
+        [ Board.width2 (boardViewModel model)
+        , Board.offsetTop2 (boardViewModel model)
+        , centerX
+        ]
+        (currentMoveLayer model)
 
 
-currentMoveLayer : Model -> List (Html msg)
+currentMoveLayer : Model -> Element msg
 currentMoveLayer model =
-    mapTiles (renderCurrentMove model) model.board
+    toFloating (mapTiles (renderCurrentMove model) model.board)
 
 
-renderCurrentMove : Model -> Move -> Html msg
+renderCurrentMove : Model -> Move -> Element msg
 renderCurrentMove model move =
     if Block.isCurrentMove (Move.block move) && model.isDragging then
         Tile.view
             { boardSize = model.boardSize
             , window = model.context.window
-            , tileSettings = model.tileSettings
+            , settings = model.tileSettings
             , isBursting = Burst.isBursting model.board
             , withTracer = False
             }
             move
 
     else
-        span [] []
+        none
 
 
-renderLines : Model -> List (Html msg)
+renderLines : Model -> Element msg
 renderLines model =
-    mapTiles (Line.view (lineViewModel model)) model.board
+    column [] (mapTiles (Line.view (lineViewModel model) >> html) model.board)
 
 
-boardLayout : Model -> List (Html msg) -> Html msg
-boardLayout model =
-    div
-        [ style
-            [ width <| toFloat <| Board.width <| boardViewModel model
-            , Board.marginTop <| boardViewModel model
-            ]
-        , class "relative z-3 center flex flex-wrap"
-        ]
-
-
-handleMoveEvents : Model -> Move -> Html.Attribute Msg
+handleMoveEvents : Model -> Move -> Element.Attribute Msg
 handleMoveEvents model move =
-    Attribute.applyIf
+    Element.applyIf
         (not model.isDragging)
-        (Pointer.onPointerDown (StartMove move))
+        (Touch.onStart (StartMove move))
 
 
 mapTiles : (Move -> a) -> Board -> List a
@@ -884,10 +867,10 @@ infoContent : Context -> LevelEndPrompt -> Element Msg
 infoContent context prompt =
     case prompt of
         Success ->
-            Text.text [] (successMessage context)
+            Text.text [ centerX, Text.white, Text.large ] (successMessage context)
 
         NoMovesLeft ->
-            Text.text [] "No more moves!"
+            Text.text [ centerX, Text.white, Text.large ] "No more moves!"
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife
