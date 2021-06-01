@@ -1,5 +1,5 @@
 module Scene.Level.TopBar exposing
-    ( ViewModel
+    ( Model
     , view
     )
 
@@ -22,7 +22,7 @@ import View.Seed as Seed
 import Window exposing (Window)
 
 
-type alias ViewModel =
+type alias Model =
     { window : Window
     , remainingMoves : Int
     , tileSettings : List Tile.Setting
@@ -30,7 +30,7 @@ type alias ViewModel =
     }
 
 
-view : ViewModel -> Html msg
+view : Model -> Html msg
 view model =
     div
         [ class "no-select w-100 flex items-center justify-center fixed top-0 z-3"
@@ -62,7 +62,7 @@ view model =
         ]
 
 
-renderScore : ViewModel -> Tile -> Html msg
+renderScore : Model -> Tile -> Html msg
 renderScore model tileType =
     let
         scoreMargin =

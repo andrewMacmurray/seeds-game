@@ -16,7 +16,7 @@ import Element.Text as Text
 type alias Options msg =
     { onCancel : msg
     , onClick : msg
-    , text : String
+    , confirmText : String
     }
 
 
@@ -48,5 +48,5 @@ button options =
                 }
             , Border.roundEach { corners | bottomRight = 40, topRight = 40 }
             ]
-            (Text.text [ Text.color Palette.white ] options.text)
+            (Text.text [ Text.color Palette.white ] options.confirmText)
         ]

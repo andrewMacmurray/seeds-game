@@ -3,10 +3,11 @@ module Pointer exposing
     , onPointerDown
     , onPointerMove
     , onPointerUp
+    , origin
     )
 
 import Html exposing (Attribute)
-import Html.Events exposing (on, stopPropagationOn)
+import Html.Events as Events
 import Json.Decode as Json exposing (Decoder, field, float)
 
 
@@ -16,19 +17,26 @@ type alias Pointer =
     }
 
 
+origin : Pointer
+origin =
+    { x = 0
+    , y = 0
+    }
+
+
 onPointerUp : msg -> Attribute msg
 onPointerUp msg =
-    on "pointerup" <| Json.succeed msg
+    Events.on "pointerup" (Json.succeed msg)
 
 
 onPointerDown : (Pointer -> msg) -> Attribute msg
 onPointerDown msg =
-    stopPropagationOn "pointerdown" <| Json.map alwaysStop (tagPosition msg)
+    Events.stopPropagationOn "pointerdown" (Json.map alwaysStop (tagPosition msg))
 
 
 onPointerMove : (Pointer -> msg) -> Attribute msg
 onPointerMove msg =
-    stopPropagationOn "pointermove" <| Json.map alwaysStop (tagPosition msg)
+    Events.stopPropagationOn "pointermove" (Json.map alwaysStop (tagPosition msg))
 
 
 alwaysStop : a -> ( a, Bool )

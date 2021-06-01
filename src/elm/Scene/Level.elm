@@ -25,18 +25,21 @@ import Board.Tile as Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
 import Config.Level as Level
 import Context exposing (Context)
-import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Dict exposing (Dict)
+import Element exposing (Element, behindContent, column, html, inFront)
+import Element.Button.Cancel as Cancel
+import Element.Info as Info
+import Element.Layout as Layout
+import Element.Text as Text
+import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
-import Html exposing (Attribute, Html, div, p, span, text)
+import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (attribute, class)
-import Html.Events exposing (onClick)
-import Info
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
-import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
+import Pointer
 import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
@@ -47,6 +50,7 @@ import Seed
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
+import Utils.Element as Element
 import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
 
@@ -66,7 +70,7 @@ type alias Model =
     , boardSize : Board.Size
     , levelStatus : Status
     , info : Info.State LevelEndPrompt
-    , pointer : Pointer
+    , pointer : Touch.Point
     }
 
 
@@ -76,8 +80,8 @@ type Msg
     | NextTutorialStep
     | HideTutorialStep
     | StopMove
-    | StartMove Move Pointer
-    | CheckMove Pointer
+    | StartMove Move Touch.Point
+    | CheckMove Touch.Point
     | ReleaseTile
     | SetLeavingTiles
     | SetFallingTiles
@@ -171,18 +175,18 @@ init config context =
 
 
 initialState : Level.LevelConfig -> Context -> Model
-initialState { tileSettings, boardSize, moves, tutorial } context =
+initialState config context =
     { context = context
-    , tutorial = tutorial
-    , board = Board.fromMoves []
-    , scores = Scores.init tileSettings
+    , tutorial = config.tutorial
+    , board = Board.empty
+    , scores = Scores.init config.tileSettings
     , isDragging = False
-    , remainingMoves = moves
-    , tileSettings = tileSettings
-    , boardSize = boardSize
+    , remainingMoves = config.moves
+    , tileSettings = config.tileSettings
+    , boardSize = config.boardSize
     , levelStatus = NotStarted
     , info = Info.hidden
-    , pointer = { y = 0, x = 0 }
+    , pointer = Touch.origin
     }
 
 
@@ -582,7 +586,7 @@ decrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Pointer -> Model -> Model
+handleStartMove : Move -> Touch.Point -> Model -> Model
 handleStartMove move pointer model =
     { model
         | isDragging = True
@@ -592,7 +596,7 @@ handleStartMove move pointer model =
     }
 
 
-checkMoveFromPosition : Pointer -> Model -> Model
+checkMoveFromPosition : Touch.Point -> Model -> Model
 checkMoveFromPosition pointer model =
     case moveFromPosition pointer model of
         Just move ->
@@ -615,7 +619,7 @@ handleCheckMove move model =
 -- Move from position
 
 
-moveFromPosition : Pointer -> Model -> Maybe Move
+moveFromPosition : Touch.Point -> Model -> Maybe Move
 moveFromPosition pointer model =
     moveFromCoord model.board <| coordsFromPosition pointer model
 
@@ -627,7 +631,7 @@ moveFromCoord board coord =
         |> Maybe.map (Move.move coord)
 
 
-coordsFromPosition : Pointer -> Model -> Coord
+coordsFromPosition : Touch.Point -> Model -> Coord
 coordsFromPosition pointer model =
     let
         viewModel =
@@ -686,7 +690,7 @@ handleExitPrompt model =
         Delay.trigger ExitLevel
 
     else
-        Delay.trigger <| ShowInfo ExitAreYouSure
+        Delay.trigger (ShowInfo ExitAreYouSure)
 
 
 handleRestartPrompt : Model -> Cmd Msg
@@ -695,7 +699,7 @@ handleRestartPrompt model =
         Delay.trigger RestartLevel
 
     else
-        Delay.trigger <| ShowInfo RestartAreYouSure
+        Delay.trigger (ShowInfo RestartAreYouSure)
 
 
 
@@ -704,58 +708,51 @@ handleRestartPrompt model =
 
 view : Model -> Html Msg
 view model =
-    div
+    Layout.view
         [ handleStop model
         , handleCheck model
         , disableIfComplete model
+        , behindContent (topBar model)
+        , behindContent (currentMoveOverlay model)
+        , behindContent (lineDrag model)
+        , inFront (infoWindow model)
+        , inFront (tutorialOverlay model)
         ]
-        [ topBar model
-        , tutorialOverlay model
-        , renderInfoWindow model
-        , currentMoveOverlay model
-        , lineDrag model
-        , renderBoard model
-        , moveCaptureArea
-        ]
+        (renderBoard model)
 
 
-topBar : Model -> Html msg
+topBar : Model -> Element msg
 topBar =
-    topBarViewModel >> TopBar.view
+    topBarViewModel >> TopBar.view >> html
 
 
-handleStop : Model -> Attribute Msg
+handleStop : Model -> Element.Attribute Msg
 handleStop model =
-    Attribute.applyIf model.isDragging <| onPointerUp StopMove
+    Element.applyIf model.isDragging (Touch.onRelease StopMove)
 
 
-handleCheck : Model -> Attribute Msg
+handleCheck : Model -> Element.Attribute Msg
 handleCheck model =
-    Attribute.applyIf model.isDragging <| onPointerMove CheckMove
+    Element.applyIf model.isDragging (Touch.onMove CheckMove)
 
 
-disableIfComplete : Model -> Attribute msg
+disableIfComplete : Model -> Element.Attribute msg
 disableIfComplete model =
-    Attribute.applyIf (Scores.allComplete model.scores) <| class "touch-disabled"
+    Element.applyIf (Scores.allComplete model.scores) Element.disableTouch
 
 
-moveCaptureArea : Html msg
-moveCaptureArea =
-    div [ class "w-100 h-100 fixed z-1 top-0" ] []
-
-
-lineDrag : Model -> Html msg
+lineDrag : Model -> Element msg
 lineDrag =
-    lineDragViewModel >> LineDrag.view
+    lineDragViewModel >> LineDrag.view >> html
 
 
 
 -- Tutorial Overlay
 
 
-tutorialOverlay : Model -> Html msg
+tutorialOverlay : Model -> Element msg
 tutorialOverlay =
-    Tutorial.view << tutorialViewModel
+    tutorialViewModel >> Tutorial.view >> html
 
 
 tutorialViewModel : Model -> Tutorial.ViewModel
@@ -771,12 +768,14 @@ tutorialViewModel model =
 -- Board
 
 
-renderBoard : Model -> Html Msg
+renderBoard : Model -> Element Msg
 renderBoard model =
-    boardLayout model
-        [ div [ class "relative z-5" ] <| renderTiles model
-        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
-        ]
+    html
+        (boardLayout model
+            [ div [ class "relative z-5" ] (renderTiles model)
+            , div [ class "absolute top-0 left-0 z-0" ] (renderLines model)
+            ]
+        )
 
 
 renderTiles : Model -> List (Html Msg)
@@ -802,23 +801,22 @@ renderTile model move =
         ]
 
 
-currentMoveOverlay : Model -> Html msg
+currentMoveOverlay : Model -> Element msg
 currentMoveOverlay model =
     let
         viewModel =
             boardViewModel model
-
-        moveLayer =
-            currentMoveLayer model
     in
-    div
-        [ style
-            [ Style.width <| toFloat <| Board.width viewModel
-            , top <| toFloat <| Board.offsetTop viewModel
+    html
+        (div
+            [ style
+                [ Style.width (toFloat (Board.width viewModel))
+                , Style.top (toFloat (Board.offsetTop viewModel))
+                ]
+            , class "z-6 touch-disabled absolute left-0 right-0 flex center"
             ]
-        , class "z-6 touch-disabled absolute left-0 right-0 flex center"
-        ]
-        moveLayer
+            (currentMoveLayer model)
+        )
 
 
 currentMoveLayer : Model -> List (Html msg)
@@ -858,9 +856,11 @@ boardLayout model =
         ]
 
 
-handleMoveEvents : Model -> Move -> Attribute Msg
+handleMoveEvents : Model -> Move -> Html.Attribute Msg
 handleMoveEvents model move =
-    Attribute.applyIf (not model.isDragging) <| onPointerDown <| StartMove move
+    Attribute.applyIf
+        (not model.isDragging)
+        (Pointer.onPointerDown (StartMove move))
 
 
 mapTiles : (Move -> a) -> Board -> List a
@@ -872,35 +872,22 @@ mapTiles f =
 -- Info Window
 
 
-renderInfoWindow : Model -> Html Msg
-renderInfoWindow { info, context } =
-    Info.content info
-        |> Maybe.map (renderInfoContent context.successMessageIndex)
-        |> Maybe.map (infoContainer info)
-        |> Maybe.withDefault (span [] [])
+infoWindow : Model -> Element Msg
+infoWindow { info, context } =
+    Info.view
+        { content = infoContent context
+        , info = info
+        }
 
 
-infoContainer : Info.State LevelEndPrompt -> Html Msg -> Html Msg
-infoContainer info rendered =
-    case Info.content info of
-        Just RestartAreYouSure ->
-            div [ onClick HideInfo ] [ Info.view info rendered ]
-
-        Just ExitAreYouSure ->
-            div [ onClick HideInfo ] [ Info.view info rendered ]
-
-        _ ->
-            Info.view info rendered
-
-
-renderInfoContent : Int -> LevelEndPrompt -> Html Msg
-renderInfoContent successMessageIndex infoContent =
-    case infoContent of
+infoContent : Context -> LevelEndPrompt -> Element Msg
+infoContent context prompt =
+    case prompt of
         Success ->
-            div [ class "pv5 f3 tracked-mega" ] [ text <| successMessage successMessageIndex ]
+            Text.text [] (successMessage context)
 
         NoMovesLeft ->
-            div [ class "pv5 f3 tracked-mega" ] [ text "No more moves!" ]
+            Text.text [] "No more moves!"
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife
@@ -909,13 +896,16 @@ renderInfoContent successMessageIndex infoContent =
             areYouSure "Exit" ExitLevelLoseLife
 
 
-successMessage : Int -> String
-successMessage i =
-    let
-        ii =
-            modBy (Dict.size successMessages) i
-    in
-    Dict.get ii successMessages |> Maybe.withDefault "Win!"
+successMessage : Context -> String
+successMessage context =
+    successMessages
+        |> Dict.get (nextMessageIndex context)
+        |> Maybe.withDefault "Win!"
+
+
+nextMessageIndex : Context -> Int
+nextMessageIndex context =
+    modBy (Dict.size successMessages) context.successMessageIndex
 
 
 successMessages : Dict Int String
@@ -927,47 +917,22 @@ successMessages =
         ]
 
 
-areYouSure : String -> Msg -> Html Msg
+areYouSure : String -> Msg -> Element Msg
 areYouSure yesText msg =
-    div [ class "pv4" ]
-        [ p [ class "f3 ma0 tracked" ] [ text "Are you sure?" ]
-        , p [ class "f7 tracked", style [ marginTop 15, marginBottom 35 ] ] [ text "You will lose a life" ]
+    column []
+        [ Text.text [] "Are you sure?"
+        , Text.text [] "You will lose a life"
         , yesNoButton yesText msg
         ]
 
 
-yesNoButton : String -> Msg -> Html Msg
+yesNoButton : String -> Msg -> Element Msg
 yesNoButton yesText msg =
-    div []
-        [ div
-            [ class "dib ttu tracked-mega f6"
-            , onClick HideInfo
-            , style
-                [ color Color.white
-                , backgroundColor Color.firrGreen
-                , paddingLeft 25
-                , paddingRight 15
-                , paddingTop 10
-                , paddingBottom 10
-                , leftPill
-                ]
-            ]
-            [ text "X" ]
-        , div
-            [ class "dib ttu tracked-mega f6"
-            , onClick msg
-            , style
-                [ color Color.white
-                , backgroundColor Color.gold
-                , paddingLeft 15
-                , paddingRight 20
-                , paddingTop 10
-                , paddingBottom 10
-                , rightPill
-                ]
-            ]
-            [ text yesText ]
-        ]
+    Cancel.button
+        { onCancel = HideInfo
+        , onClick = msg
+        , confirmText = yesText
+        }
 
 
 
@@ -981,7 +946,7 @@ boardViewModel model =
     }
 
 
-topBarViewModel : Model -> TopBar.ViewModel
+topBarViewModel : Model -> TopBar.Model
 topBarViewModel model =
     { window = model.context.window
     , tileSettings = model.tileSettings

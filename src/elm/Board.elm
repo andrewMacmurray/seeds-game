@@ -7,6 +7,7 @@ module Board exposing
     , activeSeedType
     , blocks
     , coords
+    , empty
     , filter
     , filterBlocks
     , findBlockAt
@@ -245,6 +246,11 @@ range n =
 fromMoves : List Move -> Board
 fromMoves =
     List.map fromMove >> Dict.fromList >> wrap
+
+
+empty : Board
+empty =
+    fromMoves []
 
 
 

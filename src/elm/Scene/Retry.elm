@@ -127,7 +127,7 @@ tryAgain =
     Cancel.button
         { onCancel = ReturnToHubClicked
         , onClick = RestartLevelClicked
-        , text = "Try Again?"
+        , confirmText = "Try Again?"
         }
 
 
