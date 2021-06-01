@@ -16,6 +16,7 @@ module Utils.Svg exposing
     , translated
     , viewBox_
     , width_
+    , window
     , windowViewBox_
     , x_
     , y_
@@ -25,15 +26,27 @@ import Css.Style as Style
 import Css.Transform as Transform
 import Css.Unit exposing (px)
 import Element
-import Svg exposing (Attribute)
+import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
-import Window exposing (Window)
+import Window exposing (Window, vh, vw)
 
 
 fill_ : Element.Color -> Attribute msg
 fill_ color =
     Svg.Attributes.fill (Color.toString color)
+
+
+window : Window -> List (Attribute msg) -> List (Svg.Svg msg) -> Svg msg
+window w attrs =
+    Svg.svg
+        (List.append
+            [ windowViewBox_ w
+            , width_ (vw w)
+            , height_ (vh w)
+            ]
+            attrs
+        )
 
 
 windowViewBox_ : Window -> Attribute msg

@@ -9,7 +9,7 @@ import Css.Transform as Transform
 import Css.Transition as Transition exposing (delay, linear, transition)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
-import Utils.Svg exposing (..)
+import Utils.Svg as Svg exposing (..)
 import View.Landscape.SteepHills as Hills
 import Window exposing (Window)
 
@@ -55,11 +55,8 @@ view window env state =
         ( elements4Left, elements4Right ) =
             hillElements4 window env
     in
-    Svg.svg
-        [ windowViewBox_ window
-        , preserveAspectRatio "none"
-        , class "fixed z-1 top-0"
-        ]
+    Svg.window window
+        [ preserveAspectRatio "none" ]
         [ Svg.g [ hillStyles window state (hillOffset -250 -400) 0 ]
             [ Hills.layer window
                 slope
