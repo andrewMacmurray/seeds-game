@@ -1,5 +1,6 @@
 module Utils.Update exposing
-    ( updateModel
+    ( andThenWithCmds
+    , updateModel
     , updateWith
     , withCmds
     )
@@ -20,3 +21,10 @@ updateModel =
 withCmds : List (Cmd msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
 withCmds cmds ( model, cmd ) =
     ( model, Cmd.batch (cmd :: cmds) )
+
+
+andThenWithCmds : List (model -> Cmd msg) -> model -> ( model, Cmd msg )
+andThenWithCmds toCmds model =
+    ( model
+    , Cmd.batch <| List.map (\f -> f model) toCmds
+    )

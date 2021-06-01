@@ -47,6 +47,7 @@ import Seed
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
+import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
 
 
@@ -163,7 +164,7 @@ canRestartLevel model =
 init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
     initialState config context
-        |> withCmds
+        |> andThenWithCmds
             [ generateBoard config
             , handleStartTutorial
             ]
@@ -183,13 +184,6 @@ initialState { tileSettings, boardSize, moves, tutorial } context =
     , info = Info.hidden
     , pointer = { y = 0, x = 0 }
     }
-
-
-withCmds : List (model -> Cmd msg) -> model -> ( model, Cmd msg )
-withCmds toCmds model =
-    ( model
-    , Cmd.batch <| List.map (\f -> f model) toCmds
-    )
 
 
 handleStartTutorial : Model -> Cmd Msg
@@ -341,7 +335,7 @@ growSeedPodsSequence board =
     Delay.sequence
         [ ( 0, EndMove )
         , ( 0, SetGrowingSeedPods )
-        , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
+        , ( 800, GrowPodsToSeeds (Board.activeSeedType board) )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         , ( 500, NextTutorialStep )
@@ -370,7 +364,7 @@ burstTilesSequence board generateSetting =
                 [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetGrowingSeedPods )
-                , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
+                , ( 800, GrowPodsToSeeds (Board.activeSeedType board) )
                 , ( 0, CheckLevelComplete )
                 , ( 600, ResetGrowingSeeds )
                 , ( 500, NextTutorialStep )
