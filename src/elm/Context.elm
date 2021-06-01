@@ -7,8 +7,8 @@ module Context exposing
     , decrementLife
     , disableMenu
     , hideLoadingScreen
-    , incrementMessageIndex
     , incrementProgress
+    , nextMessage
     , openMenu
     , setCurrentLevel
     , setWindow
@@ -35,8 +35,8 @@ type alias Context =
     }
 
 
-incrementMessageIndex : Context -> Context
-incrementMessageIndex context =
+nextMessage : Context -> Context
+nextMessage context =
     { context | successMessageIndex = context.successMessageIndex + 1 }
 
 
