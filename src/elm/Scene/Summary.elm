@@ -207,7 +207,7 @@ incrementProgress model =
         , context =
             model.context
                 |> Context.incrementProgress Worlds.all
-                |> Context.incrementMessageIndex
+                |> Context.nextMessage
     }
 
 

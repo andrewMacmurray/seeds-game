@@ -4,7 +4,6 @@ module Css.Color exposing
     , blockYellow
     , blueGrey
     , brown
-    , brownYellow
     , chocolate
     , crimson
     , darkBlue
@@ -21,7 +20,6 @@ module Css.Color exposing
     , lightGold
     , lightGray
     , lightGreen
-    , lightGreyYellow
     , lightYellow
     , meadowGreen
     , midnightBlue
@@ -32,7 +30,6 @@ module Css.Color exposing
     , rgb
     , seedPodGradient
     , silver
-    , skyGreen
     , transparent
     , transparentGray
     , washedYellow
@@ -138,19 +135,9 @@ lightGold =
     rgb 255 199 19
 
 
-lightGreyYellow : Color
-lightGreyYellow =
-    rgb 255 223 119
-
-
 darkYellow : Color
 darkYellow =
     rgb 201 153 6
-
-
-brownYellow : Color
-brownYellow =
-    rgb 105 88 35
 
 
 blockYellow : Color
@@ -201,11 +188,6 @@ green =
 lightGreen : Color
 lightGreen =
     rgb 119 193 66
-
-
-skyGreen : Color
-skyGreen =
-    rgb 164 255 186
 
 
 meadowGreen : Color

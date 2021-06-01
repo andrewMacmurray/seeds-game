@@ -4,15 +4,16 @@ module Scene.Intro.GrowingSeeds exposing
     )
 
 import Board.Tile as Tile
-import Css.Animation exposing (animation, delay, ease, easeOut)
-import Css.Style exposing (..)
-import Css.Transform as Transform
-import Css.Transition exposing (transition)
-import Html exposing (..)
-import Html.Attributes exposing (class)
+import Element exposing (..)
+import Element.Animation.Bounce as Bounce
+import Element.Scale as Scale
+import Element.Seed as Seed
+import Element.Transition as Transition
 import Seed exposing (Seed(..))
-import Utils.Attribute as Attribute
-import View.Seed as Seed
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Utils.Animated as Animated
+import Utils.Element as Element
 import Window exposing (Window)
 
 
@@ -21,97 +22,139 @@ type State
     | Leaving
 
 
-view : Window -> State -> Html msg
-view window vis =
-    let
-        size =
-            Window.size window
-    in
-    div [ class "flex justify-center" ]
-        [ sideSeedsContainer vis <| List.reverse <| List.map (growingSeed window) (seedsLeft size)
-        , div [ mainSeedStyles vis ] [ growingSeed window ( 0, Sunflower, 1.1 ) ]
-        , sideSeedsContainer vis <| List.map (growingSeed window) (seedsRight size)
+view : Window -> State -> Element msg
+view window state =
+    row
+        [ centerX
+        , spacing Scale.extraSmall
+        , moveUp 20
+        ]
+        [ sideSeeds window state (List.reverse (seedsLeft window))
+        , viewMainSeed window state
+        , sideSeeds window state (seedsRight window)
         ]
 
 
-mainSeedStyles : State -> Attribute msg
-mainSeedStyles vis =
-    case vis of
+viewMainSeed : Window -> State -> Element msg
+viewMainSeed window state =
+    case state of
         Leaving ->
-            style
-                [ animation "slide-down-scale-out" 2000 [ delay 500, ease ]
-                , transformOrigin "bottom"
-                ]
-
-        _ ->
-            Attribute.empty
-
-
-sideSeedsContainer : State -> List (Html msg) -> Html msg
-sideSeedsContainer vis =
-    case vis of
-        Leaving ->
-            div [ class "o-0 flex justify-center", style [ transition "opacity" 1500 [] ] ]
+            Animated.el slideDownScaleOut [] (staticSeed window mainSeed)
 
         Entering ->
-            div [ class "o-100 flex justify-center", style [ transition "opacity" 1500 [] ] ]
+            growingSeed window mainSeed
 
 
-growingSeed : Window -> ( Int, Seed, Float ) -> Html msg
-growingSeed window ( index, seed, scale ) =
-    let
-        delayMs =
-            index * 100
-    in
-    div [ class "flex items-end" ]
-        [ div
-            [ style
-                [ width <| 50 * scale * Tile.scale window
-                , marginLeft 5
-                , marginRight 5
-                , transform [ Transform.scale 0 ]
-                , transformOrigin "center"
-                , animation "bulge-elastic" 500 [ easeOut, delay delayMs ]
-                ]
-            , class "growing-seed"
-            ]
-            [ Seed.view seed ]
+slideDownScaleOut : Animation
+slideDownScaleOut =
+    Animation.steps
+        { startAt = [ P.y 0, P.scale 1 ]
+        , options = [ Animation.delay 500, Animation.easeInOutBack ]
+        }
+        [ Animation.step 1000 [ P.y 50, P.scale 1 ]
+        , Animation.step 750 [ P.y 50, P.scale 0 ]
         ]
 
 
-seedsLeft : Window.Size -> List ( Int, Seed, Float )
-seedsLeft screenSize =
-    case screenSize of
+sideSeeds : Window -> State -> List GrowingSeed -> Element msg
+sideSeeds window state seeds =
+    row
+        [ Transition.alpha 1000
+        , Element.visibleIf (isEntering state)
+        , spacing Scale.extraSmall
+        ]
+        (List.map (growingSeed window) seeds)
+
+
+isEntering : State -> Bool
+isEntering state =
+    case state of
+        Entering ->
+            True
+
+        Leaving ->
+            False
+
+
+growingSeed : Window -> GrowingSeed -> Element msg
+growingSeed window seed =
+    Animated.el (bulgeFade seed)
+        [ Element.originBottom
+        , alignBottom
+        ]
+        (staticSeed window seed)
+
+
+staticSeed : Window -> GrowingSeed -> Element msg
+staticSeed window seed =
+    Seed.view (seedSize window seed) seed.seed
+
+
+seedSize : Window -> GrowingSeed -> Seed.Options
+seedSize window seed =
+    Seed.size (round (50 * seed.scale * Tile.scale window))
+
+
+bulgeFade : GrowingSeed -> Animation
+bulgeFade seed =
+    Bounce.animation
+        { options = [ Animation.delay (seed.order * 100) ]
+        , duration = 1800
+        , property = P.scale
+        , bounce = Bounce.springy
+        , from = 0
+        , to = 1
+        }
+
+
+type alias GrowingSeed =
+    { order : Int
+    , seed : Seed
+    , scale : Float
+    }
+
+
+mainSeed : GrowingSeed
+mainSeed =
+    { order = 0
+    , seed = Sunflower
+    , scale = 1.1
+    }
+
+
+seedsLeft : Window -> List GrowingSeed
+seedsLeft window =
+    case Window.size window of
         Window.Small ->
-            [ ( 3, Marigold, 0.7 )
-            , ( 5, Chrysanthemum, 0.5 )
-            , ( 1, Rose, 0.8 )
-            , ( 7, Lupin, 0.5 )
+            [ { order = 3, seed = Marigold, scale = 0.7 }
+            , { order = 5, seed = Chrysanthemum, scale = 0.5 }
+            , { order = 1, seed = Rose, scale = 0.8 }
+            , { order = 7, seed = Lupin, scale = 0.5 }
             ]
 
         _ ->
-            [ ( 3, Marigold, 0.7 )
-            , ( 9, Chrysanthemum, 0.5 )
-            , ( 7, Rose, 0.8 )
-            , ( 1, Lupin, 1 )
-            , ( 5, Marigold, 0.6 )
+            [ { order = 3, seed = Marigold, scale = 0.7 }
+            , { order = 9, seed = Chrysanthemum, scale = 0.5 }
+            , { order = 7, seed = Rose, scale = 0.8 }
+            , { order = 1, seed = Lupin, scale = 1 }
+            , { order = 5, seed = Marigold, scale = 0.6 }
             ]
 
 
-seedsRight : Window.Size -> List ( Int, Seed, Float )
-seedsRight screenSize =
-    case screenSize of
+seedsRight : Window -> List GrowingSeed
+seedsRight window =
+    case Window.size window of
         Window.Small ->
-            [ ( 4, Chrysanthemum, 0.6 )
-            , ( 6, Marigold, 0.7 )
-            , ( 2, Sunflower, 0.5 )
-            , ( 8, Lupin, 0.5 )
+            [ { order = 4, seed = Chrysanthemum, scale = 0.6 }
+            , { order = 6, seed = Marigold, scale = 0.7 }
+            , { order = 2, seed = Sunflower, scale = 0.5 }
+            , { order = 8, seed = Lupin, scale = 0.5 }
             ]
 
         _ ->
-            [ ( 10, Chrysanthemum, 0.6 )
-            , ( 2, Marigold, 0.7 )
-            , ( 8, Sunflower, 0.5 )
-            , ( 6, Rose, 1 )
-            , ( 4, Lupin, 0.8 )
+            [ { order = 10, seed = Chrysanthemum, scale = 0.6 }
+            , { order = 2, seed = Marigold, scale = 0.7 }
+            , { order = 8, seed = Sunflower, scale = 0.5 }
+            , { order = 6, seed = Rose, scale = 1 }
+            , { order = 4, seed = Lupin, scale = 0.8 }
             ]

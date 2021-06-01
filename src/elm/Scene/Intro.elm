@@ -9,19 +9,22 @@ module Scene.Intro exposing
     )
 
 import Context exposing (Context)
-import Css.Animation exposing (animation)
-import Css.Color as Color
-import Css.Style exposing (..)
-import Css.Transition exposing (transitionAll)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Events exposing (onClick)
+import Element.Layout as Layout
+import Element.Palette as Palette
+import Element.Scale as Scale
+import Element.Text as Text
+import Element.Transition as Transition
 import Exit exposing (continue, exit)
-import Html exposing (..)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Html exposing (Html)
 import Scene.Intro.DyingLandscape as DL
 import Scene.Intro.GrowingSeeds as GS
 import Scene.Intro.SunflowerMeadow as SM
 import Utils.Delay exposing (sequence)
-import Window exposing (Window)
+import Utils.Element as Element
+import Window exposing (vh)
 
 
 
@@ -31,9 +34,9 @@ import Window exposing (Window)
 type alias Model =
     { context : Context
     , scene : Scene
-    , backdrop : String
+    , background : Color
     , text : String
-    , textColor : String
+    , textColor : Color
     , textVisible : Bool
     }
 
@@ -52,9 +55,9 @@ type Msg
     | InitRollingHills
     | ShowRollingHills
     | BloomFlowers
-    | SetBackdrop String
+    | SetBackground Color
     | SetText String
-    | SetTextColor String
+    | SetTextColor Color
     | ShowText
     | HideText
     | KillEnvironment
@@ -90,9 +93,9 @@ initialState : Context -> Model
 initialState context =
     { context = context
     , scene = DyingLandscape DL.Alive DL.Hidden
-    , backdrop = Color.transparent
+    , background = Palette.transparent
     , text = "Our world is dying"
-    , textColor = Color.brownYellow
+    , textColor = Palette.brownYellow
     , textVisible = False
     }
 
@@ -100,24 +103,23 @@ initialState context =
 introSequence : Cmd Msg
 introSequence =
     sequence
-        [ ( 100, SetBackdrop Color.skyGreen )
+        [ ( 100, SetBackground Palette.green9 )
         , ( 1000, ShowDyingLandscape )
-        , ( 4000, SetBackdrop Color.lightGreyYellow )
+        , ( 4000, SetBackground Palette.lightGreyYellow )
         , ( 1000, ShowText )
         , ( 1000, KillEnvironment )
         , ( 2000, HideDyingLandscape )
         , ( 1000, HideText )
         , ( 1000, SetText "We must save our seeds" )
-        , ( 500, SetBackdrop Color.lightGold )
+        , ( 500, SetBackground Palette.lightGold )
         , ( 500, ShowGrowingSeeds )
         , ( 1500, HideText )
         , ( 500, HideGrowingSeeds )
-        , ( 0, SetTextColor Color.white )
+        , ( 0, SetTextColor Palette.white )
         , ( 500, SetText "To bloom again on a new world" )
         , ( 1500, InitRollingHills )
         , ( 100, ShowRollingHills )
-        , ( 500, SetBackdrop Color.meadowGreen )
-        , ( 500, BloomFlowers )
+        , ( 3000, BloomFlowers )
         , ( 4000, HideText )
         , ( 1500, IntroComplete )
         ]
@@ -163,8 +165,8 @@ update msg model =
         HideText ->
             continue { model | textVisible = False } []
 
-        SetBackdrop bg ->
-            continue { model | backdrop = bg } []
+        SetBackground bg ->
+            continue { model | background = bg } []
 
         SetTextColor color ->
             continue { model | textColor = color } []
@@ -179,67 +181,66 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div
-        [ style
-            [ background model.backdrop
-            , transitionAll 1500 []
-            ]
-        , class "fixed top-0 left-0 w-100 h-100 z-1"
+    Layout.view
+        [ Background.color model.background
+        , Transition.background 1500
+        , behindContent (viewScene model)
         ]
-        [ p
-            [ style
-                [ textOffsetTop model.context.window
-                , textOffsetBottom model.context.window
-                , color model.textColor
-                , transitionAll 1000 []
-                , showIf model.textVisible
-                ]
-            , class "tc f3 relative z-2"
+        (column
+            [ width fill
+            , height fill
             ]
-            [ text model.text ]
-        , skipButton
-        , renderScene model
-        ]
+            [ sceneText model
+            , skipButton
+            ]
+        )
 
 
-skipButton : Html Msg
+sceneText : Model -> Element msg
+sceneText model =
+    Text.text
+        [ Text.color model.textColor
+        , Element.visibleIf model.textVisible
+        , Transition.alpha 1000
+        , Text.large
+        , moveDown (vh model.context.window / 5)
+        , centerX
+        ]
+        model.text
+
+
+skipButton : Element Msg
 skipButton =
-    div [ class "fixed bottom-1 w-100 z-6 flex", style [ opacity 0.6 ] ]
-        [ p
-            [ class "ttu dib center pointer tracked-mega f6"
-            , style
-                [ color Color.white
-                , animation "fade-in" 1000 []
-                ]
-            , onClick IntroComplete
-            ]
-            [ text "skip" ]
+    Text.text
+        [ padding Scale.large
+        , Text.white
+        , alignBottom
+        , centerX
+        , onClick IntroComplete
+        , pointer
+        , Text.spaced
         ]
+        "skip"
 
 
-renderScene : Model -> Html Msg
-renderScene model =
+viewScene : Model -> Element Msg
+viewScene model =
+    el
+        [ centerX
+        , centerY
+        , width fill
+        ]
+        (viewScene_ model)
+
+
+viewScene_ : Model -> Element Msg
+viewScene_ model =
     case model.scene of
         DyingLandscape environment vis ->
-            DL.view model.context.window environment vis
+            html (DL.view model.context.window environment vis)
 
         GrowingSeeds vis ->
             GS.view model.context.window vis
 
         SunflowerMeadow vis ->
-            SM.view model.context.window vis
-
-
-textOffsetTop : Window -> Style
-textOffsetTop window =
-    marginTop <| toFloat window.height / 5
-
-
-textOffsetBottom : Window -> Style
-textOffsetBottom window =
-    case Window.width window of
-        Window.Narrow ->
-            marginBottom 50
-
-        _ ->
-            marginBottom 60
+            html (SM.view model.context.window vis)

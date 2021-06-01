@@ -8,7 +8,6 @@ module Css.Animation exposing
     , cubicBezier
     , delay
     , ease
-    , easeOut
     , embed
     , frame
     , infinite
@@ -58,11 +57,6 @@ delay duration =
 ease : Option
 ease =
     option <| animationTimingFunction "ease"
-
-
-easeOut : Option
-easeOut =
-    option <| animationTimingFunction "ease-out"
 
 
 linear : Option

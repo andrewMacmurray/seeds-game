@@ -6,9 +6,11 @@ module Utils.Element exposing
     , id
     , maybe
     , onClickIf
+    , originBottom
     , square
     , style
     , verticalGap
+    , visibleIf
     )
 
 import Element exposing (..)
@@ -41,9 +43,23 @@ sized w h attrs =
     el (List.append [ width (px w), height (px h) ] attrs)
 
 
+visibleIf : Bool -> Attribute msg
+visibleIf condition =
+    if condition then
+        alpha 1
+
+    else
+        alpha 0
+
+
 disableTouch : Attribute msg
 disableTouch =
     class "touch-disabled"
+
+
+originBottom : Attribute msg
+originBottom =
+    style "transform-origin" "bottom"
 
 
 onClickIf : Bool -> msg -> Attribute msg
