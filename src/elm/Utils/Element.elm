@@ -8,7 +8,7 @@ module Utils.Element exposing
     , noZoom
     , onClickIf
     , originBottom
-    , showIf
+    , showIfJust
     , square
     , style
     , verticalGap
@@ -54,13 +54,9 @@ visibleIf condition =
         alpha 0
 
 
-showIf : Bool -> Element msg -> Element msg
-showIf condition el =
-    if condition then
-        el
-
-    else
-        none
+showIfJust : (a -> Element msg) -> Maybe a -> Element msg
+showIfJust toElement =
+    Maybe.map toElement >> Maybe.withDefault none
 
 
 disableTouch : Attribute msg

@@ -50,7 +50,7 @@ initScore { tileType, targetScore } =
         (Tile.TargetScore t) =
             Maybe.withDefault (Tile.TargetScore 0) targetScore
     in
-    ( Tile.hash tileType, Score t 0 )
+    ( Tile.toString tileType, Score t 0 )
 
 
 
@@ -77,7 +77,7 @@ addScoreFromMoves board scores =
 addToScore : Int -> Tile -> Scores -> Scores
 addToScore score tileType (Scores scores) =
     scores
-        |> Dict.update (Tile.hash tileType) (Maybe.map (updateScore score))
+        |> Dict.update (Tile.toString tileType) (Maybe.map (updateScore score))
         |> Scores
 
 
@@ -113,7 +113,7 @@ getScoreFor tileType =
 
 getScore : Tile -> Scores -> Maybe Score
 getScore tileType (Scores scores) =
-    Dict.get (Tile.hash tileType) scores
+    Dict.get (Tile.toString tileType) scores
 
 
 tileTypes : List Tile.Setting -> List Tile

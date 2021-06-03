@@ -1,4 +1,4 @@
-module Scene.Level.Board.Tile.Leaving2 exposing (Model, attributes)
+module Scene.Level.Board.Tile.Leaving2 exposing (Model, apply)
 
 import Board
 import Board.Block as Block exposing (Block)
@@ -6,8 +6,6 @@ import Board.Move as Move exposing (Move)
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (State(..), Tile(..))
 import Dict exposing (Dict)
-import Element exposing (..)
-import Element.Transition as Transition
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
 import Simple.Transition as Transition
@@ -26,80 +24,84 @@ type alias Model =
     }
 
 
+type alias TileModel model =
+    { model
+        | transition : Transition.Millis
+        , transitionDelay : Transition.Millis
+        , offsetX : Float
+        , offsetY : Float
+        , scale : Float
+        , alpha : Float
+    }
+
+
+apply : Model -> TileModel model -> TileModel model
+apply model tileModel =
+    if isLeaving (Move.block model.move) then
+        withExitOffsets model
+            { tileModel
+                | transition = 800
+                , transitionDelay = transitionDelay (Move.block model.move)
+                , scale = 0.5
+                , alpha = 0.2
+            }
+
+    else
+        tileModel
+
+
 
 -- Leaving Styles
 
 
-attributes : Model -> List (Attribute msg) -> List (Attribute msg)
-attributes model defaults =
-    let
-        block =
-            Move.block model.move
-    in
-    if Block.isLeaving block && not (Block.isBurst block) then
-        List.append (handleExitDirection model)
-            [ transition block
-            , alpha 0.2
-            ]
-
-    else
-        defaults
+isLeaving : Block -> Bool
+isLeaving block =
+    Block.isLeaving block && not (Block.isBurst block)
 
 
-transition : Block -> Attribute msg
-transition block =
-    Transition.all_
-        { duration = 800
-        , options = [ transitionDelay block ]
-        }
-        [ Transition.transform
-        , Transition.opacity
-        ]
-
-
-transitionDelay : Block -> Transition.Option
+transitionDelay : Block -> Int
 transitionDelay block =
-    Transition.delay (modBy 5 (Block.leavingOrder block) * 80)
+    modBy 5 (Block.leavingOrder block) * 80
 
 
-handleExitDirection : Model -> List (Attribute msg)
-handleExitDirection model =
+withExitOffsets : Model -> TileModel model -> TileModel model
+withExitOffsets model tileModel =
     case Move.tileState model.move of
         Leaving Rain _ ->
-            leavingAttributes Rain model
+            exitOffsetsFor Rain model tileModel
 
         Leaving Sun _ ->
-            leavingAttributes Sun model
+            exitOffsetsFor Sun model tileModel
 
         Leaving (Seed seedType) _ ->
-            leavingAttributes (Seed seedType) model
+            exitOffsetsFor (Seed seedType) model tileModel
 
         _ ->
-            []
+            tileModel
 
 
-leavingAttributes : Tile -> Model -> List (Attribute msg)
-leavingAttributes tileType model =
+exitOffsetsFor : Tile -> Model -> TileModel model -> TileModel model
+exitOffsetsFor tile_ model tileModel =
     leavingAttributes_ model
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault []
+        |> Dict.get (Tile.toString tile_)
+        |> Maybe.map (\offsets -> { tileModel | offsetX = offsets.x, offsetY = offsets.y })
+        |> Maybe.withDefault tileModel
 
 
-leavingAttributes_ : Model -> Dict String (List (Attribute msg))
+leavingAttributes_ : Model -> Dict String { x : Float, y : Float }
 leavingAttributes_ model =
     model.settings
         |> Scores.tileTypes
-        |> List.indexedMap (prepareLeavingStyle model)
+        |> List.indexedMap (toLeavingAttributes model)
         |> Dict.fromList
 
 
-prepareLeavingStyle : Model -> Int -> Tile -> ( String, List (Attribute msg) )
-prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.hash tileType
-    , [ moveRight (exitXDistance resourceBankIndex model)
-      , moveDown -(exitYDistance model)
-      , scale 0.5
-      ]
+toLeavingAttributes : Model -> Int -> Tile -> ( String, { x : Float, y : Float } )
+toLeavingAttributes model resourceBankIndex tile_ =
+    ( Tile.toString tile_
+    , { x = exitXDistance resourceBankIndex model
+      , y = -(exitYDistance model)
+      }
     )
 
 

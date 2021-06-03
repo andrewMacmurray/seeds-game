@@ -64,7 +64,7 @@ handleExitDirection move model =
 getLeavingStyle : Tile -> Model -> Style
 getLeavingStyle tileType model =
     newLeavingStyles model
-        |> Dict.get (Tile.hash tileType)
+        |> Dict.get (Tile.toString tileType)
         |> Maybe.withDefault Style.none
 
 
@@ -78,7 +78,7 @@ newLeavingStyles model =
 
 prepareLeavingStyle : Model -> Int -> Tile -> ( String, Style )
 prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.hash tileType
+    ( Tile.toString tileType
     , transform
         [ translate (exitXDistance resourceBankIndex model) -(exitYDistance model)
         , scale 0.5

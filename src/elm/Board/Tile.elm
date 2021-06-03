@@ -11,7 +11,6 @@ module Board.Tile exposing
     , get
     , growLeavingBurstToSeed
     , growingOrder
-    , hash
     , isBurst
     , isCollectible
     , isCurrentMove
@@ -43,6 +42,7 @@ module Board.Tile exposing
     , setToActive
     , setToDragging
     , setToFalling
+    , toString
     )
 
 import Seed
@@ -498,8 +498,8 @@ get tileState =
             Nothing
 
 
-hash : Tile -> String
-hash tileType =
+toString : Tile -> String
+toString tileType =
     case tileType of
         Rain ->
             "Rain"
@@ -514,12 +514,12 @@ hash tileType =
             Seed.name seed
 
         Burst tile ->
-            hashBurst tile
+            burstToString tile
 
 
-hashBurst : Maybe Tile -> String
-hashBurst =
-    Maybe.map (\tile -> "Burst" ++ hash tile) >> Maybe.withDefault "BurstEmpty"
+burstToString : Maybe Tile -> String
+burstToString =
+    Maybe.map (\tile -> "Burst" ++ toString tile) >> Maybe.withDefault "BurstEmpty"
 
 
 scale : Window.Window -> Float

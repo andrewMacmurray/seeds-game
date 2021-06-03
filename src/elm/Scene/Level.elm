@@ -797,7 +797,6 @@ renderTile model move =
             , window = model.context.window
             , settings = model.tileSettings
             , isBursting = Burst.isBursting model.board
-            , withTracer = True
             , move = move
             }
         )
@@ -821,12 +820,10 @@ currentMoveLayer model =
 renderCurrentMove : Model -> Move -> Element msg
 renderCurrentMove model move =
     if Block.isCurrentMove (Move.block move) && model.isDragging then
-        Tile.view
+        Tile.currentMove
             { boardSize = model.boardSize
             , window = model.context.window
             , settings = model.tileSettings
-            , isBursting = Burst.isBursting model.board
-            , withTracer = False
             , move = move
             }
 

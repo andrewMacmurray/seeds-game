@@ -2,6 +2,7 @@ module Element.Palette exposing (..)
 
 import Element exposing (Attribute, Color, rgb255, rgba255)
 import Element.Background as Background
+import Utils.Background as Background
 
 
 darkRed : Color
@@ -386,6 +387,11 @@ background2_ =
     rgb255 255 254 224
 
 
+seedPodBackground : Attribute msg
+seedPodBackground =
+    Background.split ( lime5, lime4 )
+
+
 
 -- Util
 
@@ -418,6 +424,11 @@ transparent =
 transparentGray : Color
 transparentGray =
     rgba255 149 149 149 0.2
+
+
+slateGrey : Color
+slateGrey =
+    rgb255 128 122 110
 
 
 white : Color

@@ -1,4 +1,4 @@
-module Scene.Level.Board.Tile.Wall exposing (view)
+module Scene.Level.Board.Tile.Wall exposing (view, view_)
 
 import Board.Block as Block
 import Board.Move as Move exposing (Move)
@@ -27,17 +27,17 @@ view : Model -> Element msg
 view model =
     case Move.block model.move of
         Block.Wall color ->
-            viewWall model color
+            view_ model color
 
         _ ->
             none
 
 
-viewWall : Model -> Color -> Element msg
-viewWall model color =
+view_ : { a | window : Window } -> Color -> Element msg
+view_ model color =
     Element.square (wallSize model) [ Background.color color ] none
 
 
-wallSize : Model -> Int
+wallSize : { a | window : Window } -> Int
 wallSize model =
     round (Tile.scale model.window * 45)
