@@ -1,16 +1,17 @@
-module Scene.Level.Board.Tile.Leaving exposing (Model, styles)
+module Scene.Level.Board.Tile.Leaving exposing
+    ( Model
+    , apply
+    )
 
 import Board
-import Board.Block as Block
+import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale, translate)
-import Css.Transition exposing (delay, transitionAll)
-import Dict
+import Dict exposing (Dict)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
+import Simple.Transition as Transition
 import Window exposing (Window)
 
 
@@ -21,68 +22,99 @@ import Window exposing (Window)
 type alias Model =
     { window : Window
     , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
+    , settings : List Tile.Setting
+    , move : Move
     }
 
 
+type alias TileModel model =
+    { model
+        | transition : Transition.Millis
+        , transitionDelay : Transition.Millis
+        , offsetX : Float
+        , offsetY : Float
+        , scale : Float
+        , alpha : Float
+    }
 
--- Leaving Styles
 
-
-styles : Model -> Move -> List Style
-styles model move =
-    let
-        block =
-            Move.block move
-    in
-    if Block.isLeaving block && not (Block.isBurst block) then
-        [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
-        , opacity 0.2
-        , handleExitDirection move model
-        ]
+apply : Model -> TileModel model -> TileModel model
+apply model tileModel =
+    if isLeaving (Move.block model.move) then
+        withExitOffsets model
+            { tileModel
+                | transition = 800
+                , transitionDelay = transitionDelay (Move.block model.move)
+                , scale = 0.5
+                , alpha = 0.2
+            }
 
     else
-        []
+        tileModel
 
 
-handleExitDirection : Move -> Model -> Style
-handleExitDirection move model =
-    case Block.tileState <| Move.block move of
+isLeaving : Block -> Bool
+isLeaving block =
+    Block.isLeaving block && not (Block.isBurst block)
+
+
+transitionDelay : Block -> Int
+transitionDelay block =
+    modBy 5 (Block.leavingOrder block) * 80
+
+
+withExitOffsets : Model -> TileModel model -> TileModel model
+withExitOffsets model tileModel =
+    case Move.tileState model.move of
         Leaving Rain _ ->
-            getLeavingStyle Rain model
+            exitOffsetsFor Rain model tileModel
 
         Leaving Sun _ ->
-            getLeavingStyle Sun model
+            exitOffsetsFor Sun model tileModel
 
         Leaving (Seed seedType) _ ->
-            getLeavingStyle (Seed seedType) model
+            exitOffsetsFor (Seed seedType) model tileModel
 
         _ ->
-            Style.none
+            tileModel
 
 
-getLeavingStyle : Tile -> Model -> Style
-getLeavingStyle tileType model =
-    newLeavingStyles model
-        |> Dict.get (Tile.toString tileType)
-        |> Maybe.withDefault Style.none
+exitOffsetsFor : Tile -> Model -> TileModel model -> TileModel model
+exitOffsetsFor tile_ model tileModel =
+    exitOffsets model
+        |> Dict.get (Tile.toString tile_)
+        |> Maybe.map (applyOffsets tileModel)
+        |> Maybe.withDefault tileModel
 
 
-newLeavingStyles : Model -> Dict.Dict String Style
-newLeavingStyles model =
-    model.tileSettings
+applyOffsets : TileModel model -> Offsets -> TileModel model
+applyOffsets tileModel offsets =
+    { tileModel
+        | offsetX = offsets.x
+        , offsetY = offsets.y
+    }
+
+
+exitOffsets : Model -> Dict String Offsets
+exitOffsets model =
+    model.settings
         |> Scores.tileTypes
-        |> List.indexedMap (prepareLeavingStyle model)
+        |> List.indexedMap (toOffsets model)
         |> Dict.fromList
 
 
-prepareLeavingStyle : Model -> Int -> Tile -> ( String, Style )
-prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.toString tileType
-    , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYDistance model)
-        , scale 0.5
-        ]
+type alias Offsets =
+    { x : Float
+    , y : Float
+    }
+
+
+toOffsets : Model -> Int -> Tile -> ( String, Offsets )
+toOffsets model resourceBankIndex tile_ =
+    ( Tile.toString tile_
+    , { x = exitXDistance resourceBankIndex model
+      , y = -(exitYDistance model)
+      }
     )
 
 
@@ -93,7 +125,7 @@ exitXDistance resourceBankIndex model =
             Board.scoreIconSize * 2
 
         scoreBarWidth =
-            model.tileSettings
+            model.settings
                 |> List.filter Scores.collectible
                 |> List.length
                 |> (*) scoreWidth

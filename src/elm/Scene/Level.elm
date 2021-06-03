@@ -40,7 +40,7 @@ import Lives
 import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile2 as Tile
+import Scene.Level.Board.Tile as Tile
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
