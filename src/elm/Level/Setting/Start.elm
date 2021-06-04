@@ -50,7 +50,7 @@ type Facing
 
 move : Tile -> Move
 move (Tile tile coord) =
-    Move.move coord <| Block.static tile
+    Move.move coord (Block.static tile)
 
 
 
@@ -59,7 +59,10 @@ move (Tile tile coord) =
 
 square : Tile -> { size : Int } -> List Tile
 square tile { size } =
-    rectangle tile { x = size, y = size }
+    rectangle tile
+        { x = size
+        , y = size
+        }
 
 
 line : Tile -> { length : Int, direction : Direction } -> List Tile
@@ -84,10 +87,11 @@ rectangle (Tile tileType coord) opts =
         y =
             Coord.y coord
     in
-    List.map (Tile tileType) <|
-        Coord.productXY
+    List.map (Tile tileType)
+        (Coord.productXY
             (List.range x (x + opts.x - 1))
             (List.range y (y + opts.y - 1))
+        )
 
 
 diagonal : Facing -> Int -> Tile -> List Tile

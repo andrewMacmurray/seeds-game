@@ -2,10 +2,11 @@ module Element.Animation.Bounce exposing
     ( Bounce
     , animation
     , springy
+    , stiff
     )
 
 import Simple.Animation as Animation exposing (Animation)
-import Simple.Animation.Property as P
+import Simple.Animation.Property exposing (Property)
 
 
 
@@ -16,7 +17,7 @@ type alias Options =
     { options : List Animation.Option
     , duration : Animation.Millis
     , bounce : Bounce
-    , property : Float -> P.Property
+    , property : Float -> Property
     , from : Float
     , to : Float
     }
@@ -36,6 +37,13 @@ springy : Bounce
 springy =
     { bounces = 5
     , stiffness = 1.5
+    }
+
+
+stiff : Bounce
+stiff =
+    { bounces = 3
+    , stiffness = 4
     }
 
 

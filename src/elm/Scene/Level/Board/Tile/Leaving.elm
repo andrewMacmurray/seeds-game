@@ -44,10 +44,17 @@ apply model tileModel =
         withExitOffsets model
             { tileModel
                 | transition = 800
-                , transitionDelay = transitionDelay (Move.block model.move)
+                , transitionDelay = delay (Move.block model.move)
                 , scale = 0.5
                 , alpha = 0.2
             }
+
+    else if Block.isLeaving (Move.block model.move) then
+        { tileModel
+            | transition = 800
+            , scale = 8
+            , alpha = 0
+        }
 
     else
         tileModel
@@ -58,8 +65,8 @@ isLeaving block =
     Block.isLeaving block && not (Block.isBurst block)
 
 
-transitionDelay : Block -> Int
-transitionDelay block =
+delay : Block -> Int
+delay block =
     modBy 5 (Block.leavingOrder block) * 80
 
 

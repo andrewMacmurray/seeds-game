@@ -1,5 +1,5 @@
 module Scene.Level.Board.Tile exposing
-    ( currentMove
+    ( overlay
     , view
     )
 
@@ -9,6 +9,7 @@ import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
 import Element exposing (..)
+import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
 import Element.Icon.Burst as Burst
 import Element.Palette as Palette
@@ -42,7 +43,7 @@ type alias Model =
 
 
 
--- View2
+-- View
 
 
 type alias Tile_ msg =
@@ -85,7 +86,7 @@ toTileModel model =
 -- View
 
 
-type alias CurrentMove =
+type alias Overlay =
     { window : Window
     , settings : List Tile.Setting
     , boardSize : Board.Size
@@ -93,17 +94,26 @@ type alias CurrentMove =
     }
 
 
-currentMove : CurrentMove -> Element msg
-currentMove model =
-    view_
-        (toTileModel
-            { isBursting = False
-            , window = model.window
-            , settings = model.settings
-            , boardSize = model.boardSize
-            , move = model.move
-            }
-        )
+overlay : Overlay -> Element msg
+overlay model =
+    if needsOverlay (Move.block model.move) then
+        view_
+            (toTileModel
+                { isBursting = False
+                , window = model.window
+                , settings = model.settings
+                , boardSize = model.boardSize
+                , move = model.move
+                }
+            )
+
+    else
+        none
+
+
+needsOverlay : Block -> Bool
+needsOverlay block =
+    Block.isDragging block || Block.isStatic block
 
 
 view : Model -> Element msg
@@ -112,27 +122,36 @@ view model =
         |> withDragging model
         |> withTracer model
         |> withLeaving model
+        |> withFalling model
         |> view_
 
 
 view_ : Tile_ msg -> Element msg
 view_ model =
-    el
-        [ width (px model.width)
-        , height (px model.height)
-        , scale model.scale
-        , alpha model.alpha
-        , transitionAll model
-        , moveRight model.offsetX
-        , moveDown model.offsetY
-        ]
+    animated model.animation
+        []
         (el
-            [ behindContent (viewTracer model)
-            , centerX
-            , centerY
+            [ width (px model.width)
+            , height (px model.height)
+            , scale model.scale
+            , alpha model.alpha
+            , transitionAll model
+            , moveRight model.offsetX
+            , moveDown model.offsetY
             ]
-            model.element
+            (el
+                [ behindContent (viewTracer model)
+                , centerX
+                , centerY
+                ]
+                model.element
+            )
         )
+
+
+animated : Maybe Animation -> List (Attribute msg) -> Element msg -> Element msg
+animated =
+    Maybe.map Animated.el >> Maybe.withDefault el
 
 
 viewTracer : Tile_ msg -> Element msg
@@ -252,59 +271,6 @@ transitionAll tile =
 
 
 
---viewTile : Model -> Element msg
---viewTile model =
---    viewTileWith (Tile.draggingStyles model.isBursting model.move) model
---
---
---viewTileWith : List Style -> Model -> Element msg
---viewTileWith extraStyles model =
---    html
---        (Html.div
---            [ Style.styles
---                [ extraStyles
---                , baseTileStyles model
---                ]
---            , Style.classes Tile.baseClasses
---            ]
---            [ innerTileElement (Move.block model.move) ]
---        )
---
---
---baseTileStyles : Model -> List Style
---baseTileStyles { move, window } =
---    let
---        block =
---            Move.block move
---    in
---    List.concat
---        [ Tile.growingStyles move
---        , Tile.enteringStyles move
---        , Tile.fallingStyles move
---        , Tile.releasingStyles move
---        , Style.size (roundFloat (Tile.size block * Tile.scale window))
---        , Tile.background block
---        ]
---
---
---roundFloat : Float -> Float
---roundFloat =
---    round >> toFloat
---
---
---innerTileElement : Block -> Html msg
---innerTileElement block =
---    case Block.tile block of
---        Just (Tile.Seed seedType) ->
---            Seed.view seedType
---
---        Just (Tile.Burst tile) ->
---            viewBurst block tile
---
---        _ ->
---            Html.span [] []
---
---
 -- Config
 
 
@@ -415,6 +381,28 @@ withLeaving model tileModel =
         , transitionDelay = updates.transitionDelay
         , alpha = updates.alpha
     }
+
+
+withFalling : Model -> Tile_ msg -> Tile_ msg
+withFalling model tileModel =
+    case Move.tileState model.move of
+        Tile.Falling _ distance ->
+            { tileModel | animation = Just (bounceDown model distance) }
+
+        _ ->
+            tileModel
+
+
+bounceDown : Model -> Int -> Animation
+bounceDown model distance =
+    Bounce.animation
+        { duration = 900
+        , options = []
+        , property = P.y
+        , from = 0
+        , to = toFloat (distance * tileHeight model.window)
+        , bounce = Bounce.stiff
+        }
 
 
 

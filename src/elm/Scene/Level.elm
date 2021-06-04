@@ -709,7 +709,7 @@ view model =
         , handleCheck model
         , disableIfComplete model
         , behindContent (topBar model)
-        , behindContent (currentMoveOverlay model)
+        , behindContent (moveOverlayLayer model)
         , behindContent (lineDrag model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
@@ -802,33 +802,29 @@ renderTile model move =
         )
 
 
-currentMoveOverlay : Model -> Element msg
-currentMoveOverlay model =
+moveOverlayLayer : Model -> Element msg
+moveOverlayLayer model =
     el
         [ Board.width2 (boardViewModel model)
         , Board.offsetTop2 (boardViewModel model)
         , centerX
         ]
-        (currentMoveLayer model)
+        (moveOverlayLayer_ model)
 
 
-currentMoveLayer : Model -> Element msg
-currentMoveLayer model =
-    toFloating (mapTiles (renderCurrentMove model) model.board)
+moveOverlayLayer_ : Model -> Element msg
+moveOverlayLayer_ model =
+    toFloating (mapTiles (moveOverlay model) model.board)
 
 
-renderCurrentMove : Model -> Move -> Element msg
-renderCurrentMove model move =
-    if Block.isCurrentMove (Move.block move) && model.isDragging then
-        Tile.currentMove
-            { boardSize = model.boardSize
-            , window = model.context.window
-            , settings = model.tileSettings
-            , move = move
-            }
-
-    else
-        none
+moveOverlay : Model -> Move -> Element msg
+moveOverlay model move =
+    Tile.overlay
+        { boardSize = model.boardSize
+        , window = model.context.window
+        , settings = model.tileSettings
+        , move = move
+        }
 
 
 renderLines : Model -> Element msg

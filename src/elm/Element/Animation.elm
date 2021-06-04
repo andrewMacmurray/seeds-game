@@ -3,7 +3,7 @@ module Element.Animation exposing
     , springy2
     )
 
-import Simple.Animation as Animation
+import Simple.Animation as Animation exposing (Animation)
 
 
 springy1 : Animation.Option
