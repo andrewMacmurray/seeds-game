@@ -15,9 +15,6 @@ animations =
         , slideDownScaleOut
         , exitDown
         , hover
-        , bulgeFadeN 2
-        , bulgeFadeN 10
-        , bulgeFadeN 20
         , shake
         , bulgeFade
         , bulge
@@ -119,13 +116,6 @@ bulgeFade =
             [ opacity 1, toScale 1 ]
         , frame 100
             [ opacity 0, toScale 2.5 ]
-        ]
-
-
-bulgeFadeN n =
-    keyframes ("bulge-fade-" ++ String.fromFloat n)
-        [ frame 0 [ opacity 1, toScale 1 ]
-        , frame 100 [ opacity 0, toScale n ]
         ]
 
 

@@ -188,7 +188,7 @@ l1Tutorial =
         tileHighlight =
             Tutorial.horizontalTiles { from = Coord.fromXY 3 7, length = 4 }
     in
-    Tutorial.tutorial (Tutorial.step "Pods grow into seeds" tileHighlight) []
+    Tutorial.tutorial (Tutorial.step "Connect pods to release seeds" tileHighlight) []
 
 
 l1StartTiles : List Start.Tile
@@ -202,7 +202,7 @@ l2Tutorial =
         tileHighlight =
             Tutorial.horizontalTiles { from = Coord.fromXY 3 4, length = 4 }
     in
-    Tutorial.tutorial (Tutorial.step "Pods will grow into seeds they touch" tileHighlight) []
+    Tutorial.tutorial (Tutorial.step "Pods release the same seed they touch" tileHighlight) []
 
 
 l2StartTiles : List Start.Tile

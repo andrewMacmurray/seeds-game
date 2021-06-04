@@ -206,7 +206,7 @@ l1Tutorial =
     in
     Tutorial.tutorial
         (Tutorial.step "Connect seeds to save them" highlightTiles)
-        [ Tutorial.autoStep "Fill the seed bank to complete the level" Tutorial.seedBank
+        [ Tutorial.autoStep "Collect seeds to complete the level" Tutorial.seedBank
         ]
 
 

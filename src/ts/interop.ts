@@ -15,34 +15,34 @@ export function bindPorts({
   scrollToCenter,
 }: Elm.Main.App["ports"]) {
   const { introMusic } = Audio.preload();
-
+  
   playIntroMusic.subscribe(() => {
     const musicPlaying = () => introMusicPlaying.send(true);
     Audio.playTrack(introMusic, musicPlaying);
   });
-
+  
   fadeMusic.subscribe(() => {
     Audio.longFade(introMusic);
   });
-
-  generateBounceKeyframes.subscribe((tileSize) => {
+  
+  generateBounceKeyframes.subscribe(() => {
     const styleNode = document.getElementById("generated-styles");
-    styleNode.textContent = Bounce.generateKeyframes(tileSize);
+    styleNode.textContent = Bounce.generateKeyframes();
   });
-
+  
   cacheProgress.subscribe((progress) => {
     Cache.setProgress(progress);
   });
-
+  
   clearCache_.subscribe(() => {
     Cache.clear();
     window.location.reload();
   });
-
+  
   cacheLives.subscribe((times) => {
     Cache.setLives(times);
   });
-
+  
   scrollToCenter.subscribe((id) => {
     Scroll.toCenter(id);
   });

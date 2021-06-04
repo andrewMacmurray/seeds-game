@@ -1,6 +1,5 @@
 module Main exposing (main)
 
-import Board.Tile as Tile
 import Browser
 import Browser.Events as Browser
 import Config.Level as Level
@@ -14,7 +13,7 @@ import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Level.Progress as Progress exposing (Progress)
 import Lives
-import Ports exposing (..)
+import Ports
 import Scene.Garden as Garden
 import Scene.Hub as Hub
 import Scene.Intro as Intro
@@ -23,7 +22,6 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
-import Utils.Debug as Debug
 import Utils.Delay as Delay exposing (trigger)
 import Utils.Update exposing (updateModel, updateWith, withCmds)
 import View.Animation exposing (animations)
@@ -110,8 +108,9 @@ init flags =
         |> Title.init
         |> updateWith TitleMsg initialState
         |> withCmds
-            [ bounceKeyframes flags.window
-            , Debug.goToLevel 2 4 InitLevel
+            [ generateBounceKeyframes
+
+            --, Debug.goToLevel 2 4 InitLevel
             ]
 
 
@@ -262,11 +261,11 @@ update msg ({ scene, backdrop } as model) =
             ( model, withLoadingScreen <| InitHub level )
 
         ( ResetData, _, _ ) ->
-            ( model, clearCache )
+            ( model, Ports.clearCache )
 
         ( WindowSize width height, _, _ ) ->
             ( updateContext (Context.setWindow width height) model
-            , bounceKeyframes <| Window width height
+            , Cmd.none
             )
 
         ( UpdateLives now, _, _ ) ->
@@ -314,7 +313,7 @@ updateIntro =
 
 exitIntro : Model -> () -> ( Model, Cmd Msg )
 exitIntro model _ =
-    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
+    ( model, Cmd.batch [ goToHubReachedLevel model, Ports.fadeMusic () ] )
 
 
 
@@ -611,9 +610,9 @@ livesRemaining =
     getContext >> .lives >> Lives.remaining
 
 
-bounceKeyframes : Window -> Cmd msg
-bounceKeyframes window =
-    generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
+generateBounceKeyframes : Cmd msg
+generateBounceKeyframes =
+    Ports.generateBounceKeyframes ()
 
 
 reachedLevel : Model -> Level.Id

@@ -12,7 +12,7 @@ import Config.Level as Level
 import Lives
 
 
-port generateBounceKeyframes : Float -> Cmd msg
+port generateBounceKeyframes : () -> Cmd msg
 
 
 port cacheProgress : Level.Cache -> Cmd msg
