@@ -1,21 +1,11 @@
 module Scene.Level.Board.Tile.Style exposing
-    ( background
-    , baseClasses
-    , burstStyles
-    , centerBlock
-    , coordStyles
-    , draggingStyles
-    , enteringStyles
-    , fallingStyles
-    , growingStyles
+    ( coordStyles
     , height
     , lighterStrokeColor
-    , moveTracerStyles
     , position
     , releasingStyles
     , size
     , strokeColors
-    , wallStyles
     , width
     , widthHeightStyles
     )
@@ -24,13 +14,11 @@ import Board.Block as Block exposing (Block(..))
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Animation as Animation
 import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
-import Css.Transition exposing (delay, transitionAll)
+import Css.Transition exposing (transitionAll)
 import Seed
-import Utils.Color as Color
 import Window exposing (Window)
 
 
@@ -71,18 +59,6 @@ widthHeightStyles window =
     ]
 
 
-baseClasses : List String
-baseClasses =
-    [ "br-100"
-    , centerBlock
-    ]
-
-
-centerBlock : String
-centerBlock =
-    "ma absolute top-0 left-0 right-0 bottom-0"
-
-
 width : Window -> Int
 width window =
     round <| Tile.baseSizeX * Tile.scale window
@@ -97,43 +73,6 @@ height window =
 -- Block Styles
 
 
-wallStyles : Window -> Move -> List Style
-wallStyles window move =
-    let
-        wallSize =
-            Tile.scale window * 45
-    in
-    case Move.block move of
-        Wall color ->
-            [ backgroundColor (Color.toString color)
-            , Style.width wallSize
-            , Style.height wallSize
-            ]
-
-        _ ->
-            []
-
-
-enteringStyles : Move -> List Style
-enteringStyles move =
-    case Move.tileState move of
-        Tile.Entering _ ->
-            [ Animation.animation "bounce-down" 1000 [ Animation.ease ] ]
-
-        _ ->
-            []
-
-
-fallingStyles : Move -> List Style
-fallingStyles move =
-    case Move.tileState move of
-        Tile.Falling _ distance ->
-            [ Animation.animation ("bounce-down-" ++ String.fromInt distance) 900 [ Animation.linear ] ]
-
-        _ ->
-            []
-
-
 releasingStyles : Move -> List Style
 releasingStyles move =
     case Move.tileState move of
@@ -144,97 +83,8 @@ releasingStyles move =
             []
 
 
-moveTracerStyles : Move -> List Style
-moveTracerStyles move =
-    case Move.tileState move of
-        Tile.Dragging (Tile.Burst _) _ _ ->
-            [ Animation.animation "bulge-fade-2" 800 [ Animation.ease, Animation.infinite ] ]
-
-        Tile.Dragging _ _ _ ->
-            [ Animation.animation "bulge-fade-2" 800 [ Animation.ease ]
-            ]
-
-        Tile.Active _ ->
-            [ Animation.animation "bulge-fade" 800 [ Animation.ease, Animation.infinite ]
-            ]
-
-        _ ->
-            [ display "none"
-            ]
-
-
-draggingStyles : Bool -> Move -> List Style
-draggingStyles isBursting move =
-    let
-        block =
-            Move.block move
-    in
-    if Block.isLeaving block then
-        [ transitionAll 100 []
-        ]
-
-    else if isBursting then
-        [ transitionAll 500 []
-        ]
-
-    else if Block.isDragging block && not (Block.isBurst block) then
-        [ transform [ scale 0.8 ]
-        , transitionAll 300 []
-        ]
-
-    else
-        []
-
-
-
--- SeedPod
-
-
-growingStyles : Move -> List Style
-growingStyles move =
-    case Move.tileState move of
-        Tile.Growing Tile.SeedPod _ ->
-            [ transform [ scale 4 ]
-            , transitionAll 400 [ delay <| modBy 5 (Block.growingOrder <| Move.block move) * 70 ]
-            , opacity 0
-            , disablePointer
-            ]
-
-        Tile.Growing (Tile.Seed _) _ ->
-            [ Animation.animation "bulge" 500 [ Animation.ease ] ]
-
-        _ ->
-            []
-
-
-
--- Burst
-
-
-burstStyles : Block -> List Style
-burstStyles block =
-    if Block.isLeaving block && Block.isBurst block then
-        [ Animation.animation "bulge-fade-10" 800 [ Animation.cubicBezier 0 0 0 0.8 ]
-        ]
-
-    else if Block.isDragging block && Block.isBurst block then
-        [ transform [ scale 1.3 ]
-        , transitionAll 300 []
-        ]
-
-    else
-        [ transitionAll 300 []
-        , transform [ scale 1 ]
-        ]
-
-
 
 -- Tile Type Styles
-
-
-background : Block -> List Style
-background =
-    fromBlock tileBackground_ []
 
 
 size : Block -> Float
@@ -331,25 +181,6 @@ lighterSeedStrokeColor seed =
 
         _ ->
             Color.lightBrown
-
-
-tileBackground_ : Tile -> List Style
-tileBackground_ tile =
-    case tile of
-        Tile.Rain ->
-            [ backgroundColor Color.lightBlue ]
-
-        Tile.Sun ->
-            [ backgroundColor Color.gold ]
-
-        Tile.SeedPod ->
-            [ Style.background Color.seedPodGradient ]
-
-        Tile.Seed _ ->
-            []
-
-        Tile.Burst _ ->
-            []
 
 
 tileSize_ : Tile -> Float

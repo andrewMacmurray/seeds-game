@@ -47,7 +47,7 @@ type alias Model =
 
 
 type alias Tile_ msg =
-    { animation : Maybe Animation
+    { animation : Maybe TileAnimation
     , transition : Transition.Millis
     , transitionDelay : Transition.Millis
     , element : Element msg
@@ -59,6 +59,11 @@ type alias Tile_ msg =
     , offsetX : Float
     , offsetY : Float
     }
+
+
+type TileAnimation
+    = Outer Animation
+    | Inner Animation
 
 
 type alias Tracer =
@@ -124,12 +129,13 @@ view model =
         |> withLeaving model
         |> withFalling model
         |> withEntering model
+        |> withGrowing model
         |> view_
 
 
 view_ : Tile_ msg -> Element msg
 view_ model =
-    animated model.animation
+    animateOuter model.animation
         []
         (el
             [ width (px model.width)
@@ -140,7 +146,7 @@ view_ model =
             , moveRight model.offsetX
             , moveDown model.offsetY
             ]
-            (el
+            (animateInner model.animation
                 [ behindContent (viewTracer model)
                 , centerX
                 , centerY
@@ -150,9 +156,34 @@ view_ model =
         )
 
 
-animated : Maybe Animation -> List (Attribute msg) -> Element msg -> Element msg
-animated =
-    Maybe.map Animated.el >> Maybe.withDefault el
+animateOuter : Maybe TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateOuter =
+    Maybe.map animateOuter_ >> Maybe.withDefault el
+
+
+animateInner : Maybe TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateInner =
+    Maybe.map animateInner_ >> Maybe.withDefault el
+
+
+animateInner_ : TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateInner_ anim =
+    case anim of
+        Inner a ->
+            Animated.el a
+
+        Outer _ ->
+            el
+
+
+animateOuter_ : TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateOuter_ anim =
+    case anim of
+        Outer a ->
+            Animated.el a
+
+        Inner _ ->
+            el
 
 
 viewTracer : Tile_ msg -> Element msg
@@ -389,7 +420,7 @@ withFalling : Model -> Tile_ msg -> Tile_ msg
 withFalling model tileModel =
     case Move.tileState model.move of
         Tile.Falling _ distance ->
-            { tileModel | animation = Just (bounceFall model distance) }
+            { tileModel | animation = Just (Outer (bounceFall model distance)) }
 
         _ ->
             tileModel
@@ -399,10 +430,44 @@ withEntering : Model -> Tile_ msg -> Tile_ msg
 withEntering model tileModel =
     case Move.tileState model.move of
         Tile.Entering _ ->
-            { tileModel | animation = Just bounceEnter }
+            { tileModel | animation = Just (Outer bounceEnter) }
 
         _ ->
             tileModel
+
+
+withGrowing : Model -> Tile_ msg -> Tile_ msg
+withGrowing model tileModel =
+    case Move.tileState model.move of
+        Tile.Growing Tile.SeedPod _ ->
+            { tileModel
+                | alpha = 0
+                , scale = 4
+                , transition = 400
+                , transitionDelay = growingDelay (Move.block model.move)
+            }
+
+        Tile.Growing (Tile.Seed _) _ ->
+            { tileModel | animation = Just (Inner growSeed) }
+
+        _ ->
+            tileModel
+
+
+growingDelay : Block -> Int
+growingDelay block =
+    modBy 5 (Block.growingOrder block) * 70
+
+
+growSeed : Animation
+growSeed =
+    Animation.steps
+        { startAt = [ P.scale 0.5 ]
+        , options = []
+        }
+        [ Animation.step 250 [ P.scale 1.3 ]
+        , Animation.step 250 [ P.scale 1 ]
+        ]
 
 
 bounceFall : Model -> Int -> Animation
