@@ -1,11 +1,9 @@
 module Scene.Level.Board.Style exposing
     ( ViewModel
     , fullWidth
-    , marginTop
     , offsetBottom
     , offsetLeft
     , offsetTop
-    , offsetTop2
     , scoreIconSize
     , topBarHeight
     , width
@@ -14,7 +12,6 @@ module Scene.Level.Board.Style exposing
 
 import Board
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Style as Style exposing (..)
 import Element
 import Scene.Level.Board.Tile.Style as TileStyle
 import Window exposing (Window)
@@ -44,19 +41,9 @@ type alias ViewModel =
     }
 
 
-marginTop : ViewModel -> Style
-marginTop model =
-    Style.marginTop <| toFloat <| offsetTop model
-
-
 offsetTop : ViewModel -> Int
 offsetTop ({ window } as model) =
     (window.height - height model) // 2 + (topBarHeight // 2) - 10
-
-
-offsetTop2 : ViewModel -> Element.Attr decorative msg
-offsetTop2 model =
-    Element.moveDown (toFloat (offsetTop model))
 
 
 offsetBottom : ViewModel -> Int

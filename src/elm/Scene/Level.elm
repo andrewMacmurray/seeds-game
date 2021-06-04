@@ -30,6 +30,7 @@ import Element exposing (..)
 import Element.Button.Cancel as Cancel
 import Element.Info as Info
 import Element.Layout as Layout
+import Element.Lazy as Lazy
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
@@ -49,6 +50,7 @@ import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
+import Window exposing (Window)
 
 
 
@@ -631,7 +633,9 @@ coordsFromPosition : Touch.Point -> Model -> Coord
 coordsFromPosition pointer model =
     let
         viewModel =
-            boardViewModel model
+            { window = model.context.window
+            , boardSize = model.boardSize
+            }
 
         positionY =
             toFloat <| pointer.y - Board.offsetTop viewModel
@@ -709,7 +713,6 @@ view model =
         , handleCheck model
         , disableIfComplete model
         , behindContent (topBar model)
-        , behindContent (moveOverlayLayer model)
         , behindContent (lineDrag model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
@@ -764,18 +767,50 @@ tutorialViewModel model =
 -- Board
 
 
+type alias BoardModel =
+    { window : Window
+    , board : Board
+    , boardSize : Board.Size
+    , settings : List Tile.Setting
+    , isDragging : Bool
+    }
+
+
 renderBoard : Model -> Element Msg
 renderBoard model =
+    Lazy.lazy5
+        toRenderBoard
+        model.context.window
+        model.board
+        model.boardSize
+        model.tileSettings
+        model.isDragging
+
+
+toRenderBoard : Window -> Board -> Board.Size -> List Tile.Setting -> Bool -> Element Msg
+toRenderBoard window board size settings isDragging =
+    renderBoard_
+        { window = window
+        , board = board
+        , boardSize = size
+        , settings = settings
+        , isDragging = isDragging
+        }
+
+
+renderBoard_ : BoardModel -> Element Msg
+renderBoard_ model =
     el
         [ width (px (Board.width (boardViewModel model)))
         , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
+        , behindContent (moveOverlayLayer model)
         , behindContent (renderLines model)
         , centerX
         ]
         (renderTiles model)
 
 
-renderTiles : Model -> Element Msg
+renderTiles : BoardModel -> Element Msg
 renderTiles model =
     toFloating (mapTiles (renderTile model) model.board)
 
@@ -785,7 +820,7 @@ toFloating =
     List.foldl (\el attrs -> inFront el :: attrs) [] >> (\attrs -> el attrs none)
 
 
-renderTile : Model -> Move -> Element Msg
+renderTile : BoardModel -> Move -> Element Msg
 renderTile model move =
     el
         [ handleMoveEvents model move
@@ -794,45 +829,44 @@ renderTile model move =
         ]
         (Tile.view
             { boardSize = model.boardSize
-            , window = model.context.window
-            , settings = model.tileSettings
+            , window = model.window
+            , settings = model.settings
             , isBursting = Burst.isBursting model.board
             , move = move
             }
         )
 
 
-moveOverlayLayer : Model -> Element msg
+moveOverlayLayer : BoardModel -> Element msg
 moveOverlayLayer model =
     el
         [ Board.width2 (boardViewModel model)
-        , Board.offsetTop2 (boardViewModel model)
         , centerX
         ]
         (moveOverlayLayer_ model)
 
 
-moveOverlayLayer_ : Model -> Element msg
+moveOverlayLayer_ : BoardModel -> Element msg
 moveOverlayLayer_ model =
     toFloating (mapTiles (moveOverlay model) model.board)
 
 
-moveOverlay : Model -> Move -> Element msg
+moveOverlay : BoardModel -> Move -> Element msg
 moveOverlay model move =
     Tile.overlay
         { boardSize = model.boardSize
-        , window = model.context.window
-        , settings = model.tileSettings
+        , window = model.window
+        , settings = model.settings
         , move = move
         }
 
 
-renderLines : Model -> Element msg
+renderLines : BoardModel -> Element msg
 renderLines model =
     column [] (mapTiles (Line.view (lineViewModel model) >> html) model.board)
 
 
-handleMoveEvents : Model -> Move -> Element.Attribute Msg
+handleMoveEvents : BoardModel -> Move -> Element.Attribute Msg
 handleMoveEvents model move =
     Element.applyIf
         (not model.isDragging)
@@ -915,9 +949,9 @@ yesNoButton yesText msg =
 -- View Models
 
 
-boardViewModel : Model -> Board.ViewModel
+boardViewModel : BoardModel -> Board.ViewModel
 boardViewModel model =
-    { window = model.context.window
+    { window = model.window
     , boardSize = model.boardSize
     }
 
@@ -931,9 +965,9 @@ topBarViewModel model =
     }
 
 
-lineViewModel : Model -> Line.ViewModel
+lineViewModel : BoardModel -> Line.ViewModel
 lineViewModel model =
-    { window = model.context.window
+    { window = model.window
     , activeSeedType = Board.activeSeedType model.board
     }
 
