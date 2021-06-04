@@ -123,6 +123,7 @@ view model =
         |> withTracer model
         |> withLeaving model
         |> withFalling model
+        |> withEntering model
         |> view_
 
 
@@ -320,11 +321,12 @@ position_ window coord =
 
 
 withDragging : Model -> Tile_ msg -> Tile_ msg
-withDragging model tileModel =
-    let
-        block =
-            Move.block model.move
-    in
+withDragging model =
+    withDragging_ model (Move.block model.move)
+
+
+withDragging_ : Model -> Block -> Tile_ msg -> Tile_ msg
+withDragging_ model block tileModel =
     if Block.isLeaving block then
         { tileModel | transition = 100 }
 
@@ -387,20 +389,42 @@ withFalling : Model -> Tile_ msg -> Tile_ msg
 withFalling model tileModel =
     case Move.tileState model.move of
         Tile.Falling _ distance ->
-            { tileModel | animation = Just (bounceDown model distance) }
+            { tileModel | animation = Just (bounceFall model distance) }
 
         _ ->
             tileModel
 
 
-bounceDown : Model -> Int -> Animation
-bounceDown model distance =
+withEntering : Model -> Tile_ msg -> Tile_ msg
+withEntering model tileModel =
+    case Move.tileState model.move of
+        Tile.Entering _ ->
+            { tileModel | animation = Just bounceEnter }
+
+        _ ->
+            tileModel
+
+
+bounceFall : Model -> Int -> Animation
+bounceFall model distance =
     Bounce.animation
         { duration = 900
         , options = []
         , property = P.y
         , from = 0
         , to = toFloat (distance * tileHeight model.window)
+        , bounce = Bounce.stiff
+        }
+
+
+bounceEnter : Animation
+bounceEnter =
+    Bounce.animation
+        { duration = 700
+        , options = []
+        , property = P.y
+        , from = -200
+        , to = 0
         , bounce = Bounce.stiff
         }
 
