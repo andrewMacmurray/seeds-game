@@ -1,6 +1,5 @@
 module Utils.Element exposing
     ( applyIf
-    , bfv
     , class
     , disableTouch
     , empty
@@ -12,8 +11,6 @@ module Utils.Element exposing
     , showIfJust
     , square
     , style
-    , tf3d
-    , tfs
     , verticalGap
     , visibleIf
     )
@@ -75,21 +72,6 @@ noZoom =
 originBottom : Attribute msg
 originBottom =
     style "transform-origin" "bottom"
-
-
-tf3d : Attribute msg
-tf3d =
-    style "-webkit-transform" "translate3d(0, 0, 0)"
-
-
-bfv : Attribute msg
-bfv =
-    style "-webkit-backface-visibility" "hidden"
-
-
-tfs : Attribute msg
-tfs =
-    style "-webkit-transform-style" "preserve-3d"
 
 
 onClickIf : Bool -> msg -> Attribute msg

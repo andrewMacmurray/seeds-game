@@ -34,17 +34,18 @@ import Element.Lazy as Lazy
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
-import Html exposing (Attribute, Html)
+import Html exposing (Attribute, Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
 import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile as Tile
+import Scene.Level.Board.Tile3 as Tile3
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
+import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
@@ -807,12 +808,12 @@ renderBoard_ model =
         , behindContent (renderLines model)
         , centerX
         ]
-        (renderTiles model)
+        (html (renderTiles model))
 
 
-renderTiles : BoardModel -> Element Msg
+renderTiles : BoardModel -> Html Msg
 renderTiles model =
-    toFloating (mapTiles (renderTile model) model.board)
+    div [] (mapTiles (renderTile model) model.board)
 
 
 toFloating : List (Element msg) -> Element msg
@@ -820,21 +821,19 @@ toFloating =
     List.foldl (\el attrs -> inFront el :: attrs) [] >> (\attrs -> el attrs none)
 
 
-renderTile : BoardModel -> Move -> Element Msg
+renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
-    el
+    div
         [ handleMoveEvents model move
-        , pointer
-        , Element.noZoom
         ]
-        (Tile.view
+        [ Tile3.view
             { boardSize = model.boardSize
             , window = model.window
             , settings = model.settings
             , isBursting = Burst.isBursting model.board
             , move = move
             }
-        )
+        ]
 
 
 moveOverlayLayer : BoardModel -> Element msg
@@ -843,17 +842,17 @@ moveOverlayLayer model =
         [ Board.width2 (boardViewModel model)
         , centerX
         ]
-        (moveOverlayLayer_ model)
+        (html (moveOverlayLayer_ model))
 
 
-moveOverlayLayer_ : BoardModel -> Element msg
+moveOverlayLayer_ : BoardModel -> Html msg
 moveOverlayLayer_ model =
-    toFloating (mapTiles (moveOverlay model) model.board)
+    div [] (mapTiles (moveOverlay model) model.board)
 
 
-moveOverlay : BoardModel -> Move -> Element msg
+moveOverlay : BoardModel -> Move -> Html msg
 moveOverlay model move =
-    Tile.overlay
+    Tile3.overlay
         { boardSize = model.boardSize
         , window = model.window
         , settings = model.settings
@@ -866,11 +865,11 @@ renderLines model =
     column [] (mapTiles (Line.view (lineViewModel model) >> html) model.board)
 
 
-handleMoveEvents : BoardModel -> Move -> Element.Attribute Msg
+handleMoveEvents : BoardModel -> Move -> Html.Attribute Msg
 handleMoveEvents model move =
-    Element.applyIf
+    Attribute.applyIf
         (not model.isDragging)
-        (Touch.onStart (StartMove move))
+        (Touch.onStart_ (StartMove move))
 
 
 mapTiles : (Move -> a) -> Board -> List a

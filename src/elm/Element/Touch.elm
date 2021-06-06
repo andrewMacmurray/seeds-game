@@ -3,10 +3,12 @@ module Element.Touch exposing
     , onMove
     , onRelease
     , onStart
+    , onStart_
     , origin
     )
 
 import Element exposing (Attribute, htmlAttribute)
+import Html
 import Html.Events as Events
 import Json.Decode as Json exposing (Decoder, field, float)
 
@@ -30,8 +32,13 @@ onRelease msg =
 
 
 onStart : (Point -> msg) -> Attribute msg
-onStart msg =
-    stopPropagationOn "pointerdown" (Json.map alwaysStop (tagPosition msg))
+onStart =
+    onStart_ >> htmlAttribute
+
+
+onStart_ : (Point -> msg) -> Html.Attribute msg
+onStart_ msg =
+    Events.stopPropagationOn "pointerdown" (Json.map alwaysStop (tagPosition msg))
 
 
 onMove : (Point -> msg) -> Attribute msg

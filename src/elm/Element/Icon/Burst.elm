@@ -1,12 +1,14 @@
 module Element.Icon.Burst exposing
     ( active
+    , active_
     , inactive
+    , inactive_
     )
 
 import Element exposing (Color, Element)
 import Element.Icon as Icon
 import Element.Palette as Palette
-import Svg
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
 import Utils.Svg as Svg
@@ -34,13 +36,31 @@ inactive =
         }
 
 
+inactive_ : Svg msg
+inactive_ =
+    active_
+        { color = Palette.slateGrey
+        , border = Palette.background1_
+        }
+
+
 
 -- Active
 
 
 active : Options -> Element msg
-active options =
-    Icon.view
+active =
+    withNode Icon.view
+
+
+active_ : Options -> Svg msg
+active_ =
+    withNode Svg.svg
+
+
+withNode : (List (Svg.Attribute msg) -> List (Svg msg) -> b) -> Options -> b
+withNode node options =
+    node
         [ Svg.viewBox_ 0 0 11 11
         , width "100%"
         , fillRule "evenodd"

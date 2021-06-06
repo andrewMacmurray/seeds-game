@@ -1,11 +1,14 @@
-module Scene.Level.Board.Tile.Wall exposing (view, view_)
+module Scene.Level.Board.Tile.Wall exposing (html, view, view_)
 
 import Board.Block as Block
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile
 import Element exposing (..)
 import Element.Background as Background
+import Html exposing (Html)
 import Utils.Element as Element
+import Utils.Html as Html
+import Utils.Html.Style as Style
 import Window exposing (Window)
 
 
@@ -31,6 +34,11 @@ view model =
 
         _ ->
             none
+
+
+html : { a | window : Window } -> Color -> Html msg
+html model color =
+    Html.square (wallSize model) [ Style.background color ] []
 
 
 view_ : { a | window : Window } -> Color -> Element msg
