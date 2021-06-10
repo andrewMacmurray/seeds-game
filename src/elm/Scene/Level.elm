@@ -715,7 +715,8 @@ view model =
         , disableIfComplete model
         , behindContent (topBar model)
         , inFront (renderBoard model)
-        , behindContent (lineDrag model)
+        , inFront (lineDrag model)
+        , inFront (currentMove model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
         ]
@@ -769,6 +770,15 @@ tutorialViewModel model =
 -- Board
 
 
+type alias LazyBoard msg =
+    Window
+    -> Board
+    -> Board.Size
+    -> List Tile.Setting
+    -> Bool
+    -> Element msg
+
+
 type alias BoardModel =
     { window : Window
     , board : Board
@@ -789,7 +799,7 @@ renderBoard model =
         model.isDragging
 
 
-toRenderBoard : Window -> Board -> Board.Size -> List Tile.Setting -> Bool -> Element Msg
+toRenderBoard : LazyBoard Msg
 toRenderBoard window board size settings isDragging =
     renderBoard_
         { window = window
@@ -810,12 +820,7 @@ renderBoard_ model =
         , inFront (moveOverlayLayer model)
         , centerX
         ]
-        (html (renderTiles model))
-
-
-renderTiles : BoardModel -> Html Msg
-renderTiles model =
-    div [] (mapTiles (renderTile model) model.board)
+        (tilesFor renderTile model)
 
 
 renderTile : BoardModel -> Move -> Html Msg
@@ -831,6 +836,51 @@ renderTile model move =
         ]
 
 
+currentMove : Model -> Element msg
+currentMove model =
+    Lazy.lazy5
+        toRenderCurrentMove
+        model.context.window
+        model.board
+        model.boardSize
+        model.tileSettings
+        model.isDragging
+
+
+toRenderCurrentMove : LazyBoard msg
+toRenderCurrentMove window board size settings isDragging =
+    currentMoveOverlay
+        { window = window
+        , board = board
+        , boardSize = size
+        , settings = settings
+        , isDragging = isDragging
+        }
+
+
+currentMoveOverlay : BoardModel -> Element msg
+currentMoveOverlay model =
+    el
+        [ Element.disableTouch
+        , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
+        , Board.width2 (boardViewModel model)
+        , centerX
+        ]
+        (tilesFor currentMove_ model)
+
+
+currentMove_ : BoardModel -> Move -> Html msg
+currentMove_ model move =
+    Tile.current
+        { isDragging = model.isDragging
+        , isBursting = Burst.isBursting model.board
+        , boardSize = model.boardSize
+        , window = model.window
+        , settings = model.settings
+        , move = move
+        }
+
+
 moveOverlayLayer : BoardModel -> Element msg
 moveOverlayLayer model =
     el
@@ -838,12 +888,7 @@ moveOverlayLayer model =
         , Board.width2 (boardViewModel model)
         , centerX
         ]
-        (html (moveOverlayLayer_ model))
-
-
-moveOverlayLayer_ : BoardModel -> Html msg
-moveOverlayLayer_ model =
-    div [] (mapTiles (moveOverlay model) model.board)
+        (tilesFor moveOverlay model)
 
 
 moveOverlay : BoardModel -> Move -> Html msg
@@ -866,6 +911,14 @@ handleMoveEvents model move =
     Attribute.applyIf
         (not model.isDragging)
         (Touch.onStart_ (StartMove move))
+
+
+tilesFor :
+    ({ model | board : Board } -> Move -> Html msg)
+    -> { model | board : Board }
+    -> Element msg
+tilesFor toTile model =
+    html (div [] (mapTiles (toTile model) model.board))
 
 
 mapTiles : (Move -> a) -> Board -> List a

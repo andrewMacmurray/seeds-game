@@ -1,5 +1,6 @@
 module Scene.Level.Board.Tile exposing
-    ( overlay
+    ( current
+    , overlay
     , view
     )
 
@@ -31,7 +32,7 @@ import Window exposing (Window)
 
 
 
--- Model
+-- Tile
 
 
 type alias Model =
@@ -44,10 +45,10 @@ type alias Model =
 
 
 
--- View
+-- View Model
 
 
-type alias Tile_ msg =
+type alias ViewModel msg =
     { animation : Maybe TileAnimation
     , transition : Transition.Millis
     , transitionDelay : Transition.Millis
@@ -72,7 +73,7 @@ type alias Tracer =
     }
 
 
-toTileModel : Model -> Tile_ msg
+toTileModel : Model -> ViewModel msg
 toTileModel model =
     { animation = Nothing
     , transition = 0
@@ -89,7 +90,7 @@ toTileModel model =
 
 
 
--- View
+-- Overlay
 
 
 type alias Overlay =
@@ -119,7 +120,42 @@ overlay model =
 
 needsOverlay : Block -> Bool
 needsOverlay block =
-    Block.isDragging block || Block.isStatic block
+    Block.isStatic block
+
+
+
+-- Current
+
+
+type alias Current =
+    { isDragging : Bool
+    , isBursting : Bool
+    , window : Window
+    , settings : List Tile.Setting
+    , boardSize : Board.Size
+    , move : Move
+    }
+
+
+current : Current -> Html msg
+current model =
+    if Move.isCurrent model.move && model.isDragging then
+        { isBursting = False
+        , window = model.window
+        , settings = model.settings
+        , boardSize = model.boardSize
+        , move = model.move
+        }
+            |> toTileModel
+            |> withDragging model
+            |> view_
+
+    else
+        Html.none
+
+
+
+-- View
 
 
 view : Model -> Html msg
@@ -134,7 +170,11 @@ view model =
         |> view_
 
 
-view_ : Tile_ msg -> Html msg
+
+-- Internal
+
+
+view_ : ViewModel msg -> Html msg
 view_ model =
     animateOuter model.animation
         [ Style.absolute ]
@@ -155,6 +195,17 @@ view_ model =
                 , model.element
                 ]
             ]
+        ]
+
+
+transitionAll : ViewModel msg -> Attribute msg
+transitionAll tile =
+    Transition.all
+        { duration = tile.transition
+        , options = [ Transition.delay tile.transitionDelay ]
+        }
+        [ Transition.opacity
+        , Transition.transform
         ]
 
 
@@ -188,12 +239,12 @@ animateOuter_ anim =
             div
 
 
-viewTracer : Tile_ msg -> Html msg
+viewTracer : ViewModel msg -> Html msg
 viewTracer model =
     showIfJust (viewTracer_ model) model.tracer
 
 
-viewTracer_ : Tile_ msg -> Tracer -> Html msg
+viewTracer_ : ViewModel msg -> Tracer -> Html msg
 viewTracer_ model tracer =
     Animated.div tracer.animation (Style.center [ Style.absolute ]) [ model.element ]
 
@@ -296,17 +347,6 @@ viewActiveBurst model tile_ =
             }
 
 
-transitionAll : Tile_ msg -> Attribute msg
-transitionAll tile =
-    Transition.all
-        { duration = tile.transition
-        , options = [ Transition.delay tile.transitionDelay ]
-        }
-        [ Transition.opacity
-        , Transition.transform
-        ]
-
-
 
 -- Config
 
@@ -360,12 +400,19 @@ position_ window coord =
 -- Dragging
 
 
-withDragging : Model -> Tile_ msg -> Tile_ msg
+type alias DraggingModel model =
+    { model
+        | isBursting : Bool
+        , move : Move
+    }
+
+
+withDragging : DraggingModel model -> ViewModel msg -> ViewModel msg
 withDragging model =
     withDragging_ model (Move.block model.move)
 
 
-withDragging_ : Model -> Block -> Tile_ msg -> Tile_ msg
+withDragging_ : DraggingModel model -> Block -> ViewModel msg -> ViewModel msg
 withDragging_ model block tileModel =
     if Block.isLeaving block then
         { tileModel | transition = 100 }
@@ -387,7 +434,7 @@ withDragging_ model block tileModel =
 -- Tracer
 
 
-withTracer : Model -> Tile_ msg -> Tile_ msg
+withTracer : Model -> ViewModel msg -> ViewModel msg
 withTracer model tileModel =
     case Move.tileState model.move of
         Tile.Dragging (Tile.Burst _) _ _ ->
@@ -417,7 +464,7 @@ bulgeFade options =
 -- Leaving
 
 
-withLeaving : Model -> Tile_ msg -> Tile_ msg
+withLeaving : Model -> ViewModel msg -> ViewModel msg
 withLeaving model tileModel =
     if isLeaving (Move.block model.move) then
         { tileModel
@@ -471,7 +518,7 @@ leavingViewModel model =
 -- Falling
 
 
-withFalling : Model -> Tile_ msg -> Tile_ msg
+withFalling : Model -> ViewModel msg -> ViewModel msg
 withFalling model tileModel =
     case Move.tileState model.move of
         Tile.Falling _ distance ->
@@ -485,7 +532,7 @@ withFalling model tileModel =
 -- Entering
 
 
-withEntering : Model -> Tile_ msg -> Tile_ msg
+withEntering : Model -> ViewModel msg -> ViewModel msg
 withEntering model tileModel =
     case Move.tileState model.move of
         Tile.Entering _ ->
@@ -499,7 +546,7 @@ withEntering model tileModel =
 -- Growing
 
 
-withGrowing : Model -> Tile_ msg -> Tile_ msg
+withGrowing : Model -> ViewModel msg -> ViewModel msg
 withGrowing model tileModel =
     case Move.tileState model.move of
         Tile.Growing Tile.SeedPod _ ->
