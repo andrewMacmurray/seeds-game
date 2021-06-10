@@ -714,11 +714,12 @@ view model =
         , handleCheck model
         , disableIfComplete model
         , behindContent (topBar model)
+        , inFront (renderBoard model)
         , behindContent (lineDrag model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
         ]
-        (renderBoard model)
+        none
 
 
 topBar : Model -> Element msg
@@ -804,6 +805,7 @@ renderBoard_ model =
     el
         [ width (px (Board.width (boardViewModel model)))
         , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
+        , Element.preventScroll
         , behindContent (renderLines model)
         , inFront (moveOverlayLayer model)
         , centerX

@@ -5,9 +5,9 @@ module Utils.Element exposing
     , empty
     , id
     , maybe
-    , noZoom
     , onClickIf
     , originBottom
+    , preventScroll
     , showIfJust
     , square
     , style
@@ -64,8 +64,8 @@ disableTouch =
     class "touch-disabled"
 
 
-noZoom : Attribute msg
-noZoom =
+preventScroll : Attribute msg
+preventScroll =
     style "touch-action" "none"
 
 
