@@ -2,15 +2,13 @@ module Element.Dot exposing
     ( el
     , html
     , solid
-    , split
     , split_
     )
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Html
-import Utils.Background as Background
+import Html exposing (Html)
 import Utils.Html.Style as Style
 
 
@@ -33,6 +31,7 @@ solid options =
         }
 
 
+html : List (Html.Attribute msg) -> Solid -> Html msg
 html attrs options =
     Html.div
         (List.append
@@ -57,22 +56,17 @@ type alias Split =
     }
 
 
-split : Split -> Element msg
-split options =
-    dot_
-        { background = Background.split ( options.left, options.right )
-        , size = options.size
-        , el = none
-        }
-
-
-split_ options =
+split_ : List (Html.Attribute msg) -> Split -> Html msg
+split_ attrs options =
     Html.div
-        [ Style.width options.size
-        , Style.height options.size
-        , Style.rounded options.size
-        , Style.splitBackground ( options.left, options.right )
-        ]
+        (List.append
+            [ Style.width options.size
+            , Style.height options.size
+            , Style.rounded options.size
+            , Style.splitBackground ( options.left, options.right )
+            ]
+            attrs
+        )
         []
 
 

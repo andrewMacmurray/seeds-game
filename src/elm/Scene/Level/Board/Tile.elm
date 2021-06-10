@@ -8,13 +8,12 @@ import Board.Block as Block exposing (Block)
 import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
-import Element exposing (..)
+import Css.Transform as Transform
 import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
 import Element.Icon.Burst as Burst
 import Element.Palette as Palette
-import Element.Seed as Seed2
-import Element.Transition as Transition
+import Html exposing (Attribute, Html, div)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Tile.Leaving as Leaving
 import Scene.Level.Board.Tile.Stroke as Stroke
@@ -22,10 +21,12 @@ import Scene.Level.Board.Tile.Style as Tile
 import Scene.Level.Board.Tile.Wall as Wall
 import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Animated as Animated
 import Simple.Animation.Property as P
 import Simple.Transition as Transition
-import Utils.Animated as Animated
-import Utils.Element as Element
+import Utils.Html as Html
+import Utils.Html.Style as Style
+import View.Seed as Seed
 import Window exposing (Window)
 
 
@@ -50,12 +51,12 @@ type alias Tile_ msg =
     { animation : Maybe TileAnimation
     , transition : Transition.Millis
     , transitionDelay : Transition.Millis
-    , element : Element msg
+    , element : Html msg
     , tracer : Maybe Tracer
     , width : Int
     , height : Int
     , scale : Float
-    , alpha : Float
+    , opacity : Float
     , offsetX : Float
     , offsetY : Float
     }
@@ -81,7 +82,7 @@ toTileModel model =
     , width = tileWidth model.window
     , height = tileHeight model.window
     , scale = 1
-    , alpha = 1
+    , opacity = 1
     , offsetX = offsetX model
     , offsetY = offsetY model
     }
@@ -99,7 +100,7 @@ type alias Overlay =
     }
 
 
-overlay : Overlay -> Element msg
+overlay : Overlay -> Html msg
 overlay model =
     if needsOverlay (Move.block model.move) then
         view_
@@ -113,7 +114,7 @@ overlay model =
             )
 
     else
-        none
+        Html.none
 
 
 needsOverlay : Block -> Bool
@@ -121,7 +122,7 @@ needsOverlay block =
     Block.isDragging block || Block.isStatic block
 
 
-view : Model -> Element msg
+view : Model -> Html msg
 view model =
     toTileModel model
         |> withDragging model
@@ -133,104 +134,106 @@ view model =
         |> view_
 
 
-view_ : Tile_ msg -> Element msg
+view_ : Tile_ msg -> Html msg
 view_ model =
     animateOuter model.animation
-        []
-        (el
-            [ width (px model.width)
-            , height (px model.height)
-            , scale model.scale
-            , alpha model.alpha
+        [ Style.absolute ]
+        [ div
+            [ Style.width model.width
+            , Style.height model.height
+            , Style.opacity model.opacity
+            , Style.pointer
             , transitionAll model
-            , moveRight model.offsetX
-            , moveDown model.offsetY
-            ]
-            (animateInner model.animation
-                [ behindContent (viewTracer model)
-                , centerX
-                , centerY
+            , Style.transform
+                [ Transform.translate model.offsetX model.offsetY
+                , Transform.scale model.scale
                 ]
-                model.element
-            )
-        )
+            ]
+            [ animateInner model.animation
+                (Style.center [ Style.absolute ])
+                [ viewTracer model
+                , model.element
+                ]
+            ]
+        ]
 
 
-animateOuter : Maybe TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateOuter : Maybe TileAnimation -> List (Attribute msg) -> List (Html msg) -> Html msg
 animateOuter =
-    Maybe.map animateOuter_ >> Maybe.withDefault el
+    Maybe.map animateOuter_ >> Maybe.withDefault div
 
 
-animateInner : Maybe TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateInner : Maybe TileAnimation -> List (Attribute msg) -> List (Html msg) -> Html msg
 animateInner =
-    Maybe.map animateInner_ >> Maybe.withDefault el
+    Maybe.map animateInner_ >> Maybe.withDefault div
 
 
-animateInner_ : TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateInner_ : TileAnimation -> List (Attribute msg) -> List (Html msg) -> Html msg
 animateInner_ anim =
     case anim of
         Inner a ->
-            Animated.el a
+            Animated.div a
 
         Outer _ ->
-            el
+            div
 
 
-animateOuter_ : TileAnimation -> List (Attribute msg) -> Element msg -> Element msg
+animateOuter_ : TileAnimation -> List (Attribute msg) -> List (Html msg) -> Html msg
 animateOuter_ anim =
     case anim of
         Outer a ->
-            Animated.el a
+            Animated.div a
 
         Inner _ ->
-            el
+            div
 
 
-viewTracer : Tile_ msg -> Element msg
+viewTracer : Tile_ msg -> Html msg
 viewTracer model =
-    Element.showIfJust (viewTracer_ model) model.tracer
+    showIfJust (viewTracer_ model) model.tracer
 
 
-viewTracer_ : Tile_ msg -> Tracer -> Element msg
+viewTracer_ : Tile_ msg -> Tracer -> Html msg
 viewTracer_ model tracer =
-    Animated.el tracer.animation
-        [ centerX
-        , centerY
-        ]
-        model.element
+    Animated.div tracer.animation (Style.center [ Style.absolute ]) [ model.element ]
+
+
+showIfJust : (a -> Html msg) -> Maybe a -> Html msg
+showIfJust f =
+    Maybe.map f >> Maybe.withDefault Html.none
 
 
 
 -- From Model
 
 
-tileElement : Model -> Element msg
+tileElement : Model -> Html msg
 tileElement model =
     case Move.block model.move of
         Block.Wall color ->
-            Wall.view_ model color
+            Wall.html model color
 
         Block.Space state ->
             toTileElement model state
 
 
-toTileElement : Model -> Tile.State -> Element msg
+toTileElement : Model -> Tile.State -> Html msg
 toTileElement model state =
     case Tile.get state of
         Just Tile.Rain ->
-            Dot.solid
+            Dot.html (Style.center [ Style.absolute ])
                 { size = tileSize model
                 , color = Palette.blue5
                 }
 
         Just Tile.Sun ->
-            Dot.solid
+            Dot.html (Style.center [ Style.absolute ])
                 { size = tileSize model
                 , color = Palette.gold
                 }
 
         Just Tile.SeedPod ->
-            Dot.split
+            Dot.split_ (Style.center [ Style.absolute ])
                 { size = tileSize model
                 , left = Palette.lime5
                 , right = Palette.lime4
@@ -243,49 +246,51 @@ toTileElement model state =
             toBurstElement model tile_
 
         Nothing ->
-            none
+            Html.none
 
 
-toSeedElement : Model -> Seed -> Element msg
+toSeedElement : Model -> Seed -> Html msg
 toSeedElement model seed =
-    Seed2.view (seedSize model) seed
+    Html.square (tileSize model) (Style.center [ Style.absolute ]) [ Seed.view seed ]
 
 
-seedSize : Model -> Seed2.Options
-seedSize =
-    tileSize >> Seed2.size
-
-
-toBurstElement : Model -> Maybe Tile -> Element msg
+toBurstElement : Model -> Maybe Tile -> Html msg
 toBurstElement model tile =
-    burstSize model (viewBurst_ model tile)
+    burstWrapper model (viewBurst_ model tile)
 
 
-burstSize : Model -> Element msg -> Element msg
-burstSize model =
-    el [ width (px (tileSize model)) ]
+burstWrapper : Model -> Html msg -> Html msg
+burstWrapper model el_ =
+    div
+        (Style.center
+            [ Style.width (tileSize model)
+            , Style.height (tileSize model)
+            , Style.absolute
+            ]
+        )
+        [ el_ ]
 
 
-viewBurst_ : Model -> Maybe Tile -> Element msg
+viewBurst_ : Model -> Maybe Tile -> Html msg
 viewBurst_ model tile =
     case tile of
         Just tile_ ->
             viewActiveBurst model tile_
 
         Nothing ->
-            Burst.inactive
+            Burst.inactive_
 
 
-viewActiveBurst : Model -> Tile -> Element msg
+viewActiveBurst : Model -> Tile -> Html msg
 viewActiveBurst model tile_ =
     if Block.isLeaving (Move.block model.move) then
-        Burst.active
+        Burst.active_
             { color = Stroke.darker tile_
             , border = Stroke.darker tile_
             }
 
     else
-        Burst.active
+        Burst.active_
             { color = Stroke.darker tile_
             , border = Stroke.lighter tile_
             }
@@ -293,7 +298,7 @@ viewActiveBurst model tile_ =
 
 transitionAll : Tile_ msg -> Attribute msg
 transitionAll tile =
-    Transition.all_
+    Transition.all
         { duration = tile.transition
         , options = [ Transition.delay tile.transitionDelay ]
         }
@@ -351,6 +356,10 @@ position_ window coord =
     }
 
 
+
+-- Dragging
+
+
 withDragging : Model -> Tile_ msg -> Tile_ msg
 withDragging model =
     withDragging_ model (Move.block model.move)
@@ -372,6 +381,10 @@ withDragging_ model block tileModel =
 
     else
         tileModel
+
+
+
+-- Tracer
 
 
 withTracer : Model -> Tile_ msg -> Tile_ msg
@@ -400,20 +413,62 @@ bulgeFade options =
         [ P.scale 3, P.opacity 0 ]
 
 
+
+-- Leaving
+
+
 withLeaving : Model -> Tile_ msg -> Tile_ msg
 withLeaving model tileModel =
-    let
-        updates =
-            Leaving.apply (leavingViewModel model) tileModel
-    in
-    { tileModel
-        | offsetX = updates.offsetX
-        , offsetY = updates.offsetY
-        , scale = updates.scale
-        , transition = updates.transition
-        , transitionDelay = updates.transitionDelay
-        , alpha = updates.alpha
+    if isLeaving (Move.block model.move) then
+        { tileModel
+            | transition = 800
+            , transitionDelay = delay (Move.block model.move)
+            , offsetX = leavingOffset .x tileModel.offsetX model
+            , offsetY = leavingOffset .y tileModel.offsetY model
+            , scale = 0.5
+            , opacity = 0.2
+        }
+
+    else if Block.isLeaving (Move.block model.move) then
+        { tileModel
+            | transition = 800
+            , scale = 8
+            , opacity = 0
+        }
+
+    else
+        tileModel
+
+
+leavingOffset : (Leaving.Offsets -> Float) -> Float -> Model -> Float
+leavingOffset get default =
+    leavingViewModel
+        >> Leaving.offsets
+        >> Maybe.map get
+        >> Maybe.withDefault default
+
+
+isLeaving : Block -> Bool
+isLeaving block =
+    Block.isLeaving block && not (Block.isBurst block)
+
+
+delay : Block -> Int
+delay block =
+    modBy 5 (Block.leavingOrder block) * 80
+
+
+leavingViewModel : Model -> Leaving.Model
+leavingViewModel model =
+    { window = model.window
+    , boardSize = model.boardSize
+    , settings = model.settings
+    , move = model.move
     }
+
+
+
+-- Falling
 
 
 withFalling : Model -> Tile_ msg -> Tile_ msg
@@ -426,6 +481,10 @@ withFalling model tileModel =
             tileModel
 
 
+
+-- Entering
+
+
 withEntering : Model -> Tile_ msg -> Tile_ msg
 withEntering model tileModel =
     case Move.tileState model.move of
@@ -436,12 +495,16 @@ withEntering model tileModel =
             tileModel
 
 
+
+-- Growing
+
+
 withGrowing : Model -> Tile_ msg -> Tile_ msg
 withGrowing model tileModel =
     case Move.tileState model.move of
         Tile.Growing Tile.SeedPod _ ->
             { tileModel
-                | alpha = 0
+                | opacity = 0
                 , scale = 4
                 , transition = 400
                 , transitionDelay = growingDelay (Move.block model.move)
@@ -492,16 +555,3 @@ bounceEnter =
         , to = 0
         , bounce = Bounce.stiff
         }
-
-
-
--- View Models
-
-
-leavingViewModel : Model -> Leaving.Model
-leavingViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
-    , settings = model.settings
-    , move = model.move
-    }

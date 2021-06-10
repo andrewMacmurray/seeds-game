@@ -41,7 +41,7 @@ import Lives
 import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile3 as Tile3
+import Scene.Level.Board.Tile as Tile
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
@@ -804,8 +804,8 @@ renderBoard_ model =
     el
         [ width (px (Board.width (boardViewModel model)))
         , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
-        , behindContent (moveOverlayLayer model)
         , behindContent (renderLines model)
+        , inFront (moveOverlayLayer model)
         , centerX
         ]
         (html (renderTiles model))
@@ -816,17 +816,10 @@ renderTiles model =
     div [] (mapTiles (renderTile model) model.board)
 
 
-toFloating : List (Element msg) -> Element msg
-toFloating =
-    List.foldl (\el attrs -> inFront el :: attrs) [] >> (\attrs -> el attrs none)
-
-
 renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
-    div
-        [ handleMoveEvents model move
-        ]
-        [ Tile3.view
+    div [ handleMoveEvents model move ]
+        [ Tile.view
             { boardSize = model.boardSize
             , window = model.window
             , settings = model.settings
@@ -839,7 +832,8 @@ renderTile model move =
 moveOverlayLayer : BoardModel -> Element msg
 moveOverlayLayer model =
     el
-        [ Board.width2 (boardViewModel model)
+        [ Element.disableTouch
+        , Board.width2 (boardViewModel model)
         , centerX
         ]
         (html (moveOverlayLayer_ model))
@@ -852,7 +846,7 @@ moveOverlayLayer_ model =
 
 moveOverlay : BoardModel -> Move -> Html msg
 moveOverlay model move =
-    Tile3.overlay
+    Tile.overlay
         { boardSize = model.boardSize
         , window = model.window
         , settings = model.settings

@@ -102,12 +102,18 @@ infoContainer_ direction content =
         (el
             [ centerX
             , centerY
+            , height (fill |> minimum 200)
             , padding Scale.large
             , width fill
             , Border.rounded 8
             , Palette.seedPodBackground
             ]
-            content
+            (el
+                [ centerX
+                , centerY
+                ]
+                content
+            )
         )
 
 

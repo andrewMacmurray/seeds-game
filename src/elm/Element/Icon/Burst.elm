@@ -1,12 +1,9 @@
 module Element.Icon.Burst exposing
-    ( active
-    , active_
-    , inactive
+    ( active_
     , inactive_
     )
 
 import Element exposing (Color, Element)
-import Element.Icon as Icon
 import Element.Palette as Palette
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
@@ -28,29 +25,20 @@ type alias Options =
 -- Inactive
 
 
-inactive : Element msg
-inactive =
-    active
-        { color = Palette.slateGrey
-        , border = Palette.background1_
-        }
-
-
 inactive_ : Svg msg
 inactive_ =
-    active_
-        { color = Palette.slateGrey
-        , border = Palette.background1_
-        }
+    active_ inactiveOptions
+
+
+inactiveOptions : Options
+inactiveOptions =
+    { color = Palette.slateGrey
+    , border = Palette.background1_
+    }
 
 
 
 -- Active
-
-
-active : Options -> Element msg
-active =
-    withNode Icon.view
 
 
 active_ : Options -> Svg msg
