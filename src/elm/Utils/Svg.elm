@@ -12,6 +12,7 @@ module Utils.Svg exposing
     , ry_
     , scaled
     , strokeWidth_
+    , stroke_
     , transformOrigin_
     , translated
     , viewBox_
@@ -125,6 +126,11 @@ rx_ =
 ry_ : Float -> Attribute msg
 ry_ =
     ry << String.fromFloat
+
+
+stroke_ : Element.Color -> Attribute msg
+stroke_ =
+    stroke << Color.toString
 
 
 strokeWidth_ : Float -> Attribute msg

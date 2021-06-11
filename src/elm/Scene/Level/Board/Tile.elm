@@ -18,7 +18,6 @@ import Scene.Level.Board.Tile.Leaving as Leaving
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
-import Scene.Level.Board.Tile.Style as Tile
 import Scene.Level.Board.Tile.Wall as Wall
 import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
@@ -80,8 +79,8 @@ toTileModel model =
     , transitionDelay = 0
     , element = tileElement model
     , tracer = Nothing
-    , width = Scale.width model.window
-    , height = Scale.height model.window
+    , width = Scale.outerWidth model.window
+    , height = Scale.outerHeight model.window
     , scale = 1
     , opacity = 1
     , offsetX = Position.x model
@@ -133,6 +132,7 @@ view model =
         |> withFalling model
         |> withEntering model
         |> withGrowing model
+        |> withReleasing model
         |> view_
 
 
@@ -234,19 +234,19 @@ toTileElement model state =
     case Tile.get state of
         Just Tile.Rain ->
             Dot.html (Style.center [ Style.absolute ])
-                { size = tileSize model
+                { size = innerTileSize model
                 , color = Palette.blue5
                 }
 
         Just Tile.Sun ->
             Dot.html (Style.center [ Style.absolute ])
-                { size = tileSize model
+                { size = innerTileSize model
                 , color = Palette.gold
                 }
 
         Just Tile.SeedPod ->
             Dot.split_ (Style.center [ Style.absolute ])
-                { size = tileSize model
+                { size = innerTileSize model
                 , left = Palette.lime5
                 , right = Palette.lime4
                 }
@@ -263,7 +263,7 @@ toTileElement model state =
 
 toSeedElement : Model -> Seed -> Html msg
 toSeedElement model seed =
-    Html.square (tileSize model) (Style.center [ Style.absolute ]) [ Seed.view seed ]
+    Html.square (innerTileSize model) (Style.center [ Style.absolute ]) [ Seed.view seed ]
 
 
 toBurstElement : Model -> Maybe Tile -> Html msg
@@ -275,8 +275,8 @@ burstWrapper : Model -> Html msg -> Html msg
 burstWrapper model el_ =
     div
         (Style.center
-            [ Style.width (tileSize model)
-            , Style.height (tileSize model)
+            [ Style.width (innerTileSize model)
+            , Style.height (innerTileSize model)
             , Style.absolute
             ]
         )
@@ -308,13 +308,9 @@ viewActiveBurst model tile_ =
             }
 
 
-
--- Config
-
-
-tileSize : Model -> Int
-tileSize model =
-    round (Tile.size (Move.block model.move) * Tile.scale model.window)
+innerTileSize : Model -> Int
+innerTileSize model =
+    Scale.innerSize model
 
 
 
@@ -508,7 +504,7 @@ bounceFall model distance =
         , options = []
         , property = P.y
         , from = 0
-        , to = toFloat (distance * Scale.height model.window)
+        , to = toFloat (distance * Scale.outerHeight model.window)
         , bounce = Bounce.stiff
         }
 
@@ -523,3 +519,17 @@ bounceEnter =
         , to = 0
         , bounce = Bounce.stiff
         }
+
+
+
+-- Releasing
+
+
+withReleasing : Model -> ViewModel msg -> ViewModel msg
+withReleasing model tileModel =
+    case Move.tileState model.move of
+        Tile.Releasing _ order ->
+            { tileModel | transition = 200 + (30 * order) }
+
+        _ ->
+            tileModel

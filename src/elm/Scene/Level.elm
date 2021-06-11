@@ -42,6 +42,7 @@ import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
 import Scene.Level.Board.Tile.Line as Line
+import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
@@ -640,19 +641,19 @@ coordsFromPosition pointer model =
             }
 
         positionY =
-            toFloat <| pointer.y - Board.offsetTop viewModel
+            toFloat (pointer.y - Board.offsetTop viewModel)
 
         positionX =
-            toFloat <| pointer.x - Board.offsetLeft viewModel
+            toFloat (pointer.x - Board.offsetLeft viewModel)
 
         scaleFactorY =
-            Tile.scale model.context.window * Tile.baseSizeY
+            toFloat (Scale.outerHeight model.context.window)
 
         scaleFactorX =
-            Tile.scale model.context.window * Tile.baseSizeX
+            toFloat (Scale.outerWidth model.context.window)
     in
-    ( floor <| positionY / scaleFactorY
-    , floor <| positionX / scaleFactorX
+    ( floor (positionY / scaleFactorY)
+    , floor (positionX / scaleFactorX)
     )
 
 

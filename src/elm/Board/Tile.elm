@@ -5,8 +5,6 @@ module Board.Tile exposing
     , State(..)
     , Tile(..)
     , addBearing
-    , baseSizeX
-    , baseSizeY
     , clearBurstType
     , get
     , growLeavingBurstToSeed
@@ -27,7 +25,6 @@ module Board.Tile exposing
     , moveOrder
     , releaseDraggingSeeds
     , removeBearing
-    , scale
     , seedType
     , setActiveToStatic
     , setDraggingBurstType
@@ -47,7 +44,6 @@ module Board.Tile exposing
     )
 
 import Seed
-import Window
 
 
 
@@ -531,26 +527,3 @@ toString tileType =
 burstToString : Maybe Tile -> String
 burstToString =
     Maybe.map (\tile -> "Burst" ++ toString tile) >> Maybe.withDefault "BurstEmpty"
-
-
-scale : Window.Window -> Float
-scale window =
-    case Window.size window of
-        Window.Small ->
-            0.8
-
-        Window.Medium ->
-            0.98
-
-        Window.Large ->
-            1.2
-
-
-baseSizeX : number
-baseSizeX =
-    55
-
-
-baseSizeY : number
-baseSizeY =
-    51

@@ -1,12 +1,24 @@
 module Scene.Level.Board.Tile.Stroke exposing
     ( darker
     , lighter
+    , thickness
     )
 
 import Board.Tile as Tile exposing (Tile)
 import Element exposing (Color)
 import Element.Palette as Color
+import Scene.Level.Board.Tile.Scale as Scale
 import Seed exposing (Seed)
+import Window exposing (Window)
+
+
+
+-- Size
+
+
+thickness : Window -> Float
+thickness window =
+    6 * Scale.factor window
 
 
 
@@ -23,7 +35,7 @@ darker tile =
             Color.gold
 
         Tile.SeedPod ->
-            Color.green5
+            Color.lime5
 
         Tile.Seed seed ->
             darkerSeed seed
@@ -39,7 +51,7 @@ darkerSeed seed =
             Color.darkBrown
 
         Seed.Chrysanthemum ->
-            Color.purple4
+            Color.mauve4
 
         Seed.Cornflower ->
             Color.blue2

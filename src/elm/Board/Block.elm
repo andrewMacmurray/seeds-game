@@ -5,6 +5,7 @@ module Board.Block exposing
     , clearBurstType
     , empty
     , fold
+    , foldTile
     , growLeavingBurstToSeed
     , growingOrder
     , isBurst
@@ -281,6 +282,11 @@ map f block =
 
         wall ->
             wall
+
+
+foldTile : (Tile -> a) -> a -> Block -> a
+foldTile f default =
+    fold (Tile.map default f) default
 
 
 fold : (Tile.State -> a) -> a -> Block -> a

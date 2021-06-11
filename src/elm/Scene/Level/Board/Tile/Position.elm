@@ -49,6 +49,6 @@ position model =
 
 position_ : Window -> Coord -> Position
 position_ window coord =
-    { x = toFloat (Coord.x coord * Scale.width window)
-    , y = toFloat (Coord.y coord * Scale.height window)
+    { x = toFloat (Coord.x coord * Scale.outerWidth window)
+    , y = toFloat (Coord.y coord * Scale.outerHeight window)
     }

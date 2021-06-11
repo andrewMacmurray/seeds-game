@@ -5,14 +5,14 @@ module Scene.Level.Board.LineDrag exposing
 
 import Board exposing (Board)
 import Board.Move as Move
-import Board.Tile as Tile exposing (Tile(..))
-import Css.Color as Color
-import Css.Style as Style
+import Element
+import Element.Palette as Palette
 import Html exposing (Html)
 import Level.Setting.Tile as Tile
 import Pointer exposing (Pointer)
 import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile.Style exposing (..)
+import Scene.Level.Board.Tile.Scale as Scale
+import Scene.Level.Board.Tile.Stroke as Stroke
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Utils.Html as Html
@@ -48,15 +48,12 @@ lineDrag model =
 
         ( oY, oX ) =
             lastMoveOrigin model
-
-        tileScale =
-            Tile.scale window
     in
     Svg.window window
         [ class "fixed top-0 right-0 z-4 touch-disabled" ]
-        [ line
-            [ Style.svgStyle [ Style.stroke (strokeColor model) ]
-            , strokeWidth (String.fromFloat (6 * tileScale))
+        [ Svg.line
+            [ Svg.strokeWidth_ (Stroke.thickness window)
+            , Svg.stroke_ (strokeColor model)
             , strokeLinecap "round"
             , x1 (String.fromFloat oX)
             , y1 (String.fromFloat oY)
@@ -67,15 +64,11 @@ lineDrag model =
         ]
 
 
-strokeColor : ViewModel -> Color.Color
+strokeColor : ViewModel -> Element.Color
 strokeColor model =
-    if model.isSeedPodMove then
-        strokeColors SeedPod
-
-    else
-        Board.activeMoveType model.board
-            |> Maybe.map strokeColors
-            |> Maybe.withDefault Color.greyYellow
+    Board.activeMoveType model.board
+        |> Maybe.map Stroke.darker
+        |> Maybe.withDefault Palette.greyYellow
 
 
 lastMoveOrigin : ViewModel -> ( Float, Float )
@@ -83,9 +76,6 @@ lastMoveOrigin model =
     let
         window =
             model.window
-
-        tileScale =
-            Tile.scale window
 
         lastMove =
             Board.lastMove model.board
@@ -97,10 +87,10 @@ lastMoveOrigin model =
             toFloat <| Move.x lastMove
 
         sY =
-            Tile.baseSizeY * tileScale
+            toFloat (Scale.outerHeight window)
 
         sX =
-            Tile.baseSizeX * tileScale
+            toFloat (Scale.outerWidth window)
 
         offsetY =
             Board.offsetTop (boardViewModel model) |> toFloat

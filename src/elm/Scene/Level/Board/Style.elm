@@ -11,9 +11,8 @@ module Scene.Level.Board.Style exposing
     )
 
 import Board
-import Board.Tile as Tile exposing (State(..), Tile(..))
 import Element
-import Scene.Level.Board.Tile.Style as TileStyle
+import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 
 
@@ -58,12 +57,12 @@ offsetLeft ({ window } as model) =
 
 height : ViewModel -> Int
 height { window, boardSize } =
-    round (Tile.baseSizeY * Tile.scale window) * boardSize.y
+    Scale.outerHeight window * boardSize.y
 
 
 width : ViewModel -> Int
 width { window, boardSize } =
-    TileStyle.width window * boardSize.x
+    Scale.outerWidth window * boardSize.x
 
 
 width2 : ViewModel -> Element.Attribute msg
@@ -73,4 +72,4 @@ width2 model =
 
 fullWidth : Window -> Int
 fullWidth window =
-    TileStyle.width window * 8
+    Scale.outerWidth window * 8

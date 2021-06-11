@@ -11,6 +11,7 @@ import Board.Tile as Tile exposing (State(..), Tile(..))
 import Dict exposing (Dict)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
+import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 
 
@@ -90,14 +91,14 @@ offsetXDistance resourceBankIndex model =
             (Board.width (boardViewModel model) - scoreBarWidth) // 2
 
         offset =
-            exitOffset <| Tile.scale model.window
+            exitOffset (Scale.factor model.window)
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
 
 exitOffset : Float -> Float
 exitOffset x =
-    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
+    25 * (x ^ 2) - (75 * x) + Scale.baseX
 
 
 offsetYDistance : Model -> Float

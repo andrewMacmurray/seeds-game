@@ -1,11 +1,15 @@
-module Scene.Level.Board.Tile.Wall exposing (html, view, view_)
+module Scene.Level.Board.Tile.Wall exposing
+    ( html
+    , view
+    , view_
+    )
 
 import Board.Block as Block
 import Board.Move as Move exposing (Move)
-import Board.Tile as Tile
 import Element exposing (..)
 import Element.Background as Background
 import Html exposing (Html)
+import Scene.Level.Board.Tile.Scale as Scale
 import Utils.Element as Element
 import Utils.Html as Html
 import Utils.Html.Style as Style
@@ -48,4 +52,4 @@ view_ model color =
 
 wallSize : { a | window : Window } -> Int
 wallSize model =
-    round (Tile.scale model.window * 45)
+    round (Scale.factor model.window * 45)

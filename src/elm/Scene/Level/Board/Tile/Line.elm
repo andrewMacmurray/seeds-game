@@ -10,6 +10,7 @@ import Css.Transform as Transform exposing (Transform)
 import Element exposing (Color)
 import Html exposing (Html, div)
 import Scene.Level.Board.Tile.Position as Position
+import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
 import Seed exposing (Seed)
 import Utils.Html as Html
@@ -70,14 +71,10 @@ toLine model =
 
 toLine_ : Model -> Tile -> Direction -> ViewModel
 toLine_ model tile_ direction =
-    let
-        scale =
-            Tile.scale model.window
-    in
-    { width = round (50 * scale)
-    , height = round (5 * scale)
-    , offsetX = Position.x model + .x (offsets direction) * scale
-    , offsetY = Position.y model + .y (offsets direction) * scale
+    { width = round (50 * Scale.factor model.window)
+    , height = round (Stroke.thickness model.window)
+    , offsetX = offsetX model direction
+    , offsetY = offsetY model direction
     , rotate = .rotate (offsets direction)
     , color = toColor model tile_
     }
@@ -88,6 +85,16 @@ type alias Offsets =
     , y : Float
     , rotate : Float
     }
+
+
+offsetX : Model -> Direction -> Float
+offsetX model direction =
+    Position.x model + .x (offsets direction) * Scale.factor model.window
+
+
+offsetY : Model -> Direction -> Float
+offsetY model direction =
+    Position.y model + .y (offsets direction) * Scale.factor model.window
 
 
 offsets : Direction -> Offsets

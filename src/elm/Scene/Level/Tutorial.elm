@@ -493,8 +493,8 @@ boardOffset model =
 
 tileSize : InternalViewModel -> { height : Float, width : Float }
 tileSize model =
-    { height = toFloat (Scale.height model.window)
-    , width = toFloat (Scale.width model.window)
+    { height = toFloat (Scale.outerHeight model.window)
+    , width = toFloat (Scale.outerWidth model.window)
     }
 
 

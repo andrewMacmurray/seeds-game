@@ -7,6 +7,10 @@ import Svg.Attributes exposing (..)
 import Utils.Color as Color
 
 
+
+-- Mono Seed
+
+
 type alias Options =
     { color : Color
     }

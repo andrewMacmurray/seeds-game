@@ -7,6 +7,10 @@ import Svg.Attributes exposing (..)
 import Utils.Color as Color
 
 
+
+-- Circle Seed
+
+
 type alias Options =
     { background : Color
     , center : Color

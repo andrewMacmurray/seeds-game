@@ -110,7 +110,7 @@ init flags =
         |> updateWith TitleMsg initialState
         |> withCmds
             [ generateBounceKeyframes
-            , Debug.goToLevel 1 9 InitLevel
+            , Debug.goToLevel 3 3 InitLevel
             ]
 
 
