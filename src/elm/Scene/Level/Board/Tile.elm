@@ -1,6 +1,5 @@
 module Scene.Level.Board.Tile exposing
     ( current
-    , overlay
     , view
     )
 
@@ -87,40 +86,6 @@ toTileModel model =
     , offsetX = offsetX model
     , offsetY = offsetY model
     }
-
-
-
--- Overlay
-
-
-type alias Overlay =
-    { window : Window
-    , settings : List Tile.Setting
-    , boardSize : Board.Size
-    , move : Move
-    }
-
-
-overlay : Overlay -> Html msg
-overlay model =
-    if needsOverlay (Move.block model.move) then
-        view_
-            (toTileModel
-                { isBursting = False
-                , window = model.window
-                , settings = model.settings
-                , boardSize = model.boardSize
-                , move = model.move
-                }
-            )
-
-    else
-        Html.none
-
-
-needsOverlay : Block -> Bool
-needsOverlay block =
-    Block.isStatic block
 
 
 

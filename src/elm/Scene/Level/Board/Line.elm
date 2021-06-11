@@ -37,7 +37,7 @@ view model move =
             [ Tile.widthHeightStyles model.window
             , Tile.coordStyles model.window <| Move.coord move
             ]
-        , class "dib absolute touch-disabled"
+        , class "dib z-0 absolute touch-disabled"
         ]
         [ lineFromMove model move ]
 

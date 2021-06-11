@@ -49,6 +49,7 @@ import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
+import Utils.Html.Style as Style
 import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
 import Window exposing (Window)
@@ -716,7 +717,8 @@ view model =
         , behindContent (topBar model)
         , inFront (renderBoard model)
         , inFront (lineDrag model)
-        , inFront (currentMove model)
+
+        --, inFront (currentMove model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
         ]
@@ -816,23 +818,28 @@ renderBoard_ model =
         [ width (px (Board.width (boardViewModel model)))
         , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
         , Element.preventScroll
-        , behindContent (renderLines model)
-        , inFront (moveOverlayLayer model)
         , centerX
         ]
-        (tilesFor renderTile model)
+        (html (div [] (mapTiles (renderTile model) model.board)))
 
 
 renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
-    div [ handleMoveEvents model move ]
-        [ Tile.view
-            { boardSize = model.boardSize
-            , window = model.window
-            , settings = model.settings
-            , isBursting = Burst.isBursting model.board
-            , move = move
-            }
+    div []
+        [ div
+            [ handleMoveEvents model move
+            , Style.absolute
+            , Style.z 1
+            ]
+            [ Tile.view
+                { boardSize = model.boardSize
+                , window = model.window
+                , settings = model.settings
+                , isBursting = Burst.isBursting model.board
+                , move = move
+                }
+            ]
+        , renderLine model move
         ]
 
 
@@ -881,29 +888,9 @@ currentMove_ model move =
         }
 
 
-moveOverlayLayer : BoardModel -> Element msg
-moveOverlayLayer model =
-    el
-        [ Element.disableTouch
-        , Board.width2 (boardViewModel model)
-        , centerX
-        ]
-        (tilesFor moveOverlay model)
-
-
-moveOverlay : BoardModel -> Move -> Html msg
-moveOverlay model move =
-    Tile.overlay
-        { boardSize = model.boardSize
-        , window = model.window
-        , settings = model.settings
-        , move = move
-        }
-
-
-renderLines : BoardModel -> Element msg
-renderLines model =
-    column [] (mapTiles (Line.view (lineViewModel model) >> html) model.board)
+renderLine : BoardModel -> Move -> Html msg
+renderLine model move =
+    Line.view (lineViewModel model) move
 
 
 handleMoveEvents : BoardModel -> Move -> Html.Attribute Msg

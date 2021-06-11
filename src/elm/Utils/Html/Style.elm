@@ -9,6 +9,7 @@ module Utils.Html.Style exposing
     , splitBackground
     , transform
     , width
+    , z
     )
 
 import Css.Transform as Transform exposing (Transform)
@@ -58,6 +59,11 @@ transform xs =
 background : Element.Color -> Attribute msg
 background c =
     style "background" (Color.toString c)
+
+
+z : Int -> Attribute msg
+z n =
+    style "z-index" (String.fromInt n)
 
 
 center : List (Attribute msg) -> List (Attribute msg)
