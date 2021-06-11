@@ -1,5 +1,5 @@
 module Scene.Level.Board.Style exposing
-    ( ViewModel
+    ( Model
     , fullWidth
     , offsetBottom
     , offsetLeft
@@ -7,11 +7,9 @@ module Scene.Level.Board.Style exposing
     , scoreIconSize
     , topBarHeight
     , width
-    , width2
     )
 
 import Board
-import Element
 import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 
@@ -34,40 +32,36 @@ topBarHeight =
 -- Board
 
 
-type alias ViewModel =
-    { window : Window
-    , boardSize : Board.Size
+type alias Model model =
+    { model
+        | window : Window
+        , boardSize : Board.Size
     }
 
 
-offsetTop : ViewModel -> Int
+offsetTop : Model model -> Int
 offsetTop ({ window } as model) =
     (window.height - height model) // 2 + (topBarHeight // 2) - 10
 
 
-offsetBottom : ViewModel -> Int
+offsetBottom : Model model -> Int
 offsetBottom ({ window } as model) =
     window.height - offsetTop model - height model
 
 
-offsetLeft : ViewModel -> Int
+offsetLeft : Model model -> Int
 offsetLeft ({ window } as model) =
     (window.width - width model) // 2
 
 
-height : ViewModel -> Int
+height : Model model -> Int
 height { window, boardSize } =
     Scale.outerHeight window * boardSize.y
 
 
-width : ViewModel -> Int
+width : Model model -> Int
 width { window, boardSize } =
     Scale.outerWidth window * boardSize.x
-
-
-width2 : ViewModel -> Element.Attribute msg
-width2 model =
-    Element.width (Element.px (width model))
 
 
 fullWidth : Window -> Int

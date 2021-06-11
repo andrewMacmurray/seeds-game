@@ -280,8 +280,7 @@ text : InternalViewModel -> Html msg
 text model =
     let
         offsetBottom =
-            boardViewModel model
-                |> Board.offsetBottom
+            Board.offsetBottom model
                 |> (\offset -> offset - 60)
                 |> toFloat
     in
@@ -486,8 +485,8 @@ leftEdge model =
 
 boardOffset : InternalViewModel -> { top : Float, left : Float }
 boardOffset model =
-    { top = toFloat <| Board.offsetTop (boardViewModel model)
-    , left = toFloat <| Board.offsetLeft (boardViewModel model)
+    { top = toFloat <| Board.offsetTop model
+    , left = toFloat <| Board.offsetLeft model
     }
 
 
@@ -495,15 +494,4 @@ tileSize : InternalViewModel -> { height : Float, width : Float }
 tileSize model =
     { height = toFloat (Scale.outerHeight model.window)
     , width = toFloat (Scale.outerWidth model.window)
-    }
-
-
-
--- View Models
-
-
-boardViewModel : InternalViewModel -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
     }

@@ -514,14 +514,6 @@ generateSeedType =
     Pod.generateNewSeeds AddGrowingSeeds
 
 
-isSeedPodMove : Model -> Bool
-isSeedPodMove model =
-    model.board
-        |> Board.activeMoves
-        |> List.map Move.tile
-        |> List.member (Just SeedPod)
-
-
 
 -- Leaving
 
@@ -727,7 +719,7 @@ view model =
 
 topBar : Model -> Element msg
 topBar =
-    topBarViewModel >> TopBar.view >> html
+    topBarModel >> TopBar.view >> html
 
 
 handleStop : Model -> Element.Attribute Msg
@@ -747,7 +739,7 @@ disableIfComplete model =
 
 lineDrag : Model -> Element msg
 lineDrag =
-    lineDragViewModel
+    lineDragModel
         >> LineDrag.view
         >> html
         >> el [ Element.disableTouch ]
@@ -818,8 +810,8 @@ toRenderBoard window board size settings isDragging =
 renderBoard_ : BoardModel -> Element Msg
 renderBoard_ model =
     el
-        [ width (px (Board.width (boardViewModel model)))
-        , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
+        [ width (px (Board.width model))
+        , moveDown (toFloat (Board.offsetTop model))
         , Element.preventScroll
         , centerX
         ]
@@ -881,8 +873,8 @@ currentMoveOverlay : BoardModel -> Element msg
 currentMoveOverlay model =
     el
         [ Element.disableTouch
-        , moveDown (toFloat (Board.offsetTop (boardViewModel model)))
-        , Board.width2 (boardViewModel model)
+        , moveDown (toFloat (Board.offsetTop model))
+        , width (px (Board.width model))
         , centerX
         ]
         (tilesFor currentMove_ model)
@@ -991,15 +983,8 @@ yesNoButton yesText msg =
 -- View Models
 
 
-boardViewModel : BoardModel -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
-    }
-
-
-topBarViewModel : Model -> TopBar.Model
-topBarViewModel model =
+topBarModel : Model -> TopBar.Model
+topBarModel model =
     { window = model.context.window
     , tileSettings = model.tileSettings
     , scores = model.scores
@@ -1007,8 +992,8 @@ topBarViewModel model =
     }
 
 
-lineDragViewModel : Model -> LineDrag.Model
-lineDragViewModel model =
+lineDragModel : Model -> LineDrag.Model
+lineDragModel model =
     { window = model.context.window
     , board = model.board
     , boardSize = model.boardSize

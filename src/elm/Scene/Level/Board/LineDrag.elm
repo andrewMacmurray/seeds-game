@@ -86,14 +86,12 @@ lastMove =
 
 offsetY : Model -> Float
 offsetY =
-    boardViewModel
-        >> Board.offsetTop
-        >> toFloat
+    Board.offsetTop >> toFloat
 
 
 offsetX : Model -> Float
 offsetX model =
-    toFloat ((model.window.width - Board.width (boardViewModel model)) // 2)
+    toFloat ((model.window.width - Board.width model) // 2)
 
 
 tileHeight : Model -> Float
@@ -108,13 +106,6 @@ tileWidth =
     .window
         >> Scale.outerWidth
         >> toFloat
-
-
-boardViewModel : Model -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
-    }
 
 
 

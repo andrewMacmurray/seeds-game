@@ -88,7 +88,7 @@ offsetXDistance resourceBankIndex model =
                 |> (*) scoreWidth
 
         baseOffset =
-            (Board.width (boardViewModel model) - scoreBarWidth) // 2
+            (Board.width model - scoreBarWidth) // 2
 
         offset =
             exitOffset (Scale.factor model.window)
@@ -103,15 +103,4 @@ exitOffset x =
 
 offsetYDistance : Model -> Float
 offsetYDistance model =
-    toFloat (Board.offsetTop (boardViewModel model)) - 9
-
-
-
--- View Models
-
-
-boardViewModel : Model -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
-    }
+    toFloat (Board.offsetTop model) - 9
