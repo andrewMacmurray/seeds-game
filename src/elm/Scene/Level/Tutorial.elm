@@ -28,8 +28,8 @@ import Element.Animations as Animations
 import Element.Text as Text
 import Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
+import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
-import Scene.Level.Board.Tile.Style as Tile
 import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
@@ -411,10 +411,10 @@ connectingBlock model =
         HorizontalTiles { from, length } ->
             let
                 p1 =
-                    Tile.position model.window from
+                    Position.fromCoord model.window from
 
                 p2 =
-                    Tile.position model.window (Coord.translateX (length - 2) from)
+                    Position.fromCoord model.window (Coord.translateX (length - 2) from)
 
                 { left, top } =
                     boardOffset model
@@ -435,10 +435,10 @@ connectingBlock model =
         VerticalTiles { from, length } ->
             let
                 p1 =
-                    Tile.position model.window from
+                    Position.fromCoord model.window from
 
                 p2 =
-                    Tile.position model.window (Coord.translateY (length - 2) from)
+                    Position.fromCoord model.window (Coord.translateY (length - 2) from)
 
                 { left, top } =
                     boardOffset model
@@ -467,7 +467,7 @@ moveHighlight : ViewModel -> Coord -> Svg msg
 moveHighlight model coord =
     let
         { x, y } =
-            Tile.position model.window coord
+            Position.fromCoord model.window coord
 
         { left, top } =
             boardOffset model

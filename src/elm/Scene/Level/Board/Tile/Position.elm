@@ -1,5 +1,6 @@
 module Scene.Level.Board.Tile.Position exposing
-    ( x
+    ( fromCoord
+    , x
     , y
     )
 
@@ -44,11 +45,11 @@ position : Model model -> Position
 position model =
     model.move
         |> Move.coord
-        |> position_ model.window
+        |> fromCoord model.window
 
 
-position_ : Window -> Coord -> Position
-position_ window coord =
+fromCoord : Window -> Coord -> Position
+fromCoord window coord =
     { x = toFloat (Coord.x coord * Scale.outerWidth window)
     , y = toFloat (Coord.y coord * Scale.outerHeight window)
     }

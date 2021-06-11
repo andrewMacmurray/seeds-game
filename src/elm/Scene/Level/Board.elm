@@ -40,28 +40,28 @@ type alias Model model =
 
 
 offsetTop : Model model -> Int
-offsetTop ({ window } as model) =
-    (window.height - height model) // 2 + (topBarHeight // 2) - 10
+offsetTop model =
+    (model.window.height - height model) // 2 + (topBarHeight // 2) - 10
 
 
 offsetBottom : Model model -> Int
-offsetBottom ({ window } as model) =
-    window.height - offsetTop model - height model
+offsetBottom model =
+    model.window.height - offsetTop model - height model
 
 
 offsetLeft : Model model -> Int
-offsetLeft ({ window } as model) =
-    (window.width - width model) // 2
+offsetLeft model =
+    (model.window.width - width model) // 2
 
 
 height : Model model -> Int
-height { window, boardSize } =
-    Scale.outerHeight window * boardSize.y
+height model =
+    Scale.outerHeight model.window * model.boardSize.y
 
 
 width : Model model -> Int
-width { window, boardSize } =
-    Scale.outerWidth window * boardSize.x
+width model =
+    Scale.outerWidth model.window * model.boardSize.x
 
 
 fullWidth : Window -> Int
