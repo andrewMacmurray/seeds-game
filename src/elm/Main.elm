@@ -169,25 +169,25 @@ updateSceneContext : (Context -> Context) -> Scene -> Scene
 updateSceneContext toContext scene =
     case scene of
         Title model ->
-            Title <| Title.updateContext toContext model
+            Title (Title.updateContext toContext model)
 
         Intro model ->
-            Intro <| Intro.updateContext toContext model
+            Intro (Intro.updateContext toContext model)
 
         Hub model ->
-            Hub <| Hub.updateContext toContext model
+            Hub (Hub.updateContext toContext model)
 
         Level model ->
-            Level <| Level.updateContext toContext model
+            Level (Level.updateContext toContext model)
 
         Retry model ->
-            Retry <| Retry.updateContext toContext model
+            Retry (Retry.updateContext toContext model)
 
         Summary model ->
-            Summary <| Summary.updateContext toContext model
+            Summary (Summary.updateContext toContext model)
 
         Garden model ->
-            Garden <| Garden.updateContext toContext model
+            Garden (Garden.updateContext toContext model)
 
 
 
@@ -257,7 +257,7 @@ update msg ({ scene, backdrop } as model) =
             ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
-            ( model, withLoadingScreen <| InitHub level )
+            ( model, withLoadingScreen (InitHub level) )
 
         ( ResetData, _, _ ) ->
             ( model, Ports.clearCache )
@@ -341,7 +341,7 @@ exitHub model destination =
 
 handleStartLevel : Model -> Level.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
-    ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
+    ( model, withLoadingScreen (InitLevel (Worlds.levelConfig level)) )
 
 
 
@@ -387,7 +387,7 @@ exitLevel model levelStatus =
 
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
-    if shouldIncrement <| getContext model then
+    if shouldIncrement (getContext model) then
         ( model, trigger InitSummary )
 
     else
@@ -658,7 +658,7 @@ sceneSubscriptions : Model -> Sub Msg
 sceneSubscriptions model =
     case model.scene of
         Title titleModel ->
-            Sub.map TitleMsg <| Title.subscriptions titleModel
+            Sub.map TitleMsg (Title.subscriptions titleModel)
 
         _ ->
             Sub.none
@@ -739,7 +739,7 @@ menu scene =
             renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg <| Level.menuOptions model
+            renderMenu model.context LevelMsg (Level.menuOptions model)
 
         Garden model ->
             renderMenu model.context GardenMsg Garden.menuOptions
