@@ -1,4 +1,4 @@
-module Scene.Level.Board.Style exposing
+module Scene.Level.Board exposing
     ( Model
     , fullWidth
     , offsetBottom

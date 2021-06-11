@@ -27,7 +27,7 @@ import Element exposing (Element, behindContent)
 import Element.Animations as Animations
 import Element.Text as Text
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
+import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Style as Tile
 import Simple.Animation exposing (Animation)

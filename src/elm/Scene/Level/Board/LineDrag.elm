@@ -9,7 +9,7 @@ import Element exposing (Color)
 import Element.Palette as Palette
 import Html exposing (Html)
 import Pointer exposing (Pointer)
-import Scene.Level.Board.Style as Board
+import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
 import Svg exposing (..)

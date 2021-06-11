@@ -13,7 +13,7 @@ import Css.Transition exposing (transitionAll)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
+import Scene.Level.Board as Board
 import Svg exposing (Svg)
 import View.Icon.RainBank exposing (rainBankFull)
 import View.Icon.SunBank exposing (sunBankFull)

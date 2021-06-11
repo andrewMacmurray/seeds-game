@@ -38,8 +38,8 @@ import Html exposing (Attribute, Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
+import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
-import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
 import Scene.Level.Board.Tile.Line as Line
 import Scene.Level.Board.Tile.Scale as Scale
