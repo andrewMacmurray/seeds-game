@@ -5,16 +5,14 @@ module Scene.Level.Board.LineDrag exposing
 
 import Board exposing (Board)
 import Board.Move as Move exposing (Move)
-import Element exposing (Color)
+import Element exposing (Color, Element)
 import Element.Palette as Palette
-import Html exposing (Html)
 import Pointer exposing (Pointer)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Utils.Html as Html
 import Utils.Svg as Svg
 import Window exposing (Window)
 
@@ -112,27 +110,29 @@ tileWidth =
 -- View
 
 
-view : Model -> Html msg
+view : Model -> Element msg
 view model =
     if model.isDragging then
         view_ (toViewModel model)
 
     else
-        Html.none
+        Element.none
 
 
-view_ : ViewModel -> Html msg
+view_ : ViewModel -> Element msg
 view_ model =
-    Svg.window model.window
-        []
-        [ Svg.line
-            [ Svg.strokeWidth_ model.thickness
-            , Svg.stroke_ model.color
-            , strokeLinecap "round"
-            , x1 (String.fromFloat model.x1)
-            , y1 (String.fromFloat model.y1)
-            , x2 (String.fromInt model.x2)
-            , y2 (String.fromInt model.y2)
+    Element.html
+        (Svg.window model.window
+            [ Svg.disableTouch ]
+            [ Svg.line
+                [ Svg.strokeWidth_ model.thickness
+                , Svg.stroke_ model.color
+                , strokeLinecap "round"
+                , x1 (String.fromFloat model.x1)
+                , y1 (String.fromFloat model.y1)
+                , x2 (String.fromInt model.x2)
+                , y2 (String.fromInt model.y2)
+                ]
+                []
             ]
-            []
-        ]
+        )

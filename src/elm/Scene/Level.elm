@@ -739,10 +739,7 @@ disableIfComplete model =
 
 lineDrag : Model -> Element msg
 lineDrag =
-    lineDragModel
-        >> LineDrag.view
-        >> html
-        >> el [ Element.disableTouch ]
+    lineDragModel >> LineDrag.view
 
 
 
