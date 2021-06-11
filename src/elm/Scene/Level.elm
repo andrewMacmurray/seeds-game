@@ -717,8 +717,7 @@ view model =
         , behindContent (topBar model)
         , inFront (renderBoard model)
         , inFront (lineDrag model)
-
-        --, inFront (currentMove model)
+        , inFront (currentMove model)
         , inFront (infoWindow model)
         , inFront (tutorialOverlay model)
         ]
