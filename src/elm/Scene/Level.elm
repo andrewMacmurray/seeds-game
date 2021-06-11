@@ -747,7 +747,10 @@ disableIfComplete model =
 
 lineDrag : Model -> Element msg
 lineDrag =
-    lineDragViewModel >> LineDrag.view >> html
+    lineDragViewModel
+        >> LineDrag.view
+        >> html
+        >> el [ Element.disableTouch ]
 
 
 
@@ -1004,7 +1007,7 @@ topBarViewModel model =
     }
 
 
-lineDragViewModel : Model -> LineDrag.ViewModel
+lineDragViewModel : Model -> LineDrag.Model
 lineDragViewModel model =
     { window = model.context.window
     , board = model.board
