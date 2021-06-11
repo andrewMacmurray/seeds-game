@@ -22,24 +22,33 @@ module Scene.Level.Tutorial exposing
 
 import Board
 import Board.Coord as Coord exposing (Coord)
-import Css.Animation as Animation
 import Css.Color as Color
-import Css.Style as Style
-import Html exposing (Html)
-import Html.Attributes as Attribute
+import Element exposing (Element, behindContent)
+import Element.Animations as Animations
+import Element.Text as Text
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Style as Tile
+import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
-import Utils.Html as Html
-import Utils.Svg exposing (..)
+import Utils.Animated as Animated
+import Utils.Element as Element
+import Utils.Svg as Svg exposing (..)
 import Window exposing (Window)
 
 
 
 -- Tutorial
+
+
+type alias Model =
+    { window : Window
+    , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
+    , tutorial : Tutorial
+    }
 
 
 type Tutorial
@@ -55,30 +64,28 @@ type alias Steps =
 
 
 type Step
-    = AutoHide StepConfig
-    | WaitForUserAction StepConfig
+    = AutoHide Step_
+    | WaitForUserAction Step_
 
 
-type alias StepConfig =
+type alias Step_ =
     { text : String
     , highlight : Highlight
     }
 
 
 type Highlight
-    = HorizontalTiles { from : Coord, length : Int }
-    | VerticalTiles { from : Coord, length : Int }
+    = HorizontalTiles TilesHighlight
+    | VerticalTiles TilesHighlight
     | Multiple (List Highlight)
     | RemainingMoves
     | SeedBank
     | NoHighlight
 
 
-type alias Model =
-    { window : Window
-    , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
-    , tutorial : Tutorial
+type alias TilesHighlight =
+    { from : Coord
+    , length : Int
     }
 
 
@@ -97,15 +104,15 @@ tutorial step_ steps_ =
 
 step : String -> Highlight -> Step
 step text_ =
-    WaitForUserAction << StepConfig text_
+    WaitForUserAction << Step_ text_
 
 
 autoStep : String -> Highlight -> Step
 autoStep text_ =
-    AutoHide << StepConfig text_
+    AutoHide << Step_ text_
 
 
-stepConfig : Step -> StepConfig
+stepConfig : Step -> Step_
 stepConfig step_ =
     case step_ of
         AutoHide config ->
@@ -194,12 +201,12 @@ none =
 -- Highlight
 
 
-horizontalTiles : { from : Coord, length : Int } -> Highlight
+horizontalTiles : TilesHighlight -> Highlight
 horizontalTiles =
     HorizontalTiles
 
 
-verticalTiles : { from : Coord, length : Int } -> Highlight
+verticalTiles : TilesHighlight -> Highlight
 verticalTiles =
     VerticalTiles
 
@@ -238,25 +245,25 @@ type alias ViewModel =
     }
 
 
-view : Model -> Html msg
+view : Model -> Element msg
 view model =
     case model.tutorial of
         InProgress c ->
             view_ (toViewModel model c)
 
         Complete ->
-            Html.none
+            Element.none
 
 
-view_ : ViewModel -> Html msg
+view_ : ViewModel -> Element msg
 view_ model =
-    Html.div
-        [ Attribute.class "w-100 h-100 fixed z-7 top-0 touch-disabled"
-        , Style.style (visibility model)
+    Animated.el (visibility model)
+        [ Element.disableTouch
+        , Element.width Element.fill
+        , Element.height Element.fill
+        , behindContent (highlightOverlay model)
         ]
-        [ highlightOverlay model
-        , text model
-        ]
+        (text model)
 
 
 toViewModel : Model -> Steps -> ViewModel
@@ -270,29 +277,24 @@ toViewModel model config =
     }
 
 
-visibility : ViewModel -> List Style.Style
+visibility : ViewModel -> Animation
 visibility model =
     if model.visible then
-        [ Animation.animation "fade-in" 1200 []
-        , Style.opacity 0
-        ]
+        Animations.fadeIn 1200 []
 
     else
-        [ Style.opacity 1
-        , Animation.animation "fade-out" 1000 []
-        ]
+        Animations.fadeOut 1000 []
 
 
-text : ViewModel -> Html msg
+text : ViewModel -> Element msg
 text model =
-    Html.p
-        [ Attribute.class "absolute z-7 bottom-0 tc left-0 right-0"
-        , Style.style
-            [ Style.color Color.white
-            , Style.bottom (offsetBottom model)
-            ]
+    Text.text
+        [ Text.white
+        , Element.centerX
+        , Element.alignBottom
+        , Element.moveUp (offsetBottom model)
         ]
-        [ Html.text model.text ]
+        model.text
 
 
 offsetBottom : ViewModel -> Float
@@ -300,18 +302,21 @@ offsetBottom model =
     toFloat (Board.offsetBottom model - 60)
 
 
-highlightOverlay : ViewModel -> Html msg
+highlightOverlay : ViewModel -> Element msg
 highlightOverlay model =
-    Svg.svg [ windowViewBox_ model.window ]
-        [ highlightMask model
-        , Svg.rect
-            [ width_ (toFloat model.window.width)
-            , height_ (toFloat model.window.height)
-            , fillOpacity "0.4"
-            , mask <| String.concat [ "url(#", maskId, ")" ]
+    Element.html
+        (Svg.window model.window
+            [ Svg.disableTouch ]
+            [ highlightMask model
+            , Svg.rect
+                [ Svg.width_ (toFloat model.window.width)
+                , Svg.height_ (toFloat model.window.height)
+                , fillOpacity "0.4"
+                , mask (String.concat [ "url(#", maskId, ")" ])
+                ]
+                []
             ]
-            []
-        ]
+        )
 
 
 highlightMask : ViewModel -> Svg msg
@@ -491,8 +496,8 @@ leftEdge model =
 
 boardOffset : ViewModel -> { top : Float, left : Float }
 boardOffset model =
-    { top = toFloat <| Board.offsetTop model
-    , left = toFloat <| Board.offsetLeft model
+    { top = toFloat (Board.offsetTop model)
+    , left = toFloat (Board.offsetLeft model)
     }
 
 

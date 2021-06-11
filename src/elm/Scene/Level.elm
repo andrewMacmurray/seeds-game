@@ -751,7 +751,7 @@ lineDrag =
 
 tutorialOverlay : Model -> Element msg
 tutorialOverlay =
-    tutorialViewModel >> Tutorial.view >> html
+    tutorialViewModel >> Tutorial.view
 
 
 tutorialViewModel : Model -> Tutorial.Model
@@ -824,7 +824,7 @@ renderTile model move =
         [ div
             [ handleMoveEvents model move
             , Style.absolute
-            , Style.z 1
+            , Style.zIndex 1
             ]
             [ Tile.view
                 { isBursting = Burst.isBursting model.board
@@ -836,7 +836,7 @@ renderTile model move =
             ]
         , div
             [ Style.absolute
-            , Style.z 0
+            , Style.zIndex 0
             ]
             [ Line.view
                 { move = move

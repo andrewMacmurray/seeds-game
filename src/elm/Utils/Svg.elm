@@ -2,6 +2,7 @@ module Utils.Svg exposing
     ( Point
     , cx_
     , cy_
+    , disableTouch
     , fill_
     , height_
     , originCenter_
@@ -151,3 +152,8 @@ transformOrigin_ x y =
 originCenter_ : String
 originCenter_ =
     "transform-origin: center"
+
+
+disableTouch : Attribute msg
+disableTouch =
+    Svg.Attributes.class "touch-disabled"
