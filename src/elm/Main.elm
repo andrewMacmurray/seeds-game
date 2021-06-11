@@ -109,8 +109,7 @@ init flags =
         |> Title.init
         |> updateWith TitleMsg initialState
         |> withCmds
-            [ generateBounceKeyframes
-            , Debug.goToLevel 2 1 InitLevel
+            [ Debug.goToLevel 2 1 InitLevel
             ]
 
 
@@ -608,11 +607,6 @@ saveCurrentLives =
 livesRemaining : Model -> Int
 livesRemaining =
     getContext >> .lives >> Lives.remaining
-
-
-generateBounceKeyframes : Cmd msg
-generateBounceKeyframes =
-    Ports.generateBounceKeyframes ()
 
 
 reachedLevel : Model -> Level.Id

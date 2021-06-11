@@ -1,4 +1,3 @@
-import * as Bounce from "./bounce";
 import * as Cache from "./cache";
 import * as Audio from "./audio";
 import * as Scroll from "./scroll";
@@ -23,11 +22,6 @@ export function bindPorts({
   
   fadeMusic.subscribe(() => {
     Audio.longFade(introMusic);
-  });
-  
-  generateBounceKeyframes.subscribe(() => {
-    const styleNode = document.getElementById("generated-styles");
-    styleNode.textContent = Bounce.generateKeyframes();
   });
   
   cacheProgress.subscribe((progress) => {
