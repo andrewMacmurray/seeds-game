@@ -1008,8 +1008,6 @@ lineDragViewModel : Model -> LineDrag.ViewModel
 lineDragViewModel model =
     { window = model.context.window
     , board = model.board
-    , tileSettings = model.tileSettings
-    , isSeedPodMove = isSeedPodMove model
     , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer

@@ -8,7 +8,6 @@ import Board.Move as Move
 import Element
 import Element.Palette as Palette
 import Html exposing (Html)
-import Level.Setting.Tile as Tile
 import Pointer exposing (Pointer)
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile.Scale as Scale
@@ -23,10 +22,8 @@ import Window exposing (Window)
 type alias ViewModel =
     { window : Window
     , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
     , board : Board
     , isDragging : Bool
-    , isSeedPodMove : Bool
     , pointer : Pointer
     }
 
@@ -81,10 +78,10 @@ lastMoveOrigin model =
             Board.lastMove model.board
 
         y1 =
-            toFloat <| Move.y lastMove
+            toFloat (Move.y lastMove)
 
         x1 =
-            toFloat <| Move.x lastMove
+            toFloat (Move.x lastMove)
 
         sY =
             toFloat (Scale.outerHeight window)
