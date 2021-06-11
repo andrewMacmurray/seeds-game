@@ -38,10 +38,10 @@ import Html exposing (Attribute, Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
-import Scene.Level.Board.Line as Line
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
+import Scene.Level.Board.Tile.Line as Line
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
@@ -831,14 +831,23 @@ renderTile model move =
             , Style.z 1
             ]
             [ Tile.view
-                { boardSize = model.boardSize
+                { isBursting = Burst.isBursting model.board
+                , boardSize = model.boardSize
                 , window = model.window
                 , settings = model.settings
-                , isBursting = Burst.isBursting model.board
                 , move = move
                 }
             ]
-        , renderLine model move
+        , div
+            [ Style.absolute
+            , Style.z 0
+            ]
+            [ Line.view
+                { move = move
+                , activeSeed = Board.activeSeedType model.board
+                , window = model.window
+                }
+            ]
         ]
 
 
@@ -885,11 +894,6 @@ currentMove_ model move =
         , settings = model.settings
         , move = move
         }
-
-
-renderLine : BoardModel -> Move -> Html msg
-renderLine model move =
-    Line.view (lineViewModel model) move
 
 
 handleMoveEvents : BoardModel -> Move -> Html.Attribute Msg
@@ -996,13 +1000,6 @@ topBarViewModel model =
     , tileSettings = model.tileSettings
     , scores = model.scores
     , remainingMoves = model.remainingMoves
-    }
-
-
-lineViewModel : BoardModel -> Line.ViewModel
-lineViewModel model =
-    { window = model.window
-    , activeSeedType = Board.activeSeedType model.board
     }
 
 

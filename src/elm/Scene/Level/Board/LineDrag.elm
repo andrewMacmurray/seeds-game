@@ -8,14 +8,15 @@ import Board.Move as Move
 import Board.Tile as Tile exposing (Tile(..))
 import Css.Color as Color
 import Css.Style as Style
-import Html exposing (Html, span)
+import Html exposing (Html)
 import Level.Setting.Tile as Tile
 import Pointer exposing (Pointer)
 import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile.Style exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Utils.Svg exposing (height_, width_, windowViewBox_)
+import Utils.Html as Html
+import Utils.Svg as Svg
 import Window exposing (Window)
 
 
@@ -36,7 +37,7 @@ view model =
         lineDrag model
 
     else
-        span [] []
+        Html.none
 
 
 lineDrag : ViewModel -> Html msg
@@ -51,20 +52,16 @@ lineDrag model =
         tileScale =
             Tile.scale window
     in
-    svg
-        [ width_ <| toFloat window.width
-        , height_ <| toFloat window.height
-        , windowViewBox_ window
-        , class "fixed top-0 right-0 z-4 touch-disabled"
-        ]
+    Svg.window window
+        [ class "fixed top-0 right-0 z-4 touch-disabled" ]
         [ line
-            [ Style.svgStyle [ Style.stroke <| strokeColor model ]
-            , strokeWidth <| String.fromFloat <| 6 * tileScale
+            [ Style.svgStyle [ Style.stroke (strokeColor model) ]
+            , strokeWidth (String.fromFloat (6 * tileScale))
             , strokeLinecap "round"
-            , x1 <| String.fromFloat oX
-            , y1 <| String.fromFloat oY
-            , x2 <| String.fromInt model.pointer.x
-            , y2 <| String.fromInt model.pointer.y
+            , x1 (String.fromFloat oX)
+            , y1 (String.fromFloat oY)
+            , x2 (String.fromInt model.pointer.x)
+            , y2 (String.fromInt model.pointer.y)
             ]
             []
         ]

@@ -29,6 +29,7 @@ import Html exposing (Html)
 import Html.Attributes as Attribute
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Style as Board
+import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Style as Tile
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
@@ -492,8 +493,8 @@ boardOffset model =
 
 tileSize : InternalViewModel -> { height : Float, width : Float }
 tileSize model =
-    { height = toFloat <| Tile.height model.window
-    , width = toFloat <| Tile.width model.window
+    { height = toFloat (Scale.height model.window)
+    , width = toFloat (Scale.width model.window)
     }
 
 

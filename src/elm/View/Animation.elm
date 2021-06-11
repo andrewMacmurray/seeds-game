@@ -1,7 +1,7 @@
 module View.Animation exposing (animations)
 
 import Css.Animation exposing (frame, keyframes, opacity, transform)
-import Css.Transform exposing (rotateZ, scale, translateX, translateY)
+import Css.Transform exposing (rotate, scale, translateX, translateY)
 import Html exposing (Html)
 
 
@@ -182,18 +182,18 @@ heartbeat =
 heartBreakLeft =
     keyframes "heart-break-left"
         [ frame 0
-            [ transform [ translateX 0, rotateZ 0 ] ]
+            [ transform [ translateX 0, rotate 0 ] ]
         , frame 100
-            [ transform [ translateX -3, rotateZ -2 ] ]
+            [ transform [ translateX -3, rotate -2 ] ]
         ]
 
 
 heartBreakRight =
     keyframes "heart-break-right"
         [ frame 0
-            [ transform [ translateX 0, rotateZ 0 ] ]
+            [ transform [ translateX 0, rotate 0 ] ]
         , frame 100
-            [ transform [ translateX 3, rotateZ 2 ] ]
+            [ transform [ translateX 3, rotate 2 ] ]
         ]
 
 

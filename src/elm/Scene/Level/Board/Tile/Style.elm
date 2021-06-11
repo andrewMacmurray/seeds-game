@@ -18,6 +18,7 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
+import Scene.Level.Board.Tile.Scale as Scale
 import Seed
 import Window exposing (Window)
 
@@ -54,19 +55,19 @@ position window coord =
 
 widthHeightStyles : Window -> List Style
 widthHeightStyles window =
-    [ Style.width <| toFloat <| width window
-    , Style.height <| toFloat <| height window
+    [ Style.width <| toFloat (width window)
+    , Style.height <| toFloat (height window)
     ]
 
 
 width : Window -> Int
-width window =
-    round <| Tile.baseSizeX * Tile.scale window
+width =
+    Scale.width
 
 
 height : Window -> Int
-height window =
-    round <| Tile.baseSizeY * Tile.scale window
+height =
+    Scale.height
 
 
 

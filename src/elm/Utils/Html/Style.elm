@@ -18,27 +18,27 @@ import Html exposing (Attribute)
 import Html.Attributes exposing (style)
 import Utils.Background as Background
 import Utils.Color as Color
-import Utils.Unit exposing (px)
+import Utils.Unit as Unit
 
 
 absolute : Attribute msg
 absolute =
-    style "position" "absolute"
+    position_ "absolute"
 
 
 width : Int -> Attribute msg
-width n =
-    style "width" (px n)
+width =
+    pixels_ "width"
 
 
 height : Int -> Attribute msg
-height n =
-    style "height" (px n)
+height =
+    pixels_ "height"
 
 
 rounded : Int -> Attribute msg
-rounded n =
-    style "border-radius" (px n)
+rounded =
+    pixels_ "border-radius"
 
 
 opacity : Float -> Attribute msg
@@ -78,23 +78,23 @@ center =
 
 
 top : Int -> Attribute msg
-top n =
-    style "top" (px n)
+top =
+    pixels_ "top"
 
 
 bottom : Int -> Attribute msg
-bottom n =
-    style "bottom" (px n)
+bottom =
+    pixels_ "bottom"
 
 
 left : Int -> Attribute msg
-left n =
-    style "left" (px n)
+left =
+    pixels_ "left"
 
 
 right : Int -> Attribute msg
-right n =
-    style "right" (px n)
+right =
+    pixels_ "right"
 
 
 marginAuto : Attribute msg
@@ -105,3 +105,17 @@ marginAuto =
 splitBackground : Background.Split -> Attribute msg
 splitBackground split =
     style "background" (Background.splitGradient split)
+
+
+
+-- Internal
+
+
+position_ : String -> Attribute msg
+position_ =
+    style "position"
+
+
+pixels_ : String -> Int -> Attribute msg
+pixels_ prop n =
+    style prop (Unit.px n)

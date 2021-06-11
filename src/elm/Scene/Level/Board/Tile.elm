@@ -5,7 +5,6 @@ module Scene.Level.Board.Tile exposing
 
 import Board
 import Board.Block as Block exposing (Block)
-import Board.Coord as Coord exposing (Coord)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
 import Css.Transform as Transform
@@ -16,6 +15,8 @@ import Element.Palette as Palette
 import Html exposing (Attribute, Html, div)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Tile.Leaving as Leaving
+import Scene.Level.Board.Tile.Position as Position
+import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
 import Scene.Level.Board.Tile.Style as Tile
 import Scene.Level.Board.Tile.Wall as Wall
@@ -79,12 +80,12 @@ toTileModel model =
     , transitionDelay = 0
     , element = tileElement model
     , tracer = Nothing
-    , width = tileWidth model.window
-    , height = tileHeight model.window
+    , width = Scale.width model.window
+    , height = Scale.height model.window
     , scale = 1
     , opacity = 1
-    , offsetX = offsetX model
-    , offsetY = offsetY model
+    , offsetX = Position.x model
+    , offsetY = Position.y model
     }
 
 
@@ -206,17 +207,12 @@ animateOuter_ anim =
 
 viewTracer : ViewModel msg -> Html msg
 viewTracer model =
-    showIfJust (viewTracer_ model) model.tracer
+    Html.showIfJust (viewTracer_ model) model.tracer
 
 
 viewTracer_ : ViewModel msg -> Tracer -> Html msg
 viewTracer_ model tracer =
     Animated.div tracer.animation (Style.center [ Style.absolute ]) [ model.element ]
-
-
-showIfJust : (a -> Html msg) -> Maybe a -> Html msg
-showIfJust f =
-    Maybe.map f >> Maybe.withDefault Html.none
 
 
 
@@ -316,49 +312,9 @@ viewActiveBurst model tile_ =
 -- Config
 
 
-tileWidth : Window -> Int
-tileWidth window =
-    round (Tile.baseSizeX * Tile.scale window)
-
-
-tileHeight : Window -> Int
-tileHeight window =
-    round (Tile.baseSizeY * Tile.scale window)
-
-
 tileSize : Model -> Int
 tileSize model =
     round (Tile.size (Move.block model.move) * Tile.scale model.window)
-
-
-offsetX : Model -> Float
-offsetX =
-    position >> .x
-
-
-offsetY : Model -> Float
-offsetY =
-    position >> .y
-
-
-type alias Position =
-    { x : Float
-    , y : Float
-    }
-
-
-position : Model -> Position
-position model =
-    model.move
-        |> Move.coord
-        |> position_ model.window
-
-
-position_ : Window -> Coord -> Position
-position_ window coord =
-    { x = toFloat (Coord.x coord * tileWidth window)
-    , y = toFloat (Coord.y coord * tileHeight window)
-    }
 
 
 
@@ -552,7 +508,7 @@ bounceFall model distance =
         , options = []
         , property = P.y
         , from = 0
-        , to = toFloat (distance * tileHeight model.window)
+        , to = toFloat (distance * Scale.height model.window)
         , bounce = Bounce.stiff
         }
 

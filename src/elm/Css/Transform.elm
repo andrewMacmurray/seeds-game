@@ -1,7 +1,7 @@
 module Css.Transform exposing
     ( Transform
     , render
-    , rotateZ
+    , rotate
     , scale
     , translate
     , translateX
@@ -57,8 +57,8 @@ translateZ =
     TranslateZ
 
 
-rotateZ : Float -> Transform
-rotateZ =
+rotate : Float -> Transform
+rotate =
     RotateZ
 
 
