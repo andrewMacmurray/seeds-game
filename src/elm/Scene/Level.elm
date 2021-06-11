@@ -754,7 +754,7 @@ tutorialOverlay =
     tutorialViewModel >> Tutorial.view >> html
 
 
-tutorialViewModel : Model -> Tutorial.ViewModel
+tutorialViewModel : Model -> Tutorial.Model
 tutorialViewModel model =
     { window = model.context.window
     , boardSize = model.boardSize
