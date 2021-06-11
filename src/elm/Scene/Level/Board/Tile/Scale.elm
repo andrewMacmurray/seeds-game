@@ -76,7 +76,7 @@ tileSize_ tile =
             26
 
         Tile.Seed _ ->
-            22
+            35
 
         Tile.Burst _ ->
             36

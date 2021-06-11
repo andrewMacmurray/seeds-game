@@ -20,4 +20,10 @@ showIfJust f =
 
 square : Int -> List (Attribute msg) -> List (Html msg) -> Html msg
 square size attr =
-    div (List.append [ Style.width size ] attr)
+    div
+        (List.append
+            [ Style.width size
+            , Style.height size
+            ]
+            attr
+        )

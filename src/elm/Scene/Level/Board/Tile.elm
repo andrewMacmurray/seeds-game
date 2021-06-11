@@ -8,6 +8,7 @@ import Board.Block as Block exposing (Block)
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (Tile)
 import Css.Transform as Transform
+import Element exposing (Color)
 import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
 import Element.Icon.Burst as Burst
@@ -18,7 +19,6 @@ import Scene.Level.Board.Tile.Leaving as Leaving
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
-import Scene.Level.Board.Tile.Wall as Wall
 import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
@@ -223,7 +223,7 @@ tileElement : Model -> Html msg
 tileElement model =
     case Move.block model.move of
         Block.Wall color ->
-            Wall.html model color
+            toWallElement model color
 
         Block.Space state ->
             toTileElement model state
@@ -261,9 +261,31 @@ toTileElement model state =
             Html.none
 
 
+
+-- Wall
+
+
+toWallElement : Model -> Color -> Html msg
+toWallElement model color =
+    Html.square (wallSize model) (Style.center [ Style.background color ]) []
+
+
+wallSize : Model -> Int
+wallSize model =
+    round (Scale.factor model.window * 45)
+
+
+
+-- Seed
+
+
 toSeedElement : Model -> Seed -> Html msg
 toSeedElement model seed =
     Html.square (innerTileSize model) (Style.center [ Style.absolute ]) [ Seed.view seed ]
+
+
+
+-- Burst
 
 
 toBurstElement : Model -> Maybe Tile -> Html msg
