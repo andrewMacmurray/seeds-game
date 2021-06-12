@@ -11,7 +11,7 @@ import Pointer exposing (Pointer)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
-import Svg exposing (..)
+import Svg
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
 import Window exposing (Window)

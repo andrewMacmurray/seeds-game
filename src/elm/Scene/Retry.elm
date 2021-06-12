@@ -131,11 +131,6 @@ tryAgain =
         }
 
 
-fadeInScene : Animation
-fadeInScene =
-    Animations.fadeIn 1000 [ Animation.linear ]
-
-
 fadeInText : Animation
 fadeInText =
     Animations.fadeIn 1000 [ Animation.delay 2500 ]

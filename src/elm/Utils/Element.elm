@@ -8,7 +8,6 @@ module Utils.Element exposing
     , onClickIf
     , originBottom
     , preventScroll
-    , showIfJust
     , square
     , style
     , verticalGap
@@ -52,11 +51,6 @@ visibleIf condition =
 
     else
         alpha 0
-
-
-showIfJust : (a -> Element msg) -> Maybe a -> Element msg
-showIfJust toElement =
-    Maybe.map toElement >> Maybe.withDefault none
 
 
 disableTouch : Attribute msg

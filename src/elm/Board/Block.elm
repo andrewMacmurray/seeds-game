@@ -4,7 +4,6 @@ module Board.Block exposing
     , clearBearing
     , clearBurstType
     , empty
-    , fold
     , foldTile
     , growLeavingBurstToSeed
     , growingOrder
@@ -18,7 +17,6 @@ module Board.Block exposing
     , isLeaving
     , isReleasing
     , isSeed
-    , isStatic
     , isWall
     , leavingOrder
     , moveOrder
@@ -97,11 +95,6 @@ isLeaving =
 isDragging : Block -> Bool
 isDragging =
     fold Tile.isDragging False
-
-
-isStatic : Block -> Bool
-isStatic =
-    fold Tile.isStatic False
 
 
 isReleasing : Block -> Bool

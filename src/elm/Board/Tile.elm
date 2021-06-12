@@ -19,7 +19,6 @@ module Board.Tile exposing
     , isLeaving
     , isReleasing
     , isSeed
-    , isStatic
     , leavingOrder
     , map
     , moveOrder
@@ -118,16 +117,6 @@ isEmpty : State -> Bool
 isEmpty tileState =
     case tileState of
         Empty ->
-            True
-
-        _ ->
-            False
-
-
-isStatic : State -> Bool
-isStatic tileState =
-    case tileState of
-        Static _ ->
             True
 
         _ ->

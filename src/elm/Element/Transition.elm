@@ -1,15 +1,10 @@
 module Element.Transition exposing
-    ( all_
-    , alpha
+    ( alpha
     , background
     )
 
 import Element exposing (htmlAttribute)
 import Simple.Transition as Transition
-
-
-all_ options =
-    htmlAttribute << Transition.all options
 
 
 background : Transition.Millis -> Element.Attribute msg

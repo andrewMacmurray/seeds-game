@@ -1,4 +1,4 @@
-module Utils.Animated exposing (column, el, g, path)
+module Utils.Animated exposing (el, g, path)
 
 import Element exposing (Element)
 import Simple.Animation exposing (Animation)
@@ -14,11 +14,6 @@ import Svg.Attributes
 el : Animation -> List (Element.Attribute msg) -> Element msg -> Element msg
 el =
     ui_ Element.el
-
-
-column : Animation -> List (Element.Attribute msg) -> List (Element msg) -> Element msg
-column =
-    ui_ Element.column
 
 
 ui_ :

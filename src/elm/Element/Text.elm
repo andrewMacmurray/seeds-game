@@ -1,6 +1,5 @@
 module Element.Text exposing
     ( bold
-    , button
     , color
     , fonts
     , large
@@ -12,8 +11,7 @@ module Element.Text exposing
     , wideSpaced
     )
 
-import Element exposing (Attribute, Element, pointer)
-import Element.Events exposing (onClick)
+import Element exposing (Attribute, Element)
 import Element.Font as Font
 import Element.Palette as Palette
 
@@ -25,11 +23,6 @@ import Element.Palette as Palette
 text : List (Attribute msg) -> String -> Element msg
 text attrs t =
     Element.el (medium :: darkYellow :: attrs) (Element.text t)
-
-
-button : msg -> List (Attribute msg) -> String -> Element msg
-button msg attrs =
-    text (onClick msg :: pointer :: attrs)
 
 
 bold : Attribute msg

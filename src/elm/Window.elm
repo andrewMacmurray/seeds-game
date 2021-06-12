@@ -3,7 +3,6 @@ module Window exposing
     , Width(..)
     , Window
     , isNarrow
-    , padding
     , size
     , vh
     , vw
@@ -92,14 +91,6 @@ isNarrow window =
 
 
 -- Config
-
-
-padding : number
-padding =
-    35
-
-
-
 -- Helpers
 
 

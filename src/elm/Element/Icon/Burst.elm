@@ -3,7 +3,7 @@ module Element.Icon.Burst exposing
     , inactive_
     )
 
-import Element exposing (Color, Element)
+import Element exposing (Color)
 import Element.Palette as Palette
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)

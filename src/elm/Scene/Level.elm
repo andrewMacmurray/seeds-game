@@ -21,7 +21,7 @@ import Board.Move as Move exposing (Move)
 import Board.Move.Move as Move
 import Board.Scores as Scores exposing (Scores)
 import Board.Shift as Board
-import Board.Tile as Tile exposing (State(..), Tile(..))
+import Board.Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
 import Config.Level as Level
 import Context exposing (Context)
@@ -34,7 +34,7 @@ import Element.Lazy as Lazy
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
-import Html exposing (Attribute, Html, div)
+import Html exposing (Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives

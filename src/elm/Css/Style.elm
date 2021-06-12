@@ -5,16 +5,11 @@ module Css.Style exposing
     , backgroundColor
     , border
     , borderNone
-    , bottom
     , classes
     , color
     , compose
-    , disablePointer
-    , display
     , height
     , left
-    , leftPill
-    , marginAuto
     , marginBottom
     , marginLeft
     , marginRight
@@ -22,20 +17,12 @@ module Css.Style exposing
     , none
     , opacity
     , paddingAll
-    , paddingBottom
     , paddingHorizontal
-    , paddingLeft
-    , paddingRight
-    , paddingTop
     , paddingVertical
     , property
     , renderStyles_
-    , rightPill
     , showIf
-    , size
-    , stroke
     , style
-    , styles
     , svgStyle
     , top
     , transform
@@ -69,11 +56,6 @@ compose =
 
 
 -- Html
-
-
-styles : List (List Style) -> Html.Attribute msg
-styles =
-    Html.Attributes.attribute "style" << renderStyles_ << List.concat
 
 
 style : List Style -> Html.Attribute msg
@@ -206,19 +188,9 @@ marginBottom n =
     property "margin-bottom" <| px n
 
 
-marginAuto : Style
-marginAuto =
-    property "margin" "auto"
-
-
 top : Float -> Style
 top n =
     property "top" <| px n
-
-
-bottom : Float -> Style
-bottom n =
-    property "bottom" <| px n
 
 
 left : Float -> Style
@@ -241,42 +213,6 @@ border n c =
     property "border" <| String.join " " [ px n, "solid", c ]
 
 
-rightPill : Style
-rightPill =
-    compose
-        [ borderRadiusTopRight 9999
-        , borderRadiusBottomRight 9999
-        ]
-
-
-leftPill : Style
-leftPill =
-    compose
-        [ borderRadiusTopLeft 9999
-        , borderRadiusBottomLeft 9999
-        ]
-
-
-borderRadiusTopRight : Float -> Style
-borderRadiusTopRight n =
-    property "border-top-right-radius" <| px n
-
-
-borderRadiusBottomRight : Float -> Style
-borderRadiusBottomRight n =
-    property "border-bottom-right-radius" <| px n
-
-
-borderRadiusBottomLeft : Float -> Style
-borderRadiusBottomLeft n =
-    property "border-bottom-left-radius" <| px n
-
-
-borderRadiusTopLeft : Float -> Style
-borderRadiusTopLeft n =
-    property "border-top-left-radius" <| px n
-
-
 backgroundColor : String -> Style
 backgroundColor =
     property "background-color"
@@ -285,13 +221,6 @@ backgroundColor =
 background : String -> Style
 background =
     property "background"
-
-
-size : Float -> List Style
-size n =
-    [ width n
-    , height n
-    ]
 
 
 width : Float -> Style
@@ -304,24 +233,9 @@ height h =
     property "height" <| px h
 
 
-display : String -> Style
-display d =
-    property "display" <| d
-
-
 opacity : Float -> Style
 opacity o =
     property "opacity" <| String.fromFloat o
-
-
-stroke : String -> Style
-stroke =
-    property "stroke"
-
-
-disablePointer : Style
-disablePointer =
-    property "pointer-events" "none"
 
 
 showIf : Bool -> Style

@@ -72,28 +72,28 @@ tileState move_ =
 moveStateText : Move -> String
 moveStateText move_ =
     case Move.tileState move_ of
-        Tile.Static tile ->
+        Tile.Static _ ->
             "stat"
 
-        Tile.Dragging tile moveOrder bearing ->
+        Tile.Dragging _ _ _ ->
             "drag"
 
-        Tile.Leaving tile moveOrder ->
+        Tile.Leaving _ _ ->
             "leav"
 
-        Tile.Falling tile distance ->
+        Tile.Falling _ _ ->
             "fall"
 
-        Tile.Entering tile ->
+        Tile.Entering _ ->
             "entr"
 
-        Tile.Growing tile moveOrder ->
+        Tile.Growing _ _ ->
             "grow"
 
-        Tile.Active tile ->
+        Tile.Active _ ->
             "actv"
 
-        Tile.Releasing tile moveOrder ->
+        Tile.Releasing _ _ ->
             "rels"
 
         Tile.Empty ->

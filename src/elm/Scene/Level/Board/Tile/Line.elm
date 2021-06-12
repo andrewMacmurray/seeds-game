@@ -6,7 +6,7 @@ module Scene.Level.Board.Tile.Line exposing
 
 import Board.Move as Move exposing (Move)
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Transform as Transform exposing (Transform)
+import Css.Transform as Transform
 import Element exposing (Color)
 import Html exposing (Html, div)
 import Scene.Level.Board.Tile.Position as Position
