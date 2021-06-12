@@ -22,9 +22,8 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
-import Utils.Debug as Debug
 import Utils.Delay as Delay exposing (trigger)
-import Utils.Update exposing (updateModel, updateWith, withCmds)
+import Utils.Update exposing (updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -108,9 +107,6 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds
-            [ Debug.goToLevel 2 1 InitLevel
-            ]
 
 
 initialState : Title.Model -> Model
@@ -675,8 +671,8 @@ view model =
         , LoadingScreen.view (getContext model)
         , menu model.scene
         , stage
-            [ viewScene model.scene
-            , viewBackdrop model.backdrop
+            [ viewBackdrop model.backdrop
+            , viewScene model.scene
             ]
         , background
         ]
