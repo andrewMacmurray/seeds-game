@@ -10,8 +10,6 @@ module Scene.Hub exposing
     , view
     )
 
-import Config.Level as Level
-import Config.World as Worlds
 import Context exposing (Context)
 import Countdown
 import Element exposing (..)
@@ -31,6 +29,8 @@ import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
 import Game.Board.Scores as Scores
 import Game.Board.Tile as Tile
+import Game.Config.Level as Level
+import Game.Config.World as Worlds
 import Html exposing (Html)
 import Level.Progress as Progress
 import Level.Setting.Tile as Tile exposing (TargetScore)

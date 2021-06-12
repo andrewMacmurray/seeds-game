@@ -10,7 +10,6 @@ module Scene.Level exposing
     , view
     )
 
-import Config.Level as Level
 import Context exposing (Context)
 import Dict exposing (Dict)
 import Element exposing (..)
@@ -34,6 +33,7 @@ import Game.Board.Scores as Scores exposing (Scores)
 import Game.Board.Shift as Board
 import Game.Board.Tile exposing (State(..), Tile(..))
 import Game.Board.Wall as Wall
+import Game.Config.Level as Level
 import Html exposing (Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
@@ -1022,5 +1022,5 @@ lineDragModel model =
     , board = model.board
     , boardSize = model.boardSize
     , isDragging = model.isDragging
-    , pointer = model.pointer
+    , point = model.pointer
     }

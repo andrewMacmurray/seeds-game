@@ -1,4 +1,4 @@
-module Config.Level exposing
+module Game.Config.Level exposing
     ( Cache
     , Id
     , Level

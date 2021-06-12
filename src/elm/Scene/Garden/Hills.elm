@@ -1,8 +1,8 @@
 module Scene.Garden.Hills exposing (view)
 
-import Config.Level as Level
-import Config.World as Worlds
 import Context exposing (Context)
+import Game.Config.Level as Level
+import Game.Config.World as Worlds
 import Geometry.Shape as Shape exposing (Shape)
 import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Chrysanthemum as Chrysanthemum

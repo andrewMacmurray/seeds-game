@@ -1,4 +1,4 @@
-module Config.World exposing
+module Game.Config.World exposing
     ( all
     , getLevel
     , levelConfig
@@ -6,10 +6,10 @@ module Config.World exposing
     , number
     )
 
-import Config.Level as Level exposing (..)
-import Config.World.One as One
-import Config.World.Three as Three
-import Config.World.Two as Two
+import Game.Config.Level as Level exposing (..)
+import Game.Config.World.One as One
+import Game.Config.World.Three as Three
+import Game.Config.World.Two as Two
 
 
 

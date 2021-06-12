@@ -5,10 +5,10 @@ module View.LoadingScreen exposing
     , view
     )
 
-import Config.World as Worlds
 import Css.Color exposing (gold, rainBlue)
 import Css.Style as Style exposing (Style, classes, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
+import Game.Config.World as Worlds
 import Html exposing (..)
 import Level.Progress as Progress exposing (Progress)
 import Random

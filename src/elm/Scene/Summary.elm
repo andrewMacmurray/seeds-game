@@ -9,7 +9,6 @@ module Scene.Summary exposing
     , view
     )
 
-import Config.World as Worlds
 import Context exposing (Context)
 import Css.Animation as Animation exposing (animation, linear)
 import Css.Color as Color exposing (Color)
@@ -18,6 +17,7 @@ import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile exposing (Tile(..))
+import Game.Config.World as Worlds
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Progress as Progress exposing (Progress)

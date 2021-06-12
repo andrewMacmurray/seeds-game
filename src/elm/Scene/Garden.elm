@@ -9,8 +9,6 @@ module Scene.Garden exposing
     , view
     )
 
-import Config.Level as Level
-import Config.World as Worlds
 import Context exposing (Context)
 import Element exposing (..)
 import Element.Animations as Animations
@@ -22,6 +20,8 @@ import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exit)
+import Game.Config.Level as Level
+import Game.Config.World as Worlds
 import Html exposing (Html)
 import Level.Progress as Progress exposing (Progress)
 import Ports.Scroll as Scroll

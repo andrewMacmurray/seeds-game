@@ -16,7 +16,7 @@ module Context exposing
     , updateLives
     )
 
-import Config.Level as Level
+import Game.Config.Level as Level
 import Level.Progress as Progress exposing (Progress)
 import Lives exposing (Lives)
 import Ports exposing (cacheLives)

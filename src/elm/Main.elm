@@ -2,12 +2,12 @@ module Main exposing (main)
 
 import Browser
 import Browser.Events as Browser
-import Config.Level as Level
-import Config.World as Worlds
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, style)
 import Exit
+import Game.Config.Level as Level
+import Game.Config.World as Worlds
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed

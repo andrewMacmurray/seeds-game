@@ -1,7 +1,7 @@
 module ProgressTest exposing (suite)
 
-import Config.Level as Levels
 import Expect
+import Game.Config.Level as Levels
 import Level.Progress as Progress
 import Test exposing (..)
 
