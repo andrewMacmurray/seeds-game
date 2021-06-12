@@ -36,6 +36,7 @@ import Game.Board.Wall as Wall
 import Game.Config.Level as Level
 import Game.Level.Setting.Start as Start
 import Game.Level.Setting.Tile as Tile
+import Game.Level.Tutorial as Tutorial
 import Game.Lives as Lives
 import Html exposing (Html, div)
 import Scene.Level.Board as Board
@@ -536,7 +537,7 @@ addScores model =
 
 handleResetTutorial : Model -> Model
 handleResetTutorial model =
-    if Tutorial.inProgress model.tutorial then
+    if Tutorial.isInProgress model.tutorial then
         { model | tutorial = Tutorial.showStep model.tutorial }
 
     else

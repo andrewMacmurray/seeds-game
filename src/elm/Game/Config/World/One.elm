@@ -6,8 +6,12 @@ import Game.Board.Wall as Wall exposing (s, w)
 import Game.Config.Level as Level
 import Game.Level.Setting.Start as Start
 import Game.Level.Setting.Tile exposing (..)
-import Scene.Level.Tutorial as Tutorial
+import Game.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
+
+
+
+-- World One
 
 
 world : Level.World

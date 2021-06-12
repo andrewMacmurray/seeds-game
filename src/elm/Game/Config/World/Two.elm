@@ -7,8 +7,12 @@ import Game.Board.Wall exposing (..)
 import Game.Config.Level as Level
 import Game.Level.Setting.Start as Start
 import Game.Level.Setting.Tile exposing (..)
-import Scene.Level.Tutorial as Tutorial
+import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Seed exposing (Seed(..))
+
+
+
+-- World Two
 
 
 world : Level.World
@@ -182,7 +186,7 @@ firstLevelWalls =
         ]
 
 
-l1Tutorial : Tutorial.Tutorial
+l1Tutorial : Tutorial
 l1Tutorial =
     let
         tileHighlight =

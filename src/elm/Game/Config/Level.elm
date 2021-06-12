@@ -38,7 +38,7 @@ import Game.Board as Board
 import Game.Board.Wall as Wall
 import Game.Level.Setting.Start as Start
 import Game.Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
-import Scene.Level.Tutorial as Tutorial
+import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Seed exposing (Seed(..))
 
 
@@ -179,7 +179,7 @@ level l =
         }
 
 
-withTutorial : Tutorial.Tutorial -> LevelInitConfig -> Level
+withTutorial : Tutorial -> LevelInitConfig -> Level
 withTutorial tutorial l =
     Level
         { tileSettings = l.tileSettings

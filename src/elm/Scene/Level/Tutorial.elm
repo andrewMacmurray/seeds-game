@@ -1,22 +1,5 @@
 module Scene.Level.Tutorial exposing
     ( Model
-    , Step
-    , Tutorial
-    , autoStep
-    , hideStep
-    , highlightMultiple
-    , horizontalTiles
-    , inProgress
-    , isAutoStep
-    , nextStep
-    , noHighlight
-    , none
-    , remainingMoves
-    , seedBank
-    , showStep
-    , step
-    , tutorial
-    , verticalTiles
     , view
     )
 
@@ -27,6 +10,7 @@ import Element.Text as Text
 import Game.Board as Board
 import Game.Board.Coord as Coord exposing (Coord)
 import Game.Level.Setting.Tile as Tile
+import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
@@ -51,207 +35,27 @@ type alias Model =
     }
 
 
-type Tutorial
-    = InProgress Steps
-    | Complete
-
-
-type alias Steps =
-    { current : Step
-    , remaining : List Step
+type alias ViewModel =
+    { window : Window
+    , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
+    , highlight : Tutorial.Highlight
     , visible : Bool
+    , text : String
     }
-
-
-type Step
-    = AutoHide Step_
-    | WaitForUserAction Step_
-
-
-type alias Step_ =
-    { text : String
-    , highlight : Highlight
-    }
-
-
-type Highlight
-    = HorizontalTiles TilesHighlight
-    | VerticalTiles TilesHighlight
-    | Multiple (List Highlight)
-    | RemainingMoves
-    | SeedBank
-    | NoHighlight
-
-
-type alias TilesHighlight =
-    { from : Coord
-    , length : Int
-    }
-
-
-
--- Steps
-
-
-tutorial : Step -> List Step -> Tutorial
-tutorial step_ steps_ =
-    InProgress
-        { current = step_
-        , remaining = steps_
-        , visible = False
-        }
-
-
-step : String -> Highlight -> Step
-step text_ =
-    WaitForUserAction << Step_ text_
-
-
-autoStep : String -> Highlight -> Step
-autoStep text_ =
-    AutoHide << Step_ text_
-
-
-stepConfig : Step -> Step_
-stepConfig step_ =
-    case step_ of
-        AutoHide config ->
-            config
-
-        WaitForUserAction config ->
-            config
-
-
-showStep : Tutorial -> Tutorial
-showStep tutorial_ =
-    case tutorial_ of
-        InProgress config ->
-            InProgress { config | visible = True }
-
-        Complete ->
-            Complete
-
-
-hideStep : Tutorial -> Tutorial
-hideStep tutorial_ =
-    case tutorial_ of
-        InProgress config ->
-            InProgress { config | visible = False }
-
-        Complete ->
-            Complete
-
-
-nextStep : Tutorial -> Tutorial
-nextStep tutorial_ =
-    case tutorial_ of
-        InProgress config ->
-            toNextStep config
-
-        Complete ->
-            Complete
-
-
-toNextStep : Steps -> Tutorial
-toNextStep config =
-    case List.head config.remaining of
-        Just step_ ->
-            InProgress
-                { config
-                    | current = step_
-                    , remaining = List.drop 1 config.remaining
-                    , visible = True
-                }
-
-        Nothing ->
-            Complete
-
-
-inProgress : Tutorial -> Bool
-inProgress tutorial_ =
-    case tutorial_ of
-        InProgress _ ->
-            True
-
-        Complete ->
-            False
-
-
-isAutoStep : Tutorial -> Bool
-isAutoStep tutorial_ =
-    case tutorial_ of
-        InProgress config ->
-            case config.current of
-                AutoHide _ ->
-                    True
-
-                WaitForUserAction _ ->
-                    False
-
-        Complete ->
-            False
-
-
-none : Tutorial
-none =
-    Complete
-
-
-
--- Highlight
-
-
-horizontalTiles : TilesHighlight -> Highlight
-horizontalTiles =
-    HorizontalTiles
-
-
-verticalTiles : TilesHighlight -> Highlight
-verticalTiles =
-    VerticalTiles
-
-
-remainingMoves : Highlight
-remainingMoves =
-    RemainingMoves
-
-
-seedBank : Highlight
-seedBank =
-    SeedBank
-
-
-noHighlight : Highlight
-noHighlight =
-    NoHighlight
-
-
-highlightMultiple : List Highlight -> Highlight
-highlightMultiple =
-    Multiple
 
 
 
 -- View
 
 
-type alias ViewModel =
-    { window : Window
-    , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
-    , highlight : Highlight
-    , visible : Bool
-    , text : String
-    }
-
-
 view : Model -> Element msg
 view model =
     case model.tutorial of
-        InProgress c ->
+        Tutorial.InProgress c ->
             view_ (toViewModel model c)
 
-        Complete ->
+        Tutorial.Complete ->
             Element.none
 
 
@@ -266,14 +70,14 @@ view_ model =
         (text model)
 
 
-toViewModel : Model -> Steps -> ViewModel
+toViewModel : Model -> Tutorial.Steps -> ViewModel
 toViewModel model config =
     { window = model.window
     , boardSize = model.boardSize
     , tileSettings = model.tileSettings
-    , text = .text (stepConfig config.current)
+    , text = .text (Tutorial.stepConfig config.current)
     , visible = config.visible
-    , highlight = .highlight (stepConfig config.current)
+    , highlight = .highlight (Tutorial.stepConfig config.current)
     }
 
 
@@ -344,12 +148,12 @@ remainingMovesHighlight model =
             leftEdge model + 26
     in
     case model.highlight of
-        RemainingMoves ->
+        Tutorial.RemainingMoves ->
             [ Svg.circle
                 [ fill Color.black
                 , cx_ left
-                , cy_ <| Board.scoreIconSize + 12
-                , r_ <| Board.scoreIconSize + 5
+                , cy_ (Board.scoreIconSize + 12)
+                , r_ (Board.scoreIconSize + 5)
                 ]
                 []
             ]
@@ -361,12 +165,12 @@ remainingMovesHighlight model =
 highlightCenterSeedBank : ViewModel -> List (Svg msg)
 highlightCenterSeedBank model =
     case model.highlight of
-        SeedBank ->
+        Tutorial.SeedBank ->
             [ Svg.circle
                 [ fill Color.black
-                , cx_ <| toFloat model.window.width / 2
-                , cy_ <| Board.scoreIconSize + 10
-                , r_ <| Board.scoreIconSize + 3
+                , cx_ (toFloat model.window.width / 2)
+                , cy_ (Board.scoreIconSize + 10)
+                , r_ (Board.scoreIconSize + 3)
                 ]
                 []
             ]
@@ -378,8 +182,8 @@ highlightCenterSeedBank model =
 maskBackground : ViewModel -> Svg msg
 maskBackground model =
     Svg.rect
-        [ width_ <| toFloat model.window.width
-        , height_ <| toFloat model.window.height
+        [ width_ (toFloat model.window.width)
+        , height_ (toFloat model.window.height)
         , fill Color.white
         ]
         []
@@ -388,17 +192,17 @@ maskBackground model =
 tileHighlights : ViewModel -> List (Svg msg)
 tileHighlights model =
     case model.highlight of
-        HorizontalTiles { from, length } ->
+        Tutorial.HorizontalTiles { from, length } ->
             List.range (Coord.x from) (Coord.x from + length - 1)
                 |> List.map (\x -> Coord.fromXY x (Coord.y from))
                 |> List.map (moveHighlight model)
 
-        VerticalTiles { from, length } ->
+        Tutorial.VerticalTiles { from, length } ->
             List.range (Coord.y from) (Coord.y from + length - 1)
                 |> List.map (\y -> Coord.fromXY (Coord.x from) y)
                 |> List.map (moveHighlight model)
 
-        Multiple hx ->
+        Tutorial.Multiple hx ->
             List.concatMap (\h -> tileHighlights { model | highlight = h }) hx
 
         _ ->
@@ -408,7 +212,7 @@ tileHighlights model =
 connectingBlock : ViewModel -> List (Svg msg)
 connectingBlock model =
     case model.highlight of
-        HorizontalTiles { from, length } ->
+        Tutorial.HorizontalTiles { from, length } ->
             let
                 p1 =
                     Position.fromCoord model.window from
@@ -424,15 +228,15 @@ connectingBlock model =
             in
             [ Svg.rect
                 [ fill Color.black
-                , x_ <| p1.x + left - (width / 2)
-                , y_ <| p1.y + top - height
-                , width_ <| p2.x - p1.x + width
+                , x_ (p1.x + left - (width / 2))
+                , y_ (p1.y + top - height)
+                , width_ (p2.x - p1.x + width)
                 , height_ height
                 ]
                 []
             ]
 
-        VerticalTiles { from, length } ->
+        Tutorial.VerticalTiles { from, length } ->
             let
                 p1 =
                     Position.fromCoord model.window from
@@ -448,15 +252,15 @@ connectingBlock model =
             in
             [ Svg.rect
                 [ fill Color.black
-                , x_ <| p1.x + left - width
-                , y_ <| p1.y + top - (height / 2)
-                , height_ <| p2.y - p1.y + height
+                , x_ (p1.x + left - width)
+                , y_ (p1.y + top - (height / 2))
+                , height_ (p2.y - p1.y + height)
                 , width_ width
                 ]
                 []
             ]
 
-        Multiple hx ->
+        Tutorial.Multiple hx ->
             List.concatMap (\h -> connectingBlock { model | highlight = h }) hx
 
         _ ->
@@ -477,10 +281,10 @@ moveHighlight model coord =
     in
     Svg.ellipse
         [ fill Color.black
-        , rx_ <| width / 2
-        , ry_ <| height / 2
-        , cx_ <| x + left - (width / 2)
-        , cy_ <| y + top - (height / 2)
+        , rx_ (width / 2)
+        , ry_ (height / 2)
+        , cx_ (x + left - (width / 2))
+        , cy_ (y + top - (height / 2))
         ]
         []
 
