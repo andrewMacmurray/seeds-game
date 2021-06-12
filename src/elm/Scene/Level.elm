@@ -677,13 +677,28 @@ checkLevelComplete model =
 
 
 hasLost : Model -> Bool
-hasLost { remainingMoves, levelStatus } =
-    remainingMoves < 1 && levelStatus == InProgress
+hasLost model =
+    noMovesLeft model && model.levelStatus == InProgress
 
 
 hasWon : Model -> Bool
-hasWon { scores, levelStatus } =
-    Scores.allComplete scores && levelStatus == InProgress
+hasWon model =
+    scoreIsReached model && model.levelStatus == InProgress
+
+
+levelIsOver : Model -> Bool
+levelIsOver model =
+    scoreIsReached model || noMovesLeft model
+
+
+noMovesLeft : Model -> Bool
+noMovesLeft model =
+    model.remainingMoves < 1
+
+
+scoreIsReached : Model -> Bool
+scoreIsReached model =
+    Scores.allComplete model.scores
 
 
 handleExitPrompt : Model -> Cmd Msg
@@ -713,7 +728,7 @@ view model =
     Layout.view
         [ handleStop model
         , handleCheck model
-        , disableIfComplete model
+        , disableWhenLevelOver model
         , behindContent (topBar model)
         , inFront (renderBoard model)
         , inFront (lineDrag model)
@@ -739,9 +754,9 @@ handleCheck model =
     Element.applyIf model.isDragging (Touch.onMove CheckMove)
 
 
-disableIfComplete : Model -> Element.Attribute msg
-disableIfComplete model =
-    Element.applyIf (Scores.allComplete model.scores) Element.disableTouch
+disableWhenLevelOver : Model -> Element.Attribute msg
+disableWhenLevelOver model =
+    Element.applyIf (levelIsOver model) Element.disableTouch
 
 
 lineDrag : Model -> Element msg
@@ -791,13 +806,19 @@ type alias BoardModel =
 
 renderBoard : Model -> Element Msg
 renderBoard model =
-    Lazy.lazy5
-        toRenderBoard
-        model.context.window
-        model.board
-        model.boardSize
-        model.tileSettings
-        model.isDragging
+    el
+        [ width fill
+        , height fill
+        , disableWhenLevelOver model
+        ]
+        (Lazy.lazy5
+            toRenderBoard
+            model.context.window
+            model.board
+            model.boardSize
+            model.tileSettings
+            model.isDragging
+        )
 
 
 toRenderBoard : LazyBoard Msg
