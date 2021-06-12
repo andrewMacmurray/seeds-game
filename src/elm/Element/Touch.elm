@@ -2,6 +2,7 @@ module Element.Touch exposing
     ( Point
     , onMove
     , onRelease
+    , onRelease_
     , onStart_
     , origin
     )
@@ -47,8 +48,13 @@ onStart_ msg =
 
 
 onRelease : msg -> Element.Attribute msg
-onRelease msg =
-    on "pointerup" (Json.succeed msg)
+onRelease =
+    onRelease_ >> htmlAttribute
+
+
+onRelease_ : msg -> Html.Attribute msg
+onRelease_ msg =
+    Events.on "pointerup" (Json.succeed msg)
 
 
 onMove : (Point -> msg) -> Element.Attribute msg
