@@ -81,7 +81,7 @@ type Msg
     | NextTutorialStep
     | HideTutorialStep
     | StopMove
-    | StartMove Move Touch.Point
+    | StartMove Touch.Point
     | CheckMove Touch.Point
     | ReleaseTile
     | SetLeavingTiles
@@ -257,11 +257,11 @@ update msg model =
         EndMove ->
             continue (endMove model) []
 
-        StartMove move pointer ->
-            continue (handleStartMove move pointer model) []
+        StartMove pointer ->
+            continue (handleStartMove pointer model) []
 
         CheckMove pointer ->
-            continue (checkMoveFromPosition pointer model) []
+            continue (checkMoveFromPoint pointer model) []
 
         CheckLevelComplete ->
             checkLevelComplete model
@@ -579,19 +579,24 @@ decrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Touch.Point -> Model -> Model
-handleStartMove move pointer model =
-    { model
-        | isDragging = True
-        , board = Move.drag model.boardSize move model.board
-        , pointer = pointer
-        , tutorial = Tutorial.hideStep model.tutorial
-    }
+handleStartMove : Touch.Point -> Model -> Model
+handleStartMove pointer model =
+    case moveFromPoint pointer model of
+        Just move ->
+            { model
+                | isDragging = True
+                , board = Move.drag model.boardSize move model.board
+                , pointer = pointer
+                , tutorial = Tutorial.hideStep model.tutorial
+            }
+
+        Nothing ->
+            model
 
 
-checkMoveFromPosition : Touch.Point -> Model -> Model
-checkMoveFromPosition pointer model =
-    case moveFromPosition pointer model of
+checkMoveFromPoint : Touch.Point -> Model -> Model
+checkMoveFromPoint pointer model =
+    case moveFromPoint pointer model of
         Just move ->
             handleCheckMove move { model | pointer = pointer }
 
@@ -612,9 +617,11 @@ handleCheckMove move model =
 -- Move from position
 
 
-moveFromPosition : Touch.Point -> Model -> Maybe Move
-moveFromPosition pointer model =
-    moveFromCoord model.board <| coordsFromPosition pointer model
+moveFromPoint : Touch.Point -> Model -> Maybe Move
+moveFromPoint pointer model =
+    model
+        |> coordsFromPosition pointer
+        |> moveFromCoord model.board
 
 
 moveFromCoord : Board -> Coord -> Maybe Move
@@ -819,9 +826,10 @@ renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
     div []
         [ div
-            [ handleMoveEvents model move
+            [ handleMoveEvents model
             , Style.absolute
             , Style.zIndex 1
+            , Style.pointer
             ]
             [ Tile.view
                 { isBursting = Burst.isBursting model.board
@@ -889,11 +897,9 @@ currentMove_ model move =
         }
 
 
-handleMoveEvents : BoardModel -> Move -> Html.Attribute Msg
-handleMoveEvents model move =
-    Attribute.applyIf
-        (not model.isDragging)
-        (Touch.onStart_ (StartMove move))
+handleMoveEvents : BoardModel -> Html.Attribute Msg
+handleMoveEvents model =
+    Attribute.applyIf (not model.isDragging) (Touch.onStart_ StartMove)
 
 
 tilesFor :
