@@ -3,12 +3,12 @@ module Scene.Garden.Hills exposing (view)
 import Config.Level as Level
 import Config.World as Worlds
 import Context exposing (Context)
+import Geometry.Shape as Shape exposing (Shape)
 import Level.Progress as Progress exposing (Progress)
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed)
-import Shape exposing (Shape)
 import Svg exposing (Svg)
 import Utils.Svg as Svg
 import Window exposing (Window, vh, vw)

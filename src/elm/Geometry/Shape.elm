@@ -1,4 +1,4 @@
-module Shape exposing
+module Geometry.Shape exposing
     ( Shape
     , circle
     , group
