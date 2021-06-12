@@ -22,8 +22,8 @@ import Element.Text as Text
 import Exit exposing (continue, exit)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
+import Game.Level.Progress as Progress exposing (Progress)
 import Html exposing (Html)
-import Level.Progress as Progress exposing (Progress)
 import Ports.Scroll as Scroll
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower

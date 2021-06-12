@@ -13,7 +13,7 @@ import Game.Board.Generate as Generate
 import Game.Board.Move as Move exposing (Move)
 import Game.Board.Move.Check as Check
 import Game.Board.Tile as Tile exposing (State(..), Tile(..))
-import Level.Setting.Tile as Tile
+import Game.Level.Setting.Tile as Tile
 import Seed exposing (Seed(..))
 
 

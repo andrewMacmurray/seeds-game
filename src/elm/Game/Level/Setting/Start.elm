@@ -1,4 +1,4 @@
-module Level.Setting.Start exposing
+module Game.Level.Setting.Start exposing
     ( Direction(..)
     , Facing(..)
     , Tile

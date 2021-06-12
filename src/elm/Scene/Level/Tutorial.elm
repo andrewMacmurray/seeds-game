@@ -26,7 +26,7 @@ import Element.Animations as Animations
 import Element.Text as Text
 import Game.Board as Board
 import Game.Board.Coord as Coord exposing (Coord)
-import Level.Setting.Tile as Tile
+import Game.Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale

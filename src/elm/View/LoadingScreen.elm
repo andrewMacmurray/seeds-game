@@ -9,8 +9,8 @@ import Css.Color exposing (gold, rainBlue)
 import Css.Style as Style exposing (Style, classes, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
 import Game.Config.World as Worlds
+import Game.Level.Progress as Progress exposing (Progress)
 import Html exposing (..)
-import Level.Progress as Progress exposing (Progress)
 import Random
 import Seed exposing (Seed)
 import View.Seed as Seed

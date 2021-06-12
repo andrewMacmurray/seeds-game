@@ -17,8 +17,8 @@ module Context exposing
     )
 
 import Game.Config.Level as Level
-import Level.Progress as Progress exposing (Progress)
-import Lives exposing (Lives)
+import Game.Level.Progress as Progress exposing (Progress)
+import Game.Lives as Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Time
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)

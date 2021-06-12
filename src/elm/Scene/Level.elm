@@ -34,10 +34,10 @@ import Game.Board.Shift as Board
 import Game.Board.Tile exposing (State(..), Tile(..))
 import Game.Board.Wall as Wall
 import Game.Config.Level as Level
+import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Tile as Tile
+import Game.Lives as Lives
 import Html exposing (Html, div)
-import Level.Setting.Start as Start
-import Level.Setting.Tile as Tile
-import Lives
 import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Tile as Tile

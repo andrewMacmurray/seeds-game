@@ -20,8 +20,8 @@ import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
+import Game.Level.Progress as Progress
 import Html exposing (Html)
-import Level.Progress as Progress
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Simple.Animation as Animation
 import Utils.Animated as Animated

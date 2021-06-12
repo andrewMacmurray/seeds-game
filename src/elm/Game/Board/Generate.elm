@@ -12,7 +12,7 @@ import Game.Board.Block as Block exposing (Block(..))
 import Game.Board.Coord exposing (Coord)
 import Game.Board.Move as Move
 import Game.Board.Tile exposing (State(..), Tile(..))
-import Level.Setting.Tile as Tile exposing (Probability(..))
+import Game.Level.Setting.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
 import Seed exposing (Seed)
 

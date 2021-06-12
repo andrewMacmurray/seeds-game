@@ -1,4 +1,4 @@
-module Level.Setting.Tile exposing
+module Game.Level.Setting.Tile exposing
     ( Probability(..)
     , Setting
     , TargetScore(..)

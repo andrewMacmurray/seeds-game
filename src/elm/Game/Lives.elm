@@ -1,4 +1,4 @@
-module Lives exposing
+module Game.Lives exposing
     ( Cache
     , Lives
     , decrement

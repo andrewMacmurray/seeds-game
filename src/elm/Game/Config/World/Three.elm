@@ -4,8 +4,8 @@ import Element.Palette as Palette
 import Game.Board.Coord exposing (Coord)
 import Game.Board.Wall as Wall exposing (..)
 import Game.Config.Level as Level
-import Level.Setting.Start as Start
-import Level.Setting.Tile exposing (..)
+import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
 
 

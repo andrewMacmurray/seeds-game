@@ -1,4 +1,4 @@
-module Level.Progress exposing
+module Game.Level.Progress exposing
     ( Progress
     , clearCurrentLevel
     , currentCompletedSeed
@@ -25,7 +25,7 @@ import Game.Board.Scores as Score
 import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
-import Level.Setting.Tile as Tile exposing (TargetScore(..))
+import Game.Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Seed exposing (Seed)
 import Utils.Dict
 import Utils.List

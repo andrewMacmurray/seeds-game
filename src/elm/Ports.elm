@@ -8,7 +8,7 @@ port module Ports exposing
     )
 
 import Game.Config.Level as Level
-import Lives
+import Game.Lives as Lives
 
 
 port cacheProgress : Level.Cache -> Cmd msg

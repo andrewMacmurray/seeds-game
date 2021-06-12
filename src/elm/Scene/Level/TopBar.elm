@@ -10,9 +10,9 @@ import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
 import Game.Board.Scores as Scores
 import Game.Board.Tile as Tile exposing (Tile)
+import Game.Level.Setting.Tile as Tile
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
 import Svg exposing (Svg)
 import View.Icon.RainBank exposing (rainBankFull)

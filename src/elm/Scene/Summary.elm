@@ -18,9 +18,9 @@ import Css.Transition as Transition exposing (transition, transitionAll)
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile exposing (Tile(..))
 import Game.Config.World as Worlds
+import Game.Level.Progress as Progress exposing (Progress)
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Level.Progress as Progress exposing (Progress)
 import Ports exposing (cacheProgress)
 import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
