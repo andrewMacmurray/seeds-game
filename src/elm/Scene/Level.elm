@@ -294,13 +294,13 @@ update msg model =
             exitWith Restart model
 
         RestartLevelLoseLife ->
-            exitWith Restart <| updateContext Context.decrementLife model
+            exitWith Restart (updateContext Context.decrementLife model)
 
         ExitLevel ->
             exitWith Exit model
 
         ExitLevelLoseLife ->
-            exitWith Exit <| updateContext Context.decrementLife model
+            exitWith Exit (updateContext Context.decrementLife model)
 
 
 
@@ -847,7 +847,7 @@ renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
     div []
         [ div
-            [ handleMoveEvents model
+            [ handleStartMoveEvents model
             , Style.absolute
             , Style.zIndex 1
             , Style.pointer
@@ -918,8 +918,8 @@ currentMove_ model move =
         }
 
 
-handleMoveEvents : BoardModel -> Html.Attribute Msg
-handleMoveEvents model =
+handleStartMoveEvents : BoardModel -> Html.Attribute Msg
+handleStartMoveEvents model =
     Attribute.applyIf (not model.isDragging) (Touch.onStart_ StartMove)
 
 

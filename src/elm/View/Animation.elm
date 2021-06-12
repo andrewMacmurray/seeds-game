@@ -10,25 +10,18 @@ animations =
     Css.Animation.embed
         [ fadeOut
         , fadeIn
-        , fadeInOut
         , fadeSlideDown
-        , slideDownScaleOut
-        , exitDown
-        , hover
         , shake
         , bulgeFade
         , bulge
-        , bulgeElastic
-        , bulgeElasticBig
-        , bulgeSmall
         , heartbeat
         , heartBreakLeft
         , heartBreakRight
-        , scaleIn
         ]
 
 
 fadeIn =
+    -- Menu / Summary
     keyframes "fade-in"
         [ frame 0 [ opacity 0 ]
         , frame 100 [ opacity 1 ]
@@ -36,22 +29,15 @@ fadeIn =
 
 
 fadeOut =
+    -- Menu / TopBar
     keyframes "fade-out"
         [ frame 0 [ opacity 1 ]
         , frame 100 [ opacity 0 ]
         ]
 
 
-fadeInOut =
-    keyframes "fade-in-out"
-        [ frame 0 [ opacity 0 ]
-        , frame 20 [ opacity 1 ]
-        , frame 80 [ opacity 1 ]
-        , frame 100 [ opacity 0 ]
-        ]
-
-
 fadeSlideDown =
+    -- Summary
     let
         offsetPerFrame =
             30 / 100
@@ -66,20 +52,8 @@ fadeSlideDown =
         ]
 
 
-slideDownScaleOut =
-    keyframes "slide-down-scale-out"
-        [ frame 0
-            [ opacity 1, transform [ scale 1, translateY 0 ] ]
-        , frame 50
-            [ opacity 1, transform [ scale 1, translateY 40 ] ]
-        , frame 60
-            [ opacity 1, transform [ scale 1.1, translateY 40 ] ]
-        , frame 100
-            [ opacity 0, transform [ scale 0, translateY 40 ] ]
-        ]
-
-
 shake =
+    -- Summary
     keyframes "shake"
         [ frame 10 [ toX -1 ]
         , frame 20 [ toX 1 ]
@@ -93,24 +67,8 @@ shake =
         ]
 
 
-exitDown =
-    keyframes "exit-down"
-        [ frame 0
-            [ opacity 1, toY 0 ]
-        , frame 100
-            [ opacity 0, toY 300 ]
-        ]
-
-
-hover =
-    keyframes "hover"
-        [ frame 0 [ toY 0 ]
-        , frame 50 [ toY -5 ]
-        , frame 100 [ toY 0 ]
-        ]
-
-
 bulgeFade =
+    -- Summary
     keyframes "bulge-fade"
         [ frame 0
             [ opacity 1, toScale 1 ]
@@ -120,6 +78,7 @@ bulgeFade =
 
 
 bulge =
+    -- TopBar
     keyframes "bulge"
         [ frame 0
             [ toScale 0.5 ]
@@ -127,47 +86,6 @@ bulge =
             [ toScale 1.3 ]
         , frame 100
             [ toScale 1 ]
-        ]
-
-
-bulgeElastic =
-    keyframes "bulge-elastic"
-        [ frame 0
-            [ opacity 0, toScale 0 ]
-        , frame 50
-            [ opacity 0.4, toScale 1.3 ]
-        , frame 75
-            [ opacity 0.7, toScale 0.9 ]
-        , frame 100
-            [ opacity 1, toScale 1 ]
-        ]
-
-
-bulgeElasticBig =
-    keyframes "bulge-elastic-big"
-        [ frame 0
-            [ opacity 0, toScale 0.3 ]
-        , frame 20
-            [ opacity 1, toScale 1.3 ]
-        , frame 40
-            [ opacity 1, toScale 0.8 ]
-        , frame 60
-            [ opacity 1, toScale 1.1 ]
-        , frame 80
-            [ opacity 1, toScale 0.9 ]
-        , frame 100
-            [ opacity 1, toScale 1 ]
-        ]
-
-
-bulgeSmall =
-    keyframes "bulge-small"
-        [ frame 0
-            [ opacity 0, toScale 0.5 ]
-        , frame 50
-            [ opacity 1, toScale 1.1 ]
-        , frame 100
-            [ opacity 1, toScale 1 ]
         ]
 
 
@@ -194,13 +112,6 @@ heartBreakRight =
             [ transform [ translateX 0, rotate 0 ] ]
         , frame 100
             [ transform [ translateX 3, rotate 2 ] ]
-        ]
-
-
-scaleIn =
-    keyframes "scale-in"
-        [ frame 0 [ toScale 0 ]
-        , frame 100 [ toScale 1 ]
         ]
 
 
