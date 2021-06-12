@@ -3,6 +3,8 @@ module Utils.Sine exposing
     , wave
     )
 
+-- Sine Wave
+
 
 type alias Wave a =
     { left : a
@@ -21,19 +23,20 @@ type alias Wave a =
 
 wave : Wave a -> Int -> a
 wave { left, center, right } n =
-    let
-        offsetSin =
-            toFloat n
-                |> (*) 90
-                |> degrees
-                |> sin
-                |> round
-    in
-    if offsetSin == 0 then
+    if offsetSine n == 0 then
         center
 
-    else if offsetSin == 1 then
+    else if offsetSine n == 1 then
         right
 
     else
         left
+
+
+offsetSine : Int -> Int
+offsetSine =
+    toFloat
+        >> (*) 90
+        >> degrees
+        >> sin
+        >> round
