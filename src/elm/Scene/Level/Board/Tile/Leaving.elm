@@ -4,11 +4,11 @@ module Scene.Level.Board.Tile.Leaving exposing
     , offsets
     )
 
-import Board
-import Board.Move as Move exposing (Move)
-import Board.Scores as Scores
-import Board.Tile as Tile exposing (State(..), Tile(..))
 import Dict exposing (Dict)
+import Game.Board as Board
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Scores as Scores
+import Game.Board.Tile as Tile exposing (State(..), Tile(..))
 import Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale

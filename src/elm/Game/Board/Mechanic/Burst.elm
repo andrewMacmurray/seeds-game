@@ -1,4 +1,4 @@
-module Board.Mechanic.Burst exposing
+module Game.Board.Mechanic.Burst exposing
     ( burst
     , drag
     , isBursting
@@ -7,11 +7,11 @@ module Board.Mechanic.Burst exposing
     , shouldBurst
     )
 
-import Board exposing (Board)
-import Board.Block as Block
-import Board.Coord as Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
-import Board.Tile exposing (State(..))
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile exposing (State(..))
 
 
 

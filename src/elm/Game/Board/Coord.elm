@@ -1,4 +1,4 @@
-module Board.Coord exposing
+module Game.Board.Coord exposing
     ( Coord
     , X
     , Y

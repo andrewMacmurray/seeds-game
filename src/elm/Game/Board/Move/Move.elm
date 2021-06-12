@@ -1,12 +1,12 @@
-module Board.Move.Move exposing (drag)
+module Game.Board.Move.Move exposing (drag)
 
-import Board exposing (Board)
-import Board.Block as Block
-import Board.Mechanic.Burst as Burst
-import Board.Mechanic.Pod as Pod
-import Board.Move as Move exposing (Move)
-import Board.Move.Bearing as Bearing
-import Board.Move.Check as Check
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block
+import Game.Board.Mechanic.Burst as Burst
+import Game.Board.Mechanic.Pod as Pod
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Move.Bearing as Bearing
+import Game.Board.Move.Check as Check
 
 
 

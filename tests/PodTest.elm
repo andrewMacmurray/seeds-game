@@ -1,12 +1,12 @@
 module PodTest exposing (suite)
 
-import Board exposing (Board)
-import Board.Coord as Coord
-import Board.Mechanic.Pod as Pod
-import Board.Move as Move
-import Board.Move.Move as Move
-import Board.Tile exposing (Tile(..))
 import Expect
+import Game.Board as Board exposing (Board)
+import Game.Board.Coord as Coord
+import Game.Board.Mechanic.Pod as Pod
+import Game.Board.Move as Move
+import Game.Board.Move.Move as Move
+import Game.Board.Tile exposing (Tile(..))
 import Seed exposing (Seed(..))
 import Test exposing (..)
 

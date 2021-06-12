@@ -1,10 +1,10 @@
 module Config.World.Two exposing (world)
 
-import Board.Coord as Coord exposing (Coord)
-import Board.Wall exposing (..)
 import Config.Level as Level
 import Element
 import Element.Palette as Palette
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Wall exposing (..)
 import Level.Setting.Start as Start
 import Level.Setting.Tile exposing (..)
 import Scene.Level.Tutorial as Tutorial

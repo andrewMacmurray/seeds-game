@@ -11,7 +11,7 @@ module Level.Setting.Tile exposing
     , sun
     )
 
-import Board.Tile as Tile exposing (Tile(..))
+import Game.Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
 
 

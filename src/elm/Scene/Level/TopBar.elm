@@ -3,13 +3,13 @@ module Scene.Level.TopBar exposing
     , view
     )
 
-import Board.Scores as Scores
-import Board.Tile as Tile exposing (Tile)
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
+import Game.Board.Scores as Scores
+import Game.Board.Tile as Tile exposing (Tile)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Level.Setting.Tile as Tile

@@ -1,4 +1,4 @@
-module Board.Wall exposing
+module Game.Board.Wall exposing
     ( Config
     , addToBoard
     , corners
@@ -9,11 +9,11 @@ module Board.Wall exposing
     , walls
     )
 
-import Board exposing (Board)
-import Board.Block exposing (Block(..))
-import Board.Coord exposing (Coord)
 import Element exposing (Color)
 import Element.Palette as Palette
+import Game.Board as Board exposing (Board)
+import Game.Board.Block exposing (Block(..))
+import Game.Board.Coord exposing (Coord)
 
 
 

@@ -32,10 +32,10 @@ module Config.Level exposing
     , worldsList
     )
 
-import Board
-import Board.Wall as Wall
 import Dict exposing (Dict)
 import Element exposing (Color)
+import Game.Board as Board
+import Game.Board.Wall as Wall
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
 import Scene.Level.Tutorial as Tutorial

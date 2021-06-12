@@ -1,4 +1,4 @@
-module Board.Block exposing
+module Game.Board.Block exposing
     ( Block(..)
     , addBearing
     , clearBearing
@@ -40,8 +40,8 @@ module Board.Block exposing
     , tileState
     )
 
-import Board.Tile as Tile exposing (Tile)
 import Element
+import Game.Board.Tile as Tile exposing (Tile)
 import Seed exposing (Seed)
 
 

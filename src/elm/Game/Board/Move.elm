@@ -1,4 +1,4 @@
-module Board.Move exposing
+module Game.Board.Move exposing
     ( Move
     , areNeighbours
     , block
@@ -14,9 +14,9 @@ module Board.Move exposing
     , y
     )
 
-import Board.Block as Block exposing (Block)
-import Board.Coord as Coord exposing (Coord)
-import Board.Tile as Tile exposing (Tile)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Tile as Tile exposing (Tile)
 
 
 

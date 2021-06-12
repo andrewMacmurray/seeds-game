@@ -1,4 +1,4 @@
-module Board.Scores exposing
+module Game.Board.Scores exposing
     ( Score
     , Scores
     , addScoreFromMoves
@@ -10,11 +10,11 @@ module Board.Scores exposing
     , toString
     )
 
-import Board exposing (Board)
-import Board.Block as Block
-import Board.Move as Move
-import Board.Tile as Tile exposing (Tile(..))
 import Dict exposing (Dict)
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block
+import Game.Board.Move as Move
+import Game.Board.Tile as Tile exposing (Tile(..))
 import Level.Setting.Tile as Tile
 
 

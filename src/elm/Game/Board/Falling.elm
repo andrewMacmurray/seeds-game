@@ -1,10 +1,10 @@
-module Board.Falling exposing (setFallingTiles)
+module Game.Board.Falling exposing (setFallingTiles)
 
-import Board exposing (Board)
-import Board.Block as Block exposing (Block)
-import Board.Coord as Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
-import Board.Shift as Board
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Shift as Board
 
 
 setFallingTiles : Board -> Board

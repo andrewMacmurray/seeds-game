@@ -1,9 +1,9 @@
-module Board.Shift exposing (groupBoardByColumn, shift)
+module Game.Board.Shift exposing (groupBoardByColumn, shift)
 
-import Board exposing (Board)
-import Board.Block as Block
-import Board.Coord as Coord
-import Board.Move as Move exposing (Move)
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block
+import Game.Board.Coord as Coord
+import Game.Board.Move as Move exposing (Move)
 import Utils.List
 
 

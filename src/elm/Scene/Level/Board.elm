@@ -9,7 +9,7 @@ module Scene.Level.Board exposing
     , width
     )
 
-import Board
+import Game.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 

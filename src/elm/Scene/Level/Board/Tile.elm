@@ -3,16 +3,16 @@ module Scene.Level.Board.Tile exposing
     , view
     )
 
-import Board
-import Board.Block as Block exposing (Block)
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Tile)
 import Css.Transform as Transform
 import Element exposing (Color)
 import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
 import Element.Icon.Burst as Burst
 import Element.Palette as Palette
+import Game.Board as Board
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile as Tile exposing (Tile)
 import Html exposing (Attribute, Html, div)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board.Tile.Leaving as Leaving

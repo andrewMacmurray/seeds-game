@@ -10,19 +10,6 @@ module Scene.Level exposing
     , view
     )
 
-import Board exposing (Board)
-import Board.Block as Block exposing (Block)
-import Board.Coord exposing (Coord)
-import Board.Falling exposing (..)
-import Board.Generate as Generate
-import Board.Mechanic.Burst as Burst
-import Board.Mechanic.Pod as Pod
-import Board.Move as Move exposing (Move)
-import Board.Move.Move as Move
-import Board.Scores as Scores exposing (Scores)
-import Board.Shift as Board
-import Board.Tile exposing (State(..), Tile(..))
-import Board.Wall as Wall
 import Config.Level as Level
 import Context exposing (Context)
 import Dict exposing (Dict)
@@ -34,6 +21,19 @@ import Element.Lazy as Lazy
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Coord exposing (Coord)
+import Game.Board.Falling exposing (..)
+import Game.Board.Generate as Generate
+import Game.Board.Mechanic.Burst as Burst
+import Game.Board.Mechanic.Pod as Pod
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Move.Move as Move
+import Game.Board.Scores as Scores exposing (Scores)
+import Game.Board.Shift as Board
+import Game.Board.Tile exposing (State(..), Tile(..))
+import Game.Board.Wall as Wall
 import Html exposing (Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile

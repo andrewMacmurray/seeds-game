@@ -1,10 +1,10 @@
-module Board.Move.Check exposing
+module Game.Board.Move.Check exposing
     ( isNewNeighbour
     , sameActiveTileType
     )
 
-import Board exposing (Board)
-import Board.Move as Move exposing (Move)
+import Game.Board as Board exposing (Board)
+import Game.Board.Move as Move exposing (Move)
 
 
 isNewNeighbour : Move -> Board -> Bool

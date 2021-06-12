@@ -15,10 +15,10 @@ module Level.Setting.Start exposing
     , sunflower
     )
 
-import Board.Block as Block
-import Board.Coord as Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Tile(..))
+import Game.Board.Block as Block
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
 import Utils.List as List
 

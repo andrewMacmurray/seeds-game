@@ -1,4 +1,4 @@
-module Board exposing
+module Game.Board exposing
     ( Board
     , Size
     , activeMoveType
@@ -28,11 +28,11 @@ module Board exposing
     , updateBlocks
     )
 
-import Board.Block as Block exposing (Block)
-import Board.Coord as Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Tile(..))
 import Dict exposing (Dict)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
 import Utils.Dict
 

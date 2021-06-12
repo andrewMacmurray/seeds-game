@@ -1,4 +1,4 @@
-module Board.Tile exposing
+module Game.Board.Tile exposing
     ( Bearing(..)
     , Distance
     , MoveOrder

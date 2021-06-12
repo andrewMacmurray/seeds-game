@@ -20,11 +20,11 @@ module Level.Progress exposing
     , worldComplete
     )
 
-import Board.Scores as Score
-import Board.Tile as Tile exposing (Tile)
 import Config.Level as Level
 import Config.World as Worlds
 import Dict exposing (Dict)
+import Game.Board.Scores as Score
+import Game.Board.Tile as Tile exposing (Tile)
 import Level.Setting.Tile as Tile exposing (TargetScore(..))
 import Seed exposing (Seed)
 import Utils.Dict

@@ -20,12 +20,12 @@ module Scene.Level.Tutorial exposing
     , view
     )
 
-import Board
-import Board.Coord as Coord exposing (Coord)
 import Css.Color as Color
 import Element exposing (Element, behindContent)
 import Element.Animations as Animations
 import Element.Text as Text
+import Game.Board as Board
+import Game.Board.Coord as Coord exposing (Coord)
 import Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position

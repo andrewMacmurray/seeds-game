@@ -1,4 +1,4 @@
-module Board.Mechanic.Pod exposing
+module Game.Board.Mechanic.Pod exposing
     ( generateNewSeeds
     , growPods
     , growSeeds
@@ -7,12 +7,12 @@ module Board.Mechanic.Pod exposing
     , shouldGrow
     )
 
-import Board exposing (Board)
-import Board.Block as Block exposing (Block(..))
-import Board.Generate as Generate
-import Board.Move as Move exposing (Move)
-import Board.Move.Check as Check
-import Board.Tile as Tile exposing (State(..), Tile(..))
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block exposing (Block(..))
+import Game.Board.Generate as Generate
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Move.Check as Check
+import Game.Board.Tile as Tile exposing (State(..), Tile(..))
 import Level.Setting.Tile as Tile
 import Seed exposing (Seed(..))
 

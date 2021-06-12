@@ -3,10 +3,10 @@ module Scene.Level.Board.LineDrag exposing
     , view
     )
 
-import Board exposing (Board)
-import Board.Move as Move exposing (Move)
 import Element exposing (Color, Element)
 import Element.Palette as Palette
+import Game.Board as Board exposing (Board)
+import Game.Board.Move as Move exposing (Move)
 import Pointer exposing (Pointer)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
