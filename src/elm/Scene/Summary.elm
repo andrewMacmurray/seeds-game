@@ -26,9 +26,9 @@ import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
 import Seed exposing (Seed(..))
-import Sine
 import Svg exposing (Svg)
 import Utils.Delay exposing (after, sequence, trigger)
+import Utils.Sine as Sine
 import View.Icon.RainBank exposing (..)
 import View.Icon.SeedBank exposing (seedBank)
 import View.Icon.SunBank exposing (sunBank, sunBankFull)

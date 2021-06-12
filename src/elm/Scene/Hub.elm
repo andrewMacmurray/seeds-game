@@ -37,10 +37,10 @@ import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
-import Sine
 import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
+import Utils.Sine as Sine
 import View.Icon.Heart as Heart
 import View.Menu as Menu
 

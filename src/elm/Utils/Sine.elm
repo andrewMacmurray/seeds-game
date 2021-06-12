@@ -1,4 +1,4 @@
-module Sine exposing
+module Utils.Sine exposing
     ( Wave
     , wave
     )
