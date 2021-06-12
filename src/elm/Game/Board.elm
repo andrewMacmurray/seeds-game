@@ -57,7 +57,9 @@ type alias Size =
 
 updateAt : Coord -> (Block -> Block) -> Board -> Board
 updateAt coord f =
-    aroundBoard (Dict.update coord <| Maybe.map f)
+    Maybe.map f
+        |> Dict.update coord
+        |> update_
 
 
 placeMoves : Board -> List Move -> Board
@@ -67,32 +69,36 @@ placeMoves =
 
 placeAt : Coord -> Block -> Board -> Board
 placeAt coord block =
-    Move.move coord block |> place
+    place (Move.move coord block)
 
 
 place : Move -> Board -> Board
 place move =
-    aroundBoard (Dict.update (Move.coord move) <| Maybe.map (always <| Move.block move))
+    update_
+        (Dict.update
+            (Move.coord move)
+            (Maybe.map (always (Move.block move)))
+        )
 
 
 updateBlocks : (Block -> Block) -> Board -> Board
 updateBlocks f =
-    update <| always f
+    update (always f)
 
 
 update : (Coord -> Block -> Block) -> Board -> Board
 update f =
-    aroundBoard (Dict.map f)
+    update_ (Dict.map f)
 
 
 filterBlocks : (Block -> Bool) -> Board -> Board
 filterBlocks f =
-    filter <| always f
+    filter (always f)
 
 
 filter : (Coord -> Block -> Bool) -> Board -> Board
 filter f =
-    aroundBoard (Dict.filter f)
+    update_ (Dict.filter f)
 
 
 
@@ -101,37 +107,37 @@ filter f =
 
 size : Board -> Int
 size =
-    unwrap >> Dict.size
+    board_ >> Dict.size
 
 
 isEmpty : Board -> Bool
 isEmpty =
-    unwrap >> Dict.isEmpty
+    board_ >> Dict.isEmpty
 
 
 coords : Board -> List Coord
 coords =
-    unwrap >> Dict.keys
+    board_ >> Dict.keys
 
 
 blocks : Board -> List Block
 blocks =
-    unwrap >> Dict.values
+    board_ >> Dict.values
 
 
 moves : Board -> List Move
 moves =
-    unwrap >> Dict.toList >> List.map toMove
+    board_ >> Dict.toList >> List.map toMove
 
 
 findBlockAt : Coord -> Board -> Maybe Block
 findBlockAt c =
-    unwrap >> Dict.get c
+    board_ >> Dict.get c
 
 
 matchBlock : (Block -> Bool) -> Board -> Maybe Move
 matchBlock f =
-    unwrap >> Utils.Dict.findValue f >> Maybe.map toMove
+    board_ >> Utils.Dict.findValue f >> Maybe.map toMove
 
 
 
@@ -226,11 +232,10 @@ secondLastMove =
 
 
 fromTiles : Size -> List Tile -> Board
-fromTiles boardDimensions tiles =
-    tiles
-        |> List.map Block.static
-        |> List.map2 Move.move (makeCoords boardDimensions)
-        |> fromMoves
+fromTiles boardDimensions =
+    List.map Block.static
+        >> List.map2 Move.move (makeCoords boardDimensions)
+        >> fromMoves
 
 
 makeCoords : Size -> List Coord
@@ -267,9 +272,9 @@ fromMove move =
     ( Move.coord move, Move.block move )
 
 
-aroundBoard : (Dict Coord Block -> Dict Coord Block) -> Board -> Board
-aroundBoard f =
-    unwrap >> f >> wrap
+update_ : (Dict Coord Block -> Dict Coord Block) -> Board -> Board
+update_ f =
+    board_ >> f >> wrap
 
 
 wrap : Dict Coord Block -> Board
@@ -277,6 +282,6 @@ wrap =
     Board
 
 
-unwrap : Board -> Dict Coord Block
-unwrap (Board board) =
+board_ : Board -> Dict Coord Block
+board_ (Board board) =
     board
