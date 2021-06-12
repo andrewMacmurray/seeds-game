@@ -1,12 +1,11 @@
 module Css.Transform exposing
     ( Transform
     , render
-    , rotateZ
+    , rotate
     , scale
     , translate
     , translateX
     , translateY
-    , translateZ
     )
 
 import Css.Unit exposing (..)
@@ -16,7 +15,6 @@ type Transform
     = Translate XY
     | TranslateX Float
     | TranslateY Float
-    | TranslateZ Float
     | Scale Float
     | RotateZ Float
 
@@ -52,13 +50,8 @@ translateY =
     TranslateY
 
 
-translateZ : Float -> Transform
-translateZ =
-    TranslateZ
-
-
-rotateZ : Float -> Transform
-rotateZ =
+rotate : Float -> Transform
+rotate =
     RotateZ
 
 
@@ -80,9 +73,6 @@ fromTransform ts =
         TranslateY n ->
             translateY_ n
 
-        TranslateZ n ->
-            translateZ_ n
-
 
 scale_ : Float -> String
 scale_ n =
@@ -102,11 +92,6 @@ translateX_ n =
 translateY_ : Float -> String
 translateY_ n =
     join [ "translateY(", px n, ")" ]
-
-
-translateZ_ : Float -> String
-translateZ_ n =
-    join [ "translateZ(", px n, ")" ]
 
 
 rotate_ : String -> Float -> String

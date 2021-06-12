@@ -4,6 +4,7 @@ module Board.Move exposing
     , block
     , coord
     , empty
+    , isCurrent
     , move
     , sameTileType
     , tile
@@ -57,6 +58,11 @@ block (Move _ b) =
 tileState : Move -> Tile.State
 tileState =
     block >> Block.tileState
+
+
+isCurrent : Move -> Bool
+isCurrent =
+    block >> Block.isCurrentMove
 
 
 x : Move -> Int

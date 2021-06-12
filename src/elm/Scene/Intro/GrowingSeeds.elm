@@ -3,12 +3,12 @@ module Scene.Intro.GrowingSeeds exposing
     , view
     )
 
-import Board.Tile as Tile
 import Element exposing (..)
 import Element.Animation.Bounce as Bounce
 import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Transition as Transition
+import Scene.Level.Board.Tile.Scale as Scale
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
@@ -92,7 +92,7 @@ staticSeed window seed =
 
 seedSize : Window -> GrowingSeed -> Seed.Options
 seedSize window seed =
-    Seed.size (round (50 * seed.scale * Tile.scale window))
+    Seed.size (round (50 * seed.scale * Scale.factor window))
 
 
 bulgeFade : GrowingSeed -> Animation

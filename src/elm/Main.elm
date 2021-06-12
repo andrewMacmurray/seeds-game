@@ -1,6 +1,5 @@
 module Main exposing (main)
 
-import Board.Tile as Tile
 import Browser
 import Browser.Events as Browser
 import Config.Level as Level
@@ -14,7 +13,7 @@ import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Level.Progress as Progress exposing (Progress)
 import Lives
-import Ports exposing (..)
+import Ports
 import Scene.Garden as Garden
 import Scene.Hub as Hub
 import Scene.Intro as Intro
@@ -24,7 +23,7 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Delay as Delay exposing (trigger)
-import Utils.Update exposing (updateModel, updateWith, withCmds)
+import Utils.Update exposing (updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -108,7 +107,6 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> withCmds [ bounceKeyframes flags.window ]
 
 
 initialState : Title.Model -> Model
@@ -167,25 +165,25 @@ updateSceneContext : (Context -> Context) -> Scene -> Scene
 updateSceneContext toContext scene =
     case scene of
         Title model ->
-            Title <| Title.updateContext toContext model
+            Title (Title.updateContext toContext model)
 
         Intro model ->
-            Intro <| Intro.updateContext toContext model
+            Intro (Intro.updateContext toContext model)
 
         Hub model ->
-            Hub <| Hub.updateContext toContext model
+            Hub (Hub.updateContext toContext model)
 
         Level model ->
-            Level <| Level.updateContext toContext model
+            Level (Level.updateContext toContext model)
 
         Retry model ->
-            Retry <| Retry.updateContext toContext model
+            Retry (Retry.updateContext toContext model)
 
         Summary model ->
-            Summary <| Summary.updateContext toContext model
+            Summary (Summary.updateContext toContext model)
 
         Garden model ->
-            Garden <| Garden.updateContext toContext model
+            Garden (Garden.updateContext toContext model)
 
 
 
@@ -255,14 +253,14 @@ update msg ({ scene, backdrop } as model) =
             ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
-            ( model, withLoadingScreen <| InitHub level )
+            ( model, withLoadingScreen (InitHub level) )
 
         ( ResetData, _, _ ) ->
-            ( model, clearCache )
+            ( model, Ports.clearCache )
 
         ( WindowSize width height, _, _ ) ->
             ( updateContext (Context.setWindow width height) model
-            , bounceKeyframes <| Window width height
+            , Cmd.none
             )
 
         ( UpdateLives now, _, _ ) ->
@@ -310,7 +308,7 @@ updateIntro =
 
 exitIntro : Model -> () -> ( Model, Cmd Msg )
 exitIntro model _ =
-    ( model, Cmd.batch [ goToHubReachedLevel model, fadeMusic () ] )
+    ( model, Cmd.batch [ goToHubReachedLevel model, Ports.fadeMusic () ] )
 
 
 
@@ -339,7 +337,7 @@ exitHub model destination =
 
 handleStartLevel : Model -> Level.Id -> ( Model, Cmd Msg )
 handleStartLevel model level =
-    ( model, withLoadingScreen <| InitLevel <| Worlds.levelConfig level )
+    ( model, withLoadingScreen (InitLevel (Worlds.levelConfig level)) )
 
 
 
@@ -385,7 +383,7 @@ exitLevel model levelStatus =
 
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
-    if shouldIncrement <| getContext model then
+    if shouldIncrement (getContext model) then
         ( model, trigger InitSummary )
 
     else
@@ -607,11 +605,6 @@ livesRemaining =
     getContext >> .lives >> Lives.remaining
 
 
-bounceKeyframes : Window -> Cmd msg
-bounceKeyframes window =
-    generateBounceKeyframes <| Tile.baseSizeY * Tile.scale window
-
-
 reachedLevel : Model -> Level.Id
 reachedLevel =
     getContext >> .progress >> Progress.reachedLevel
@@ -661,7 +654,7 @@ sceneSubscriptions : Model -> Sub Msg
 sceneSubscriptions model =
     case model.scene of
         Title titleModel ->
-            Sub.map TitleMsg <| Title.subscriptions titleModel
+            Sub.map TitleMsg (Title.subscriptions titleModel)
 
         _ ->
             Sub.none
@@ -678,8 +671,8 @@ view model =
         , LoadingScreen.view (getContext model)
         , menu model.scene
         , stage
-            [ viewScene model.scene
-            , viewBackdrop model.backdrop
+            [ viewBackdrop model.backdrop
+            , viewScene model.scene
             ]
         , background
         ]
@@ -742,7 +735,7 @@ menu scene =
             renderMenu model.context HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg <| Level.menuOptions model
+            renderMenu model.context LevelMsg (Level.menuOptions model)
 
         Garden model ->
             renderMenu model.context GardenMsg Garden.menuOptions

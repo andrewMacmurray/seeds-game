@@ -16,7 +16,6 @@ import Element.Scale as Scale
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Background as Background
 
 
 
@@ -103,15 +102,18 @@ infoContainer_ direction content =
         (el
             [ centerX
             , centerY
+            , height (fill |> minimum 200)
             , padding Scale.large
             , width fill
             , Border.rounded 8
-            , Background.split
-                ( Palette.lime5
-                , Palette.lime4
-                )
+            , Palette.seedPodBackground
             ]
-            content
+            (el
+                [ centerX
+                , centerY
+                ]
+                content
+            )
         )
 
 

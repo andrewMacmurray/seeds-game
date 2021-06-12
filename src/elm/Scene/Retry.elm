@@ -15,7 +15,6 @@ import Element.Animation as Animation
 import Element.Animations as Animations
 import Element.Button.Cancel as Cancel
 import Element.Layout as Layout
-import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
@@ -95,10 +94,11 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Layout.view
-        [ Palette.background2
-        ]
-        (Animated.column fadeInScene
+    Layout.fadeIn
+        { duration = 1000
+        , attributes = []
+        }
+        (column
             [ centerX
             , centerY
             , spacing Scale.large
@@ -127,13 +127,8 @@ tryAgain =
     Cancel.button
         { onCancel = ReturnToHubClicked
         , onClick = RestartLevelClicked
-        , text = "Try Again?"
+        , confirmText = "Try Again?"
         }
-
-
-fadeInScene : Animation
-fadeInScene =
-    Animations.fadeIn 1000 [ Animation.linear ]
 
 
 fadeInText : Animation

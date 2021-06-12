@@ -1,6 +1,7 @@
 module Utils.Unit exposing
     ( deg
     , pc
+    , px
     )
 
 
@@ -12,3 +13,8 @@ deg n =
 pc : Float -> String
 pc n =
     String.fromFloat n ++ "%"
+
+
+px : Int -> String
+px n =
+    String.fromInt n ++ "px"

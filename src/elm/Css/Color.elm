@@ -1,21 +1,14 @@
 module Css.Color exposing
     ( Color
     , black
-    , blockYellow
     , blueGrey
     , brown
     , chocolate
     , crimson
-    , darkBlue
-    , darkBrown
     , darkRed
     , darkYellow
     , fadedOrange
-    , firrGreen
     , gold
-    , green
-    , greyYellow
-    , lightBlue
     , lightBrown
     , lightGold
     , lightGray
@@ -140,11 +133,6 @@ darkYellow =
     rgb 201 153 6
 
 
-blockYellow : Color
-blockYellow =
-    rgb 246 224 111
-
-
 lightYellow : Color
 lightYellow =
     rgb 255 251 179
@@ -155,11 +143,6 @@ washedYellow =
     rgb 255 254 224
 
 
-greyYellow : Color
-greyYellow =
-    rgba 195 167 82 0.65
-
-
 lightBrown : Color
 lightBrown =
     rgb 167 123 82
@@ -168,11 +151,6 @@ lightBrown =
 brown : Color
 brown =
     rgb 119 76 40
-
-
-darkBrown : Color
-darkBrown =
-    rgb 97 62 16
 
 
 chocolate : Color
@@ -195,24 +173,9 @@ meadowGreen =
     rgb 91 201 120
 
 
-firrGreen : Color
-firrGreen =
-    rgb 93 136 61
-
-
-lightBlue : Color
-lightBlue =
-    rgb 38 170 224
-
-
 rainBlue : Color
 rainBlue =
     rgb 97 188 255
-
-
-darkBlue : Color
-darkBlue =
-    rgb 7 28 65
 
 
 blueGrey : Color

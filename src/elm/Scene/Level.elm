@@ -21,33 +21,39 @@ import Board.Move as Move exposing (Move)
 import Board.Move.Move as Move
 import Board.Scores as Scores exposing (Scores)
 import Board.Shift as Board
-import Board.Tile as Tile exposing (State(..), Tile(..))
+import Board.Tile exposing (State(..), Tile(..))
 import Board.Wall as Wall
 import Config.Level as Level
 import Context exposing (Context)
-import Css.Color as Color
-import Css.Style as Style exposing (..)
 import Dict exposing (Dict)
+import Element exposing (..)
+import Element.Button.Cancel as Cancel
+import Element.Info as Info
+import Element.Layout as Layout
+import Element.Lazy as Lazy
+import Element.Text as Text
+import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
-import Html exposing (Attribute, Html, div, p, span, text)
-import Html.Attributes exposing (attribute, class)
-import Html.Events exposing (onClick)
-import Info
+import Html exposing (Html, div)
 import Level.Setting.Start as Start
 import Level.Setting.Tile as Tile
 import Lives
-import Pointer exposing (Pointer, onPointerDown, onPointerMove, onPointerUp)
-import Scene.Level.Board.Line as Line
+import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
-import Scene.Level.Board.Style as Board
 import Scene.Level.Board.Tile as Tile
+import Scene.Level.Board.Tile.Line as Line
+import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
 import Utils.Attribute as Attribute
 import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
+import Utils.Element as Element
+import Utils.Html.Style as Style
+import Utils.Update exposing (andThenWithCmds)
 import View.Menu as Menu
+import Window exposing (Window)
 
 
 
@@ -65,7 +71,7 @@ type alias Model =
     , boardSize : Board.Size
     , levelStatus : Status
     , info : Info.State LevelEndPrompt
-    , pointer : Pointer
+    , pointer : Touch.Point
     }
 
 
@@ -75,8 +81,8 @@ type Msg
     | NextTutorialStep
     | HideTutorialStep
     | StopMove
-    | StartMove Move Pointer
-    | CheckMove Pointer
+    | StartMove Touch.Point
+    | CheckMove Touch.Point
     | ReleaseTile
     | SetLeavingTiles
     | SetFallingTiles
@@ -163,33 +169,26 @@ canRestartLevel model =
 init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
     initialState config context
-        |> withCmds
+        |> andThenWithCmds
             [ generateBoard config
             , handleStartTutorial
             ]
 
 
 initialState : Level.LevelConfig -> Context -> Model
-initialState { tileSettings, boardSize, moves, tutorial } context =
+initialState config context =
     { context = context
-    , tutorial = tutorial
-    , board = Board.fromMoves []
-    , scores = Scores.init tileSettings
+    , tutorial = config.tutorial
+    , board = Board.empty
+    , scores = Scores.init config.tileSettings
     , isDragging = False
-    , remainingMoves = moves
-    , tileSettings = tileSettings
-    , boardSize = boardSize
+    , remainingMoves = config.moves
+    , tileSettings = config.tileSettings
+    , boardSize = config.boardSize
     , levelStatus = NotStarted
     , info = Info.hidden
-    , pointer = { y = 0, x = 0 }
+    , pointer = Touch.origin
     }
-
-
-withCmds : List (model -> Cmd msg) -> model -> ( model, Cmd msg )
-withCmds toCmds model =
-    ( model
-    , Cmd.batch <| List.map (\f -> f model) toCmds
-    )
 
 
 handleStartTutorial : Model -> Cmd Msg
@@ -258,11 +257,11 @@ update msg model =
         EndMove ->
             continue (endMove model) []
 
-        StartMove move pointer ->
-            continue (handleStartMove move pointer model) []
+        StartMove pointer ->
+            continue (handleStartMove pointer model) []
 
         CheckMove pointer ->
-            continue (checkMoveFromPosition pointer model) []
+            continue (checkMoveFromPoint pointer model) []
 
         CheckLevelComplete ->
             checkLevelComplete model
@@ -341,7 +340,7 @@ growSeedPodsSequence board =
     Delay.sequence
         [ ( 0, EndMove )
         , ( 0, SetGrowingSeedPods )
-        , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
+        , ( 800, GrowPodsToSeeds (Board.activeSeedType board) )
         , ( 0, CheckLevelComplete )
         , ( 600, ResetGrowingSeeds )
         , ( 500, NextTutorialStep )
@@ -370,7 +369,7 @@ burstTilesSequence board generateSetting =
                 [ ( 0, EndMove )
                 , ( 0, BurstTiles )
                 , ( 700, SetGrowingSeedPods )
-                , ( 800, GrowPodsToSeeds <| Board.activeSeedType board )
+                , ( 800, GrowPodsToSeeds (Board.activeSeedType board) )
                 , ( 0, CheckLevelComplete )
                 , ( 600, ResetGrowingSeeds )
                 , ( 500, NextTutorialStep )
@@ -515,14 +514,6 @@ generateSeedType =
     Pod.generateNewSeeds AddGrowingSeeds
 
 
-isSeedPodMove : Model -> Bool
-isSeedPodMove model =
-    model.board
-        |> Board.activeMoves
-        |> List.map Move.tile
-        |> List.member (Just SeedPod)
-
-
 
 -- Leaving
 
@@ -588,19 +579,24 @@ decrementRemainingMoves model =
         { model | remainingMoves = model.remainingMoves - 1 }
 
 
-handleStartMove : Move -> Pointer -> Model -> Model
-handleStartMove move pointer model =
-    { model
-        | isDragging = True
-        , board = Move.drag model.boardSize move model.board
-        , pointer = pointer
-        , tutorial = Tutorial.hideStep model.tutorial
-    }
+handleStartMove : Touch.Point -> Model -> Model
+handleStartMove pointer model =
+    case moveFromPoint pointer model of
+        Just move ->
+            { model
+                | isDragging = True
+                , board = Move.drag model.boardSize move model.board
+                , pointer = pointer
+                , tutorial = Tutorial.hideStep model.tutorial
+            }
+
+        Nothing ->
+            model
 
 
-checkMoveFromPosition : Pointer -> Model -> Model
-checkMoveFromPosition pointer model =
-    case moveFromPosition pointer model of
+checkMoveFromPoint : Touch.Point -> Model -> Model
+checkMoveFromPoint pointer model =
+    case moveFromPoint pointer model of
         Just move ->
             handleCheckMove move { model | pointer = pointer }
 
@@ -621,9 +617,11 @@ handleCheckMove move model =
 -- Move from position
 
 
-moveFromPosition : Pointer -> Model -> Maybe Move
-moveFromPosition pointer model =
-    moveFromCoord model.board <| coordsFromPosition pointer model
+moveFromPoint : Touch.Point -> Model -> Maybe Move
+moveFromPoint pointer model =
+    model
+        |> coordsFromPosition pointer
+        |> moveFromCoord model.board
 
 
 moveFromCoord : Board -> Coord -> Maybe Move
@@ -633,26 +631,28 @@ moveFromCoord board coord =
         |> Maybe.map (Move.move coord)
 
 
-coordsFromPosition : Pointer -> Model -> Coord
+coordsFromPosition : Touch.Point -> Model -> Coord
 coordsFromPosition pointer model =
     let
         viewModel =
-            boardViewModel model
+            { window = model.context.window
+            , boardSize = model.boardSize
+            }
 
         positionY =
-            toFloat <| pointer.y - Board.offsetTop viewModel
+            toFloat (pointer.y - Board.offsetTop viewModel)
 
         positionX =
-            toFloat <| pointer.x - Board.offsetLeft viewModel
+            toFloat (pointer.x - Board.offsetLeft viewModel)
 
         scaleFactorY =
-            Tile.scale model.context.window * Tile.baseSizeY
+            toFloat (Scale.outerHeight model.context.window)
 
         scaleFactorX =
-            Tile.scale model.context.window * Tile.baseSizeX
+            toFloat (Scale.outerWidth model.context.window)
     in
-    ( floor <| positionY / scaleFactorY
-    , floor <| positionX / scaleFactorX
+    ( floor (positionY / scaleFactorY)
+    , floor (positionX / scaleFactorX)
     )
 
 
@@ -677,13 +677,28 @@ checkLevelComplete model =
 
 
 hasLost : Model -> Bool
-hasLost { remainingMoves, levelStatus } =
-    remainingMoves < 1 && levelStatus == InProgress
+hasLost model =
+    noMovesLeft model && model.levelStatus == InProgress
 
 
 hasWon : Model -> Bool
-hasWon { scores, levelStatus } =
-    Scores.allComplete scores && levelStatus == InProgress
+hasWon model =
+    scoreIsReached model && model.levelStatus == InProgress
+
+
+levelIsOver : Model -> Bool
+levelIsOver model =
+    scoreIsReached model || noMovesLeft model
+
+
+noMovesLeft : Model -> Bool
+noMovesLeft model =
+    model.remainingMoves < 1
+
+
+scoreIsReached : Model -> Bool
+scoreIsReached model =
+    Scores.allComplete model.scores
 
 
 handleExitPrompt : Model -> Cmd Msg
@@ -692,7 +707,7 @@ handleExitPrompt model =
         Delay.trigger ExitLevel
 
     else
-        Delay.trigger <| ShowInfo ExitAreYouSure
+        Delay.trigger (ShowInfo ExitAreYouSure)
 
 
 handleRestartPrompt : Model -> Cmd Msg
@@ -701,7 +716,7 @@ handleRestartPrompt model =
         Delay.trigger RestartLevel
 
     else
-        Delay.trigger <| ShowInfo RestartAreYouSure
+        Delay.trigger (ShowInfo RestartAreYouSure)
 
 
 
@@ -710,61 +725,55 @@ handleRestartPrompt model =
 
 view : Model -> Html Msg
 view model =
-    div
+    Layout.view
         [ handleStop model
         , handleCheck model
-        , disableIfComplete model
+        , disableWhenLevelOver model
+        , behindContent (topBar model)
+        , inFront (renderBoard model)
+        , inFront (lineDrag model)
+        , inFront (currentMove model)
+        , inFront (infoWindow model)
+        , inFront (tutorialOverlay model)
         ]
-        [ topBar model
-        , tutorialOverlay model
-        , renderInfoWindow model
-        , currentMoveOverlay model
-        , lineDrag model
-        , renderBoard model
-        , moveCaptureArea
-        ]
+        none
 
 
-topBar : Model -> Html msg
+topBar : Model -> Element msg
 topBar =
-    topBarViewModel >> TopBar.view
+    topBarModel >> TopBar.view >> html
 
 
-handleStop : Model -> Attribute Msg
+handleStop : Model -> Element.Attribute Msg
 handleStop model =
-    Attribute.applyIf model.isDragging <| onPointerUp StopMove
+    Element.applyIf model.isDragging (Touch.onRelease StopMove)
 
 
-handleCheck : Model -> Attribute Msg
+handleCheck : Model -> Element.Attribute Msg
 handleCheck model =
-    Attribute.applyIf model.isDragging <| onPointerMove CheckMove
+    Element.applyIf model.isDragging (Touch.onMove CheckMove)
 
 
-disableIfComplete : Model -> Attribute msg
-disableIfComplete model =
-    Attribute.applyIf (Scores.allComplete model.scores) <| class "touch-disabled"
+disableWhenLevelOver : Model -> Element.Attribute msg
+disableWhenLevelOver model =
+    Element.applyIf (levelIsOver model) Element.disableTouch
 
 
-moveCaptureArea : Html msg
-moveCaptureArea =
-    div [ class "w-100 h-100 fixed z-1 top-0" ] []
-
-
-lineDrag : Model -> Html msg
+lineDrag : Model -> Element msg
 lineDrag =
-    lineDragViewModel >> LineDrag.view
+    lineDragModel >> LineDrag.view
 
 
 
 -- Tutorial Overlay
 
 
-tutorialOverlay : Model -> Html msg
+tutorialOverlay : Model -> Element msg
 tutorialOverlay =
-    Tutorial.view << tutorialViewModel
+    tutorialViewModel >> Tutorial.view
 
 
-tutorialViewModel : Model -> Tutorial.ViewModel
+tutorialViewModel : Model -> Tutorial.Model
 tutorialViewModel model =
     { window = model.context.window
     , boardSize = model.boardSize
@@ -777,96 +786,149 @@ tutorialViewModel model =
 -- Board
 
 
-renderBoard : Model -> Html Msg
+type alias LazyBoard msg =
+    Window
+    -> Board
+    -> Board.Size
+    -> List Tile.Setting
+    -> Bool
+    -> Element msg
+
+
+type alias BoardModel =
+    { window : Window
+    , board : Board
+    , boardSize : Board.Size
+    , settings : List Tile.Setting
+    , isDragging : Bool
+    }
+
+
+renderBoard : Model -> Element Msg
 renderBoard model =
-    boardLayout model
-        [ div [ class "relative z-5" ] <| renderTiles model
-        , div [ class "absolute top-0 left-0 z-0" ] <| renderLines model
+    el
+        [ width fill
+        , height fill
+        , disableWhenLevelOver model
         ]
+        (Lazy.lazy5
+            toRenderBoard
+            model.context.window
+            model.board
+            model.boardSize
+            model.tileSettings
+            model.isDragging
+        )
 
 
-renderTiles : Model -> List (Html Msg)
-renderTiles model =
-    mapTiles (renderTile model) model.board
+toRenderBoard : LazyBoard Msg
+toRenderBoard window board size settings isDragging =
+    renderBoard_
+        { window = window
+        , board = board
+        , boardSize = size
+        , settings = settings
+        , isDragging = isDragging
+        }
 
 
-renderTile : Model -> Move -> Html Msg
+renderBoard_ : BoardModel -> Element Msg
+renderBoard_ model =
+    el
+        [ width (px (Board.width model))
+        , moveDown (toFloat (Board.offsetTop model))
+        , Element.preventScroll
+        , centerX
+        ]
+        (html (div [] (mapTiles (renderTile model) model.board)))
+
+
+renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
-    div
-        [ handleMoveEvents model move
-        , class "pointer"
-        , attribute "touch-action" "none"
-        ]
-        [ Tile.view
-            { boardSize = model.boardSize
-            , window = model.context.window
-            , tileSettings = model.tileSettings
-            , isBursting = Burst.isBursting model.board
-            , withTracer = True
-            }
-            move
+    div []
+        [ div
+            [ handleMoveEvents model
+            , Style.absolute
+            , Style.zIndex 1
+            , Style.pointer
+            ]
+            [ Tile.view
+                { isBursting = Burst.isBursting model.board
+                , boardSize = model.boardSize
+                , window = model.window
+                , settings = model.settings
+                , move = move
+                }
+            ]
+        , div
+            [ Style.absolute
+            , Style.zIndex 0
+            ]
+            [ Line.view
+                { move = move
+                , activeSeed = Board.activeSeedType model.board
+                , window = model.window
+                }
+            ]
         ]
 
 
-currentMoveOverlay : Model -> Html msg
+currentMove : Model -> Element msg
+currentMove model =
+    Lazy.lazy5
+        toRenderCurrentMove
+        model.context.window
+        model.board
+        model.boardSize
+        model.tileSettings
+        model.isDragging
+
+
+toRenderCurrentMove : LazyBoard msg
+toRenderCurrentMove window board size settings isDragging =
+    currentMoveOverlay
+        { window = window
+        , board = board
+        , boardSize = size
+        , settings = settings
+        , isDragging = isDragging
+        }
+
+
+currentMoveOverlay : BoardModel -> Element msg
 currentMoveOverlay model =
-    let
-        viewModel =
-            boardViewModel model
-
-        moveLayer =
-            currentMoveLayer model
-    in
-    div
-        [ style
-            [ Style.width <| toFloat <| Board.width viewModel
-            , top <| toFloat <| Board.offsetTop viewModel
-            ]
-        , class "z-6 touch-disabled absolute left-0 right-0 flex center"
+    el
+        [ Element.disableTouch
+        , moveDown (toFloat (Board.offsetTop model))
+        , width (px (Board.width model))
+        , centerX
         ]
-        moveLayer
+        (tilesFor currentMove_ model)
 
 
-currentMoveLayer : Model -> List (Html msg)
-currentMoveLayer model =
-    mapTiles (renderCurrentMove model) model.board
+currentMove_ : BoardModel -> Move -> Html msg
+currentMove_ model move =
+    Tile.current
+        { isDragging = model.isDragging
+        , isBursting = Burst.isBursting model.board
+        , boardSize = model.boardSize
+        , window = model.window
+        , settings = model.settings
+        , move = move
+        }
 
 
-renderCurrentMove : Model -> Move -> Html msg
-renderCurrentMove model move =
-    if Block.isCurrentMove (Move.block move) && model.isDragging then
-        Tile.view
-            { boardSize = model.boardSize
-            , window = model.context.window
-            , tileSettings = model.tileSettings
-            , isBursting = Burst.isBursting model.board
-            , withTracer = False
-            }
-            move
-
-    else
-        span [] []
+handleMoveEvents : BoardModel -> Html.Attribute Msg
+handleMoveEvents model =
+    Attribute.applyIf (not model.isDragging) (Touch.onStart_ StartMove)
 
 
-renderLines : Model -> List (Html msg)
-renderLines model =
-    mapTiles (Line.view (lineViewModel model)) model.board
-
-
-boardLayout : Model -> List (Html msg) -> Html msg
-boardLayout model =
-    div
-        [ style
-            [ width <| toFloat <| Board.width <| boardViewModel model
-            , Board.marginTop <| boardViewModel model
-            ]
-        , class "relative z-3 center flex flex-wrap"
-        ]
-
-
-handleMoveEvents : Model -> Move -> Attribute Msg
-handleMoveEvents model move =
-    Attribute.applyIf (not model.isDragging) <| onPointerDown <| StartMove move
+tilesFor :
+    ({ model | board : Board } -> Move -> Html msg)
+    -> { model | board : Board }
+    -> Element msg
+tilesFor toTile model =
+    html (div [] (mapTiles (toTile model) model.board))
 
 
 mapTiles : (Move -> a) -> Board -> List a
@@ -878,35 +940,22 @@ mapTiles f =
 -- Info Window
 
 
-renderInfoWindow : Model -> Html Msg
-renderInfoWindow { info, context } =
-    Info.content info
-        |> Maybe.map (renderInfoContent context.successMessageIndex)
-        |> Maybe.map (infoContainer info)
-        |> Maybe.withDefault (span [] [])
+infoWindow : Model -> Element Msg
+infoWindow { info, context } =
+    Info.view
+        { content = infoContent context
+        , info = info
+        }
 
 
-infoContainer : Info.State LevelEndPrompt -> Html Msg -> Html Msg
-infoContainer info rendered =
-    case Info.content info of
-        Just RestartAreYouSure ->
-            div [ onClick HideInfo ] [ Info.view info rendered ]
-
-        Just ExitAreYouSure ->
-            div [ onClick HideInfo ] [ Info.view info rendered ]
-
-        _ ->
-            Info.view info rendered
-
-
-renderInfoContent : Int -> LevelEndPrompt -> Html Msg
-renderInfoContent successMessageIndex infoContent =
-    case infoContent of
+infoContent : Context -> LevelEndPrompt -> Element Msg
+infoContent context prompt =
+    case prompt of
         Success ->
-            div [ class "pv5 f3 tracked-mega" ] [ text <| successMessage successMessageIndex ]
+            Text.text [ centerX, Text.white, Text.large ] (successMessage context)
 
         NoMovesLeft ->
-            div [ class "pv5 f3 tracked-mega" ] [ text "No more moves!" ]
+            Text.text [ centerX, Text.white, Text.large ] "No more moves!"
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife
@@ -915,13 +964,16 @@ renderInfoContent successMessageIndex infoContent =
             areYouSure "Exit" ExitLevelLoseLife
 
 
-successMessage : Int -> String
-successMessage i =
-    let
-        ii =
-            modBy (Dict.size successMessages) i
-    in
-    Dict.get ii successMessages |> Maybe.withDefault "Win!"
+successMessage : Context -> String
+successMessage context =
+    successMessages
+        |> Dict.get (nextMessageIndex context)
+        |> Maybe.withDefault "Win!"
+
+
+nextMessageIndex : Context -> Int
+nextMessageIndex context =
+    modBy (Dict.size successMessages) context.successMessageIndex
 
 
 successMessages : Dict Int String
@@ -933,62 +985,30 @@ successMessages =
         ]
 
 
-areYouSure : String -> Msg -> Html Msg
+areYouSure : String -> Msg -> Element Msg
 areYouSure yesText msg =
-    div [ class "pv4" ]
-        [ p [ class "f3 ma0 tracked" ] [ text "Are you sure?" ]
-        , p [ class "f7 tracked", style [ marginTop 15, marginBottom 35 ] ] [ text "You will lose a life" ]
+    column []
+        [ Text.text [] "Are you sure?"
+        , Text.text [] "You will lose a life"
         , yesNoButton yesText msg
         ]
 
 
-yesNoButton : String -> Msg -> Html Msg
+yesNoButton : String -> Msg -> Element Msg
 yesNoButton yesText msg =
-    div []
-        [ div
-            [ class "dib ttu tracked-mega f6"
-            , onClick HideInfo
-            , style
-                [ color Color.white
-                , backgroundColor Color.firrGreen
-                , paddingLeft 25
-                , paddingRight 15
-                , paddingTop 10
-                , paddingBottom 10
-                , leftPill
-                ]
-            ]
-            [ text "X" ]
-        , div
-            [ class "dib ttu tracked-mega f6"
-            , onClick msg
-            , style
-                [ color Color.white
-                , backgroundColor Color.gold
-                , paddingLeft 15
-                , paddingRight 20
-                , paddingTop 10
-                , paddingBottom 10
-                , rightPill
-                ]
-            ]
-            [ text yesText ]
-        ]
+    Cancel.button
+        { onCancel = HideInfo
+        , onClick = msg
+        , confirmText = yesText
+        }
 
 
 
 -- View Models
 
 
-boardViewModel : Model -> Board.ViewModel
-boardViewModel model =
-    { window = model.context.window
-    , boardSize = model.boardSize
-    }
-
-
-topBarViewModel : Model -> TopBar.ViewModel
-topBarViewModel model =
+topBarModel : Model -> TopBar.Model
+topBarModel model =
     { window = model.context.window
     , tileSettings = model.tileSettings
     , scores = model.scores
@@ -996,19 +1016,10 @@ topBarViewModel model =
     }
 
 
-lineViewModel : Model -> Line.ViewModel
-lineViewModel model =
-    { window = model.context.window
-    , activeSeedType = Board.activeSeedType model.board
-    }
-
-
-lineDragViewModel : Model -> LineDrag.ViewModel
-lineDragViewModel model =
+lineDragModel : Model -> LineDrag.Model
+lineDragModel model =
     { window = model.context.window
     , board = model.board
-    , tileSettings = model.tileSettings
-    , isSeedPodMove = isSeedPodMove model
     , boardSize = model.boardSize
     , isDragging = model.isDragging
     , pointer = model.pointer

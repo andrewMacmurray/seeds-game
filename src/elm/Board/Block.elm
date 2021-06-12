@@ -4,7 +4,7 @@ module Board.Block exposing
     , clearBearing
     , clearBurstType
     , empty
-    , fold
+    , foldTile
     , growLeavingBurstToSeed
     , growingOrder
     , isBurst
@@ -41,7 +41,7 @@ module Board.Block exposing
     )
 
 import Board.Tile as Tile exposing (Tile)
-import Css.Color as Css
+import Element
 import Seed exposing (Seed)
 
 
@@ -50,7 +50,7 @@ import Seed exposing (Seed)
 
 
 type Block
-    = Wall Css.Color
+    = Wall Element.Color
     | Space Tile.State
 
 
@@ -275,6 +275,11 @@ map f block =
 
         wall ->
             wall
+
+
+foldTile : (Tile -> a) -> a -> Block -> a
+foldTile f default =
+    fold (Tile.map default f) default
 
 
 fold : (Tile.State -> a) -> a -> Block -> a

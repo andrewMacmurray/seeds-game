@@ -3,16 +3,12 @@ port module Ports exposing
     , cacheProgress
     , clearCache
     , fadeMusic
-    , generateBounceKeyframes
     , introMusicPlaying
     , playIntroMusic
     )
 
 import Config.Level as Level
 import Lives
-
-
-port generateBounceKeyframes : Float -> Cmd msg
 
 
 port cacheProgress : Level.Cache -> Cmd msg

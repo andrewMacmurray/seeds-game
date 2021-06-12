@@ -2,6 +2,7 @@ module Utils.Svg exposing
     ( Point
     , cx_
     , cy_
+    , disableTouch
     , fill_
     , height_
     , originCenter_
@@ -12,6 +13,7 @@ module Utils.Svg exposing
     , ry_
     , scaled
     , strokeWidth_
+    , stroke_
     , transformOrigin_
     , translated
     , viewBox_
@@ -127,6 +129,11 @@ ry_ =
     ry << String.fromFloat
 
 
+stroke_ : Element.Color -> Attribute msg
+stroke_ =
+    stroke << Color.toString
+
+
 strokeWidth_ : Float -> Attribute msg
 strokeWidth_ =
     strokeWidth << String.fromFloat
@@ -145,3 +152,8 @@ transformOrigin_ x y =
 originCenter_ : String
 originCenter_ =
     "transform-origin: center"
+
+
+disableTouch : Attribute msg
+disableTouch =
+    Svg.Attributes.class "touch-disabled"

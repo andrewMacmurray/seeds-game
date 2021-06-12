@@ -1,128 +1,106 @@
-module Scene.Level.Board.Tile.Leaving exposing (ViewModel, styles)
+module Scene.Level.Board.Tile.Leaving exposing
+    ( Model
+    , Offsets
+    , offsets
+    )
 
 import Board
-import Board.Block as Block
 import Board.Move as Move exposing (Move)
 import Board.Scores as Scores
 import Board.Tile as Tile exposing (State(..), Tile(..))
-import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale, translate)
-import Css.Transition exposing (delay, transitionAll)
-import Dict
+import Dict exposing (Dict)
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
+import Scene.Level.Board as Board
+import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 
 
 
--- View Model
+-- Model
 
 
-type alias ViewModel =
+type alias Model =
     { window : Window
     , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
+    , settings : List Tile.Setting
+    , move : Move
+    }
+
+
+type alias Offsets =
+    { x : Float
+    , y : Float
     }
 
 
 
--- Leaving Styles
+-- Offsets
 
 
-styles : ViewModel -> Move -> List Style
-styles model move =
-    let
-        block =
-            Move.block move
-    in
-    if Block.isLeaving block && not (Block.isBurst block) then
-        [ transitionAll 800 [ delay <| modBy 5 (Block.leavingOrder block) * 80 ]
-        , opacity 0.2
-        , handleExitDirection move model
-        ]
-
-    else
-        []
-
-
-handleExitDirection : Move -> ViewModel -> Style
-handleExitDirection move model =
-    case Block.tileState <| Move.block move of
+offsets : Model -> Maybe Offsets
+offsets model =
+    case Move.tileState model.move of
         Leaving Rain _ ->
-            getLeavingStyle Rain model
+            offsetsFor Rain model
 
         Leaving Sun _ ->
-            getLeavingStyle Sun model
+            offsetsFor Sun model
 
         Leaving (Seed seedType) _ ->
-            getLeavingStyle (Seed seedType) model
+            offsetsFor (Seed seedType) model
 
         _ ->
-            Style.none
+            Nothing
 
 
-getLeavingStyle : Tile -> ViewModel -> Style
-getLeavingStyle tileType model =
-    newLeavingStyles model
-        |> Dict.get (Tile.hash tileType)
-        |> Maybe.withDefault Style.none
+offsetsFor : Tile -> Model -> Maybe Offsets
+offsetsFor tile =
+    allOffsets >> Dict.get (Tile.toString tile)
 
 
-newLeavingStyles : ViewModel -> Dict.Dict String Style
-newLeavingStyles model =
-    model.tileSettings
+allOffsets : Model -> Dict String Offsets
+allOffsets model =
+    model.settings
         |> Scores.tileTypes
-        |> List.indexedMap (prepareLeavingStyle model)
+        |> List.indexedMap (toOffsets model)
         |> Dict.fromList
 
 
-prepareLeavingStyle : ViewModel -> Int -> Tile -> ( String, Style )
-prepareLeavingStyle model resourceBankIndex tileType =
-    ( Tile.hash tileType
-    , transform
-        [ translate (exitXDistance resourceBankIndex model) -(exitYDistance model)
-        , scale 0.5
-        ]
+toOffsets : Model -> Int -> Tile -> ( String, Offsets )
+toOffsets model resourceBankIndex tile_ =
+    ( Tile.toString tile_
+    , { x = offsetXDistance resourceBankIndex model
+      , y = -(offsetYDistance model)
+      }
     )
 
 
-exitXDistance : Int -> ViewModel -> Float
-exitXDistance resourceBankIndex model =
+offsetXDistance : Int -> Model -> Float
+offsetXDistance resourceBankIndex model =
     let
         scoreWidth =
             Board.scoreIconSize * 2
 
         scoreBarWidth =
-            model.tileSettings
+            model.settings
                 |> List.filter Scores.collectible
                 |> List.length
                 |> (*) scoreWidth
 
         baseOffset =
-            (Board.width (boardViewModel model) - scoreBarWidth) // 2
+            (Board.width model - scoreBarWidth) // 2
 
         offset =
-            exitOffset <| Tile.scale model.window
+            exitOffset (Scale.factor model.window)
     in
     toFloat (baseOffset + resourceBankIndex * scoreWidth) + offset
 
 
 exitOffset : Float -> Float
 exitOffset x =
-    25 * (x ^ 2) - (75 * x) + Tile.baseSizeX
+    25 * (x ^ 2) - (75 * x) + Scale.baseX
 
 
-exitYDistance : ViewModel -> Float
-exitYDistance model =
-    toFloat (Board.offsetTop (boardViewModel model)) - 9
-
-
-
--- View Models
-
-
-boardViewModel : ViewModel -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
-    }
+offsetYDistance : Model -> Float
+offsetYDistance model =
+    toFloat (Board.offsetTop model) - 9

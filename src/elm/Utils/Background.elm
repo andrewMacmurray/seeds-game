@@ -1,4 +1,4 @@
-module Utils.Background exposing (split)
+module Utils.Background exposing (Split, split, splitGradient)
 
 import Element exposing (Attribute, Color)
 import Utils.Color as Color

@@ -233,7 +233,7 @@ menuDrawerButton { open, close } context =
             div
                 [ onClick close
                 , style
-                    [ transform [ Transform.rotateZ 0 ]
+                    [ transform [ Transform.rotate 0 ]
                     , width 20
                     , height 20
                     , transitionAll 300 []
@@ -245,7 +245,7 @@ menuDrawerButton { open, close } context =
             div
                 [ onClick open
                 , style
-                    [ transform [ Transform.rotateZ 180 ]
+                    [ transform [ Transform.rotate 180 ]
                     , width 20
                     , height 20
                     , transitionAll 300 []

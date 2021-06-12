@@ -111,7 +111,7 @@ insertEnteringTiles newTiles board_ =
         tilesToAdd =
             board_
                 |> emptyCoords
-                |> List.map2 (\tile coord -> Move.move coord (Space <| Entering tile)) newTiles
+                |> List.map2 (\tile coord -> Move.move coord (Space (Entering tile))) newTiles
     in
     Board.placeMoves board_ tilesToAdd
 

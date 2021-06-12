@@ -7,6 +7,7 @@ module Utils.Element exposing
     , maybe
     , onClickIf
     , originBottom
+    , preventScroll
     , square
     , style
     , verticalGap
@@ -55,6 +56,11 @@ visibleIf condition =
 disableTouch : Attribute msg
 disableTouch =
     class "touch-disabled"
+
+
+preventScroll : Attribute msg
+preventScroll =
+    style "touch-action" "none"
 
 
 originBottom : Attribute msg

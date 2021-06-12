@@ -12,7 +12,8 @@ module Board.Wall exposing
 import Board exposing (Board)
 import Board.Block exposing (Block(..))
 import Board.Coord exposing (Coord)
-import Css.Color as Color exposing (Color)
+import Element exposing (Color)
+import Element.Palette as Palette
 
 
 
@@ -29,12 +30,12 @@ type Config
 
 walls : List Coord -> List Config
 walls =
-    withColor Color.blockYellow
+    withColor Palette.blockYellow
 
 
 invisible : List Coord -> List Config
 invisible =
-    withColor Color.lightYellow
+    withColor Palette.transparent
 
 
 addToBoard : List Config -> Board -> Board

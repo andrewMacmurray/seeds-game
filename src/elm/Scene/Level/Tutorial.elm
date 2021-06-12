@@ -1,7 +1,7 @@
 module Scene.Level.Tutorial exposing
-    ( Step
+    ( Model
+    , Step
     , Tutorial
-    , ViewModel
     , autoStep
     , hideStep
     , highlightMultiple
@@ -22,22 +22,33 @@ module Scene.Level.Tutorial exposing
 
 import Board
 import Board.Coord as Coord exposing (Coord)
-import Css.Animation as Animation
 import Css.Color as Color
-import Css.Style as Style
-import Html exposing (Html)
-import Html.Attributes as Attribute
+import Element exposing (Element, behindContent)
+import Element.Animations as Animations
+import Element.Text as Text
 import Level.Setting.Tile as Tile
-import Scene.Level.Board.Style as Board
-import Scene.Level.Board.Tile.Style as Tile
+import Scene.Level.Board as Board
+import Scene.Level.Board.Tile.Position as Position
+import Scene.Level.Board.Tile.Scale as Scale
+import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
-import Utils.Svg exposing (..)
+import Utils.Animated as Animated
+import Utils.Element as Element
+import Utils.Svg as Svg exposing (..)
 import Window exposing (Window)
 
 
 
 -- Tutorial
+
+
+type alias Model =
+    { window : Window
+    , boardSize : Board.Size
+    , tileSettings : List Tile.Setting
+    , tutorial : Tutorial
+    }
 
 
 type Tutorial
@@ -53,30 +64,28 @@ type alias Steps =
 
 
 type Step
-    = AutoHide StepConfig
-    | WaitForUserAction StepConfig
+    = AutoHide Step_
+    | WaitForUserAction Step_
 
 
-type alias StepConfig =
+type alias Step_ =
     { text : String
     , highlight : Highlight
     }
 
 
 type Highlight
-    = HorizontalTiles { from : Coord, length : Int }
-    | VerticalTiles { from : Coord, length : Int }
+    = HorizontalTiles TilesHighlight
+    | VerticalTiles TilesHighlight
     | Multiple (List Highlight)
     | RemainingMoves
     | SeedBank
     | NoHighlight
 
 
-type alias ViewModel =
-    { window : Window
-    , boardSize : Board.Size
-    , tileSettings : List Tile.Setting
-    , tutorial : Tutorial
+type alias TilesHighlight =
+    { from : Coord
+    , length : Int
     }
 
 
@@ -95,15 +104,15 @@ tutorial step_ steps_ =
 
 step : String -> Highlight -> Step
 step text_ =
-    WaitForUserAction << StepConfig text_
+    WaitForUserAction << Step_ text_
 
 
 autoStep : String -> Highlight -> Step
 autoStep text_ =
-    AutoHide << StepConfig text_
+    AutoHide << Step_ text_
 
 
-stepConfig : Step -> StepConfig
+stepConfig : Step -> Step_
 stepConfig step_ =
     case step_ of
         AutoHide config ->
@@ -192,12 +201,12 @@ none =
 -- Highlight
 
 
-horizontalTiles : { from : Coord, length : Int } -> Highlight
+horizontalTiles : TilesHighlight -> Highlight
 horizontalTiles =
     HorizontalTiles
 
 
-verticalTiles : { from : Coord, length : Int } -> Highlight
+verticalTiles : TilesHighlight -> Highlight
 verticalTiles =
     VerticalTiles
 
@@ -226,7 +235,7 @@ highlightMultiple =
 -- View
 
 
-type alias InternalViewModel =
+type alias ViewModel =
     { window : Window
     , boardSize : Board.Size
     , tileSettings : List Tile.Setting
@@ -236,79 +245,81 @@ type alias InternalViewModel =
     }
 
 
-view : ViewModel -> Html msg
+view : Model -> Element msg
 view model =
     case model.tutorial of
         InProgress c ->
-            let
-                config =
-                    stepConfig c.current
-
-                vm =
-                    { window = model.window
-                    , boardSize = model.boardSize
-                    , tileSettings = model.tileSettings
-                    , text = config.text
-                    , visible = c.visible
-                    , highlight = config.highlight
-                    }
-            in
-            Html.div [ Attribute.class "w-100 h-100 fixed z-7 top-0 touch-disabled", Style.style <| visibility vm ]
-                [ highlightOverlay vm
-                , text vm
-                ]
+            view_ (toViewModel model c)
 
         Complete ->
-            Html.span [] []
+            Element.none
 
 
-visibility : InternalViewModel -> List Style.Style
+view_ : ViewModel -> Element msg
+view_ model =
+    Animated.el (visibility model)
+        [ Element.disableTouch
+        , Element.width Element.fill
+        , Element.height Element.fill
+        , behindContent (highlightOverlay model)
+        ]
+        (text model)
+
+
+toViewModel : Model -> Steps -> ViewModel
+toViewModel model config =
+    { window = model.window
+    , boardSize = model.boardSize
+    , tileSettings = model.tileSettings
+    , text = .text (stepConfig config.current)
+    , visible = config.visible
+    , highlight = .highlight (stepConfig config.current)
+    }
+
+
+visibility : ViewModel -> Animation
 visibility model =
     if model.visible then
-        [ Animation.animation "fade-in" 1200 []
-        , Style.opacity 0
-        ]
+        Animations.fadeIn 1200 []
 
     else
-        [ Style.opacity 1
-        , Animation.animation "fade-out" 1000 []
-        ]
+        Animations.fadeOut 1000 []
 
 
-text : InternalViewModel -> Html msg
+text : ViewModel -> Element msg
 text model =
-    let
-        offsetBottom =
-            boardViewModel model
-                |> Board.offsetBottom
-                |> (\offset -> offset - 60)
-                |> toFloat
-    in
-    Html.p
-        [ Attribute.class "absolute z-7 bottom-0 tc left-0 right-0"
-        , Style.style
-            [ Style.color Color.white
-            , Style.bottom offsetBottom
-            ]
+    Text.text
+        [ Text.white
+        , Element.centerX
+        , Element.alignBottom
+        , Element.moveUp (offsetBottom model)
         ]
-        [ Html.text model.text ]
+        model.text
 
 
-highlightOverlay : InternalViewModel -> Html msg
+offsetBottom : ViewModel -> Float
+offsetBottom model =
+    toFloat (Board.offsetBottom model - 60)
+
+
+highlightOverlay : ViewModel -> Element msg
 highlightOverlay model =
-    Svg.svg [ windowViewBox_ model.window ]
-        [ highlightMask model
-        , Svg.rect
-            [ width_ <| toFloat model.window.width
-            , height_ <| toFloat model.window.height
-            , fillOpacity "0.4"
-            , mask <| String.concat [ "url(#", maskId, ")" ]
+    Element.html
+        (Svg.window model.window
+            [ Svg.disableTouch ]
+            [ highlightMask model
+            , Svg.rect
+                [ Svg.width_ (toFloat model.window.width)
+                , Svg.height_ (toFloat model.window.height)
+                , fillOpacity "0.4"
+                , mask (String.concat [ "url(#", maskId, ")" ])
+                ]
+                []
             ]
-            []
-        ]
+        )
 
 
-highlightMask : InternalViewModel -> Svg msg
+highlightMask : ViewModel -> Svg msg
 highlightMask model =
     Svg.mask [ id maskId ]
         (List.concat
@@ -326,7 +337,7 @@ maskId =
     "tutorial-overlay-mask"
 
 
-remainingMovesHighlight : InternalViewModel -> List (Svg msg)
+remainingMovesHighlight : ViewModel -> List (Svg msg)
 remainingMovesHighlight model =
     let
         left =
@@ -347,7 +358,7 @@ remainingMovesHighlight model =
             []
 
 
-highlightCenterSeedBank : InternalViewModel -> List (Svg msg)
+highlightCenterSeedBank : ViewModel -> List (Svg msg)
 highlightCenterSeedBank model =
     case model.highlight of
         SeedBank ->
@@ -364,7 +375,7 @@ highlightCenterSeedBank model =
             []
 
 
-maskBackground : InternalViewModel -> Svg msg
+maskBackground : ViewModel -> Svg msg
 maskBackground model =
     Svg.rect
         [ width_ <| toFloat model.window.width
@@ -374,7 +385,7 @@ maskBackground model =
         []
 
 
-tileHighlights : InternalViewModel -> List (Svg msg)
+tileHighlights : ViewModel -> List (Svg msg)
 tileHighlights model =
     case model.highlight of
         HorizontalTiles { from, length } ->
@@ -394,16 +405,16 @@ tileHighlights model =
             []
 
 
-connectingBlock : InternalViewModel -> List (Svg msg)
+connectingBlock : ViewModel -> List (Svg msg)
 connectingBlock model =
     case model.highlight of
         HorizontalTiles { from, length } ->
             let
                 p1 =
-                    Tile.position model.window from
+                    Position.fromCoord model.window from
 
                 p2 =
-                    Tile.position model.window (Coord.translateX (length - 2) from)
+                    Position.fromCoord model.window (Coord.translateX (length - 2) from)
 
                 { left, top } =
                     boardOffset model
@@ -424,10 +435,10 @@ connectingBlock model =
         VerticalTiles { from, length } ->
             let
                 p1 =
-                    Tile.position model.window from
+                    Position.fromCoord model.window from
 
                 p2 =
-                    Tile.position model.window (Coord.translateY (length - 2) from)
+                    Position.fromCoord model.window (Coord.translateY (length - 2) from)
 
                 { left, top } =
                     boardOffset model
@@ -452,11 +463,11 @@ connectingBlock model =
             []
 
 
-moveHighlight : InternalViewModel -> Coord -> Svg msg
+moveHighlight : ViewModel -> Coord -> Svg msg
 moveHighlight model coord =
     let
         { x, y } =
-            Tile.position model.window coord
+            Position.fromCoord model.window coord
 
         { left, top } =
             boardOffset model
@@ -478,31 +489,20 @@ moveHighlight model coord =
 -- Helpers
 
 
-leftEdge : InternalViewModel -> Float
+leftEdge : ViewModel -> Float
 leftEdge model =
     toFloat (model.window.width - Board.fullWidth model.window) / 2
 
 
-boardOffset : InternalViewModel -> { top : Float, left : Float }
+boardOffset : ViewModel -> { top : Float, left : Float }
 boardOffset model =
-    { top = toFloat <| Board.offsetTop (boardViewModel model)
-    , left = toFloat <| Board.offsetLeft (boardViewModel model)
+    { top = toFloat (Board.offsetTop model)
+    , left = toFloat (Board.offsetLeft model)
     }
 
 
-tileSize : InternalViewModel -> { height : Float, width : Float }
+tileSize : ViewModel -> { height : Float, width : Float }
 tileSize model =
-    { height = toFloat <| Tile.height model.window
-    , width = toFloat <| Tile.width model.window
-    }
-
-
-
--- View Models
-
-
-boardViewModel : InternalViewModel -> Board.ViewModel
-boardViewModel model =
-    { window = model.window
-    , boardSize = model.boardSize
+    { height = toFloat (Scale.outerHeight model.window)
+    , width = toFloat (Scale.outerWidth model.window)
     }

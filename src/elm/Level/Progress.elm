@@ -244,7 +244,7 @@ position worlds ((Progress { current }) as progress) =
 
 getScoreFor : Tile -> Dict String Int -> Maybe Int
 getScoreFor =
-    Tile.hash >> Dict.get
+    Tile.toString >> Dict.get
 
 
 resourcesInLevels : Seed -> List Level.Level -> List Tile
@@ -306,7 +306,7 @@ accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
         Just (TargetScore n) ->
-            Utils.Dict.insertWith (+) (Tile.hash setting.tileType) n acc
+            Utils.Dict.insertWith (+) (Tile.toString setting.tileType) n acc
 
         Nothing ->
             acc
