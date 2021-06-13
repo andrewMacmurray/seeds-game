@@ -5,8 +5,8 @@ module Scene.Level.Tutorial exposing
 
 import Css.Color as Color
 import Element exposing (Element, behindContent)
-import Element.Animations as Animations
 import Element.Text as Text
+import Element.Transition as Transition
 import Game.Board as Board
 import Game.Board.Coord as Coord exposing (Coord)
 import Game.Level.Setting.Tile as Tile
@@ -14,10 +14,8 @@ import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
-import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (fill, fillOpacity, id, mask)
-import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.Svg as Svg exposing (..)
 import Window exposing (Window)
@@ -40,7 +38,7 @@ type alias ViewModel =
     , boardSize : Board.Size
     , tileSettings : List Tile.Setting
     , highlight : Tutorial.Highlight
-    , visible : Bool
+    , isVisible : Bool
     , text : String
     }
 
@@ -61,10 +59,12 @@ view model =
 
 view_ : ViewModel -> Element msg
 view_ model =
-    Animated.el (visibility model)
-        [ Element.disableTouch
-        , Element.width Element.fill
+    Element.el
+        [ Element.width Element.fill
         , Element.height Element.fill
+        , Transition.alpha 1000
+        , Element.visibleIf model.isVisible
+        , Element.disableTouch
         , behindContent (highlightOverlay model)
         ]
         (text model)
@@ -76,18 +76,9 @@ toViewModel model config =
     , boardSize = model.boardSize
     , tileSettings = model.tileSettings
     , text = .text (Tutorial.stepConfig config.current)
-    , visible = config.visible
+    , isVisible = config.visible
     , highlight = .highlight (Tutorial.stepConfig config.current)
     }
-
-
-visibility : ViewModel -> Animation
-visibility model =
-    if model.visible then
-        Animations.fadeIn 1200 []
-
-    else
-        Animations.fadeOut 1000 []
 
 
 text : ViewModel -> Element msg

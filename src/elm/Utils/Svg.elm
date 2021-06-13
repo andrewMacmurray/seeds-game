@@ -141,7 +141,7 @@ strokeWidth_ =
 
 viewBox_ : Float -> Float -> Float -> Float -> Attribute msg
 viewBox_ x y w h =
-    viewBox <| String.join " " <| List.map String.fromFloat [ x, y, w, h ]
+    viewBox (String.join " " (List.map String.fromFloat [ x, y, w, h ]))
 
 
 transformOrigin_ : Float -> Float -> String

@@ -11,8 +11,9 @@ import Game.Board.Move as Move exposing (Move)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
-import Svg
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Element as Element
 import Utils.Svg as Svg
 import Window exposing (Window)
 
@@ -112,27 +113,32 @@ tileWidth =
 
 view : Model -> Element msg
 view model =
-    if model.isDragging then
-        view_ (toViewModel model)
-
-    else
-        Element.none
+    toViewModel model
+        |> view_
+        |> wrapper model.isDragging
 
 
-view_ : ViewModel -> Element msg
+wrapper : Bool -> Svg msg -> Element msg
+wrapper isVisible el_ =
+    Element.el
+        [ Element.disableTouch
+        , Element.visibleIf isVisible
+        ]
+        (Element.html el_)
+
+
+view_ : ViewModel -> Svg msg
 view_ model =
-    Element.html
-        (Svg.window model.window
-            [ Svg.disableTouch ]
-            [ Svg.line
-                [ Svg.strokeWidth_ model.thickness
-                , Svg.stroke_ model.color
-                , strokeLinecap "round"
-                , x1 (String.fromFloat model.x1)
-                , y1 (String.fromFloat model.y1)
-                , x2 (String.fromInt model.x2)
-                , y2 (String.fromInt model.y2)
-                ]
-                []
+    Svg.window model.window
+        [ Svg.disableTouch ]
+        [ Svg.line
+            [ Svg.strokeWidth_ model.thickness
+            , Svg.stroke_ model.color
+            , strokeLinecap "round"
+            , x1 (String.fromFloat model.x1)
+            , y1 (String.fromFloat model.y1)
+            , x2 (String.fromInt model.x2)
+            , y2 (String.fromInt model.y2)
             ]
-        )
+            []
+        ]
