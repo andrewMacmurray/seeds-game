@@ -4,12 +4,19 @@ module Scene.Level.TopBar exposing
     )
 
 import Element exposing (..)
+import Element.Icon.RainBank as RainBank
+import Element.Icon.SunBank as SunBank
+import Element.Icon.Tick as Tick
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
-import Game.Board.Scores as Scores
+import Game.Board.Scores as Scores exposing (Scores)
+import Game.Board.Tile as Tile exposing (Tile)
 import Game.Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
+import Svg exposing (Svg)
+import Utils.Element as Element
+import View.Seed as Seed
 import Window exposing (Window)
 
 
@@ -21,8 +28,63 @@ type alias Model =
     { window : Window
     , remainingMoves : Int
     , tileSettings : List Tile.Setting
-    , scores : Scores.Scores
+    , scores : Scores
     }
+
+
+type alias ViewModel =
+    { remainingMoves : Int
+    , color : Color
+    , width : Int
+    , resources : List Resource
+    }
+
+
+type alias Resource =
+    { tile : Tile
+    , score : Score
+    }
+
+
+type Score
+    = Complete
+    | Remaining String
+
+
+
+-- View Model
+
+
+toViewModel : Model -> ViewModel
+toViewModel model =
+    { remainingMoves = model.remainingMoves
+    , color = remainingMovesColor model
+    , width = Board.fullWidth model.window
+    , resources = toResources model
+    }
+
+
+toResources : Model -> List Resource
+toResources model =
+    model.tileSettings
+        |> Scores.tileTypes
+        |> List.map (toResource model)
+
+
+toResource : Model -> Tile -> Resource
+toResource model tile =
+    { tile = tile
+    , score = toScore tile model.scores
+    }
+
+
+toScore : Tile -> Scores -> Score
+toScore tile scores =
+    if Scores.getScoreFor tile scores == Just 0 then
+        Complete
+
+    else
+        Remaining (Scores.toString tile scores)
 
 
 
@@ -30,7 +92,12 @@ type alias Model =
 
 
 view : Model -> Element msg
-view model =
+view =
+    toViewModel >> view_
+
+
+view_ : ViewModel -> Element msg
+view_ model =
     el
         [ width fill
         , height (px Board.topBarHeight)
@@ -39,14 +106,20 @@ view model =
         (row
             [ centerX
             , height fill
-            , width (px (Board.fullWidth model.window))
+            , width (px model.width)
             , paddingXY Scale.extraSmall 0
             ]
-            [ remainingMoves model ]
+            [ remainingMoves model
+            , resourceBanks model
+            ]
         )
 
 
-remainingMoves : Model -> Element msg
+
+-- Remaining Moves
+
+
+remainingMoves : ViewModel -> Element msg
 remainingMoves model =
     column [ spacing Scale.extraSmall ]
         [ remainingMoves_ model
@@ -54,10 +127,10 @@ remainingMoves model =
         ]
 
 
-remainingMoves_ : Model -> Element msg
+remainingMoves_ : ViewModel -> Element msg
 remainingMoves_ model =
     Text.text
-        [ Text.color (remainingMovesColor model)
+        [ Text.color model.color
         , Text.large
         , centerX
         ]
@@ -77,37 +150,47 @@ remainingMovesColor model =
 
 
 
---renderScore : Model -> Tile -> Html msg
---renderScore model tileType =
---    let
---        scoreMargin =
---            Board.scoreIconSize // 2
---    in
---    div
---        [ class "relative tc"
---        , style
---            [ marginRight (toFloat scoreMargin)
---            , marginLeft (toFloat scoreMargin)
---            ]
---        ]
---        [ scoreIcon tileType Board.scoreIconSize
---        , p
---            [ class "ma0 absolute left-0 right-0 f6"
---            , Html.Attributes.style "bottom" "-1.5em"
---            ]
---            [ scoreContent tileType model.scores ]
---        ]
---
---
---scoreContent : Tile -> Scores.Scores -> Html msg
---scoreContent tileType scores =
---    if Scores.getScoreFor tileType scores == Just 0 then
---        tickFadeIn tileType scores
---
---    else
---        text (Scores.toString tileType scores)
---
---
+-- Resource Banks
+
+
+resourceBanks : ViewModel -> Element msg
+resourceBanks model =
+    row
+        [ centerX
+        , moveLeft (Board.scoreIconSize - 9)
+        , spacing (round Board.scoreIconSize)
+        ]
+        (List.map viewBank model.resources)
+
+
+viewBank : Resource -> Element msg
+viewBank resource =
+    Element.showIfJust (viewBank_ resource) (scoreIcon_ resource.tile)
+
+
+viewBank_ : Resource -> Svg msg -> Element msg
+viewBank_ resource icon_ =
+    column [ spacing (Scale.extraSmall + Scale.extraSmall // 2) ]
+        [ el
+            [ width (px Board.scoreIconSize)
+            , height (px Board.scoreIconSize)
+            ]
+            (html icon_)
+        , viewScore resource.score
+        ]
+
+
+viewScore : Score -> Element msg
+viewScore score =
+    case score of
+        Remaining score_ ->
+            Text.text [ centerX, Text.color Palette.gold ] score_
+
+        Complete ->
+            html Tick.icon
+
+
+
 --tickFadeIn : Tile -> Scores.Scores -> Html msg
 --tickFadeIn tileType scores =
 --    div [ class "relative" ]
@@ -128,36 +211,19 @@ remainingMovesColor model =
 --            ]
 --            [ text (Scores.toString tileType scores) ]
 --        ]
---
---
---scoreIcon : Tile -> Float -> Html msg
---scoreIcon tileType iconSize =
---    case scoreIcon_ tileType of
---        Just icon ->
---            div
---                [ class "bg-center contain"
---                , style
---                    [ width iconSize
---                    , height iconSize
---                    ]
---                ]
---                [ icon ]
---
---        Nothing ->
---            span [] []
---
---
---scoreIcon_ : Tile -> Maybe (Svg msg)
---scoreIcon_ tileType =
---    case tileType of
---        Tile.Sun ->
---            Just SunBank.full
---
---        Tile.Rain ->
---            Just RainBank.full
---
---        Tile.Seed seed ->
---            Just (Seed.view seed)
---
---        _ ->
---            Nothing
+
+
+scoreIcon_ : Tile -> Maybe (Svg msg)
+scoreIcon_ tileType =
+    case tileType of
+        Tile.Sun ->
+            Just SunBank.full
+
+        Tile.Rain ->
+            Just RainBank.full
+
+        Tile.Seed seed ->
+            Just (Seed.view seed)
+
+        _ ->
+            Nothing
