@@ -36,7 +36,7 @@ import Game.Board.Wall as Wall
 import Game.Config.Level as Level
 import Game.Level.Setting.Start as Start
 import Game.Level.Setting.Tile as Tile
-import Game.Level.Tutorial as Tutorial
+import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Game.Lives as Lives
 import Html exposing (Html, div)
 import Scene.Level.Board as Board
@@ -546,11 +546,12 @@ handleResetTutorial model =
 
 handleTutorialStep : Model -> Exit.With Status ( Model, Cmd Msg )
 handleTutorialStep model =
-    let
-        nextTutorial =
-            Tutorial.nextStep model.tutorial
-    in
-    continue { model | tutorial = nextTutorial } [ triggerHideAutoStep nextTutorial ]
+    handleTutorialStep_ model (Tutorial.nextStep model.tutorial)
+
+
+handleTutorialStep_ : Model -> Tutorial -> Exit.With Status ( Model, Cmd Msg )
+handleTutorialStep_ model next =
+    continue { model | tutorial = next } [ triggerHideAutoStep next ]
 
 
 triggerHideAutoStep : Tutorial.Tutorial -> Cmd Msg

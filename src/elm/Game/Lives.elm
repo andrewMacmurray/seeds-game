@@ -83,10 +83,10 @@ timeTillNextLife : Lives -> Maybe Countdown
 timeTillNextLife (Lives cache) =
     let
         minutes =
-            modBy max <| cache.timeTillNextLife // minute
+            modBy max (cache.timeTillNextLife // minute)
 
         seconds =
-            modBy 60 <| cache.timeTillNextLife // second
+            modBy 60 (cache.timeTillNextLife // second)
     in
     if cache.timeTillNextLife == 0 then
         Nothing
@@ -188,7 +188,7 @@ heart { active, currentLife, breaking } =
             , height 35
             , marginLeft 10
             , marginRight 10
-            , Style.applyIf (not active) <| transform [ scale 1.11 ]
+            , Style.applyIf (not active) (transform [ scale 1.11 ])
             , Style.applyIf currentLife Heart.beatingAnimation
             ]
         , class "dib"
