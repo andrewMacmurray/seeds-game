@@ -13,7 +13,7 @@ import Element.Scale as Scale
 import Element.Text as Text
 import Game.Board.Scores as Scores exposing (Scores)
 import Game.Board.Tile as Tile exposing (Tile)
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
 import Scene.Level.Board as Board
 import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)

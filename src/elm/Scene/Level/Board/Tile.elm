@@ -13,7 +13,7 @@ import Game.Board as Board
 import Game.Board.Block as Block exposing (Block)
 import Game.Board.Move as Move exposing (Move)
 import Game.Board.Tile as Tile exposing (Tile)
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
 import Html exposing (Attribute, Html, div)
 import Scene.Level.Board.Tile.Leaving as Leaving
 import Scene.Level.Board.Tile.Position as Position

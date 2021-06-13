@@ -3,10 +3,10 @@ module Game.Config.World.Two exposing (world)
 import Element
 import Element.Palette as Palette
 import Game.Board.Coord as Coord exposing (Coord)
-import Game.Board.Wall exposing (..)
+import Game.Board.Wall as Wall exposing (s, w)
 import Game.Config.Level as Level
-import Game.Level.Setting.Constant as Constant
-import Game.Level.Setting.Tile exposing (..)
+import Game.Level.Tile as Tile
+import Game.Level.Tile.Constant as Constant
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Seed exposing (Seed(..))
 
@@ -30,17 +30,19 @@ world =
 levels : List Level.Level
 levels =
     [ Level.withTutorial l1Tutorial
-        { walls = walls firstLevelWalls
+        { walls = Wall.fromCoords firstLevelWalls
         , startTiles = l1StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 5
         , tileSettings =
-            [ seed
-                Chrysanthemum
-                (Probability 5)
-                (TargetScore 50)
-            , seedPod
-                (Probability 80)
+            [ Tile.seed
+                { seed = Chrysanthemum
+                , probability = 5
+                , targetScore = 50
+                }
+            , Tile.seedPod
+                { probability = 80
+                }
             ]
         }
     , Level.withTutorial l2Tutorial
@@ -49,124 +51,149 @@ levels =
         , boardSize = { x = 8, y = 8 }
         , moves = 8
         , tileSettings =
-            [ seed
-                Chrysanthemum
-                (Probability 5)
-                (TargetScore 50)
-            , seed
-                Sunflower
-                (Probability 5)
-                (TargetScore 50)
-            , seedPod
-                (Probability 80)
+            [ Tile.seed
+                { seed = Chrysanthemum
+                , probability = 5
+                , targetScore = 50
+                }
+            , Tile.seed
+                { seed = Sunflower
+                , probability = 5
+                , targetScore = 50
+                }
+            , Tile.seedPod
+                { probability = 80
+                }
             ]
         }
     , Level.level
-        { walls = walls corners
+        { walls = Wall.corners
         , startTiles = []
         , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
-            [ seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 30)
-            , rain
-                (Probability 25)
-                (TargetScore 20)
-            , seed
-                Chrysanthemum
-                (Probability 25)
-                (TargetScore 30)
-            , seedPod
-                (Probability 25)
-            , burst
-                (Probability 6)
+            [ Tile.seed
+                { seed = Sunflower
+                , probability = 25
+                , targetScore = 30
+                }
+            , Tile.rain
+                { probability = 25
+                , targetScore = 20
+                }
+            , Tile.seed
+                { seed = Chrysanthemum
+                , probability = 25
+                , targetScore = 30
+                }
+            , Tile.seedPod
+                { probability = 25
+                }
+            , Tile.burst
+                { probability = 6
+                }
             ]
         }
     , Level.level
-        { walls = walls diagonal
+        { walls = Wall.fromCoords diagonal
         , startTiles = l4StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
-            [ seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 30)
-            , sun
-                (Probability 25)
-                (TargetScore 20)
-            , seed
-                Chrysanthemum
-                (Probability 25)
-                (TargetScore 30)
-            , seedPod
-                (Probability 5)
-            , burst
-                (Probability 6)
+            [ Tile.seed
+                { seed = Sunflower
+                , probability = 25
+                , targetScore = 30
+                }
+            , Tile.sun
+                { probability = 25
+                , targetScore = 20
+                }
+            , Tile.seed
+                { seed = Chrysanthemum
+                , probability = 25
+                , targetScore = 30
+                }
+            , Tile.seedPod
+                { probability = 5
+                }
+            , Tile.burst
+                { probability = 6
+                }
             ]
         }
     , Level.level
-        { walls = walls l5Walls
+        { walls = Wall.fromCoords l5Walls
         , startTiles = l5StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 10
         , tileSettings =
-            [ rain
-                (Probability 20)
-                (TargetScore 20)
-            , seed
-                Chrysanthemum
-                (Probability 20)
-                (TargetScore 50)
-            , sun
-                (Probability 20)
-                (TargetScore 20)
-            , seedPod
-                (Probability 40)
-            , burst
-                (Probability 5)
+            [ Tile.rain
+                { probability = 20
+                , targetScore = 20
+                }
+            , Tile.seed
+                { seed = Chrysanthemum
+                , probability = 20
+                , targetScore = 50
+                }
+            , Tile.sun
+                { probability = 20
+                , targetScore = 20
+                }
+            , Tile.seedPod
+                { probability = 40
+                }
+            , Tile.burst
+                { probability = 5
+                }
             ]
         }
     , Level.level
-        { walls = walls l6Walls
+        { walls = Wall.fromCoords l6Walls
         , startTiles = []
         , boardSize = { x = 7, y = 8 }
         , moves = 7
         , tileSettings =
-            [ seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 35)
-            , seed
-                Chrysanthemum
-                (Probability 25)
-                (TargetScore 35)
-            , seedPod
-                (Probability 60)
+            [ Tile.seed
+                { seed = Sunflower
+                , probability = 25
+                , targetScore = 35
+                }
+            , Tile.seed
+                { seed = Chrysanthemum
+                , probability = 25
+                , targetScore = 35
+                }
+            , Tile.seedPod
+                { probability = 60
+                }
             ]
         }
     , Level.level
-        { walls = walls lWalls
+        { walls = Wall.fromCoords lWalls
         , startTiles = l7StartTiles
         , boardSize = { x = 8, y = 8 }
         , moves = 7
         , tileSettings =
-            [ seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 20)
-            , sun
-                (Probability 30)
-                (TargetScore 20)
-            , rain
-                (Probability 30)
-                (TargetScore 20)
-            , seed
-                Chrysanthemum
-                (Probability 25)
-                (TargetScore 20)
+            [ Tile.seed
+                { seed = Sunflower
+                , probability = 25
+                , targetScore = 20
+                }
+            , Tile.sun
+                { probability = 30
+                , targetScore = 20
+                }
+            , Tile.rain
+                { probability = 30
+                , targetScore = 20
+                }
+            , Tile.seed
+                { seed = Chrysanthemum
+                , probability = 25
+                , targetScore = 20
+                }
             ]
         }
     ]
@@ -174,7 +201,7 @@ levels =
 
 firstLevelWalls : List Coord
 firstLevelWalls =
-    toCoords
+    Wall.coords
         [ [ w, s, s, w, w, s, s, w ]
         , [ w, s, s, s, s, s, s, w ]
         , [ s, s, s, s, s, s, s, s ]
@@ -248,7 +275,7 @@ l4StartTiles =
 
 l5Walls : List Coord
 l5Walls =
-    toCoords
+    Wall.coords
         [ [ s, s, s, s, s, s, s, s ]
         , [ s, w, w, s, s, w, w, s ]
         , [ s, w, s, s, s, s, w, s ]
@@ -291,7 +318,7 @@ l5StartTiles =
 
 diagonal : List Coord
 diagonal =
-    toCoords
+    Wall.coords
         [ [ w, s, s, s, s, s, s, s ]
         , [ s, w, s, s, s, s, s, s ]
         , [ s, s, w, s, s, s, s, s ]
@@ -305,7 +332,7 @@ diagonal =
 
 l6Walls : List Coord
 l6Walls =
-    toCoords
+    Wall.coords
         [ [ w, w, s, s, s, w, w ]
         , [ w, s, s, s, s, s, w ]
         , [ s, s, s, w, s, s, s ]
@@ -319,7 +346,7 @@ l6Walls =
 
 lWalls : List Coord
 lWalls =
-    toCoords
+    Wall.coords
         [ [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]
         , [ s, s, s, w, w, s, s, s ]

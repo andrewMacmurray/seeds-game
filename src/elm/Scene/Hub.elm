@@ -32,7 +32,7 @@ import Game.Board.Tile as Tile
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress
-import Game.Level.Setting.Tile as Tile exposing (TargetScore)
+import Game.Level.Tile as Tile exposing (TargetScore)
 import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
 import Ports.Scroll as Scroll

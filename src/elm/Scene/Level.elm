@@ -34,8 +34,8 @@ import Game.Board.Shift as Board
 import Game.Board.Tile exposing (State(..), Tile(..))
 import Game.Board.Wall as Wall
 import Game.Config.Level as Level
-import Game.Level.Setting.Constant as Start
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
+import Game.Level.Tile.Constant as Start
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Game.Lives as Lives
 import Html exposing (Html, div)
