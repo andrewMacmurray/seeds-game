@@ -36,7 +36,7 @@ import Dict exposing (Dict)
 import Element exposing (Color)
 import Game.Board as Board
 import Game.Board.Wall as Wall
-import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Constant as Start
 import Game.Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Seed exposing (Seed(..))

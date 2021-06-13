@@ -4,6 +4,7 @@ module Scene.Level.TopBar exposing
     )
 
 import Element exposing (..)
+import Element.Animations as Animations
 import Element.Icon.RainBank as RainBank
 import Element.Icon.SunBank as SunBank
 import Element.Icon.Tick as Tick
@@ -14,7 +15,10 @@ import Game.Board.Scores as Scores exposing (Scores)
 import Game.Board.Tile as Tile exposing (Tile)
 import Game.Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
+import Simple.Animation as Animation
+import Simple.Animation.Property as P
 import Svg exposing (Svg)
+import Utils.Animated as Animated
 import Utils.Element as Element
 import View.Seed as Seed
 import Window exposing (Window)
@@ -184,10 +188,32 @@ viewScore : Score -> Element msg
 viewScore score =
     case score of
         Remaining score_ ->
-            Text.text [ centerX, Text.color Palette.gold ] score_
+            textScore score_
 
         Complete ->
-            html Tick.icon
+            scoreComplete
+
+
+textScore : String -> Element msg
+textScore =
+    Text.text [ centerX, Text.color Palette.gold ]
+
+
+scoreComplete =
+    el
+        [ behindContent (Animated.el (Animations.fadeOut 1000 []) [ centerX ] (textScore "0"))
+        , centerX
+        ]
+        (Animated.el bulge [ centerX ] (html Tick.icon))
+
+
+bulge =
+    Animation.fromTo
+        { duration = 500
+        , options = [ Animation.easeOutBack, Animation.delay 800 ]
+        }
+        [ P.scale 0 ]
+        [ P.scale 1 ]
 
 
 

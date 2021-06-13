@@ -4,7 +4,7 @@ import Element.Palette as Palette
 import Game.Board.Coord as Coord exposing (Coord)
 import Game.Board.Wall as Wall exposing (s, w)
 import Game.Config.Level as Level
-import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Constant as Constant
 import Game.Level.Setting.Tile exposing (..)
 import Game.Level.Tutorial as Tutorial
 import Seed exposing (Seed(..))
@@ -226,11 +226,11 @@ l2Walls =
         ]
 
 
-l2StartTiles : List Start.Tile
+l2StartTiles : List Constant.Tile
 l2StartTiles =
     List.concat
-        [ Start.square (Start.sunflower 1 1) { size = 6 }
-        , Start.square (Start.rain 2 2) { size = 4 }
+        [ Constant.square (Constant.sunflower 1 1) { size = 6 }
+        , Constant.square (Constant.rain 2 2) { size = 4 }
         ]
 
 
@@ -251,15 +251,15 @@ l2Tutorial =
         ]
 
 
-l3StartTiles : List Start.Tile
+l3StartTiles : List Constant.Tile
 l3StartTiles =
     List.concat
-        [ Start.square (Start.rain 6 1) { size = 2 }
-        , Start.corner (Start.sunflower 5 3) { size = 3, facing = Start.TopRight }
-        , Start.corner (Start.rain 4 4) { size = 4, facing = Start.TopRight }
-        , Start.corner (Start.sunflower 3 5) { size = 5, facing = Start.TopRight }
-        , Start.corner (Start.rain 2 6) { size = 6, facing = Start.TopRight }
-        , Start.corner (Start.sunflower 1 7) { size = 7, facing = Start.TopRight }
+        [ Constant.square (Constant.rain 6 1) { size = 2 }
+        , Constant.corner (Constant.sunflower 5 3) { size = 3, facing = Constant.TopRight }
+        , Constant.corner (Constant.rain 4 4) { size = 4, facing = Constant.TopRight }
+        , Constant.corner (Constant.sunflower 3 5) { size = 5, facing = Constant.TopRight }
+        , Constant.corner (Constant.rain 2 6) { size = 6, facing = Constant.TopRight }
+        , Constant.corner (Constant.sunflower 1 7) { size = 7, facing = Constant.TopRight }
         ]
 
 
@@ -276,11 +276,11 @@ l4Walls =
         ]
 
 
-l4StartTiles : List Start.Tile
+l4StartTiles : List Constant.Tile
 l4StartTiles =
     List.concat
-        [ Start.corner (Start.rain 1 1) { size = 4, facing = Start.BottomRight }
-        , Start.corner (Start.sun 7 7) { size = 4, facing = Start.TopLeft }
+        [ Constant.corner (Constant.rain 1 1) { size = 4, facing = Constant.BottomRight }
+        , Constant.corner (Constant.sun 7 7) { size = 4, facing = Constant.TopLeft }
         ]
 
 
@@ -312,13 +312,13 @@ l5Walls =
         ]
 
 
-l5StartTiles : List Start.Tile
+l5StartTiles : List Constant.Tile
 l5StartTiles =
     List.concat
-        [ Start.square (Start.sun 1 1) { size = 8 }
-        , Start.square (Start.sunflower 2 2) { size = 6 }
-        , Start.rectangle (Start.sun 4 1) { x = 2, y = 8 }
-        , Start.square (Start.burst 4 4) { size = 2 }
+        [ Constant.square (Constant.sun 1 1) { size = 8 }
+        , Constant.square (Constant.sunflower 2 2) { size = 6 }
+        , Constant.rectangle (Constant.sun 4 1) { x = 2, y = 8 }
+        , Constant.square (Constant.burst 4 4) { size = 2 }
         ]
 
 
@@ -352,13 +352,13 @@ l6Walls =
         ]
 
 
-l6StartTiles : List Start.Tile
+l6StartTiles : List Constant.Tile
 l6StartTiles =
     List.concat
-        [ Start.line (Start.rain 3 1) { length = 8, direction = Start.Vertical }
-        , Start.line (Start.sun 6 1) { length = 8, direction = Start.Vertical }
-        , [ Start.burst 4 5
-          , Start.burst 5 4
+        [ Constant.line (Constant.rain 3 1) { length = 8, direction = Constant.Vertical }
+        , Constant.line (Constant.sun 6 1) { length = 8, direction = Constant.Vertical }
+        , [ Constant.burst 4 5
+          , Constant.burst 5 4
           ]
         ]
 
@@ -377,12 +377,12 @@ l7Walls =
         ]
 
 
-l7StartTiles : List Start.Tile
+l7StartTiles : List Constant.Tile
 l7StartTiles =
     List.concat
-        [ Start.square (Start.sunflower 1 1) { size = 8 }
-        , Start.square (Start.sun 2 2) { size = 6 }
-        , Start.square (Start.rain 3 3) { size = 4 }
+        [ Constant.square (Constant.sunflower 1 1) { size = 8 }
+        , Constant.square (Constant.sun 2 2) { size = 6 }
+        , Constant.square (Constant.rain 3 3) { size = 4 }
         ]
 
 
@@ -414,13 +414,13 @@ l8Invisibles =
         ]
 
 
-l8StartTiles : List Start.Tile
+l8StartTiles : List Constant.Tile
 l8StartTiles =
     List.concat
-        [ Start.square (Start.sunflower 4 4) { size = 2 }
-        , Start.square (Start.rain 2 4) { size = 2 }
-        , Start.square (Start.rain 6 4) { size = 2 }
-        , Start.square (Start.sun 4 6) { size = 2 }
-        , Start.square (Start.sun 4 2) { size = 2 }
-        , [ Start.burst 1 4, Start.burst 8 5 ]
+        [ Constant.square (Constant.sunflower 4 4) { size = 2 }
+        , Constant.square (Constant.rain 2 4) { size = 2 }
+        , Constant.square (Constant.rain 6 4) { size = 2 }
+        , Constant.square (Constant.sun 4 6) { size = 2 }
+        , Constant.square (Constant.sun 4 2) { size = 2 }
+        , [ Constant.burst 1 4, Constant.burst 8 5 ]
         ]

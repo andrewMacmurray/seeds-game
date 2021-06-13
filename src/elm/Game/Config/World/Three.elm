@@ -4,7 +4,7 @@ import Element.Palette as Palette
 import Game.Board.Coord exposing (Coord)
 import Game.Board.Wall as Wall exposing (..)
 import Game.Config.Level as Level
-import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Constant as Constant
 import Game.Level.Setting.Tile exposing (..)
 import Seed exposing (Seed(..))
 
@@ -111,6 +111,6 @@ l1Walls =
         ]
 
 
-l2StartingTiles : List Start.Tile
+l2StartingTiles : List Constant.Tile
 l2StartingTiles =
-    Start.square (Start.burst 4 4) { size = 2 }
+    Constant.square (Constant.burst 4 4) { size = 2 }
