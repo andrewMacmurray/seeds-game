@@ -1,12 +1,12 @@
 module Game.Board.Wall exposing
     ( Config
     , addToBoard
+    , coords
     , corners
+    , fromCoords
     , invisible
     , s
-    , toCoords
     , w
-    , walls
     )
 
 import Element exposing (Color)
@@ -28,8 +28,8 @@ type Config
 -- Construct
 
 
-walls : List Coord -> List Config
-walls =
+fromCoords : List Coord -> List Config
+fromCoords =
     withColor Palette.blockYellow
 
 
@@ -57,18 +57,19 @@ withColor color =
 -- Visually construct Coordinates
 
 
-corners : List Coord
+corners : List Config
 corners =
-    toCoords
-        [ [ w, w, s, s, s, s, s, s ]
-        , [ w, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, s ]
-        , [ s, s, s, s, s, s, s, w ]
-        , [ s, s, s, s, s, s, w, w ]
-        ]
+    [ [ w, w, s, s, s, s, s, s ]
+    , [ w, s, s, s, s, s, s, s ]
+    , [ s, s, s, s, s, s, s, s ]
+    , [ s, s, s, s, s, s, s, s ]
+    , [ s, s, s, s, s, s, s, s ]
+    , [ s, s, s, s, s, s, s, s ]
+    , [ s, s, s, s, s, s, s, w ]
+    , [ s, s, s, s, s, s, w, w ]
+    ]
+        |> coords
+        |> fromCoords
 
 
 w : Bool
@@ -81,8 +82,8 @@ s =
     False
 
 
-toCoords : List (List Bool) -> List Coord
-toCoords allWalls =
+coords : List (List Bool) -> List Coord
+coords allWalls =
     allWalls
         |> List.indexedMap (\i r -> List.indexedMap (toCoord i) r)
         |> List.concat

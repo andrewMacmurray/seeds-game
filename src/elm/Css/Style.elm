@@ -9,16 +9,12 @@ module Css.Style exposing
     , color
     , compose
     , height
-    , left
     , marginBottom
     , marginLeft
     , marginRight
     , marginTop
     , none
     , opacity
-    , paddingAll
-    , paddingHorizontal
-    , paddingVertical
     , property
     , renderStyles_
     , showIf
@@ -127,47 +123,6 @@ transformOrigin =
     property "transform-origin"
 
 
-paddingAll : Float -> Style
-paddingAll n =
-    property "padding" <| px n
-
-
-paddingHorizontal : Float -> Style
-paddingHorizontal n =
-    compose
-        [ paddingLeft n
-        , paddingRight n
-        ]
-
-
-paddingVertical : Float -> Style
-paddingVertical n =
-    compose
-        [ paddingTop n
-        , paddingBottom n
-        ]
-
-
-paddingLeft : Float -> Style
-paddingLeft n =
-    property "padding-left" <| px n
-
-
-paddingRight : Float -> Style
-paddingRight n =
-    property "padding-right" <| px n
-
-
-paddingTop : Float -> Style
-paddingTop n =
-    property "padding-top" <| px n
-
-
-paddingBottom : Float -> Style
-paddingBottom n =
-    property "padding-bottom" <| px n
-
-
 marginRight : Float -> Style
 marginRight n =
     property "margin-right" <| px n
@@ -191,11 +146,6 @@ marginBottom n =
 top : Float -> Style
 top n =
     property "top" <| px n
-
-
-left : Float -> Style
-left n =
-    property "left" <| px n
 
 
 color : String -> Style

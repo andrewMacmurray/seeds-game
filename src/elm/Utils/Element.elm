@@ -4,10 +4,10 @@ module Utils.Element exposing
     , disableTouch
     , empty
     , id
-    , maybe
     , onClickIf
     , originBottom
     , preventScroll
+    , showIfJust
     , square
     , style
     , verticalGap
@@ -19,8 +19,8 @@ import Element.Events exposing (onClick)
 import Html.Attributes
 
 
-maybe : (a -> Element msg) -> Maybe a -> Element msg
-maybe toElement =
+showIfJust : (a -> Element msg) -> Maybe a -> Element msg
+showIfJust toElement =
     Maybe.map toElement >> Maybe.withDefault none
 
 

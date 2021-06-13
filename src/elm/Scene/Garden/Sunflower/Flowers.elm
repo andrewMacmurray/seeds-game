@@ -51,8 +51,8 @@ flower : Options -> Element msg
 flower options =
     el
         [ width (px options.size)
-        , inFront (Element.maybe (restingButterfly options) options.restingButterfly)
-        , inFront (Element.maybe (hoveringButterfly options) options.hoveringButterfly)
+        , inFront (Element.showIfJust (restingButterfly options) options.restingButterfly)
+        , inFront (Element.showIfJust (hoveringButterfly options) options.hoveringButterfly)
         ]
         (html Sunflower.static)
 

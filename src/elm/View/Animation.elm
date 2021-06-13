@@ -13,7 +13,6 @@ animations =
         , fadeSlideDown
         , shake
         , bulgeFade
-        , bulge
         , heartbeat
         , heartBreakLeft
         , heartBreakRight
@@ -74,18 +73,6 @@ bulgeFade =
             [ opacity 1, toScale 1 ]
         , frame 100
             [ opacity 0, toScale 2.5 ]
-        ]
-
-
-bulge =
-    -- TopBar
-    keyframes "bulge"
-        [ frame 0
-            [ toScale 0.5 ]
-        , frame 50
-            [ toScale 1.3 ]
-        , frame 100
-            [ toScale 1 ]
         ]
 
 

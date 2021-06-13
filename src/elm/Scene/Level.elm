@@ -34,8 +34,8 @@ import Game.Board.Shift as Board
 import Game.Board.Tile exposing (State(..), Tile(..))
 import Game.Board.Wall as Wall
 import Game.Config.Level as Level
-import Game.Level.Setting.Start as Start
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
+import Game.Level.Tile.Constant as Start
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Game.Lives as Lives
 import Html exposing (Html, div)
@@ -52,7 +52,7 @@ import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import Utils.Update exposing (andThenWithCmds)
+import Utils.Update exposing (andCmds)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -170,7 +170,7 @@ canRestartLevel model =
 init : Level.LevelConfig -> Context -> ( Model, Cmd Msg )
 init config context =
     initialState config context
-        |> andThenWithCmds
+        |> andCmds
             [ generateBoard config
             , handleStartTutorial
             ]
@@ -743,7 +743,7 @@ view model =
 
 topBar : Model -> Element msg
 topBar =
-    topBarModel >> TopBar.view >> html
+    topBarModel >> TopBar.view
 
 
 handleStop : Model -> Element.Attribute Msg

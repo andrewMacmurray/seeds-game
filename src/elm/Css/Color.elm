@@ -7,12 +7,10 @@ module Css.Color exposing
     , crimson
     , darkRed
     , darkYellow
-    , fadedOrange
     , gold
     , lightBrown
     , lightGold
     , lightGray
-    , lightGreen
     , lightYellow
     , meadowGreen
     , midnightBlue
@@ -106,11 +104,6 @@ crimson =
 pinkRed : Color
 pinkRed =
     rgb 255 116 116
-
-
-fadedOrange : Color
-fadedOrange =
-    rgb 247 179 113
 
 
 orange : Color

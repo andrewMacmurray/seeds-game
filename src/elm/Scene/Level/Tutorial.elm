@@ -9,7 +9,7 @@ import Element.Text as Text
 import Element.Transition as Transition
 import Game.Board as Board
 import Game.Board.Coord as Coord exposing (Coord)
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position

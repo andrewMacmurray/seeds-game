@@ -36,10 +36,10 @@ import Dict exposing (Dict)
 import Element exposing (Color)
 import Game.Board as Board
 import Game.Board.Wall as Wall
-import Game.Level.Setting.Start as Start
-import Game.Level.Setting.Tile as Tile exposing (Probability(..), TargetScore(..))
+import Game.Level.Tile as Tile
+import Game.Level.Tile.Constant as Start
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
-import Seed exposing (Seed(..))
+import Seed exposing (Seed)
 
 
 
@@ -207,17 +207,21 @@ default =
         , startTiles = []
         , tileSettings =
             [ Tile.rain
-                (Probability 25)
-                (TargetScore 30)
+                { probability = 25
+                , targetScore = 30
+                }
             , Tile.seed
-                Sunflower
-                (Probability 25)
-                (TargetScore 50)
+                { seed = Seed.Sunflower
+                , probability = 25
+                , targetScore = 50
+                }
             , Tile.sun
-                (Probability 25)
-                (TargetScore 30)
+                { probability = 25
+                , targetScore = 30
+                }
             , Tile.seedPod
-                (Probability 25)
+                { probability = 25
+                }
             ]
         }
 

@@ -15,7 +15,7 @@ import Game.Board as Board exposing (Board)
 import Game.Board.Block as Block
 import Game.Board.Move as Move
 import Game.Board.Tile as Tile exposing (Tile(..))
-import Game.Level.Setting.Tile as Tile
+import Game.Level.Tile as Tile
 
 
 
