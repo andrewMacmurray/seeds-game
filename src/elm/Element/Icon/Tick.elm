@@ -1,14 +1,14 @@
-module View.Icon.Tick exposing (tickBackground)
+module Element.Icon.Tick exposing (icon)
 
 import Css.Color exposing (white)
 import Html exposing (Html)
-import Svg exposing (svg)
+import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
-tickBackground : Html msg
-tickBackground =
-    svg
+icon : Svg msg
+icon =
+    Svg.svg
         [ height "16"
         , viewBox "0 0 16 16"
         , width "16"
@@ -17,7 +17,13 @@ tickBackground =
             [ fill "none"
             , fillRule "evenodd"
             ]
-            [ Svg.circle [ cx "8", cy "8", fill "#5AD962", r "8" ] []
+            [ Svg.circle
+                [ cx "8"
+                , cy "8"
+                , fill "#5AD962"
+                , r "8"
+                ]
+                []
             , tick
             ]
         ]

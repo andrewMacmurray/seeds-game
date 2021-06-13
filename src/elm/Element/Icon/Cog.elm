@@ -1,4 +1,4 @@
-module View.Icon.Cog exposing (cog)
+module Element.Icon.Cog exposing (icon)
 
 import Css.Color as Color
 import Css.Style as Style
@@ -7,8 +7,8 @@ import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 
 
-cog : Color.Color -> Svg msg
-cog color =
+icon : Color.Color -> Svg msg
+icon color =
     Svg.svg
         [ width "20"
         , height "20"

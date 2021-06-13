@@ -15,6 +15,9 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
+import Element.Icon.RainBank as RainBank exposing (..)
+import Element.Icon.SeedBank as SeedBank exposing (icon)
+import Element.Icon.SunBank as SunBank
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile exposing (Tile(..))
 import Game.Config.World as Worlds
@@ -29,9 +32,6 @@ import Seed exposing (Seed(..))
 import Svg exposing (Svg)
 import Utils.Delay exposing (after, sequence, trigger)
 import Utils.Sine as Sine
-import View.Icon.RainBank exposing (..)
-import View.Icon.SeedBank exposing (seedBank)
-import View.Icon.SunBank exposing (sunBank, sunBankFull)
 import View.Seed as Seed
 import Window exposing (Window)
 
@@ -457,7 +457,7 @@ innerSeedBank seedBankState seed fillLevel =
     case seedBankState of
         Visible ->
             div [ style [ transform [ translateY 0 ], transitionAll 2000 [] ] ]
-                [ seedBank seed fillLevel ]
+                [ SeedBank.icon seed fillLevel ]
 
         Leaving ->
             div
@@ -468,7 +468,7 @@ innerSeedBank seedBankState seed fillLevel =
                         , transformOrigin "bottom"
                         ]
                     ]
-                    [ seedBank seed fillLevel ]
+                    [ SeedBank.icon seed fillLevel ]
                 ]
 
         Blooming ->
@@ -476,7 +476,7 @@ innerSeedBank seedBankState seed fillLevel =
                 [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
                 [ div
                     [ style [ animation "bulge-fade" 500 [] ] ]
-                    [ seedBank seed fillLevel
+                    [ SeedBank.icon seed fillLevel
                     ]
                 ]
 
@@ -497,19 +497,19 @@ renderResource resourceState progress tileType =
         Rain ->
             div [ style [ width 40 ], class "dib ph1 mh4" ]
                 [ renderResourceFill resourceState progress tileType
-                , rainBank fillLevel
+                , RainBank.icon fillLevel
                 ]
 
         Sun ->
             div [ style [ width 40 ], class "dib mh4" ]
                 [ renderResourceFill resourceState progress tileType
-                , sunBank fillLevel
+                , SunBank.icon fillLevel
                 ]
 
         Seed seed ->
             div [ style [ width 40 ], class "dib ph1 mh4" ]
                 [ renderResourceFill resourceState progress tileType
-                , seedBank seed fillLevel
+                , SeedBank.icon seed fillLevel
                 ]
 
         _ ->
@@ -525,13 +525,13 @@ renderResourceFill resourceState progress tileType =
     case tileType of
         Rain ->
             div [ style [ height 50 ] ]
-                [ div [ style [ width 13 ], class "center" ] [ rainBankFull ]
+                [ div [ style [ width 13 ], class "center" ] [ RainBank.full ]
                 , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.rainBlue) <| List.range 1 50
                 ]
 
         Sun ->
             div [ style [ height 50 ] ]
-                [ div [ style [ width 18 ], class "center" ] [ sunBankFull ]
+                [ div [ style [ width 18 ], class "center" ] [ SunBank.full ]
                 , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.gold) <| List.range 4 54
                 ]
 

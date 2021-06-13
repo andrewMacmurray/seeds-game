@@ -1,4 +1,7 @@
-module View.Icon.RainBank exposing (rainBank, rainBankFull)
+module Element.Icon.RainBank exposing
+    ( full
+    , icon
+    )
 
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)
@@ -7,21 +10,12 @@ import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
 
-rainBank : Float -> Svg msg
-rainBank percentFull =
-    let
-        fullHeight =
-            35.8
 
-        waterLevelOffset =
-            (fullHeight / 100) * (100 - percentFull)
+-- Rain Bank
 
-        offsetLevelStyles =
-            svgStyle
-                [ transitionAll 1500 []
-                , Style.transform [ translateY waterLevelOffset ]
-                ]
-    in
+
+icon : Float -> Svg msg
+icon percentFull =
     Svg.svg
         [ viewBox "0 0 25 36"
         , width "100%"
@@ -29,7 +23,7 @@ rainBank percentFull =
         ]
         [ Svg.defs []
             [ Svg.rect
-                [ height <| String.fromFloat fullHeight
+                [ height (String.fromFloat fullHeight)
                 , width "60"
                 , id "water-level"
                 ]
@@ -51,7 +45,11 @@ rainBank percentFull =
                 [ fill "white"
                 , id "rain-bank"
                 ]
-                [ Svg.use [ xlinkHref "#water-level", offsetLevelStyles ] []
+                [ Svg.use
+                    [ xlinkHref "#water-level"
+                    , offsetLevelStyles percentFull
+                    ]
+                    []
                 ]
             , Svg.path
                 [ rainBankPath
@@ -63,8 +61,30 @@ rainBank percentFull =
         ]
 
 
-rainBankFull : Svg msg
-rainBankFull =
+fullHeight : Float
+fullHeight =
+    35.8
+
+
+offsetLevelStyles : Float -> Attribute msg
+offsetLevelStyles percentFull =
+    svgStyle
+        [ transitionAll 1500 []
+        , Style.transform [ translateY (offset percentFull) ]
+        ]
+
+
+offset : Float -> Float
+offset percentFull =
+    (fullHeight / 100) * (100 - percentFull)
+
+
+
+-- Static
+
+
+full : Svg msg
+full =
     Svg.svg
         [ viewBox "0 0 25 36"
         , width "100%"

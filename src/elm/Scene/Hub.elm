@@ -18,6 +18,7 @@ import Element.Background as Background
 import Element.Button as Button
 import Element.Dot as Dot
 import Element.Events exposing (onClick)
+import Element.Icon.Heart as Heart
 import Element.Icon.Triangle as Triangle
 import Element.Info as Info
 import Element.Layout as Layout
@@ -41,7 +42,6 @@ import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Utils.Sine as Sine
-import View.Icon.Heart as Heart
 import View.Menu as Menu
 
 
@@ -222,6 +222,7 @@ infoContent context level =
         column
             [ spacing (Scale.medium + Scale.small)
             , onClick (PlayLevelClicked level)
+            , pointer
             , centerX
             ]
             [ Text.text [ Text.white, centerX, Text.spaced ] (levelLabel level)

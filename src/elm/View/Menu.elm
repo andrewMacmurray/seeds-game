@@ -12,12 +12,12 @@ import Css.Color as Color
 import Css.Style as Style exposing (..)
 import Css.Transform as Transform exposing (translateX)
 import Css.Transition exposing (transitionAll)
+import Element.Icon.Cog as Cog
 import Element.Touch as Touch
 import Html exposing (Attribute, Html, a, button, div, text)
 import Html.Attributes exposing (attribute, class, href, target)
 import Html.Events exposing (onClick)
 import Utils.Attribute as Attribute
-import View.Icon.Cog as Icon
 
 
 
@@ -65,7 +65,7 @@ fadeOut =
             ]
         , class "absolute top-1 right-1 z-9"
         ]
-        [ Icon.cog Color.darkYellow ]
+        [ Cog.icon Color.darkYellow ]
 
 
 view : Msg msg -> Context -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
@@ -243,7 +243,7 @@ menuDrawerButton { open, close } context =
                     , transitionAll 300 []
                     ]
                 ]
-                [ Icon.cog Color.white ]
+                [ Cog.icon Color.white ]
 
         _ ->
             div
@@ -255,4 +255,4 @@ menuDrawerButton { open, close } context =
                     , transitionAll 300 []
                     ]
                 ]
-                [ Icon.cog Color.darkYellow ]
+                [ Cog.icon Color.darkYellow ]

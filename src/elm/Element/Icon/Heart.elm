@@ -1,4 +1,4 @@
-module View.Icon.Heart exposing
+module Element.Icon.Heart exposing
     ( alive
     , beating
     , beatingAnimation
