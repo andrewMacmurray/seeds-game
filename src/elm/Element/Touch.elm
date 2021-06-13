@@ -7,7 +7,7 @@ module Element.Touch exposing
     , origin
     )
 
-import Element exposing (Attribute, htmlAttribute)
+import Element exposing (htmlAttribute)
 import Html
 import Html.Events as Events
 import Json.Decode as Json exposing (Decoder, field, float)
@@ -64,11 +64,6 @@ onMove msg =
 
 
 -- Internal
-
-
-on : String -> Decoder msg -> Element.Attribute msg
-on e decoder =
-    htmlAttribute (Events.on e decoder)
 
 
 stopPropagationOn : String -> Decoder ( msg, Bool ) -> Element.Attribute msg

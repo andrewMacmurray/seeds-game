@@ -4,7 +4,7 @@ module Scene.Garden.Sunflower exposing
     )
 
 import Element exposing (Element)
-import Geometry.Shape as Shape exposing (Shape)
+import Geometry.Shape exposing (Shape)
 import Scene.Garden.Sunflower.Flowers as Flowers
 import Scene.Garden.Sunflower.Hills as Hills
 import Window exposing (Window)

@@ -15,8 +15,8 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (translateX, translateY)
 import Css.Transition as Transition exposing (transition, transitionAll)
-import Element.Icon.RainBank as RainBank exposing (..)
-import Element.Icon.SeedBank as SeedBank exposing (icon)
+import Element.Icon.RainBank as RainBank
+import Element.Icon.SeedBank as SeedBank
 import Element.Icon.SunBank as SunBank
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile exposing (Tile(..))
