@@ -22,7 +22,6 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
-import Utils.Debug as Debug
 import Utils.Delay as Delay exposing (trigger)
 import Utils.Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
@@ -108,7 +107,6 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> Debug.goToLevel 1 9 InitLevel
 
 
 initialState : Title.Model -> Model

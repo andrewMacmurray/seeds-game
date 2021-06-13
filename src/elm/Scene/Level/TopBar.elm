@@ -15,11 +15,11 @@ import Game.Board.Scores as Scores exposing (Scores)
 import Game.Board.Tile as Tile exposing (Tile)
 import Game.Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
-import Simple.Animation as Animation
+import Seed exposing (Seed)
+import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Utils.Animated as Animated
-import Utils.Element as Element
 import View.Seed as Seed
 import Window exposing (Window)
 
@@ -45,9 +45,15 @@ type alias ViewModel =
 
 
 type alias Resource =
-    { tile : Tile
+    { icon : Icon
     , score : Score
     }
+
+
+type Icon
+    = Sun
+    | Rain
+    | Seed Seed
 
 
 type Score
@@ -72,12 +78,28 @@ toResources : Model -> List Resource
 toResources model =
     model.tileSettings
         |> Scores.tileTypes
-        |> List.map (toResource model)
+        |> List.filterMap (toResource model)
 
 
-toResource : Model -> Tile -> Resource
+toResource : Model -> Tile -> Maybe Resource
 toResource model tile =
-    { tile = tile
+    case tile of
+        Tile.Sun ->
+            Just (toResource_ Sun model tile)
+
+        Tile.Rain ->
+            Just (toResource_ Rain model tile)
+
+        Tile.Seed seed ->
+            Just (toResource_ (Seed seed) model tile)
+
+        _ ->
+            Nothing
+
+
+toResource_ : Icon -> Model -> Tile -> Resource
+toResource_ icon model tile =
+    { icon = icon
     , score = toScore tile model.scores
     }
 
@@ -169,19 +191,32 @@ resourceBanks model =
 
 viewBank : Resource -> Element msg
 viewBank resource =
-    Element.showIfJust (viewBank_ resource) (scoreIcon_ resource.tile)
-
-
-viewBank_ : Resource -> Svg msg -> Element msg
-viewBank_ resource icon_ =
     column [ spacing (Scale.extraSmall + Scale.extraSmall // 2) ]
-        [ el
-            [ width (px Board.scoreIconSize)
-            , height (px Board.scoreIconSize)
-            ]
-            (html icon_)
+        [ resourceIcon resource.icon
         , viewScore resource.score
         ]
+
+
+resourceIcon : Icon -> Element msg
+resourceIcon icon =
+    el
+        [ width (px Board.scoreIconSize)
+        , height (px Board.scoreIconSize)
+        ]
+        (html (resourceIcon_ icon))
+
+
+resourceIcon_ : Icon -> Svg msg
+resourceIcon_ resource =
+    case resource of
+        Sun ->
+            SunBank.full
+
+        Rain ->
+            RainBank.full
+
+        Seed seed ->
+            Seed.view seed
 
 
 viewScore : Score -> Element msg
@@ -196,17 +231,28 @@ viewScore score =
 
 textScore : String -> Element msg
 textScore =
-    Text.text [ centerX, Text.color Palette.gold ]
-
-
-scoreComplete =
-    el
-        [ behindContent (Animated.el (Animations.fadeOut 1000 []) [ centerX ] (textScore "0"))
-        , centerX
+    Text.text
+        [ centerX
+        , Text.color Palette.gold
         ]
-        (Animated.el bulge [ centerX ] (html Tick.icon))
 
 
+scoreComplete : Element msg
+scoreComplete =
+    el [ behindContent fadingOutScore, centerX ] tick
+
+
+fadingOutScore : Element msg
+fadingOutScore =
+    Animated.el fadeOut [ centerX ] (textScore "0")
+
+
+tick : Element msg
+tick =
+    Animated.el bulge [ centerX ] (html Tick.icon)
+
+
+bulge : Animation
 bulge =
     Animation.fromTo
         { duration = 500
@@ -216,40 +262,6 @@ bulge =
         [ P.scale 1 ]
 
 
-
---tickFadeIn : Tile -> Scores.Scores -> Html msg
---tickFadeIn tileType scores =
---    div [ class "relative" ]
---        [ div
---            [ style
---                [ top 1
---                , transform [ scale 0 ]
---                , animation "bulge" 600 [ ease, delay 800 ]
---                ]
---            , class "absolute top-0 left-0 right-0"
---            ]
---            [ Tick.icon ]
---        , div
---            [ style
---                [ opacity 1
---                , animation "fade-out" 500 [ ease ]
---                ]
---            ]
---            [ text (Scores.toString tileType scores) ]
---        ]
-
-
-scoreIcon_ : Tile -> Maybe (Svg msg)
-scoreIcon_ tileType =
-    case tileType of
-        Tile.Sun ->
-            Just SunBank.full
-
-        Tile.Rain ->
-            Just RainBank.full
-
-        Tile.Seed seed ->
-            Just (Seed.view seed)
-
-        _ ->
-            Nothing
+fadeOut : Animation
+fadeOut =
+    Animations.fadeOut 1000 []
