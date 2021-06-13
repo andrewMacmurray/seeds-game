@@ -1,7 +1,6 @@
 module Element.Animations exposing
     ( fadeIn
     , fadeOut
-    , hover
     )
 
 import Simple.Animation as Animation exposing (Animation)
@@ -26,14 +25,3 @@ fadeOut duration options =
         }
         [ P.opacity 1 ]
         [ P.opacity 0 ]
-
-
-hover : Animation
-hover =
-    Animation.steps
-        { startAt = [ P.y 0 ]
-        , options = [ Animation.loop ]
-        }
-        [ Animation.step 750 [ P.y -5 ]
-        , Animation.step 750 [ P.y 0 ]
-        ]

@@ -13,7 +13,6 @@ module Scene.Hub exposing
 import Context exposing (Context)
 import Countdown
 import Element exposing (..)
-import Element.Animations as Animations
 import Element.Background as Background
 import Element.Button as Button
 import Element.Dot as Dot
@@ -38,7 +37,6 @@ import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
-import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Utils.Sine as Sine
@@ -413,7 +411,7 @@ renderLevel model =
 currentLevelPointer : LevelModel -> Element msg
 currentLevelPointer model =
     if model.isCurrentLevel then
-        Animated.el Animations.hover [ centerX ] Triangle.icon
+        Triangle.hovering [ centerX ]
 
     else
         none
