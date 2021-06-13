@@ -3,21 +3,21 @@ module Scene.Level.TopBar exposing
     , view
     )
 
-import Board.Scores as Scores
-import Board.Tile as Tile exposing (Tile)
 import Css.Animation exposing (animation, delay, ease)
 import Css.Color exposing (..)
 import Css.Style exposing (..)
 import Css.Transform exposing (..)
 import Css.Transition exposing (transitionAll)
+import Element.Icon.RainBank as RainBank
+import Element.Icon.SunBank as SunBank
+import Element.Icon.Tick as Tick exposing (icon)
+import Game.Board.Scores as Scores
+import Game.Board.Tile as Tile exposing (Tile)
+import Game.Level.Setting.Tile as Tile
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import Level.Setting.Tile as Tile
 import Scene.Level.Board as Board
 import Svg exposing (Svg)
-import View.Icon.RainBank exposing (rainBankFull)
-import View.Icon.SunBank exposing (sunBankFull)
-import View.Icon.Tick exposing (tickBackground)
 import View.Seed as Seed
 import Window exposing (Window)
 
@@ -42,7 +42,7 @@ view model =
         ]
         [ div
             [ style
-                [ width <| toFloat <| Board.fullWidth model.window
+                [ width (toFloat (Board.fullWidth model.window))
                 , height Board.topBarHeight
                 ]
             , class "flex items-center justify-center relative"
@@ -56,8 +56,7 @@ view model =
                     ]
                 , class "flex justify-center"
                 ]
-              <|
-                List.map (renderScore model) (Scores.tileTypes model.tileSettings)
+                (List.map (renderScore model) (Scores.tileTypes model.tileSettings))
             ]
         ]
 
@@ -71,8 +70,8 @@ renderScore model tileType =
     div
         [ class "relative tc"
         , style
-            [ marginRight <| toFloat scoreMargin
-            , marginLeft <| toFloat scoreMargin
+            [ marginRight (toFloat scoreMargin)
+            , marginLeft (toFloat scoreMargin)
             ]
         ]
         [ scoreIcon tileType Board.scoreIconSize
@@ -99,11 +98,11 @@ remainingMoves moves =
             [ p
                 [ class "ma0 f3"
                 , style
-                    [ color <| moveCounterColor moves
+                    [ color (moveCounterColor moves)
                     , transitionAll 1000 []
                     ]
                 ]
-                [ text <| String.fromInt moves ]
+                [ text (String.fromInt moves) ]
             ]
         , p
             [ style [ color darkYellow ]
@@ -131,7 +130,7 @@ scoreContent tileType scores =
         tickFadeIn tileType scores
 
     else
-        text <| Scores.toString tileType scores
+        text (Scores.toString tileType scores)
 
 
 tickFadeIn : Tile -> Scores.Scores -> Html msg
@@ -145,14 +144,14 @@ tickFadeIn tileType scores =
                 ]
             , class "absolute top-0 left-0 right-0"
             ]
-            [ tickBackground ]
+            [ Tick.icon ]
         , div
             [ style
                 [ opacity 1
                 , animation "fade-out" 500 [ ease ]
                 ]
             ]
-            [ text <| Scores.toString tileType scores ]
+            [ text (Scores.toString tileType scores) ]
         ]
 
 
@@ -177,13 +176,13 @@ scoreIcon_ : Tile -> Maybe (Svg msg)
 scoreIcon_ tileType =
     case tileType of
         Tile.Sun ->
-            Just sunBankFull
+            Just SunBank.full
 
         Tile.Rain ->
-            Just rainBankFull
+            Just RainBank.full
 
         Tile.Seed seed ->
-            Just <| Seed.view seed
+            Just (Seed.view seed)
 
         _ ->
             Nothing

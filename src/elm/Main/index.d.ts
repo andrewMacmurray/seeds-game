@@ -6,9 +6,6 @@ export namespace Elm {
   namespace Main {
     export interface App {
       ports: {
-        generateBounceKeyframes: {
-          subscribe(callback: (data: null) => void): void
-        }
         cacheProgress: {
           subscribe(callback: (data: { worldId: number; levelId: number }) => void): void
         }

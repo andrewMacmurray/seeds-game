@@ -1,7 +1,7 @@
 module MoveTest exposing (suite)
 
-import Board.Coord as Coord exposing (Coord)
 import Expect
+import Game.Board.Coord as Coord exposing (Coord)
 import Test exposing (..)
 
 

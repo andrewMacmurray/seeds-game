@@ -6,9 +6,9 @@ module Scene.Level.Board.Tile.Scale exposing
     , outerWidth
     )
 
-import Board.Block as Block exposing (Block)
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile exposing (Tile)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile as Tile exposing (Tile)
 import Window exposing (Window)
 
 

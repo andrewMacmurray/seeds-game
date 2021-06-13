@@ -7,7 +7,6 @@ export function bindPorts({
   playIntroMusic,
   introMusicPlaying,
   fadeMusic,
-  generateBounceKeyframes,
   cacheProgress,
   cacheLives,
   clearCache_,

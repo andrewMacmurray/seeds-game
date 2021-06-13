@@ -18,8 +18,8 @@ import Element.Layout as Layout
 import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
+import Game.Lives as Lives
 import Html exposing (..)
-import Lives
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated

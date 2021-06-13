@@ -1,9 +1,9 @@
 module Scene.Garden.Chrysanthemum exposing (flowers, hills)
 
 import Element exposing (Element)
+import Geometry.Shape exposing (Shape)
 import Scene.Garden.Chrysanthemum.Flowers as Flowers
 import Scene.Garden.Chrysanthemum.Hills as Hills
-import Shape exposing (Shape)
 import Window exposing (Window)
 
 

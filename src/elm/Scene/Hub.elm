@@ -10,18 +10,14 @@ module Scene.Hub exposing
     , view
     )
 
-import Board.Scores as Scores
-import Board.Tile as Tile
-import Config.Level as Level
-import Config.World as Worlds
 import Context exposing (Context)
 import Countdown
 import Element exposing (..)
-import Element.Animations as Animations
 import Element.Background as Background
 import Element.Button as Button
 import Element.Dot as Dot
 import Element.Events exposing (onClick)
+import Element.Icon.Heart as Heart
 import Element.Icon.Triangle as Triangle
 import Element.Info as Info
 import Element.Layout as Layout
@@ -31,17 +27,19 @@ import Element.Seed as Seed
 import Element.Text as Text
 import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
+import Game.Board.Scores as Scores
+import Game.Board.Tile as Tile
+import Game.Config.Level as Level
+import Game.Config.World as Worlds
+import Game.Level.Progress as Progress
+import Game.Level.Setting.Tile as Tile exposing (TargetScore)
+import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
-import Level.Progress as Progress
-import Level.Setting.Tile as Tile exposing (TargetScore)
-import Lives exposing (Lives)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
-import Sine
-import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element as Element
-import View.Icon.Heart as Heart
+import Utils.Sine as Sine
 import View.Menu as Menu
 
 
@@ -222,6 +220,7 @@ infoContent context level =
         column
             [ spacing (Scale.medium + Scale.small)
             , onClick (PlayLevelClicked level)
+            , pointer
             , centerX
             ]
             [ Text.text [ Text.white, centerX, Text.spaced ] (levelLabel level)
@@ -412,7 +411,7 @@ renderLevel model =
 currentLevelPointer : LevelModel -> Element msg
 currentLevelPointer model =
     if model.isCurrentLevel then
-        Animated.el Animations.hover [ centerX ] Triangle.icon
+        Triangle.hovering [ centerX ]
 
     else
         none

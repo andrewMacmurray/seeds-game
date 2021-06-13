@@ -5,9 +5,9 @@ import Circle2d exposing (Circle2d)
 import Direction2d
 import Element exposing (Color)
 import Element.Palette as Palette
+import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
-import Shape exposing (Shape)
 import Utils.Function exposing (apply)
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)

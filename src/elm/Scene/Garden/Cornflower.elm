@@ -4,9 +4,9 @@ module Scene.Garden.Cornflower exposing
     )
 
 import Element exposing (Element)
+import Geometry.Shape exposing (Shape)
 import Scene.Garden.Cornflower.Flowers as Flowers
 import Scene.Garden.Cornflower.Hills as Hills
-import Shape exposing (Shape)
 import Window exposing (Window)
 
 

@@ -4,9 +4,9 @@ module Scene.Level.Board.Tile.Stroke exposing
     , thickness
     )
 
-import Board.Tile as Tile exposing (Tile)
 import Element exposing (Color)
 import Element.Palette as Color
+import Game.Board.Tile as Tile exposing (Tile)
 import Scene.Level.Board.Tile.Scale as Scale
 import Seed exposing (Seed)
 import Window exposing (Window)

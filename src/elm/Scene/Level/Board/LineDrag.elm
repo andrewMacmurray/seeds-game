@@ -3,11 +3,11 @@ module Scene.Level.Board.LineDrag exposing
     , view
     )
 
-import Board exposing (Board)
-import Board.Move as Move exposing (Move)
 import Element exposing (Color, Element)
 import Element.Palette as Palette
-import Pointer exposing (Pointer)
+import Element.Touch as Touch
+import Game.Board as Board exposing (Board)
+import Game.Board.Move as Move exposing (Move)
 import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
@@ -26,7 +26,7 @@ type alias Model =
     , boardSize : Board.Size
     , board : Board
     , isDragging : Bool
-    , pointer : Pointer
+    , point : Touch.Point
     }
 
 
@@ -48,8 +48,8 @@ toViewModel model =
     , thickness = Stroke.thickness model.window
     , x1 = .x (lastMoveOrigin model)
     , y1 = .y (lastMoveOrigin model)
-    , x2 = model.pointer.x
-    , y2 = model.pointer.y
+    , x2 = model.point.x
+    , y2 = model.point.y
     }
 
 

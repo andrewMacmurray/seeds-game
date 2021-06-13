@@ -4,8 +4,8 @@ module Scene.Level.Board.Tile.Position exposing
     , y
     )
 
-import Board.Coord as Coord exposing (Coord)
-import Board.Move as Move exposing (Move)
+import Game.Board.Coord as Coord exposing (Coord)
+import Game.Board.Move as Move exposing (Move)
 import Scene.Level.Board.Tile.Scale as Scale
 import Window exposing (Window)
 

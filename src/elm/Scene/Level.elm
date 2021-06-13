@@ -10,20 +10,6 @@ module Scene.Level exposing
     , view
     )
 
-import Board exposing (Board)
-import Board.Block as Block exposing (Block)
-import Board.Coord exposing (Coord)
-import Board.Falling exposing (..)
-import Board.Generate as Generate
-import Board.Mechanic.Burst as Burst
-import Board.Mechanic.Pod as Pod
-import Board.Move as Move exposing (Move)
-import Board.Move.Move as Move
-import Board.Scores as Scores exposing (Scores)
-import Board.Shift as Board
-import Board.Tile exposing (State(..), Tile(..))
-import Board.Wall as Wall
-import Config.Level as Level
 import Context exposing (Context)
 import Dict exposing (Dict)
 import Element exposing (..)
@@ -34,10 +20,25 @@ import Element.Lazy as Lazy
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
+import Game.Board as Board exposing (Board)
+import Game.Board.Block as Block exposing (Block)
+import Game.Board.Coord exposing (Coord)
+import Game.Board.Falling exposing (..)
+import Game.Board.Generate as Generate
+import Game.Board.Mechanic.Burst as Burst
+import Game.Board.Mechanic.Pod as Pod
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Move.Move as Move
+import Game.Board.Scores as Scores exposing (Scores)
+import Game.Board.Shift as Board
+import Game.Board.Tile exposing (State(..), Tile(..))
+import Game.Board.Wall as Wall
+import Game.Config.Level as Level
+import Game.Level.Setting.Start as Start
+import Game.Level.Setting.Tile as Tile
+import Game.Level.Tutorial as Tutorial exposing (Tutorial)
+import Game.Lives as Lives
 import Html exposing (Html, div)
-import Level.Setting.Start as Start
-import Level.Setting.Tile as Tile
-import Lives
 import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
 import Scene.Level.Board.Tile as Tile
@@ -294,13 +295,13 @@ update msg model =
             exitWith Restart model
 
         RestartLevelLoseLife ->
-            exitWith Restart <| updateContext Context.decrementLife model
+            exitWith Restart (updateContext Context.decrementLife model)
 
         ExitLevel ->
             exitWith Exit model
 
         ExitLevelLoseLife ->
-            exitWith Exit <| updateContext Context.decrementLife model
+            exitWith Exit (updateContext Context.decrementLife model)
 
 
 
@@ -536,7 +537,7 @@ addScores model =
 
 handleResetTutorial : Model -> Model
 handleResetTutorial model =
-    if Tutorial.inProgress model.tutorial then
+    if Tutorial.isInProgress model.tutorial then
         { model | tutorial = Tutorial.showStep model.tutorial }
 
     else
@@ -545,11 +546,12 @@ handleResetTutorial model =
 
 handleTutorialStep : Model -> Exit.With Status ( Model, Cmd Msg )
 handleTutorialStep model =
-    let
-        nextTutorial =
-            Tutorial.nextStep model.tutorial
-    in
-    continue { model | tutorial = nextTutorial } [ triggerHideAutoStep nextTutorial ]
+    handleTutorialStep_ model (Tutorial.nextStep model.tutorial)
+
+
+handleTutorialStep_ : Model -> Tutorial -> Exit.With Status ( Model, Cmd Msg )
+handleTutorialStep_ model next =
+    continue { model | tutorial = next } [ triggerHideAutoStep next ]
 
 
 triggerHideAutoStep : Tutorial.Tutorial -> Cmd Msg
@@ -847,7 +849,7 @@ renderTile : BoardModel -> Move -> Html Msg
 renderTile model move =
     div []
         [ div
-            [ handleMoveEvents model
+            [ handleStartMoveEvents model
             , Style.absolute
             , Style.zIndex 1
             , Style.pointer
@@ -918,8 +920,8 @@ currentMove_ model move =
         }
 
 
-handleMoveEvents : BoardModel -> Html.Attribute Msg
-handleMoveEvents model =
+handleStartMoveEvents : BoardModel -> Html.Attribute Msg
+handleStartMoveEvents model =
     Attribute.applyIf (not model.isDragging) (Touch.onStart_ StartMove)
 
 
@@ -1022,5 +1024,5 @@ lineDragModel model =
     , board = model.board
     , boardSize = model.boardSize
     , isDragging = model.isDragging
-    , pointer = model.pointer
+    , point = model.pointer
     }

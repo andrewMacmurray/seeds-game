@@ -6,13 +6,13 @@ module Utils.Debug exposing
     , tileState
     )
 
-import Board.Move as Move exposing (Move)
-import Board.Tile as Tile
-import Config.Level as Level exposing (LevelConfig)
-import Config.World as World
 import Element exposing (..)
 import Element.Font as Font
-import Level.Progress as Progress exposing (Progress)
+import Game.Board.Move as Move exposing (Move)
+import Game.Board.Tile as Tile
+import Game.Config.Level as Level exposing (LevelConfig)
+import Game.Config.World as World
+import Game.Level.Progress as Progress exposing (Progress)
 import Ports
 import Utils.Delay as Delay
 
