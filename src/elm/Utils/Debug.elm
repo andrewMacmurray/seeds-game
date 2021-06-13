@@ -21,8 +21,13 @@ import Utils.Delay as Delay
 -- Progress and Levels
 
 
-goToLevel : Int -> Int -> (LevelConfig -> msg) -> Cmd msg
-goToLevel world level msg =
+goToLevel : Int -> Int -> (LevelConfig -> msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+goToLevel world level msg ( model, cmd ) =
+    ( model, Cmd.batch [ goToLevel_ world level msg, cmd ] )
+
+
+goToLevel_ : Int -> Int -> (LevelConfig -> msg) -> Cmd msg
+goToLevel_ world level msg =
     Cmd.batch
         [ Delay.trigger (msg (levelConfig world level))
         , setProgress world level

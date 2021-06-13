@@ -22,8 +22,9 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
+import Utils.Debug as Debug
 import Utils.Delay as Delay exposing (trigger)
-import Utils.Update exposing (updateModel, updateWith)
+import Utils.Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -107,6 +108,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
+        |> Debug.goToLevel 1 9 InitLevel
 
 
 initialState : Title.Model -> Model
@@ -490,7 +492,7 @@ updateScene :
     -> (subMsg -> subModel -> Exit.With payload ( subModel, Cmd subMsg ))
     -> Exit.Handle payload subMsg subModel Model msg
 updateScene toScene =
-    Exit.handle (composeScene toScene asForeground)
+    Exit.handle (updateSceneModel toScene asForeground)
 
 
 updateBackdrop :
@@ -499,7 +501,7 @@ updateBackdrop :
     -> (subMsg -> subModel -> Exit.With payload ( subModel, Cmd subMsg ))
     -> Exit.Handle payload subMsg subModel Model msg
 updateBackdrop toScene =
-    Exit.handle (composeScene toScene asBackdrop)
+    Exit.handle (updateSceneModel toScene asBackdrop)
 
 
 load :
@@ -516,8 +518,8 @@ load toModel toScene msg initScene_ model =
         |> updateWith msg (toScene >> toModel model)
 
 
-composeScene : (subModel -> Scene) -> (Model -> Scene -> Model) -> (subModel -> Model -> Model)
-composeScene toScene toModel sceneModel model =
+updateSceneModel : (subModel -> Scene) -> (Model -> Scene -> Model) -> (subModel -> Model -> Model)
+updateSceneModel toScene toModel sceneModel model =
     toModel model (toScene sceneModel)
 
 
@@ -583,11 +585,6 @@ updateLives now model =
     model
         |> updateContext (Context.updateLives now)
         |> andCmd saveCurrentLives
-
-
-andCmd : (Model -> Cmd Msg) -> Model -> ( Model, Cmd Msg )
-andCmd cmdF model =
-    ( model, cmdF model )
 
 
 closeMenu : ( Model, Cmd msg ) -> ( Model, Cmd msg )
