@@ -198,7 +198,7 @@ allFlowers context =
 
 worldFlowers : Context -> Level.WorldWithLevels -> Element Msg
 worldFlowers context { world, levels } =
-    if Progress.worldComplete levels context.progress then
+    if Progress.worldIsCompleted levels context.progress then
         el [ width fill, height (px context.window.height) ]
             (column
                 [ centerX

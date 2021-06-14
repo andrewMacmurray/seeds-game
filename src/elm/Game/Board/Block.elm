@@ -4,6 +4,7 @@ module Game.Board.Block exposing
     , clearBearing
     , clearBurstType
     , empty
+    , entering
     , foldTile
     , growLeavingBurstToSeed
     , growingOrder
@@ -66,6 +67,11 @@ static =
 empty : Block
 empty =
     Space Tile.Empty
+
+
+entering : Tile -> Block
+entering =
+    Tile.Entering >> Space
 
 
 

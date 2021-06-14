@@ -45,7 +45,7 @@ addToBoard walls_ board =
 
 addWall : Config -> Board -> Board
 addWall (Config color coord) =
-    Board.placeAt coord <| Wall color
+    Board.placeAt coord (Wall color)
 
 
 withColor : Color -> List Coord -> List Config
