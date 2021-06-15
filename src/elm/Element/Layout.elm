@@ -41,25 +41,25 @@ type alias FadeInOptions msg =
     }
 
 
-fadeIn : FadeInOptions msg -> Element msg -> Html msg
-fadeIn options el =
-    fade options.duration
+fadeIn : List (Attribute msg) -> Element msg -> Html msg
+fadeIn attributes el =
+    fade
         (Style.center
             [ Style.absolute
             , Style.zIndex 2
             ]
         )
-        [ view options.attributes el ]
+        [ view attributes el ]
 
 
-fade : Animation.Millis -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
+fade : List (Html.Attribute msg) -> List (Html msg) -> Html msg
 fade =
-    fade_ >> Animated.div
+    Animated.div fade_
 
 
-fade_ : Animation.Millis -> Animation
-fade_ duration =
-    Animations.fadeIn duration
+fade_ : Animation
+fade_ =
+    Animations.fadeIn 1000
         [ Animation.linear
         , Animation.delay 200
         ]

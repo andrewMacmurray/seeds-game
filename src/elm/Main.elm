@@ -22,8 +22,9 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
+import Utils.Debug as Debug
 import Utils.Delay as Delay exposing (trigger)
-import Utils.Update exposing (andCmd, updateModel, updateWith)
+import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -107,6 +108,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
+        |> Debug.trigger InitSummary
 
 
 initialState : Title.Model -> Model
@@ -134,56 +136,56 @@ initialContext flags =
 getContext : Model -> Context
 getContext model =
     case model.scene of
-        Title subModel ->
-            Title.getContext subModel
+        Title model_ ->
+            Update.context model_
 
-        Intro subModel ->
-            Intro.getContext subModel
+        Intro model_ ->
+            Update.context model_
 
-        Hub subModel ->
-            Hub.getContext subModel
+        Hub model_ ->
+            Update.context model_
 
-        Level subModel ->
-            Level.getContext subModel
+        Level model_ ->
+            Update.context model_
 
-        Retry subModel ->
-            Retry.getContext subModel
+        Retry model_ ->
+            Update.context model_
 
-        Summary subModel ->
-            Summary.getContext subModel
+        Summary model_ ->
+            Update.context model_
 
-        Garden subModel ->
-            Garden.getContext subModel
+        Garden model_ ->
+            Update.context model_
 
 
 updateContext : (Context -> Context) -> Model -> Model
 updateContext toContext model =
-    { model | scene = updateSceneContext toContext model.scene }
+    { model | scene = updateContext_ toContext model.scene }
 
 
-updateSceneContext : (Context -> Context) -> Scene -> Scene
-updateSceneContext toContext scene =
+updateContext_ : (Context -> Context) -> Scene -> Scene
+updateContext_ toContext scene =
     case scene of
         Title model ->
-            Title (Title.updateContext toContext model)
+            Title (Update.withContext toContext model)
 
         Intro model ->
-            Intro (Intro.updateContext toContext model)
+            Intro (Update.withContext toContext model)
 
         Hub model ->
-            Hub (Hub.updateContext toContext model)
+            Hub (Update.withContext toContext model)
 
         Level model ->
-            Level (Level.updateContext toContext model)
+            Level (Update.withContext toContext model)
 
         Retry model ->
-            Retry (Retry.updateContext toContext model)
+            Retry (Update.withContext toContext model)
 
         Summary model ->
-            Summary (Summary.updateContext toContext model)
+            Summary (Update.withContext toContext model)
 
         Garden model ->
-            Garden (Garden.updateContext toContext model)
+            Garden (Update.withContext toContext model)
 
 
 

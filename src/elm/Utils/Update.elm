@@ -1,9 +1,13 @@
 module Utils.Update exposing
     ( andCmd
     , andCmds
+    , context
     , updateModel
     , updateWith
+    , withContext
     )
+
+-- Update
 
 
 updateWith : (subMsg -> msg) -> (subModel -> model) -> ( subModel, Cmd subMsg ) -> ( model, Cmd msg )
@@ -28,3 +32,17 @@ andCmds toCmds model =
     ( model
     , Cmd.batch (List.map (\f -> f model) toCmds)
     )
+
+
+
+-- Context
+
+
+context : { a | context : context } -> context
+context =
+    .context
+
+
+withContext : (context -> context) -> { a | context : context } -> { a | context : context }
+withContext f model =
+    { model | context = f model.context }

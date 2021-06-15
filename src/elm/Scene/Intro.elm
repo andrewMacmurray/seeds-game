@@ -1,10 +1,8 @@
 module Scene.Intro exposing
     ( Model
     , Msg
-    , getContext
     , init
     , update
-    , updateContext
     , view
     )
 
@@ -62,20 +60,6 @@ type Msg
     | HideText
     | KillEnvironment
     | IntroComplete
-
-
-
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
 
 
 

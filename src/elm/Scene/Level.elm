@@ -2,11 +2,9 @@ module Scene.Level exposing
     ( Model
     , Msg
     , Status(..)
-    , getContext
     , init
     , menuOptions
     , update
-    , updateContext
     , view
     )
 
@@ -52,7 +50,7 @@ import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import Utils.Update exposing (andCmds)
+import Utils.Update as Update exposing (andCmds)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -126,20 +124,6 @@ type LevelEndPrompt
     | NoMovesLeft
     | RestartAreYouSure
     | ExitAreYouSure
-
-
-
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
 
 
 
@@ -280,10 +264,10 @@ update msg model =
             continue { model | info = Info.hidden } []
 
         PromptRestart ->
-            continue (updateContext Context.closeMenu model) [ handleRestartPrompt model ]
+            continue (Update.withContext Context.closeMenu model) [ handleRestartPrompt model ]
 
         PromptExit ->
-            continue (updateContext Context.closeMenu model) [ handleExitPrompt model ]
+            continue (Update.withContext Context.closeMenu model) [ handleExitPrompt model ]
 
         LevelWon ->
             exitWith Win model
@@ -295,13 +279,13 @@ update msg model =
             exitWith Restart model
 
         RestartLevelLoseLife ->
-            exitWith Restart (updateContext Context.decrementLife model)
+            exitWith Restart (Update.withContext Context.decrementLife model)
 
         ExitLevel ->
             exitWith Exit model
 
         ExitLevelLoseLife ->
-            exitWith Exit (updateContext Context.decrementLife model)
+            exitWith Exit (Update.withContext Context.decrementLife model)
 
 
 
@@ -666,7 +650,7 @@ checkLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
 checkLevelComplete model =
     let
         disableMenu =
-            updateContext Context.disableMenu
+            Update.withContext Context.disableMenu
     in
     if hasWon model then
         continue (disableMenu { model | levelStatus = Win }) [ winSequence ]

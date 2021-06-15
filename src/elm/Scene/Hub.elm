@@ -2,11 +2,9 @@ module Scene.Hub exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , menuOptions
     , update
-    , updateContext
     , view
     )
 
@@ -71,17 +69,7 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
+-- Menu
 
 
 menuOptions : List (Menu.Option Msg)

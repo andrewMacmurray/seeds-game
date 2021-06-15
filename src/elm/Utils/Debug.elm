@@ -4,6 +4,7 @@ module Utils.Debug exposing
     , progress
     , setProgress
     , tileState
+    , trigger
     )
 
 import Element exposing (..)
@@ -15,6 +16,15 @@ import Game.Config.World as World
 import Game.Level.Progress as Progress exposing (Progress)
 import Ports
 import Utils.Delay as Delay
+
+
+
+-- Trigger
+
+
+trigger : msg -> ( model, Cmd msg ) -> ( model, Cmd msg )
+trigger msg ( model, cmd ) =
+    ( model, Cmd.batch [ cmd, Delay.trigger msg ] )
 
 
 

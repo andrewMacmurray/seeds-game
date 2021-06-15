@@ -2,12 +2,10 @@ module Scene.Title exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , menuOptions
     , subscriptions
     , update
-    , updateContext
     , view
     )
 
@@ -28,6 +26,7 @@ import Utils.Animated as Animated
 import Utils.Delay exposing (sequence)
 import Utils.Element exposing (verticalGap)
 import Utils.Function exposing (apply)
+import Utils.Update as Update
 import View.Menu as Menu
 
 
@@ -62,17 +61,7 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
+-- Menu
 
 
 menuOptions : List (Menu.Option Msg)
@@ -109,7 +98,7 @@ update msg model =
             continue { model | fade = Disappearing } []
 
         PlayIntro ->
-            continue (updateContext Context.disableMenu model) [ playIntroMusic () ]
+            continue (Update.withContext Context.disableMenu model) [ playIntroMusic () ]
 
         IntroMusicPlaying ->
             continue model
