@@ -3,6 +3,8 @@ module Element.Icon.SeedBank exposing (icon)
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)
 import Css.Transition exposing (transitionAll)
+import Element exposing (Element)
+import Element.Icon as Icon
 import Seed exposing (Seed)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
@@ -14,12 +16,11 @@ import View.Seed.Mono exposing (greyedOutSeed)
 -- Seed Bank
 
 
-icon : Seed -> Float -> Svg msg
+icon : Seed -> Float -> Element msg
 icon seed percentFull =
-    Svg.svg
+    Icon.view
         [ viewBox "0 0 124.5 193.5"
         , width "100%"
-        , height "100%"
         ]
         [ Svg.defs []
             [ Svg.rect

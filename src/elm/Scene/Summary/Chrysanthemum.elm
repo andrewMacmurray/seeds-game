@@ -8,7 +8,9 @@ import Css.Color as Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Css.Transition as Transition
+import Element
 import Element.Flower.Chrysanthemum as Chrysanthemum
+import Element.Palette as Palette
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
@@ -26,9 +28,9 @@ hidden =
     view Hidden
 
 
-background : Color
+background : Element.Color
 background =
-    Color.purple
+    Palette.purple4
 
 
 type Visibility

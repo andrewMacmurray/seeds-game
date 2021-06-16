@@ -181,8 +181,13 @@ currentLevelSeedType worlds =
     currentLevel >> Maybe.andThen (Level.seedType worlds)
 
 
-resources : Level.Worlds -> Progress -> Maybe (List Tile)
-resources worlds progress =
+resources : Level.Worlds -> Progress -> List Tile
+resources worlds =
+    resources_ worlds >> Maybe.withDefault []
+
+
+resources_ : Level.Worlds -> Progress -> Maybe (List Tile)
+resources_ worlds progress =
     case currentLevel progress of
         Just level ->
             Maybe.map2 resourcesInLevels

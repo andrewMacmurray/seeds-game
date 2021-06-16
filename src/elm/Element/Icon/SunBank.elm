@@ -6,6 +6,8 @@ module Element.Icon.SunBank exposing
 import Css.Style as Style exposing (svgStyle)
 import Css.Transform exposing (translateY)
 import Css.Transition exposing (transitionAll)
+import Element exposing (Element)
+import Element.Icon as Icon
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -14,12 +16,11 @@ import Svg.Attributes exposing (..)
 -- Sun Bank
 
 
-icon : Float -> Svg msg
+icon : Float -> Element msg
 icon percentFull =
-    Svg.svg
+    Icon.view
         [ viewBox "0 0 31 37"
         , width "100%"
-        , height "100%"
         ]
         [ Svg.defs []
             [ Svg.rect
