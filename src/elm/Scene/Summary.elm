@@ -16,6 +16,7 @@ import Element.Icon.SunBank as SunBank
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Element.Seed as Seed
 import Element.Text as Text
 import Element.Transition as Transition
 import Exit exposing (continue, exitWith)
@@ -482,12 +483,7 @@ resourceSummary_ model =
 
 mainResource : ViewModel -> Element msg
 mainResource model =
-    el [ centerX ]
-        (viewResource
-            { size = 100
-            }
-            model.mainResource
-        )
+    el [ centerX ] (viewResource 100 model.mainResource)
 
 
 levelEndText : ViewModel -> Element msg
@@ -506,23 +502,15 @@ otherResources model =
         [ spacing Scale.large
         , centerX
         ]
-        (List.map
-            (viewResource
-                { size = 50
-                }
-            )
-            model.otherResources
-        )
+        (List.map (viewResource 50) model.otherResources)
 
 
-type alias ResourceOptions =
-    { size : Int
-    }
-
-
-viewResource : ResourceOptions -> Resource -> Element msg
-viewResource options resource =
-    Element.square options.size [ centerX ] (viewResource_ resource)
+viewResource : Int -> Resource -> Element msg
+viewResource size resource =
+    column [ spacing Scale.large ]
+        [ Element.square 20 [ centerX ] (fullResource resource.icon)
+        , Element.square size [ centerX ] (viewResource_ resource)
+        ]
 
 
 viewResource_ : Resource -> Element msg
@@ -536,6 +524,18 @@ viewResource_ resource =
 
         Seed seed ->
             SeedBank.icon seed resource.fill
+
+
+fullResource icon =
+    case icon of
+        Sun ->
+            html SunBank.full
+
+        Rain ->
+            html RainBank.full
+
+        Seed seed ->
+            Seed.view Seed.fill seed
 
 
 

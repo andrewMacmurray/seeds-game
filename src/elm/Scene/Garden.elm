@@ -105,7 +105,8 @@ view : Model -> Html Msg
 view model =
     Layout.view
         [ inFront backToLevelsButton
-        , inFront initialOverlay
+
+        --, inFront initialOverlay
         ]
         (el
             [ width fill
@@ -221,10 +222,10 @@ seedId seed =
 
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
-    row [ spacing Scale.small, centerX ]
-        [ el [ alignBottom ] (Seed.grey (Seed.size 20))
-        , el [ moveDown 2 ] (Seed.grey (Seed.size 30))
-        , el [ alignBottom ] (Seed.grey (Seed.size 20))
+    row [ centerX ]
+        [ el [ alignBottom ] (Seed.grey Seed.small)
+        , el [ moveDown 2 ] (Seed.grey Seed.medium)
+        , el [ alignBottom ] (Seed.grey Seed.small)
         ]
 
 
@@ -241,10 +242,10 @@ flowerName seed =
 
 seeds : Seed -> Element msg
 seeds seed =
-    row [ centerX, moveUp 20, spacing Scale.small ]
-        [ el [ alignBottom ] (Seed.view (Seed.size 12) seed)
-        , el [ moveDown 2 ] (Seed.view (Seed.size 20) seed)
-        , el [ alignBottom ] (Seed.view (Seed.size 12) seed)
+    row [ centerX, moveUp 20 ]
+        [ el [ alignBottom ] (Seed.view Seed.extraSmall seed)
+        , el [] (Seed.view Seed.small seed)
+        , el [ alignBottom ] (Seed.view Seed.extraSmall seed)
         ]
 
 

@@ -26,7 +26,7 @@ view : Window -> State -> Element msg
 view window state =
     row
         [ centerX
-        , spacing Scale.extraSmall
+        , spacing -Scale.extraSmall
         , moveUp 20
         ]
         [ sideSeeds window state (List.reverse (seedsLeft window))
@@ -61,7 +61,7 @@ sideSeeds window state seeds =
     row
         [ Transition.alpha 1000
         , Element.visibleIf (isEntering state)
-        , spacing Scale.extraSmall
+        , spacing -Scale.extraSmall
         ]
         (List.map (growingSeed window) seeds)
 
@@ -92,7 +92,7 @@ staticSeed window seed =
 
 seedSize : Window -> GrowingSeed -> Seed.Options
 seedSize window seed =
-    Seed.size (round (50 * seed.scale * Scale.factor window))
+    Seed.size (round (75 * seed.scale * Scale.factor window))
 
 
 bulgeFade : GrowingSeed -> Animation

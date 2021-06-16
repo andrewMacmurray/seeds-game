@@ -260,14 +260,14 @@ infoIcons =
 
 infoIconContainer : List (Element msg) -> Element msg
 infoIconContainer =
-    row [ spacing Scale.large, centerX ]
+    row [ spacing (Scale.medium + Scale.small), centerX ]
 
 
 viewIcon : Tile.Setting -> Element msg
 viewIcon setting =
-    column [ spacing Scale.small ]
-        [ el [ height (px 55), centerX ] (el [ alignBottom ] (tileIcon setting))
-        , el [ centerX ] (viewTargetScore setting.targetScore)
+    column [ spacing Scale.small, width (px 50), height fill ]
+        [ el [ centerX, alignBottom ] (tileIcon setting)
+        , el [ centerX, alignBottom ] (viewTargetScore setting.targetScore)
         ]
 
 
@@ -289,7 +289,7 @@ tileIcon setting =
 
 seedIcon : Seed -> Element msg
 seedIcon =
-    Seed.view (Seed.size 35)
+    Seed.view Seed.medium
 
 
 viewTargetScore : Maybe TargetScore -> Element msg
