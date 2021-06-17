@@ -7,6 +7,7 @@ module Utils.Element exposing
     , onClickIf
     , originBottom
     , preventScroll
+    , showIf
     , showIfJust
     , square
     , style
@@ -22,6 +23,15 @@ import Html.Attributes
 showIfJust : (a -> Element msg) -> Maybe a -> Element msg
 showIfJust toElement =
     Maybe.map toElement >> Maybe.withDefault none
+
+
+showIf : Bool -> Element msg -> Element msg
+showIf condition el =
+    if condition then
+        el
+
+    else
+        none
 
 
 id : String -> Attribute msg

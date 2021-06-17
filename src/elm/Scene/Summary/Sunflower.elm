@@ -123,7 +123,7 @@ hills leftColor rightColor offset window visibility =
             Style.transform [ Transform.translateY y ]
     in
     Svg.g
-        [ Style.svgStyle
+        [ Style.svg
             [ translateY
             , Transition.transition "transform"
                 3000

@@ -93,7 +93,7 @@ hills left right offset delay visibility window =
 
         translateStyles d el =
             Svg.g
-                [ Style.svgStyle
+                [ Style.svg
                     [ Transition.transition "transform"
                         3000
                         [ Transition.cubicBezier 0 0 0 1

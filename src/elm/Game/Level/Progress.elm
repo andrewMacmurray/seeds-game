@@ -229,8 +229,13 @@ percent a b =
     (toFloat a / toFloat b) * 100
 
 
-pointsFromPreviousLevel : Level.Worlds -> Tile -> Progress -> Maybe Int
-pointsFromPreviousLevel worlds tileType progress =
+pointsFromPreviousLevel : Level.Worlds -> Tile -> Progress -> Int
+pointsFromPreviousLevel worlds tile =
+    pointsFromPreviousLevel_ worlds tile >> Maybe.withDefault 0
+
+
+pointsFromPreviousLevel_ : Level.Worlds -> Tile -> Progress -> Maybe Int
+pointsFromPreviousLevel_ worlds tileType progress =
     let
         tileScore =
             getScoreFor tileType

@@ -190,25 +190,25 @@ hillStyles window state offset delay =
     in
     case state of
         Hidden ->
-            Style.svgStyle
+            Style.svg
                 [ translateY <| toFloat window.height / 2
                 , transitionTransform
                 ]
 
         Entering ->
-            Style.svgStyle
+            Style.svg
                 [ translateY offset
                 , transitionTransform
                 ]
 
         Visible ->
-            Style.svgStyle
+            Style.svg
                 [ Style.opacity 1
                 , translateY offset
                 ]
 
         Leaving ->
-            Style.svgStyle
+            Style.svg
                 [ Style.opacity 0
                 , Transition.transition "opacity" 400 [ Transition.linear, Transition.delay delay ]
                 , translateY offset
@@ -304,7 +304,7 @@ pineTree env delay =
 
 transitionFillStyle : Int -> Attribute msg
 transitionFillStyle delayMs =
-    Style.svgStyle [ transitionFill delayMs ]
+    Style.svg [ transitionFill delayMs ]
 
 
 transitionFill : Int -> Style

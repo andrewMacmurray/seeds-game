@@ -9,6 +9,7 @@ module Scene.Summary exposing
 
 import Context exposing (Context)
 import Element exposing (..)
+import Element.Animation as Animation
 import Element.Background as Background
 import Element.Icon.RainBank as RainBank
 import Element.Icon.SeedBank as SeedBank
@@ -19,6 +20,7 @@ import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
 import Element.Transition as Transition
+import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.World as Worlds
@@ -29,8 +31,12 @@ import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
 import Seed exposing (Seed)
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Utils.Animated as Animated
 import Utils.Delay exposing (after, sequence, trigger)
 import Utils.Element as Element
+import Utils.Sine as Sine
 
 
 
@@ -214,6 +220,31 @@ view model =
 -- View Model
 
 
+type alias ViewModel =
+    { worldSeed : WorldSeed
+    , textVisible : Bool
+    , mainResource : Resource
+    , otherResources : List Resource
+    }
+
+
+type alias Resource =
+    { icon : Icon
+    , isFilling : Bool
+    , fill : Percent
+    }
+
+
+type Icon
+    = Rain
+    | Sun
+    | Seed Seed
+
+
+type alias Percent =
+    Float
+
+
 toViewModel : Model -> ViewModel
 toViewModel model =
     { worldSeed = model.worldSeed
@@ -221,6 +252,26 @@ toViewModel model =
     , mainResource = toMainResource model
     , otherResources = toOtherResources model
     }
+
+
+isFilling : Model -> Tile -> Bool
+isFilling model tile =
+    isFilling_ model && pointsGainedFor model tile > 0
+
+
+pointsGainedFor : Model -> Tile -> Int
+pointsGainedFor model tile =
+    Progress.pointsFromPreviousLevel Worlds.all tile (getProgress model)
+
+
+isFilling_ : Model -> Bool
+isFilling_ model =
+    case model.resourceBank of
+        Filling ->
+            True
+
+        _ ->
+            False
 
 
 toMainResource : Model -> Resource
@@ -261,6 +312,7 @@ toResource model tile =
 toResource_ : Model -> Tile -> Icon -> Resource
 toResource_ model tile icon =
     { icon = icon
+    , isFilling = isFilling model tile
     , fill = percentFor tile (getProgress model)
     }
 
@@ -305,6 +357,217 @@ flowerBackground seed =
 
         _ ->
             Sunflower.background
+
+
+
+-- Resources
+
+
+resourceSummary : Model -> Element msg
+resourceSummary =
+    toViewModel >> resourceSummary_
+
+
+resourceSummary_ : ViewModel -> Element msg
+resourceSummary_ model =
+    column
+        [ centerX
+        , centerY
+        , spacing Scale.large
+        ]
+        [ mainResource model
+        , otherResources model
+        , levelEndText model
+        ]
+
+
+mainResource : ViewModel -> Element msg
+mainResource model =
+    el [ centerX ]
+        (viewResource
+            { size = 100
+            , order = 0
+            }
+            model.mainResource
+        )
+
+
+levelEndText : ViewModel -> Element msg
+levelEndText model =
+    Text.text
+        [ centerX
+        , Transition.alpha 1000
+        , Element.visibleIf model.textVisible
+        ]
+        "We're one step closer..."
+
+
+otherResources : ViewModel -> Element msg
+otherResources model =
+    row
+        [ spacing Scale.large
+        , centerX
+        ]
+        (List.indexedMap otherResource model.otherResources)
+
+
+otherResource : Int -> Resource -> Element msg
+otherResource index =
+    viewResource
+        { size = 50
+        , order = index + 1
+        }
+
+
+type alias ResourceOptions =
+    { size : Int
+    , order : Int
+    }
+
+
+viewResource : ResourceOptions -> Resource -> Element msg
+viewResource options resource =
+    column
+        [ spacing Scale.large
+        , behindContent (resourceDrops options resource)
+        ]
+        [ Element.square 20 [ centerX ] (fullResource resource.icon)
+        , Element.square options.size [ centerX ] (viewResource_ options resource)
+        ]
+
+
+fillDelay : ResourceOptions -> Int
+fillDelay options =
+    options.order * 75
+
+
+resourceDrops : ResourceOptions -> Resource -> Element msg
+resourceDrops options resource =
+    List.range 0 50
+        |> List.map (drop options resource)
+        |> toDrops
+
+
+drop : ResourceOptions -> Resource -> Int -> Element msg
+drop options resource dropNumber =
+    el
+        [ offsetDrop dropNumber
+        , Element.visibleIf resource.isFilling
+        ]
+        (Animated.el
+            (fallDown resource options dropNumber)
+            [ centerX ]
+            (drop_ resource)
+        )
+
+
+drop_ : Resource -> Element msg
+drop_ resource =
+    case resource.icon of
+        Sun ->
+            Weather.sun
+                { size = Weather.small
+                , shade = Weather.bright
+                }
+
+        Rain ->
+            Weather.rain Weather.small
+
+        Seed seed ->
+            Seed.view (Seed.size 10) seed
+
+
+offsetDrop : Int -> Attr decorative msg
+offsetDrop order =
+    Sine.wave
+        { left = moveLeft 2
+        , center = moveLeft 0
+        , right = moveRight 2
+        }
+        (order - 1)
+
+
+toDrops : List (Element msg) -> Element msg
+toDrops drops =
+    column (List.map (behindContent << el [ centerX ]) drops ++ [ centerX ]) []
+
+
+fallDown : Resource -> ResourceOptions -> Int -> Animation
+fallDown resource options dropNumber =
+    if resource.isFilling then
+        fallDown_ options dropNumber
+
+    else
+        Animation.none
+
+
+fallDown_ : ResourceOptions -> Int -> Animation
+fallDown_ options dropNumber =
+    Animation.frames
+        { duration = 150
+        , startAt = [ P.opacity 0, P.y 0 ]
+        , options =
+            [ Animation.linear
+            , Animation.delay (fallDelay options dropNumber)
+            ]
+        }
+        [ Animation.frame 10 [ P.y 5, P.opacity 1 ]
+        , Animation.frame 50 [ P.y 25, P.opacity 1 ]
+        , Animation.frame 100 [ P.y 50, P.opacity 0 ]
+        ]
+
+
+fallDelay : ResourceOptions -> Int -> Animation.Millis
+fallDelay options dropNumber =
+    fillDelay options + dropNumber * dropDelay dropNumber
+
+
+dropDelay : Int -> Int
+dropDelay n =
+    if modBy 3 n == 0 then
+        30
+
+    else if modBy 3 n == 1 then
+        60
+
+    else
+        90
+
+
+viewResource_ : ResourceOptions -> Resource -> Element msg
+viewResource_ options resource =
+    case resource.icon of
+        Sun ->
+            SunBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                }
+
+        Rain ->
+            RainBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                }
+
+        Seed seed ->
+            SeedBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                , seed = seed
+                }
+
+
+fullResource : Icon -> Element msg
+fullResource icon =
+    case icon of
+        Sun ->
+            html SunBank.full
+
+        Rain ->
+            html RainBank.full
+
+        Seed seed ->
+            Seed.view Seed.fill seed
 
 
 
@@ -436,109 +699,6 @@ flowerBackground seed =
 --
 --
 --
--- Resources
-
-
-type alias ViewModel =
-    { worldSeed : WorldSeed
-    , textVisible : Bool
-    , mainResource : Resource
-    , otherResources : List Resource
-    }
-
-
-type alias Resource =
-    { icon : Icon
-    , fill : Percent
-    }
-
-
-type Icon
-    = Rain
-    | Sun
-    | Seed Seed
-
-
-type alias Percent =
-    Float
-
-
-resourceSummary : Model -> Element msg
-resourceSummary =
-    toViewModel >> resourceSummary_
-
-
-resourceSummary_ : ViewModel -> Element msg
-resourceSummary_ model =
-    column
-        [ centerX
-        , centerY
-        , spacing Scale.large
-        ]
-        [ mainResource model
-        , otherResources model
-        , levelEndText model
-        ]
-
-
-mainResource : ViewModel -> Element msg
-mainResource model =
-    el [ centerX ] (viewResource 100 model.mainResource)
-
-
-levelEndText : ViewModel -> Element msg
-levelEndText model =
-    Text.text
-        [ centerX
-        , Transition.alpha 1000
-        , Element.visibleIf model.textVisible
-        ]
-        "We're one step closer..."
-
-
-otherResources : ViewModel -> Element msg
-otherResources model =
-    row
-        [ spacing Scale.large
-        , centerX
-        ]
-        (List.map (viewResource 50) model.otherResources)
-
-
-viewResource : Int -> Resource -> Element msg
-viewResource size resource =
-    column [ spacing Scale.large ]
-        [ Element.square 20 [ centerX ] (fullResource resource.icon)
-        , Element.square size [ centerX ] (viewResource_ resource)
-        ]
-
-
-viewResource_ : Resource -> Element msg
-viewResource_ resource =
-    case resource.icon of
-        Sun ->
-            SunBank.icon resource.fill
-
-        Rain ->
-            RainBank.icon resource.fill
-
-        Seed seed ->
-            SeedBank.icon seed resource.fill
-
-
-fullResource icon =
-    case icon of
-        Sun ->
-            html SunBank.full
-
-        Rain ->
-            html RainBank.full
-
-        Seed seed ->
-            Seed.view Seed.fill seed
-
-
-
 --innerSeedBank : WorldSeed -> Seed -> Float -> Html msg
 --innerSeedBank seedBankState seed fillLevel =
 --    case seedBankState of
@@ -694,13 +854,3 @@ fullResource icon =
 --        ]
 --
 --
---dropDelay : Int -> Int
---dropDelay n =
---    if modBy 3 n == 0 then
---        30
---
---    else if modBy 3 n == 1 then
---        60
---
---    else
---        90

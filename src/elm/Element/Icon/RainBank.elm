@@ -3,11 +3,12 @@ module Element.Icon.RainBank exposing
     , icon
     )
 
-import Css.Style as Style exposing (svgStyle)
+import Css.Style as Style
 import Css.Transform exposing (translateY)
-import Css.Transition exposing (transitionAll)
+import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
+import Simple.Animation as Animation
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 
@@ -16,11 +17,18 @@ import Svg.Attributes exposing (..)
 -- Rain Bank
 
 
-icon : Float -> Element msg
-icon percentFull =
+type alias Options =
+    { percent : Float
+    , delay : Animation.Millis
+    }
+
+
+icon : Options -> Element msg
+icon options =
     Icon.view
         [ viewBox "0 0 25 36"
         , width "100%"
+        , height "100%"
         ]
         [ Svg.defs []
             [ Svg.rect
@@ -48,7 +56,7 @@ icon percentFull =
                 ]
                 [ Svg.use
                     [ xlinkHref "#water-level"
-                    , offsetLevelStyles percentFull
+                    , offsetLevelStyles options
                     ]
                     []
                 ]
@@ -67,11 +75,11 @@ fullHeight =
     35.8
 
 
-offsetLevelStyles : Float -> Attribute msg
-offsetLevelStyles percentFull =
-    svgStyle
-        [ transitionAll 1500 []
-        , Style.transform [ translateY (offset percentFull) ]
+offsetLevelStyles : Options -> Attribute msg
+offsetLevelStyles options =
+    Style.svg
+        [ Style.transform [ translateY (offset options.percent) ]
+        , Transition.transition "transform" 1500 [ Transition.delay options.delay ]
         ]
 
 

@@ -275,10 +275,13 @@ tileIcon : Tile.Setting -> Element msg
 tileIcon setting =
     case setting.tileType of
         Tile.Rain ->
-            Weather.rain
+            Weather.rain Weather.medium
 
         Tile.Sun ->
             Weather.sun
+                { size = Weather.medium
+                , shade = Weather.dark
+                }
 
         Tile.Seed seed ->
             seedIcon seed

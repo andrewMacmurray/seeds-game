@@ -61,7 +61,7 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
         yAxis =
             Axis2d.withDirection Direction2d.y center
     in
-    Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate 0 0 ] ] ]
+    Svg.g [ Style.svg [ Style.transform [ Transform.translate 0 0 ] ] ]
         [ hillFullScreen window slope leftColor leftStyles leftElements
         , Geometry.Svg.mirrorAcross yAxis <| hillFullScreen window slope rightColor rightStyles rightElements
         ]
@@ -101,7 +101,7 @@ hill : Color -> List Style -> Float -> Svg msg
 hill color styles slope =
     Svg.polygon
         [ fill color
-        , Style.svgStyle styles
+        , Style.svg styles
         , points_
             [ point 0 0
             , point 0 100

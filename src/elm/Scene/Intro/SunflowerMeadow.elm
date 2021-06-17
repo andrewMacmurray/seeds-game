@@ -64,14 +64,14 @@ offsetStyles window state offset delay =
             Style.transform [ Transform.translateY n ]
 
         visibleStyles =
-            Style.svgStyle
+            Style.svg
                 [ translateY offset
                 , Transition.transition "transform" 2000 [ Transition.cubicBezier 0 0 0 1, Transition.delay delay ]
                 ]
     in
     case state of
         Hidden ->
-            Style.svgStyle
+            Style.svg
                 [ translateY <| toFloat <| window.height // 2
                 ]
 

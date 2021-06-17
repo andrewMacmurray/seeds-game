@@ -8,7 +8,7 @@ module Element.Icon.Heart exposing
 
 import Css.Animation as Animation
 import Css.Color exposing (..)
-import Css.Style as Style exposing (Style, svgStyle, transformOrigin)
+import Css.Style as Style exposing (Style, transformOrigin)
 import Html exposing (Html)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
@@ -88,7 +88,7 @@ heartBreak heartState =
             [ Svg.path
                 [ d "M28 4.5a15.5 15.5 0 0 1 22 21.9l-22 22c-.3.2-.7.4-1 .4v-8.9l-5.7-9.8 5.7-8.7-5.7-8.3L27 5.7l1-1.2z"
                 , fill lightGray
-                , svgStyle
+                , Style.svg
                     [ transformOrigin "bottom"
                     , breakRight
                     ]
@@ -97,7 +97,7 @@ heartBreak heartState =
             , Svg.path
                 [ d "M26.4 4.5A15.5 15.5 0 0 0 4.5 26.4l22 22c.3.2.6.4 1 .4v-8.9l-5.6-9.8 5.5-8.7-5.5-8.3 5.5-7.4-1-1.2z"
                 , fill silver
-                , svgStyle
+                , Style.svg
                     [ transformOrigin "bottom"
                     , breakLeft
                     ]

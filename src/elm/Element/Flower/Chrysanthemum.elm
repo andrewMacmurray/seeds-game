@@ -3,7 +3,7 @@ module Element.Flower.Chrysanthemum exposing
     , static
     )
 
-import Css.Style exposing (svgStyle, transformOrigin)
+import Css.Style as Style exposing (transformOrigin)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
@@ -37,12 +37,12 @@ animateInnerPetals delay petals =
 
 animateLeftOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateLeftOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ svgStyle [ transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.svg [ transformOrigin "bottom center" ] ] petals
 
 
 animateRightOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateRightOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ svgStyle [ transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.svg [ transformOrigin "bottom center" ] ] petals
 
 
 fadeIn : Animation.Millis -> Animation.Millis -> Int -> Animation

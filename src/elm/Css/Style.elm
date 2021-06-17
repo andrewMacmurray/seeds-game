@@ -19,7 +19,7 @@ module Css.Style exposing
     , renderStyles_
     , showIf
     , style
-    , svgStyle
+    , svg
     , top
     , transform
     , transformOrigin
@@ -63,8 +63,8 @@ style =
 -- Svg
 
 
-svgStyle : List Style -> Svg.Attribute msg
-svgStyle =
+svg : List Style -> Svg.Attribute msg
+svg =
     Svg.Attributes.style << renderStyles_
 
 

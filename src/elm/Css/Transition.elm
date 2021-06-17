@@ -35,22 +35,22 @@ transitionAll =
 
 easeInOut : Option
 easeInOut =
-    option <| transitionTimingFunction "ease-in-out"
+    option (transitionTimingFunction "ease-in-out")
 
 
 easeOut : Option
 easeOut =
-    option <| transitionTimingFunction "ease-out"
+    option (transitionTimingFunction "ease-out")
 
 
 linear : Option
 linear =
-    option <| transitionTimingFunction "linear"
+    option (transitionTimingFunction "linear")
 
 
 cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
-    option <| transitionTimingFunction <| cubicBezier_ a b c d
+    option (transitionTimingFunction (cubicBezier_ a b c d))
 
 
 delay : Int -> Option
@@ -64,12 +64,12 @@ delay =
 
 transitionDelay : Int -> Style
 transitionDelay n =
-    Style.property "transition-delay" <| ms <| toFloat n
+    Style.property "transition-delay" (ms (toFloat n))
 
 
 transitionDuration : Int -> Style
 transitionDuration n =
-    Style.property "transition-duration" <| ms <| toFloat n
+    Style.property "transition-duration" (ms (toFloat n))
 
 
 transitionTimingFunction : String -> Style
