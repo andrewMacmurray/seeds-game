@@ -34,7 +34,7 @@ import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Delay exposing (after, sequence, trigger)
+import Utils.Delay as Delay exposing (sequence, trigger)
 import Utils.Element as Element
 import Utils.Sine as Sine
 
@@ -45,11 +45,9 @@ import Utils.Sine as Sine
 
 type alias Model =
     { context : Context
-    , text : Text
-    , worldSeed : WorldSeed
-    , resourceBank : ResourceBank
-    , messageVisible : Bool
-    , fadeOut : Bool
+    , worldText : WorldText
+    , levelTextVisible : TextVisible
+    , sequence : Sequence
     }
 
 
@@ -68,19 +66,15 @@ type Msg
     | ExitToGarden
 
 
-type WorldSeed
+type Sequence
     = Visible
-    | Leaving
-    | Blooming
+    | ResourcesFilling
+    | SeedShaking
+    | FlowersBlooming
+    | FadingOut
 
 
-type ResourceBank
-    = Waiting
-    | Filling
-    | Hidden
-
-
-type Text
+type WorldText
     = First TextVisible
     | Second TextVisible
 
@@ -101,18 +95,16 @@ type Destination
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-    , after 1500 IncrementProgress
+    , Delay.after 1500 IncrementProgress
     )
 
 
 initialState : Context -> Model
 initialState context =
     { context = context
-    , text = First False
-    , worldSeed = Visible
-    , resourceBank = Waiting
-    , messageVisible = False
-    , fadeOut = False
+    , worldText = First False
+    , sequence = Visible
+    , levelTextVisible = False
     }
 
 
@@ -133,33 +125,28 @@ update msg model =
                 ]
 
         ShowLevelSuccess ->
-            continue { model | messageVisible = True } []
+            continue { model | levelTextVisible = True } []
 
         BeginSeedBankTransformation ->
-            continue
-                { model
-                    | worldSeed = Leaving
-                    , resourceBank = Hidden
-                }
-                []
+            continue { model | sequence = SeedShaking } []
 
         BloomWorldFlower ->
-            continue { model | worldSeed = Blooming } []
+            continue { model | sequence = FlowersBlooming } []
 
         ShowFirstText ->
-            continue { model | text = First True } []
+            continue { model | worldText = First True } []
 
         HideFirstText ->
-            continue { model | text = First False } []
+            continue { model | worldText = First False } []
 
         ShowSecondText ->
-            continue { model | text = Second True } []
+            continue { model | worldText = Second True } []
 
         HiddenSecondText ->
-            continue { model | text = Second False } []
+            continue { model | worldText = Second False } []
 
         FadeOut ->
-            continue { model | fadeOut = True } []
+            continue { model | sequence = FadingOut } []
 
         ExitToHub ->
             exitWith ToHub model
@@ -193,7 +180,7 @@ handleSuccessMessage { context } =
 incrementProgress : Model -> Model
 incrementProgress model =
     { model
-        | resourceBank = Filling
+        | sequence = ResourcesFilling
         , context = incrementProgress_ model.context
     }
 
@@ -221,8 +208,9 @@ view model =
 
 
 type alias ViewModel =
-    { worldSeed : WorldSeed
-    , textVisible : Bool
+    { textVisible : Bool
+    , resourcesVisible : Bool
+    , sequence : Sequence
     , mainResource : Resource
     , otherResources : List Resource
     }
@@ -247,8 +235,9 @@ type alias Percent =
 
 toViewModel : Model -> ViewModel
 toViewModel model =
-    { worldSeed = model.worldSeed
-    , textVisible = model.messageVisible
+    { textVisible = model.levelTextVisible
+    , resourcesVisible = otherResourcesVisible model
+    , sequence = model.sequence
     , mainResource = toMainResource model
     , otherResources = toOtherResources model
     }
@@ -259,6 +248,19 @@ isFilling model tile =
     isFilling_ model && pointsGainedFor model tile > 0
 
 
+otherResourcesVisible : Model -> Bool
+otherResourcesVisible model =
+    case model.sequence of
+        Visible ->
+            True
+
+        ResourcesFilling ->
+            True
+
+        _ ->
+            False
+
+
 pointsGainedFor : Model -> Tile -> Int
 pointsGainedFor model tile =
     Progress.pointsFromPreviousLevel Worlds.all tile (getProgress model)
@@ -266,8 +268,8 @@ pointsGainedFor model tile =
 
 isFilling_ : Model -> Bool
 isFilling_ model =
-    case model.resourceBank of
-        Filling ->
+    case model.sequence of
+        ResourcesFilling ->
             True
 
         _ ->
@@ -332,15 +334,18 @@ currentSeedType =
 
 background : Model -> Color
 background model =
-    case model.worldSeed of
-        Visible ->
-            Palette.background2_
-
-        Leaving ->
+    case model.sequence of
+        SeedShaking ->
             Palette.lightGold
 
-        Blooming ->
+        FlowersBlooming ->
             flowerBackground (currentSeedType model)
+
+        FadingOut ->
+            flowerBackground (currentSeedType model)
+
+        _ ->
+            Palette.background2_
 
 
 flowerBackground : Seed -> Color
@@ -360,7 +365,7 @@ flowerBackground seed =
 
 
 
--- Resources
+-- Resource Summary
 
 
 resourceSummary : Model -> Element msg
@@ -381,15 +386,78 @@ resourceSummary_ model =
         ]
 
 
+
+-- Main Resource
+
+
 mainResource : ViewModel -> Element msg
 mainResource model =
-    el [ centerX ]
+    mainResourceAnimation model
+        [ centerX
+        , Element.originPercent 50 75
+        ]
         (viewResource
             { size = 100
+            , dropperVisible = model.resourcesVisible
             , order = 0
             }
             model.mainResource
         )
+
+
+mainResourceAnimation : ViewModel -> List (Attribute msg) -> Element msg -> Element msg
+mainResourceAnimation model =
+    case model.sequence of
+        SeedShaking ->
+            Animated.el leaveAndShake
+
+        FlowersBlooming ->
+            Animated.el expandFade
+
+        _ ->
+            el
+
+
+leaveAndShake : Animation
+leaveAndShake =
+    Animation.steps
+        { startAt = [ P.y 0 ]
+        , options = []
+        }
+        (Animation.step 1000 [ P.y 100 ] :: shakeSteps)
+
+
+shakeSteps : List Animation.Step
+shakeSteps =
+    List.map shakeStep (List.range 0 60)
+
+
+shakeStep : Int -> Animation.Step
+shakeStep i =
+    Animation.step 50 [ P.y 100, P.x (shakeOffset i) ]
+
+
+shakeOffset : Int -> number
+shakeOffset i =
+    if modBy 2 i == 0 then
+        1
+
+    else
+        -1
+
+
+expandFade : Animation
+expandFade =
+    Animation.fromTo
+        { duration = 1000
+        , options = []
+        }
+        [ P.opacity 1, P.scale 1, P.y 100 ]
+        [ P.opacity 0, P.scale 5, P.y 100 ]
+
+
+
+-- Level End Text
 
 
 levelEndText : ViewModel -> Element msg
@@ -402,10 +470,16 @@ levelEndText model =
         "We're one step closer..."
 
 
+
+-- Other Resources
+
+
 otherResources : ViewModel -> Element msg
 otherResources model =
     row
         [ spacing Scale.large
+        , Transition.alpha 1500
+        , Element.visibleIf model.resourcesVisible
         , centerX
         ]
         (List.indexedMap otherResource model.otherResources)
@@ -415,12 +489,18 @@ otherResource : Int -> Resource -> Element msg
 otherResource index =
     viewResource
         { size = 50
+        , dropperVisible = True
         , order = index + 1
         }
 
 
+
+-- Resource
+
+
 type alias ResourceOptions =
     { size : Int
+    , dropperVisible : Bool
     , order : Int
     }
 
@@ -431,9 +511,24 @@ viewResource options resource =
         [ spacing Scale.large
         , behindContent (resourceDrops options resource)
         ]
-        [ Element.square 20 [ centerX ] (fullResource resource.icon)
-        , Element.square options.size [ centerX ] (viewResource_ options resource)
+        [ resourceDropper options resource
+        , resourceBank options resource
         ]
+
+
+resourceBank : ResourceOptions -> Resource -> Element msg
+resourceBank options resource =
+    Element.square options.size [ centerX ] (resourceBank_ options resource)
+
+
+resourceDropper : ResourceOptions -> Resource -> Element msg
+resourceDropper options resource =
+    Element.square 20
+        [ centerX
+        , Transition.alpha 1000
+        , Element.visibleIf options.dropperVisible
+        ]
+        (fullResource resource.icon)
 
 
 fillDelay : ResourceOptions -> Int
@@ -534,8 +629,8 @@ dropDelay n =
         90
 
 
-viewResource_ : ResourceOptions -> Resource -> Element msg
-viewResource_ options resource =
+resourceBank_ : ResourceOptions -> Resource -> Element msg
+resourceBank_ options resource =
     case resource.icon of
         Sun ->
             SunBank.icon
