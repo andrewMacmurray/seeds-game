@@ -189,27 +189,27 @@ lime5 =
 
 purple1 : Color
 purple1 =
-    rgb255 51 26 66
+    rgb255 31 15 39
 
 
 purple2 : Color
 purple2 =
-    rgb255 73 24 101
+    rgb255 51 26 66
 
 
 purple3 : Color
 purple3 =
-    rgb255 122 71 153
+    rgb255 66 40 82
 
 
 purple4 : Color
 purple4 =
-    rgb255 146 80 186
+    rgb255 122 71 153
 
 
 purple5 : Color
 purple5 =
-    rgb255 165 68 224
+    rgb255 146 80 186
 
 
 purple6 : Color

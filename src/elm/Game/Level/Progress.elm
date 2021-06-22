@@ -15,8 +15,8 @@ module Game.Level.Progress exposing
     , reachedLevel
     , reachedLevelSeedType
     , resources
+    , save
     , setCurrentLevel
-    , toCache
     , worldIsCompleted
     )
 
@@ -26,6 +26,7 @@ import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Tile as Tile exposing (TargetScore(..))
+import Ports
 import Seed exposing (Seed)
 import Utils.Dict
 import Utils.List
@@ -53,6 +54,11 @@ type Position
 
 
 -- Cache
+
+
+save : Progress -> Cmd msg
+save =
+    toCache >> Ports.cacheProgress
 
 
 toCache : Progress -> Level.Cache

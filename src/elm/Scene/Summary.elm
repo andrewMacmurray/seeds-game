@@ -26,7 +26,6 @@ import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
 import Html exposing (Html)
-import Ports exposing (cacheProgress)
 import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
@@ -34,9 +33,10 @@ import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Delay as Delay exposing (sequence, trigger)
+import Utils.Delay as Delay exposing (trigger)
 import Utils.Element as Element
 import Utils.Sine as Sine
+import Window exposing (Window)
 
 
 
@@ -95,7 +95,8 @@ type Destination
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-    , Delay.after 1500 IncrementProgress
+      --, Delay.after 1500 IncrementProgress
+    , Cmd.none
     )
 
 
@@ -103,7 +104,7 @@ initialState : Context -> Model
 initialState context =
     { context = context
     , worldText = First False
-    , sequence = Visible
+    , sequence = FlowersBlooming
     , levelTextVisible = False
     }
 
@@ -120,8 +121,8 @@ update msg model =
 
         CacheProgress ->
             continue model
-                [ cacheProgress (Progress.toCache model.context.progress)
-                , handleSuccessMessage model
+                [ Progress.save model.context.progress
+                , successSequence model
                 ]
 
         ShowLevelSuccess ->
@@ -155,10 +156,10 @@ update msg model =
             exitWith ToGarden model
 
 
-handleSuccessMessage : Model -> Cmd Msg
-handleSuccessMessage { context } =
+successSequence : Model -> Cmd Msg
+successSequence { context } =
     if Progress.currentWorldComplete Worlds.all context.progress then
-        sequence
+        Delay.sequence
             [ ( 3000, BeginSeedBankTransformation )
             , ( 4000, BloomWorldFlower )
             , ( 2000, ShowFirstText )
@@ -170,7 +171,7 @@ handleSuccessMessage { context } =
             ]
 
     else
-        sequence
+        Delay.sequence
             [ ( 2000, ShowLevelSuccess )
 
             --, ( 2500, ExitToHub )
@@ -198,6 +199,7 @@ view : Model -> Html msg
 view model =
     Layout.fadeIn
         [ Background.color (background model)
+        , inFront (worldSummary model)
         , Transition.background 3000
         ]
         (resourceSummary model)
@@ -208,9 +210,11 @@ view model =
 
 
 type alias ViewModel =
-    { textVisible : Bool
-    , resourcesVisible : Bool
+    { window : Window
     , sequence : Sequence
+    , levelTextVisible : Bool
+    , worldSummary : WorldSummary
+    , resourcesVisible : Bool
     , mainResource : Resource
     , otherResources : List Resource
     }
@@ -229,14 +233,21 @@ type Icon
     | Seed Seed
 
 
+type WorldSummary
+    = WorldSummaryHidden
+    | WorldSummaryVisible Seed
+
+
 type alias Percent =
     Float
 
 
 toViewModel : Model -> ViewModel
 toViewModel model =
-    { textVisible = model.levelTextVisible
+    { window = model.context.window
+    , levelTextVisible = model.levelTextVisible
     , resourcesVisible = otherResourcesVisible model
+    , worldSummary = toWorldSummary model
     , sequence = model.sequence
     , mainResource = toMainResource model
     , otherResources = toOtherResources model
@@ -259,6 +270,19 @@ otherResourcesVisible model =
 
         _ ->
             False
+
+
+toWorldSummary : Model -> WorldSummary
+toWorldSummary model =
+    case model.sequence of
+        FlowersBlooming ->
+            WorldSummaryVisible (currentSeedType model)
+
+        FadingOut ->
+            WorldSummaryVisible (currentSeedType model)
+
+        _ ->
+            WorldSummaryHidden
 
 
 pointsGainedFor : Model -> Tile -> Int
@@ -424,7 +448,7 @@ leaveAndShake =
         { startAt = [ P.y 0 ]
         , options = []
         }
-        (Animation.step 1000 [ P.y 100 ] :: shakeSteps)
+        (Animation.step 1000 [ P.y leavingOffset ] :: shakeSteps)
 
 
 shakeSteps : List Animation.Step
@@ -434,7 +458,10 @@ shakeSteps =
 
 shakeStep : Int -> Animation.Step
 shakeStep i =
-    Animation.step 50 [ P.y 100, P.x (shakeOffset i) ]
+    Animation.step 50
+        [ P.y leavingOffset
+        , P.x (shakeOffset i)
+        ]
 
 
 shakeOffset : Int -> number
@@ -449,11 +476,16 @@ shakeOffset i =
 expandFade : Animation
 expandFade =
     Animation.fromTo
-        { duration = 1000
+        { duration = 800
         , options = []
         }
-        [ P.opacity 1, P.scale 1, P.y 100 ]
-        [ P.opacity 0, P.scale 5, P.y 100 ]
+        [ P.opacity 1, P.scale 1, P.y leavingOffset ]
+        [ P.opacity 0, P.scale 5, P.y leavingOffset ]
+
+
+leavingOffset : number
+leavingOffset =
+    75
 
 
 
@@ -465,7 +497,7 @@ levelEndText model =
     Text.text
         [ centerX
         , Transition.alpha 1000
-        , Element.visibleIf model.textVisible
+        , Element.visibleIf model.levelTextVisible
         ]
         "We're one step closer..."
 
@@ -663,6 +695,39 @@ fullResource icon =
 
         Seed seed ->
             Seed.view Seed.fill seed
+
+
+
+-- World Summary
+
+
+worldSummary : Model -> Element msg
+worldSummary =
+    toViewModel >> worldSummary_
+
+
+worldSummary_ : ViewModel -> Element msg
+worldSummary_ model =
+    case model.worldSummary of
+        WorldSummaryVisible seed ->
+            el
+                [ width fill
+                , height fill
+                ]
+                (viewWorldSummary seed model)
+
+        WorldSummaryHidden ->
+            none
+
+
+viewWorldSummary : Seed -> ViewModel -> Element msg
+viewWorldSummary seed model =
+    case seed of
+        Seed.Chrysanthemum ->
+            html (Chrysanthemum.view model.window)
+
+        _ ->
+            none
 
 
 

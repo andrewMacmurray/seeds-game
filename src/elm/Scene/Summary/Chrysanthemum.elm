@@ -1,31 +1,23 @@
 module Scene.Summary.Chrysanthemum exposing
     ( background
-    , hidden
-    , visible
+    , view
     )
 
-import Css.Color as Color exposing (Color)
-import Css.Style as Style
-import Css.Transform as Transform
-import Css.Transition as Transition
-import Element
-import Element.Flower.Chrysanthemum as Chrysanthemum
+import Axis2d exposing (Axis2d)
+import Circle2d exposing (Circle2d)
+import Direction2d
+import Element exposing (Color)
 import Element.Palette as Palette
+import Geometry.Shape as Shape exposing (Shape)
+import Pixels exposing (Pixels)
+import Point2d exposing (Point2d)
 import Svg exposing (Svg)
-import Svg.Attributes exposing (..)
-import Utils.Svg exposing (..)
-import View.Landscape.RollingHills as Hills
-import Window exposing (Window)
+import Utils.Geometry exposing (down)
+import Window exposing (Window, vh, vw)
 
 
-visible : Window -> Svg msg
-visible =
-    view Visible
 
-
-hidden : Window -> Svg msg
-hidden =
-    view Hidden
+-- Background
 
 
 background : Element.Color
@@ -33,98 +25,116 @@ background =
     Palette.purple4
 
 
-type Visibility
-    = Visible
-    | Hidden
+
+-- View
 
 
-view : Visibility -> Window -> Svg msg
-view visibility window =
-    Svg.svg
-        [ windowViewBox_ window
-        , class "fixed z-1 top-0"
-        ]
-        (List.concat
-            [ [ hills "#E268C4" "#F09AEF" -550 1500 visibility window
-              , hills red "#9665B4" -440 1200 visibility window
-              , hills "#FFA538" "#623D79" -330 900 visibility window
-              , hills "#E268C4" "#F09AEF" -220 600 visibility window
-              , hills darkPink "#9665B4" -110 300 visibility window
-              , hills "#FFA538" "#623D79" 0 0 visibility window
-              ]
-            , flowers visibility window
-            ]
+view : Window -> Svg msg
+view window =
+    Shape.window window [] (shape window)
+
+
+shape : Window -> Shape
+shape window =
+    List.range 0 3
+        |> List.map (cycleHills >> hillTrio window)
+        |> List.concat
+        |> Shape.group
+        |> Shape.moveDown 350
+
+
+cycleHills : Int -> HillTrio
+cycleHills i =
+    case modBy 4 i of
+        0 ->
+            { offset = toOffset i
+            , left = Palette.purple5
+            , middle = Palette.purple1
+            , right = Palette.purple5
+            }
+
+        1 ->
+            { offset = toOffset i
+            , left = Palette.purple6
+            , middle = Palette.purple2
+            , right = Palette.purple6
+            }
+
+        2 ->
+            { offset = toOffset i
+            , left = Palette.purple8
+            , middle = Palette.purple1
+            , right = Palette.purple8
+            }
+
+        _ ->
+            { offset = toOffset i
+            , left = Palette.purple9
+            , middle = Palette.purple3
+            , right = Palette.purple9
+            }
+
+
+toOffset : Int -> Float
+toOffset i =
+    -430 + toFloat i * 220
+
+
+type alias HillTrio =
+    { offset : Float
+    , left : Color
+    , middle : Color
+    , right : Color
+    }
+
+
+hillTrio : Window -> HillTrio -> List Shape
+hillTrio window { offset, right, middle, left } =
+    [ roundHill offset right window
+    , Shape.mirror (roundHill offset left window)
+    , middleHill offset window middle
+    ]
+
+
+middleHill : Float -> Window -> Color -> Shape
+middleHill y w c =
+    Shape.circle { fill = c } (middleHill_ y w)
+
+
+roundHill : Float -> Color -> Window -> Shape
+roundHill y color window =
+    Shape.circle { fill = color } (roundHill_ y window)
+
+
+middleHill_ : Float -> Window -> Circle2d Pixels coordinates
+middleHill_ y w =
+    Circle2d.translateBy (down y)
+        (Circle2d.atPoint
+            (Point2d.pixels (vw w / 2) (vh w - 60))
+            (Pixels.pixels 680)
         )
 
 
-red =
-    Color.rgb 226 64 64
-
-
-darkPink =
-    Color.rgb 218 37 131
-
-
-flowers visibility window =
-    case visibility of
-        Hidden ->
-            []
-
-        Visible ->
-            [ chrysanthemum window 150 1000
-            , chrysanthemum window 75 1500 |> translated -100 60
-            , chrysanthemum window 75 2000 |> translated 100 60
-            ]
-
-
-hills : Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
-hills left right offset delay visibility window =
+roundHill_ : Float -> Window -> Circle2d Pixels coordinates
+roundHill_ y w =
     let
-        curve =
-            ifNarrow window 1.6 1.3
-
-        y =
-            case visibility of
-                Hidden ->
-                    toFloat <| window.height // 2
-
-                Visible ->
-                    offset + 150
-
-        translateStyles d el =
-            Svg.g
-                [ Style.svg
-                    [ Transition.transition "transform"
-                        3000
-                        [ Transition.cubicBezier 0 0 0 1
-                        , Transition.delay d
-                        ]
-                    , Style.transform [ Transform.translateY y ]
-                    ]
-                ]
-                [ el ]
+        r =
+            clamp 400 1800 (vw w / 2)
     in
-    Hills.doubleLayerWithCurve curve window left right |> translateStyles (delay + 500)
+    Circle2d.translateBy (down y)
+        (Circle2d.atPoint
+            (point w)
+            (Pixels.pixels r)
+        )
 
 
-ifNarrow : Window -> a -> a -> a
-ifNarrow window a b =
-    case Window.width window of
-        Window.Narrow ->
-            a
-
-        _ ->
-            b
+point : Window -> Point2d Pixels coordinates
+point w =
+    Point2d.along (axis w) (Pixels.pixels (vw w / 2))
 
 
-chrysanthemum : Window -> Float -> Int -> Svg msg
-chrysanthemum window size delay =
-    Svg.svg
-        [ viewBox_ 0 0 size size
-        , x_ <| toFloat window.width / 2
-        , y_ <| toFloat window.height / 2 - 50
-        , width_ size
-        , height_ size
-        ]
-        [ Chrysanthemum.animated delay ]
-        |> translated -(size / 2) -(size / 2)
+axis : Window -> Axis2d Pixels coordinates
+axis w =
+    Axis2d.withDirection
+        (Direction2d.degrees (vw w / 50))
+        (Point2d.pixels (vw w / 2) (vh w / 2))

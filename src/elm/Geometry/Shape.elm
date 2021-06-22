@@ -7,6 +7,7 @@ module Geometry.Shape exposing
     , moveDown
     , polygon
     , view
+    , window
     )
 
 import Circle2d exposing (Circle2d)
@@ -146,21 +147,26 @@ updateAttributes_ f shape =
 -- View
 
 
-view : Window -> Shape -> Svg.Svg msg
-view window shape =
+window : Window -> List (Svg.Attribute msg) -> Shape -> Svg msg
+window window_ attrs shape =
+    Svg.window window_ attrs [ view window_ shape ]
+
+
+view : Window -> Shape -> Svg msg
+view window_ shape =
     case shape of
         Polygon p ->
             Svg.polygon2d [ fill p ] p.shape
-                |> withMirror p window
+                |> withMirror p window_
                 |> applyHidden p
 
         Circle c ->
             Svg.circle2d [ fill c ] c.shape
-                |> withMirror c window
+                |> withMirror c window_
                 |> applyHidden c
 
         Group shapes ->
-            Svg.g [] (List.map (view window) shapes)
+            Svg.g [] (List.map (view window_) shapes)
 
 
 fill : Shape_ shape -> Svg.Attribute msg
@@ -169,9 +175,9 @@ fill shape =
 
 
 withMirror : Shape_ shape -> Window -> Svg msg -> Svg msg
-withMirror shape window s =
+withMirror shape window_ s =
     if shape.attributes.mirror then
-        Geometry.mirror window s
+        Geometry.mirror window_ s
 
     else
         s
