@@ -8,6 +8,7 @@ module Scene.Garden exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
@@ -30,7 +31,6 @@ import Scene.Garden.Sunflower as Sunflower
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
-import Utils.Delay exposing (after)
 import Utils.Element as Element
 import View.Menu as Menu
 
@@ -66,7 +66,7 @@ menuOptions =
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-    , after 500 ScrollToCurrentCompletedWorld
+    , Delay.after 500 ScrollToCurrentCompletedWorld
     )
 
 
@@ -105,8 +105,7 @@ view : Model -> Html Msg
 view model =
     Layout.view
         [ inFront backToLevelsButton
-
-        --, inFront initialOverlay
+        , inFront initialOverlay
         ]
         (el
             [ width fill

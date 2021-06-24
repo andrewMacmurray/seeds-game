@@ -8,6 +8,7 @@ module Scene.Summary exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animation as Animation
 import Element.Background as Background
@@ -33,9 +34,9 @@ import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Delay as Delay exposing (trigger)
 import Utils.Element as Element
 import Utils.Sine as Sine
+import Utils.Update as Update
 import Window exposing (Window)
 
 
@@ -117,7 +118,7 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
-            continue (incrementProgress model) [ trigger CacheProgress ]
+            continue (incrementProgress model) [ Update.trigger CacheProgress ]
 
         CacheProgress ->
             continue model
@@ -476,7 +477,7 @@ shakeOffset i =
 expandFade : Animation
 expandFade =
     Animation.fromTo
-        { duration = 500
+        { duration = 800
         , options = []
         }
         [ P.opacity 1, P.scale 1, P.y leavingOffset ]

@@ -9,6 +9,7 @@ module Scene.Level exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Button.Cancel as Cancel
@@ -46,7 +47,6 @@ import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
 import Utils.Attribute as Attribute
-import Utils.Delay as Delay
 import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Html.Style as Style
@@ -469,7 +469,7 @@ endMove =
 
 triggerRelease : Cmd Msg
 triggerRelease =
-    Delay.trigger ReleaseTile
+    Update.trigger ReleaseTile
 
 
 releaseTiles : Model -> Model
@@ -690,19 +690,19 @@ scoreIsReached model =
 handleExitPrompt : Model -> Cmd Msg
 handleExitPrompt model =
     if model.levelStatus == NotStarted then
-        Delay.trigger ExitLevel
+        Update.trigger ExitLevel
 
     else
-        Delay.trigger (ShowInfo ExitAreYouSure)
+        Update.trigger (ShowInfo ExitAreYouSure)
 
 
 handleRestartPrompt : Model -> Cmd Msg
 handleRestartPrompt model =
     if model.levelStatus == NotStarted then
-        Delay.trigger RestartLevel
+        Update.trigger RestartLevel
 
     else
-        Delay.trigger (ShowInfo RestartAreYouSure)
+        Update.trigger (ShowInfo RestartAreYouSure)
 
 
 

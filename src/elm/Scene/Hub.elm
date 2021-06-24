@@ -10,6 +10,7 @@ module Scene.Hub exposing
 
 import Context exposing (Context)
 import Countdown
+import Delay
 import Element exposing (..)
 import Element.Background as Background
 import Element.Button as Button
@@ -35,7 +36,6 @@ import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
-import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Utils.Sine as Sine
 import View.Menu as Menu
@@ -85,7 +85,7 @@ menuOptions =
 init : Level.Id -> Context -> ( Model, Cmd Msg )
 init level context =
     ( initialState context
-    , sequence
+    , Delay.sequence
         [ ( 1000, ScrollToLevel level )
         , ( 1500, ClearCurrentLevel )
         ]
@@ -114,7 +114,7 @@ update msg model =
 
         DismissInfoClicked ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, SetInfoState (Info.leaving model.info) )
                     , ( 1000, SetInfoState Info.hidden )
                     ]
@@ -131,7 +131,7 @@ update msg model =
 
         PlayLevelClicked level ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, SetCurrentLevel level )
                     , ( 10, SetInfoState (Info.leaving model.info) )
                     , ( 600, SetInfoState Info.hidden )

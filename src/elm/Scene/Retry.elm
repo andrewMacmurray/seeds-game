@@ -8,6 +8,7 @@ module Scene.Retry exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animation as Animation
 import Element.Animations as Animations
@@ -21,7 +22,6 @@ import Html exposing (..)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Delay exposing (after)
 import Utils.Update as Update
 import Window exposing (Window, vh)
 
@@ -53,7 +53,7 @@ type Destination
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( { context = context }
-    , after 1000 DecrementLives
+    , Delay.after 1000 DecrementLives
     )
 
 

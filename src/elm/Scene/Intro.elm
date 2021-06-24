@@ -7,6 +7,7 @@ module Scene.Intro exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Background as Background
 import Element.Events exposing (onClick)
@@ -20,7 +21,6 @@ import Html exposing (Html)
 import Scene.Intro.DyingLandscape as DL
 import Scene.Intro.GrowingSeeds as GS
 import Scene.Intro.SunflowerMeadow as SM
-import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Window exposing (vh)
 
@@ -86,7 +86,7 @@ initialState context =
 
 introSequence : Cmd Msg
 introSequence =
-    sequence
+    Delay.sequence
         [ ( 100, SetBackground Palette.green9 )
         , ( 1000, ShowDyingLandscape )
         , ( 4000, SetBackground Palette.lightGreyYellow )

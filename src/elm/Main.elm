@@ -5,6 +5,7 @@ import Browser.Events as Browser
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, style)
+import Delay
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
@@ -23,7 +24,6 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Debug as Debug
-import Utils.Delay as Delay exposing (trigger)
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
@@ -288,7 +288,7 @@ exitTitle model destination =
             ( model, goToHubReachedLevel model )
 
         Title.ToIntro ->
-            ( model, trigger InitIntro )
+            ( model, Update.trigger InitIntro )
 
         Title.ToGarden ->
             ( model, goToGarden )
@@ -386,7 +386,7 @@ exitLevel model levelStatus =
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
     if shouldIncrement (getContext model) then
-        ( model, trigger InitSummary )
+        ( model, Update.trigger InitSummary )
 
     else
         ( model, goToHubCurrentLevel model )
@@ -398,7 +398,7 @@ levelLose model =
         ( updateContext Context.decrementLife model, goToHubCurrentLevel model )
 
     else
-        ( model, trigger InitRetry )
+        ( model, Update.trigger InitRetry )
 
 
 
@@ -450,7 +450,7 @@ exitSummary model destination =
             ( clearBackdrop model, goToHubReachedLevel model )
 
         Summary.ToGarden ->
-            ( clearBackdrop model, trigger InitGarden )
+            ( clearBackdrop model, Update.trigger InitGarden )
 
 
 
@@ -572,12 +572,12 @@ reloadCurrentLevel =
 
 goToHubCurrentLevel : Model -> Cmd Msg
 goToHubCurrentLevel =
-    trigger << GoToHub << currentLevel
+    Update.trigger << GoToHub << currentLevel
 
 
 goToHubReachedLevel : Model -> Cmd Msg
 goToHubReachedLevel =
-    trigger << GoToHub << reachedLevel
+    Update.trigger << GoToHub << reachedLevel
 
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )

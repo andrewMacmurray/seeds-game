@@ -2,12 +2,15 @@ module Utils.Update exposing
     ( andCmd
     , andCmds
     , context
+    , trigger
     , updateModel
     , updateWith
     , withContext
     )
 
 -- Update
+
+import Task
 
 
 updateWith : (subMsg -> msg) -> (subModel -> model) -> ( subModel, Cmd subMsg ) -> ( model, Cmd msg )
@@ -32,6 +35,11 @@ andCmds toCmds model =
     ( model
     , Cmd.batch (List.map (\f -> f model) toCmds)
     )
+
+
+trigger : msg -> Cmd msg
+trigger =
+    Task.succeed >> Task.perform identity
 
 
 

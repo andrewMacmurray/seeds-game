@@ -10,6 +10,7 @@ module Scene.Title exposing
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Button as Button
@@ -23,7 +24,6 @@ import Html exposing (Html)
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Simple.Animation as Animation
 import Utils.Animated as Animated
-import Utils.Delay exposing (sequence)
 import Utils.Element exposing (verticalGap)
 import Utils.Function exposing (apply)
 import Utils.Update as Update
@@ -102,7 +102,7 @@ update msg model =
 
         IntroMusicPlaying ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, FadeSeeds )
                     , ( 2000, GoToIntro )
                     ]
