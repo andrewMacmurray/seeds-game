@@ -96,6 +96,7 @@ init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
     , Delay.after 1500 IncrementProgress
+      --, Cmd.none
     )
 
 
@@ -475,7 +476,7 @@ shakeOffset i =
 expandFade : Animation
 expandFade =
     Animation.fromTo
-        { duration = 800
+        { duration = 500
         , options = []
         }
         [ P.opacity 1, P.scale 1, P.y leavingOffset ]
@@ -709,11 +710,7 @@ worldSummary_ : ViewModel -> Element msg
 worldSummary_ model =
     case model.worldSummary of
         WorldSummaryVisible seed ->
-            el
-                [ width fill
-                , height fill
-                ]
-                (viewWorldSummary seed model)
+            viewWorldSummary seed model
 
         WorldSummaryHidden ->
             none
@@ -723,7 +720,12 @@ viewWorldSummary : Seed -> ViewModel -> Element msg
 viewWorldSummary seed model =
     case seed of
         Seed.Chrysanthemum ->
-            html (Chrysanthemum.view model.window)
+            el
+                [ width fill
+                , height fill
+                , inFront Chrysanthemum.flowers
+                ]
+                (html (Chrysanthemum.hills model.window))
 
         _ ->
             none

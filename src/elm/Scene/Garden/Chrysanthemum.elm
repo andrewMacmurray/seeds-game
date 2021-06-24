@@ -9,7 +9,7 @@ import Window exposing (Window)
 
 hills : Window -> Shape
 hills window =
-    Hills.shape window
+    Hills.hills_ window
         |> Shape.moveDown 75
 
 

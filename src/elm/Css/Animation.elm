@@ -12,7 +12,6 @@ module Css.Animation exposing
     , frame
     , infinite
     , keyframes
-    , linear
     , opacity
     , transform
     )
@@ -57,11 +56,6 @@ delay duration =
 ease : Option
 ease =
     option <| animationTimingFunction "ease"
-
-
-linear : Option
-linear =
-    option <| animationTimingFunction "linear"
 
 
 cubicBezier : Float -> Float -> Float -> Float -> Option

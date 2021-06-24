@@ -1,18 +1,21 @@
 module Scene.Summary.Chrysanthemum exposing
     ( background
-    , shape
-    , view
+    , flowers
+    , hills
+    , hills_
     )
 
 import Axis2d exposing (Axis2d)
 import Circle2d exposing (Circle2d)
 import Direction2d
-import Element exposing (Color)
+import Element exposing (..)
 import Element.Animations as Animations
+import Element.Flower.Chrysanthemum as Chrysanthemum
 import Element.Palette as Palette
 import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
+import Scene.Garden.Chrysanthemum.Sprites as Bee
 import Simple.Animation as Animation exposing (Animation)
 import Svg exposing (Svg)
 import Utils.Geometry exposing (down)
@@ -29,16 +32,76 @@ background =
 
 
 
--- View
+-- Flowers
 
 
-view : Window -> Svg msg
-view window =
-    Shape.window window [] (shape window)
+flowers : Element msg
+flowers =
+    row [ centerX, centerY ]
+        [ el
+            [ moveDown 25
+            , moveRight 0
+            , bee { x = 0, y = -16, delay = 1600 }
+            ]
+            (flower { size = 75, delay = 300 })
+        , el
+            [ moveUp 45
+            , bee { x = 0, y = 15, delay = 0 }
+            , bee { x = -25, y = -5, delay = 500 }
+            , bee { x = 25, y = -25, delay = 700 }
+            ]
+            (flower { size = 125, delay = 0 })
+        , el
+            [ moveDown 25
+            , moveLeft 0
+            , bee { x = 0, y = -5, delay = 1200 }
+            ]
+            (flower { size = 75, delay = 600 })
+        ]
 
 
-shape : Window -> Shape
-shape window =
+type alias BeeOptions =
+    { x : Float
+    , y : Float
+    , delay : Animation.Millis
+    }
+
+
+bee : BeeOptions -> Attribute msg
+bee options =
+    inFront
+        (el
+            [ centerX
+            , centerY
+            , moveRight options.x
+            , moveDown options.y
+            ]
+            (Bee.bee { delay = options.delay + 3000 })
+        )
+
+
+type alias FlowerOptions =
+    { size : Int
+    , delay : Animation.Millis
+    }
+
+
+flower : FlowerOptions -> Element msg
+flower options =
+    el [ width (px options.size) ] (html (Chrysanthemum.animated (1000 + options.delay)))
+
+
+
+-- Hills
+
+
+hills : Window -> Svg msg
+hills window =
+    Shape.window window [] (hills_ window)
+
+
+hills_ : Window -> Shape
+hills_ window =
     List.range 0 5
         |> List.map (cycleHills >> hillTrio window)
         |> Shape.group
@@ -116,7 +179,7 @@ animateHill : Int -> Animation.Millis -> Shape -> Shape
 animateHill order delay =
     Shape.animate
         (Animations.fadeIn 600
-            [ Animation.delay (150 * (5 - order) + delay)
+            [ Animation.delay (800 + (150 * (5 - order) + delay))
             ]
         )
 
