@@ -8,6 +8,7 @@ module View.Seed.Twin exposing
 import Css.Color as Color exposing (Color)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 
 
 sunflower : Svg msg
@@ -35,6 +36,7 @@ twin ( left, right ) =
     Svg.svg
         [ width "100%"
         , height "100%"
+        , Svg.baseTransform
         , viewBox "0 0 124.5 193.5"
         ]
         [ Svg.path

@@ -9,6 +9,7 @@ import Seed exposing (Seed)
 import Simple.Animation as Animation
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
 
@@ -39,24 +40,20 @@ icon options =
                 ]
                 []
             ]
-        , Svg.g []
-            [ greyedOutSeed
-            , Svg.g []
-                [ Svg.mask
-                    [ fill "white"
-                    , id (seedBankId options.seed)
-                    ]
-                    [ Svg.use
-                        [ xlinkHref ("#" ++ fillLevelId options.seed)
-                        , offsetLevelStyles options
-                        ]
-                        []
-                    ]
-                , Svg.g
-                    [ mask ("url(#" ++ seedBankId options.seed ++ ")") ]
-                    [ Seed.view options.seed ]
-                ]
+        , greyedOutSeed
+        , Svg.mask
+            [ fill "white"
+            , id (seedBankId options.seed)
             ]
+            [ Svg.use
+                [ xlinkHref ("#" ++ fillLevelId options.seed)
+                , offsetLevelStyles options
+                ]
+                []
+            ]
+        , Svg.g_
+            [ mask ("url(#" ++ seedBankId options.seed ++ ")") ]
+            [ Seed.view options.seed ]
         ]
 
 

@@ -1,9 +1,11 @@
 module Utils.Svg exposing
     ( Point
+    , baseTransform
     , cx_
     , cy_
     , disableTouch
     , fill_
+    , g_
     , height_
     , originCenter_
     , point
@@ -24,7 +26,7 @@ module Utils.Svg exposing
     , y_
     )
 
-import Css.Style as Style
+import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
 import Css.Unit exposing (px)
 import Element
@@ -37,6 +39,21 @@ import Window exposing (Window, vh, vw)
 fill_ : Element.Color -> Attribute msg
 fill_ color =
     Svg.Attributes.fill (Color.toString color)
+
+
+g_ : List (Attribute msg) -> List (Svg msg) -> Svg msg
+g_ attrs =
+    Svg.g (baseTransform :: attrs)
+
+
+baseTransform : Attribute msg
+baseTransform =
+    Style.svg [ translate0 ]
+
+
+translate0 : Style
+translate0 =
+    Style.transform [ Transform.translate 0 0 ]
 
 
 window : Window -> List (Attribute msg) -> List (Svg.Svg msg) -> Svg msg

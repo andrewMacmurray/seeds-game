@@ -3,6 +3,7 @@ module View.Seed.Mono exposing (greyedOutSeed, rose)
 import Css.Color exposing (purple, transparentGray)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 
 
 rose : Svg msg
@@ -20,6 +21,7 @@ mono bgColor =
     Svg.svg
         [ width "100%"
         , height "100%"
+        , Svg.baseTransform
         , viewBox "0 0 124.5 193.5"
         ]
         [ Svg.path
