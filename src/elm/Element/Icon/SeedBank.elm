@@ -1,4 +1,4 @@
-module Element.Icon.SeedBank exposing (icon)
+module Element.Icon.SeedBank exposing (full, icon)
 
 import Css.Style as Style
 import Css.Transform exposing (translateY)
@@ -37,6 +37,7 @@ icon options =
                 [ height (String.fromFloat fullHeight)
                 , id (fillLevelId options.seed)
                 , width "100%"
+                , height "100%"
                 ]
                 []
             ]
@@ -54,6 +55,17 @@ icon options =
         , Svg.g_
             [ mask ("url(#" ++ seedBankId options.seed ++ ")") ]
             [ Seed.view options.seed ]
+        ]
+
+
+full : Seed -> Element msg
+full seed =
+    Icon.view
+        [ viewBox "0 0 124.5 193.5"
+        , width "100%"
+        , height "100%"
+        ]
+        [ Seed.view seed
         ]
 
 

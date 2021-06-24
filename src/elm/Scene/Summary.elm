@@ -99,7 +99,6 @@ init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
     , Delay.after 1500 IncrementProgress
-      --, Cmd.none
     )
 
 
@@ -486,30 +485,28 @@ resourceSummary_ model =
 
 mainResource : ViewModel -> Element msg
 mainResource model =
-    mainResourceAnimation model
-        [ centerX
-        , Element.originPercent 50 75
-        ]
+    el [ centerX ]
         (viewResource
             { size = 100
             , dropperVisible = model.resourcesVisible
             , order = 0
+            , animation = mainResourceAnimation model
             }
             model.mainResource
         )
 
 
-mainResourceAnimation : ViewModel -> List (Attribute msg) -> Element msg -> Element msg
+mainResourceAnimation : ViewModel -> Maybe Animation
 mainResourceAnimation model =
     case model.sequence of
         SeedShaking ->
-            Animated.el leaveAndShake
+            Just leaveAndShake
 
         FlowersBlooming ->
-            Animated.el expandFade
+            Just expandFade
 
         _ ->
-            el
+            Nothing
 
 
 leaveAndShake : Animation
@@ -593,6 +590,7 @@ otherResource index =
         { size = 50
         , dropperVisible = True
         , order = index + 1
+        , animation = Nothing
         }
 
 
@@ -604,6 +602,7 @@ type alias ResourceOptions =
     { size : Int
     , dropperVisible : Bool
     , order : Int
+    , animation : Maybe Animation
     }
 
 
@@ -620,7 +619,15 @@ viewResource options resource =
 
 resourceBank : ResourceOptions -> Resource -> Element msg
 resourceBank options resource =
-    Element.square options.size [ centerX ] (resourceBank_ options resource)
+    Animated.maybe options.animation
+        [ centerX
+        , centerY
+        , Element.originPercent 50 60
+        ]
+        (Element.square options.size
+            [ centerX, centerY ]
+            (resourceBank_ options resource)
+        )
 
 
 resourceDropper : ResourceOptions -> Resource -> Element msg
@@ -764,7 +771,7 @@ fullResource icon =
             html RainBank.full
 
         Seed seed ->
-            Seed.view Seed.fill seed
+            SeedBank.full seed
 
 
 
