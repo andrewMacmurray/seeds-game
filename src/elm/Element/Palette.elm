@@ -194,7 +194,7 @@ purple1 =
 
 purple2 : Color
 purple2 =
-    rgb255 51 26 66
+    rgb255 45 22 59
 
 
 purple3 : Color

@@ -1,12 +1,13 @@
 module Scene.Garden.Cornflower.Sprites exposing (ladybird)
 
 import Element exposing (Element)
+import Element.Palette as Palette
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
-import Utils.Svg exposing (height_, viewBox_, width_)
+import Utils.Svg as Svg exposing (height_, viewBox_, width_)
 
 
 ladybird : Animation.Millis -> Element msg
@@ -45,9 +46,9 @@ ladybird_ =
                 , fill "#f30748"
                 ]
                 []
-            , Svg.circle [ cx "2.3", cy "6", r ".7" ] []
-            , Svg.circle [ cx "1.7", cy "3.1", r ".7" ] []
-            , Svg.circle [ cx "4.7", cy "6", r ".7" ] []
-            , Svg.circle [ cx "5.3", cy "3.1", r ".7" ] []
+            , Svg.circle [ Svg.fill_ Palette.black, cx "2.3", cy "6", r ".7" ] []
+            , Svg.circle [ Svg.fill_ Palette.black, cx "1.7", cy "3.1", r ".7" ] []
+            , Svg.circle [ Svg.fill_ Palette.black, cx "4.7", cy "6", r ".7" ] []
+            , Svg.circle [ Svg.fill_ Palette.black, cx "5.3", cy "3.1", r ".7" ] []
             ]
         )

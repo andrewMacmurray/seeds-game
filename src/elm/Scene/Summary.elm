@@ -11,6 +11,7 @@ import Context exposing (Context)
 import Delay
 import Element exposing (..)
 import Element.Animation as Animation
+import Element.Animations as Animations
 import Element.Background as Background
 import Element.Icon.RainBank as RainBank
 import Element.Icon.SeedBank as SeedBank
@@ -97,7 +98,6 @@ init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
     , Delay.after 1500 IncrementProgress
-      --, Cmd.none
     )
 
 
@@ -163,7 +163,7 @@ successSequence { context } =
         Delay.sequence
             [ ( 3000, BeginSeedBankTransformation )
             , ( 4000, BloomWorldFlower )
-            , ( 2000, ShowFirstText )
+            , ( 3000, ShowFirstText )
             , ( 3000, HideFirstText )
             , ( 1000, ShowSecondText )
             , ( 3000, HiddenSecondText )
@@ -174,8 +174,7 @@ successSequence { context } =
     else
         Delay.sequence
             [ ( 2000, ShowLevelSuccess )
-
-            --, ( 2500, ExitToHub )
+            , ( 2500, ExitToHub )
             ]
 
 
@@ -201,6 +200,7 @@ view model =
     Layout.fadeIn
         [ Background.color (background model)
         , inFront (worldSummary model)
+        , inFront (fadeOverlay model)
         , Transition.background 3000
         ]
         (resourceSummary model)
@@ -213,7 +213,8 @@ view model =
 type alias ViewModel =
     { window : Window
     , sequence : Sequence
-    , levelTextVisible : Bool
+    , textVisible : TextVisible
+    , text : String
     , worldSummary : WorldSummary
     , resourcesVisible : Bool
     , mainResource : Resource
@@ -246,13 +247,54 @@ type alias Percent =
 toViewModel : Model -> ViewModel
 toViewModel model =
     { window = model.context.window
-    , levelTextVisible = model.levelTextVisible
+    , textVisible = textVisible model
     , resourcesVisible = otherResourcesVisible model
+    , text = successText model
     , worldSummary = toWorldSummary model
     , sequence = model.sequence
     , mainResource = toMainResource model
     , otherResources = toOtherResources model
     }
+
+
+textVisible : Model -> TextVisible
+textVisible model =
+    case toWorldSummary model of
+        WorldSummaryVisible _ ->
+            case model.worldText of
+                First visible ->
+                    visible
+
+                Second visible ->
+                    visible
+
+        WorldSummaryHidden ->
+            model.levelTextVisible
+
+
+successText : Model -> String
+successText model =
+    case toWorldSummary model of
+        WorldSummaryHidden ->
+            levelSuccessText
+
+        WorldSummaryVisible seed ->
+            worldSuccessText seed model
+
+
+levelSuccessText : String
+levelSuccessText =
+    "We're one step closer..."
+
+
+worldSuccessText : Seed -> Model -> String
+worldSuccessText seed model =
+    case model.worldText of
+        First _ ->
+            "You saved the " ++ Seed.name seed ++ "!"
+
+        Second _ ->
+            "It will bloom again on our new world"
 
 
 isFilling : Model -> Tile -> Bool
@@ -390,6 +432,30 @@ flowerBackground seed =
 
 
 
+-- Fade Overlay
+
+
+fadeOverlay : Model -> Element msg
+fadeOverlay model =
+    case model.sequence of
+        FadingOut ->
+            fadeOverlay_
+
+        _ ->
+            none
+
+
+fadeOverlay_ : Element msg
+fadeOverlay_ =
+    Animated.el (Animations.fadeIn 1800 [ Animation.linear ])
+        [ width fill
+        , height fill
+        , Background.color Palette.background1_
+        ]
+        none
+
+
+
 -- Resource Summary
 
 
@@ -498,9 +564,9 @@ levelEndText model =
     Text.text
         [ centerX
         , Transition.alpha 1000
-        , Element.visibleIf model.levelTextVisible
+        , Element.visibleIf model.textVisible
         ]
-        "We're one step closer..."
+        model.text
 
 
 
@@ -724,12 +790,35 @@ viewWorldSummary seed model =
             el
                 [ width fill
                 , height fill
-                , inFront Chrysanthemum.flowers
+                , inFront (flowersWithText Chrysanthemum.flowers model)
                 ]
                 (html (Chrysanthemum.hills model.window))
 
         _ ->
             none
+
+
+flowersWithText : Element msg -> ViewModel -> Element msg
+flowersWithText flowers model =
+    column
+        [ centerY
+        , centerX
+        , spacing Scale.large
+        ]
+        [ flowers
+        , worldText model
+        ]
+
+
+worldText : ViewModel -> Element msg
+worldText model =
+    Text.text
+        [ Element.visibleIf model.textVisible
+        , Transition.alpha 1000
+        , Text.white
+        , centerX
+        ]
+        model.text
 
 
 

@@ -20,7 +20,7 @@ shape window =
         |> List.indexedMap toHills
         |> List.concatMap (apply window)
         |> Shape.group
-        |> Shape.moveDown (Window.whenNarrow -250 -80 window)
+        |> Shape.moveDown (Window.whenNarrow -250 -100 window)
 
 
 toHills : Int -> ( Color, Color ) -> Window -> List Shape
