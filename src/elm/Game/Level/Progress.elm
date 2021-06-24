@@ -28,7 +28,7 @@ import Game.Config.World as Worlds
 import Game.Level.Tile as Tile exposing (TargetScore(..))
 import Ports
 import Seed exposing (Seed)
-import Utils.Dict
+import Utils.Dict as Dict
 import Utils.List
 
 
@@ -341,7 +341,7 @@ combineWithEmptyScores worlds levels scores =
 scoresAtBeginningOfWorld : Level.Worlds -> Level.Id -> Maybe (Dict String Int)
 scoresAtBeginningOfWorld worlds level =
     targetWorldScores worlds level
-        |> Maybe.map (Utils.Dict.mapValues (always 0))
+        |> Maybe.map (Dict.mapValues (always 0))
 
 
 targetWorldScores : Level.Worlds -> Level.Id -> Maybe (Dict String Int)
@@ -365,7 +365,7 @@ accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
         Just (TargetScore n) ->
-            Utils.Dict.insertWith (+) (Tile.toString setting.tileType) n acc
+            Dict.insertWith (+) (Tile.toString setting.tileType) n acc
 
         Nothing ->
             acc

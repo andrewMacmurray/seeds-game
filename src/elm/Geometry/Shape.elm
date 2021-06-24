@@ -6,6 +6,7 @@ module Geometry.Shape exposing
     , hideIf
     , mirror
     , moveDown
+    , moveUp
     , polygon
     , view
     , window
@@ -125,6 +126,11 @@ hide =
 animate : Animation -> Shape -> Shape
 animate animation =
     update (\a -> { a | animation = Just animation })
+
+
+moveUp : Float -> Shape -> Shape
+moveUp y =
+    moveDown -y
 
 
 moveDown : Float -> Shape -> Shape

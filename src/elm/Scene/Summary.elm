@@ -27,6 +27,7 @@ import Exit exposing (continue, exitWith)
 import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
+import Game.Messages as Messages
 import Html exposing (Html)
 import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
@@ -98,6 +99,7 @@ init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
     , Delay.after 1500 IncrementProgress
+      --, Cmd.none
     )
 
 
@@ -168,7 +170,7 @@ successSequence { context } =
             , ( 1000, ShowSecondText )
             , ( 3000, HiddenSecondText )
             , ( 2000, FadeOut )
-            , ( 2000, ExitToGarden )
+            , ( 2500, ExitToGarden )
             ]
 
     else
@@ -213,7 +215,8 @@ view model =
 type alias ViewModel =
     { window : Window
     , sequence : Sequence
-    , textVisible : TextVisible
+    , levelTextVisible : TextVisible
+    , worldTextVisible : TextVisible
     , text : String
     , worldSummary : WorldSummary
     , resourcesVisible : Bool
@@ -247,7 +250,8 @@ type alias Percent =
 toViewModel : Model -> ViewModel
 toViewModel model =
     { window = model.context.window
-    , textVisible = textVisible model
+    , levelTextVisible = model.levelTextVisible
+    , worldTextVisible = worldTextVisible model
     , resourcesVisible = otherResourcesVisible model
     , text = successText model
     , worldSummary = toWorldSummary model
@@ -257,34 +261,33 @@ toViewModel model =
     }
 
 
-textVisible : Model -> TextVisible
-textVisible model =
-    case toWorldSummary model of
-        WorldSummaryVisible _ ->
-            case model.worldText of
-                First visible ->
-                    visible
+worldTextVisible : Model -> TextVisible
+worldTextVisible model =
+    case model.worldText of
+        First visible ->
+            visible
 
-                Second visible ->
-                    visible
-
-        WorldSummaryHidden ->
-            model.levelTextVisible
+        Second visible ->
+            visible
 
 
 successText : Model -> String
 successText model =
     case toWorldSummary model of
         WorldSummaryHidden ->
-            levelSuccessText
+            levelSuccessText model.context
 
         WorldSummaryVisible seed ->
             worldSuccessText seed model
 
 
-levelSuccessText : String
+levelSuccessText : Context -> String
 levelSuccessText =
-    "We're one step closer..."
+    Messages.pickFrom "We're one step closer..."
+        [ "More seeds for our new home..."
+        , "A triumph for our seeds!"
+        , "You're saving the world, seed by seed!"
+        ]
 
 
 worldSuccessText : Seed -> Model -> String
@@ -294,7 +297,7 @@ worldSuccessText seed model =
             "You saved the " ++ Seed.name seed ++ "!"
 
         Second _ ->
-            "It will bloom again on our new world"
+            "It will bloom again on our new world..."
 
 
 isFilling : Model -> Tile -> Bool
@@ -564,7 +567,7 @@ levelEndText model =
     Text.text
         [ centerX
         , Transition.alpha 1000
-        , Element.visibleIf model.textVisible
+        , Element.visibleIf model.levelTextVisible
         ]
         model.text
 
@@ -786,6 +789,14 @@ worldSummary_ model =
 viewWorldSummary : Seed -> ViewModel -> Element msg
 viewWorldSummary seed model =
     case seed of
+        Seed.Sunflower ->
+            el
+                [ width fill
+                , height fill
+                , inFront (flowersWithText Sunflower.flowers model)
+                ]
+                (html (Sunflower.hills model.window))
+
         Seed.Chrysanthemum ->
             el
                 [ width fill
@@ -803,7 +814,8 @@ flowersWithText flowers model =
     column
         [ centerY
         , centerX
-        , spacing Scale.large
+        , moveUp Scale.large
+        , spacing Scale.medium
         ]
         [ flowers
         , worldText model
@@ -813,7 +825,7 @@ flowersWithText flowers model =
 worldText : ViewModel -> Element msg
 worldText model =
     Text.text
-        [ Element.visibleIf model.textVisible
+        [ Element.visibleIf model.worldTextVisible
         , Transition.alpha 1000
         , Text.white
         , centerX

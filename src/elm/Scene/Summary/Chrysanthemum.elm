@@ -12,6 +12,7 @@ import Element exposing (..)
 import Element.Animations as Animations
 import Element.Flower.Chrysanthemum as Chrysanthemum
 import Element.Palette as Palette
+import Element.Scale as Scale exposing (edges)
 import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
@@ -37,26 +38,32 @@ background =
 
 flowers : Element msg
 flowers =
-    row [ centerX, centerY ]
+    column
+        [ centerX
+        , spacing Scale.small
+        , paddingEach { edges | bottom = Scale.medium }
+        ]
         [ el
-            [ moveDown 25
-            , moveRight 0
-            , bee { x = 0, y = -16, delay = 1600 }
-            ]
-            (flower { size = 75, delay = 300 })
-        , el
-            [ moveUp 45
+            [ centerX
             , bee { x = 0, y = 15, delay = 0 }
             , bee { x = -25, y = -5, delay = 500 }
             , bee { x = 25, y = -25, delay = 700 }
             ]
             (flower { size = 125, delay = 0 })
-        , el
-            [ moveDown 25
-            , moveLeft 0
-            , bee { x = 0, y = -5, delay = 1200 }
+        , row
+            [ centerX
+            , spacing (Scale.extraLarge + Scale.large)
             ]
-            (flower { size = 75, delay = 600 })
+            [ el
+                [ bee { x = 0, y = -16, delay = 1600 }
+                ]
+                (flower { size = 75, delay = 300 })
+            , el
+                [ bee { x = 0, y = -5, delay = 1200 }
+                , alignRight
+                ]
+                (flower { size = 75, delay = 600 })
+            ]
         ]
 
 

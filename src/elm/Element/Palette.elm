@@ -389,7 +389,10 @@ background2_ =
 
 seedPodBackground : Attribute msg
 seedPodBackground =
-    Background.split ( lime5, lime4 )
+    Background.split
+        { left = lime5
+        , right = lime4
+        }
 
 
 

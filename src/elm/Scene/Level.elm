@@ -10,7 +10,6 @@ module Scene.Level exposing
 
 import Context exposing (Context)
 import Delay
-import Dict exposing (Dict)
 import Element exposing (..)
 import Element.Button.Cancel as Cancel
 import Element.Info as Info
@@ -37,6 +36,7 @@ import Game.Level.Tile as Tile
 import Game.Level.Tile.Constant as Start
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Game.Lives as Lives
+import Game.Messages as Messages
 import Html exposing (Html, div)
 import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
@@ -47,7 +47,6 @@ import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
 import Utils.Attribute as Attribute
-import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Html.Style as Style
 import Utils.Update as Update exposing (andCmds)
@@ -951,23 +950,10 @@ infoContent context prompt =
 
 
 successMessage : Context -> String
-successMessage context =
-    successMessages
-        |> Dict.get (nextMessageIndex context)
-        |> Maybe.withDefault "Win!"
-
-
-nextMessageIndex : Context -> Int
-nextMessageIndex context =
-    modBy (Dict.size successMessages) context.successMessageIndex
-
-
-successMessages : Dict Int String
-successMessages =
-    indexedDictFrom 0
+successMessage =
+    Messages.pickFrom "Win!"
         [ "Level Complete!"
         , "Success!"
-        , "Win!"
         ]
 
 

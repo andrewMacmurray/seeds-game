@@ -34,7 +34,7 @@ import Game.Board.Coord as Coord exposing (Coord)
 import Game.Board.Move as Move exposing (Move)
 import Game.Board.Tile as Tile exposing (Tile(..))
 import Seed exposing (Seed)
-import Utils.Dict
+import Utils.Dict as Dict
 
 
 
@@ -137,7 +137,7 @@ findBlockAt c =
 
 matchBlock : (Block -> Bool) -> Board -> Maybe Move
 matchBlock f =
-    board_ >> Utils.Dict.findValue f >> Maybe.map toMove
+    board_ >> Dict.findValue f >> Maybe.map toMove
 
 
 

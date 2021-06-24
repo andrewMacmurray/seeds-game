@@ -63,7 +63,10 @@ split_ attrs options =
             [ Style.width options.size
             , Style.height options.size
             , Style.rounded options.size
-            , Style.splitBackground ( options.left, options.right )
+            , Style.splitBackground
+                { left = options.left
+                , right = options.right
+                }
             ]
             attrs
         )

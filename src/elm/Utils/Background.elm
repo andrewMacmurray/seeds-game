@@ -1,4 +1,8 @@
-module Utils.Background exposing (Split, split, splitGradient)
+module Utils.Background exposing
+    ( Split
+    , split
+    , splitGradient
+    )
 
 import Element exposing (Attribute, Color)
 import Utils.Color as Color
@@ -6,8 +10,14 @@ import Utils.Element as Element
 import Utils.Unit as Unit
 
 
+
+-- Split Background
+
+
 type alias Split =
-    ( Color, Color )
+    { left : Color
+    , right : Color
+    }
 
 
 split : Split -> Attribute msg
@@ -25,7 +35,7 @@ splitGradient split_ =
 
 
 splitGradient_ : Split -> String
-splitGradient_ ( left, right ) =
+splitGradient_ { left, right } =
     String.join ", "
         [ Unit.deg 90
         , Color.toString left

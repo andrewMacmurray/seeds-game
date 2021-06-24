@@ -1,6 +1,6 @@
 module Utils.Dict exposing
     ( findValue
-    , indexedDictFrom
+    , indexedFrom
     , insertWith
     , mapValues
     )
@@ -10,7 +10,7 @@ import Dict exposing (Dict)
 
 mapValues : (a -> b) -> Dict comparable a -> Dict comparable b
 mapValues f =
-    Dict.map <| always f
+    Dict.map (always f)
 
 
 insertWith : (a -> a -> a) -> comparable -> a -> Dict comparable a -> Dict comparable a
@@ -22,31 +22,29 @@ insertWith f k v dict =
         Dict.insert k v dict
 
 
-indexedDictFrom : Int -> List a -> Dict Int a
-indexedDictFrom n xs =
-    xs
-        |> List.indexedMap (\i x -> ( i + n, x ))
-        |> Dict.fromList
+indexedFrom : Int -> List a -> Dict Int a
+indexedFrom n =
+    List.indexedMap (\i x -> ( i + n, x )) >> Dict.fromList
 
 
 findValue : (a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
 findValue f =
-    find <| always f
+    find (always f)
 
 
 find : (comparable -> a -> Bool) -> Dict comparable a -> Maybe ( comparable, a )
 find predicate =
     let
-        findItem_ predicate_ k v acc =
+        findItem_ k v acc =
             case acc of
                 Just _ ->
                     acc
 
                 Nothing ->
-                    if predicate_ k v then
+                    if predicate k v then
                         Just ( k, v )
 
                     else
                         Nothing
     in
-    Dict.foldl (findItem_ predicate) Nothing
+    Dict.foldl findItem_ Nothing
