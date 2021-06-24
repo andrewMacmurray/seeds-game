@@ -95,8 +95,7 @@ type Destination
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-      --, Delay.after 1500 IncrementProgress
-    , Cmd.none
+    , Delay.after 1500 IncrementProgress
     )
 
 
@@ -104,7 +103,7 @@ initialState : Context -> Model
 initialState context =
     { context = context
     , worldText = First False
-    , sequence = FlowersBlooming
+    , sequence = Visible
     , levelTextVisible = False
     }
 
