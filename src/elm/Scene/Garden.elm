@@ -28,7 +28,7 @@ import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Hills as Hills
 import Scene.Garden.Sunflower as Sunflower
-import Seed exposing (Seed(..))
+import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
@@ -251,13 +251,13 @@ seeds seed =
 flowers : Seed -> Element msg
 flowers seed =
     case seed of
-        Sunflower ->
+        Seed.Sunflower ->
             Sunflower.flowers
 
-        Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Chrysanthemum.flowers
 
-        Cornflower ->
+        Seed.Cornflower ->
             Cornflower.flowers
 
         _ ->
@@ -267,13 +267,13 @@ flowers seed =
 textColor : Seed -> Color
 textColor seed =
     case seed of
-        Sunflower ->
+        Seed.Sunflower ->
             Palette.white
 
-        Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Palette.purple9
 
-        Cornflower ->
+        Seed.Cornflower ->
             Palette.yellow1
 
         _ ->
