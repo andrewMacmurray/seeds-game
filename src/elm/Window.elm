@@ -2,7 +2,6 @@ module Window exposing
     ( Size(..)
     , Width(..)
     , Window
-    , isNarrow
     , size
     , vh
     , vw
@@ -77,16 +76,6 @@ whenNarrow a b window =
 
         _ ->
             b
-
-
-isNarrow : Window -> Bool
-isNarrow window =
-    case width window of
-        Narrow ->
-            True
-
-        _ ->
-            False
 
 
 

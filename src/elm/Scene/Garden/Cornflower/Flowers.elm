@@ -2,22 +2,25 @@ module Scene.Garden.Cornflower.Flowers exposing (flowers)
 
 import Element exposing (..)
 import Element.Flower.Cornflower as Cornflower
+import Element.Scale as Scale
 import Scene.Garden.Cornflower.Sprites as Ladybird
 import Simple.Animation as Animation
 
 
 flowers : Element msg
 flowers =
-    column [ centerX ]
+    column
+        [ centerX
+        , spacing -Scale.extraLarge
+        ]
         [ el
-            [ moveDown 80
-            , moveRight 10
+            [ moveRight 10
             , ladybird { angle = 35, x = 35, y = 30, delay = 0 }
             , ladybird { angle = 90, x = 120, y = 180, delay = 1300 }
             , ladybird { angle = 155, x = 210, y = 90, delay = 600 }
             ]
             (flower 215)
-        , row []
+        , row [ height (px 75) ]
             [ el [ moveLeft 40 ] (flower 120)
             , el [ moveRight 40 ] (flower 120)
             ]

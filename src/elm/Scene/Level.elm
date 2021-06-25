@@ -2,16 +2,14 @@ module Scene.Level exposing
     ( Model
     , Msg
     , Status(..)
-    , getContext
     , init
     , menuOptions
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
-import Dict exposing (Dict)
+import Delay
 import Element exposing (..)
 import Element.Button.Cancel as Cancel
 import Element.Info as Info
@@ -38,6 +36,7 @@ import Game.Level.Tile as Tile
 import Game.Level.Tile.Constant as Start
 import Game.Level.Tutorial as Tutorial exposing (Tutorial)
 import Game.Lives as Lives
+import Game.Messages as Messages
 import Html exposing (Html, div)
 import Scene.Level.Board as Board
 import Scene.Level.Board.LineDrag as LineDrag
@@ -48,11 +47,9 @@ import Scene.Level.TopBar as TopBar
 import Scene.Level.Tutorial as Tutorial
 import Seed
 import Utils.Attribute as Attribute
-import Utils.Delay as Delay
-import Utils.Dict exposing (indexedDictFrom)
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import Utils.Update exposing (andCmds)
+import Utils.Update as Update exposing (andCmds)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -126,20 +123,6 @@ type LevelEndPrompt
     | NoMovesLeft
     | RestartAreYouSure
     | ExitAreYouSure
-
-
-
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
 
 
 
@@ -280,10 +263,10 @@ update msg model =
             continue { model | info = Info.hidden } []
 
         PromptRestart ->
-            continue (updateContext Context.closeMenu model) [ handleRestartPrompt model ]
+            continue (Update.withContext Context.closeMenu model) [ handleRestartPrompt model ]
 
         PromptExit ->
-            continue (updateContext Context.closeMenu model) [ handleExitPrompt model ]
+            continue (Update.withContext Context.closeMenu model) [ handleExitPrompt model ]
 
         LevelWon ->
             exitWith Win model
@@ -295,13 +278,13 @@ update msg model =
             exitWith Restart model
 
         RestartLevelLoseLife ->
-            exitWith Restart (updateContext Context.decrementLife model)
+            exitWith Restart (Update.withContext Context.decrementLife model)
 
         ExitLevel ->
             exitWith Exit model
 
         ExitLevelLoseLife ->
-            exitWith Exit (updateContext Context.decrementLife model)
+            exitWith Exit (Update.withContext Context.decrementLife model)
 
 
 
@@ -485,7 +468,7 @@ endMove =
 
 triggerRelease : Cmd Msg
 triggerRelease =
-    Delay.trigger ReleaseTile
+    Update.trigger ReleaseTile
 
 
 releaseTiles : Model -> Model
@@ -666,7 +649,7 @@ checkLevelComplete : Model -> Exit.With Status ( Model, Cmd Msg )
 checkLevelComplete model =
     let
         disableMenu =
-            updateContext Context.disableMenu
+            Update.withContext Context.disableMenu
     in
     if hasWon model then
         continue (disableMenu { model | levelStatus = Win }) [ winSequence ]
@@ -706,19 +689,19 @@ scoreIsReached model =
 handleExitPrompt : Model -> Cmd Msg
 handleExitPrompt model =
     if model.levelStatus == NotStarted then
-        Delay.trigger ExitLevel
+        Update.trigger ExitLevel
 
     else
-        Delay.trigger (ShowInfo ExitAreYouSure)
+        Update.trigger (ShowInfo ExitAreYouSure)
 
 
 handleRestartPrompt : Model -> Cmd Msg
 handleRestartPrompt model =
     if model.levelStatus == NotStarted then
-        Delay.trigger RestartLevel
+        Update.trigger RestartLevel
 
     else
-        Delay.trigger (ShowInfo RestartAreYouSure)
+        Update.trigger (ShowInfo RestartAreYouSure)
 
 
 
@@ -954,10 +937,10 @@ infoContent : Context -> LevelEndPrompt -> Element Msg
 infoContent context prompt =
     case prompt of
         Success ->
-            Text.text [ centerX, Text.white, Text.large ] (successMessage context)
+            Text.text [ centerX, Text.white, Text.f3 ] (successMessage context)
 
         NoMovesLeft ->
-            Text.text [ centerX, Text.white, Text.large ] "No more moves!"
+            Text.text [ centerX, Text.white, Text.f3 ] "No more moves!"
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife
@@ -967,23 +950,10 @@ infoContent context prompt =
 
 
 successMessage : Context -> String
-successMessage context =
-    successMessages
-        |> Dict.get (nextMessageIndex context)
-        |> Maybe.withDefault "Win!"
-
-
-nextMessageIndex : Context -> Int
-nextMessageIndex context =
-    modBy (Dict.size successMessages) context.successMessageIndex
-
-
-successMessages : Dict Int String
-successMessages =
-    indexedDictFrom 0
+successMessage =
+    Messages.pickFrom "Win!"
         [ "Level Complete!"
         , "Success!"
-        , "Win!"
         ]
 
 

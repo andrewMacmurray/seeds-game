@@ -2,16 +2,15 @@ module Scene.Title exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , menuOptions
     , subscriptions
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Button as Button
@@ -25,9 +24,9 @@ import Html exposing (Html)
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Simple.Animation as Animation
 import Utils.Animated as Animated
-import Utils.Delay exposing (sequence)
 import Utils.Element exposing (verticalGap)
 import Utils.Function exposing (apply)
+import Utils.Update as Update
 import View.Menu as Menu
 
 
@@ -62,17 +61,7 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
+-- Menu
 
 
 menuOptions : List (Menu.Option Msg)
@@ -109,11 +98,11 @@ update msg model =
             continue { model | fade = Disappearing } []
 
         PlayIntro ->
-            continue (updateContext Context.disableMenu model) [ playIntroMusic () ]
+            continue (Update.withContext Context.disableMenu model) [ playIntroMusic () ]
 
         IntroMusicPlaying ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, FadeSeeds )
                     , ( 2000, GoToIntro )
                     ]
@@ -183,7 +172,7 @@ titleText model =
 titleText_ : Element msg
 titleText_ =
     Text.text
-        [ Text.large
+        [ Text.f3
         , Text.wideSpaced
         , centerX
         ]

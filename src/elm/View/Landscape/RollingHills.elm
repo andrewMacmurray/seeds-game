@@ -1,7 +1,6 @@
 module View.Landscape.RollingHills exposing
     ( Element
     , doubleLayer
-    , doubleLayerWithCurve
     , element
     )
 
@@ -26,13 +25,8 @@ doubleLayer =
     doubleLayerWithCurve_ 1
 
 
-doubleLayerWithCurve : Float -> Window -> Color -> Color -> Svg msg
-doubleLayerWithCurve curve window left right =
-    doubleLayerWithCurve_ curve window ( left, [] ) ( right, [] )
-
-
 doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =
-    Svg.g [ Style.svgStyle [ Style.transform [ Transform.translate 0 0 ] ] ]
+    Svg.g [ Style.svg [ Style.transform [ Transform.translate 0 0 ] ] ]
         [ hillFullScreen window
             { color = leftColor
             , elements = leftElements
@@ -126,6 +120,6 @@ hill color r cx cy =
         , cy_ cy
         , r_ r
         , fill color
-        , Style.svgStyle [ Style.transform [ Transform.translateY r ] ]
+        , Style.svg [ Style.transform [ Transform.translateY r ] ]
         ]
         []

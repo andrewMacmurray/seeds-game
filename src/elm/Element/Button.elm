@@ -194,12 +194,12 @@ toFontSize : Button_ msg -> List (Attribute msg)
 toFontSize button_ =
     case button_.size of
         Regular ->
-            [ Text.medium
+            [ Text.f5
             , Text.wideSpaced
             ]
 
         Small ->
-            [ Text.small
+            [ Text.f6
             , Text.spaced
             ]
 

@@ -8,9 +8,9 @@ module Game.Board.Generate exposing
     )
 
 import Game.Board as Board exposing (Board)
-import Game.Board.Block as Block exposing (Block(..))
+import Game.Board.Block as Block
 import Game.Board.Coord exposing (Coord)
-import Game.Board.Move as Move
+import Game.Board.Move as Move exposing (Move)
 import Game.Board.Tile exposing (State(..), Tile(..))
 import Game.Level.Tile as Tile exposing (Probability(..))
 import Random exposing (Generator)
@@ -107,13 +107,12 @@ numberOfEmpties =
 
 insertEnteringTiles : List Tile -> Board -> Board
 insertEnteringTiles newTiles board_ =
-    let
-        tilesToAdd =
-            board_
-                |> emptyCoords
-                |> List.map2 (\tile coord -> Move.move coord (Space (Entering tile))) newTiles
-    in
-    Board.placeMoves board_ tilesToAdd
+    Board.placeMoves board_ (newEnteringMoves newTiles board_)
+
+
+newEnteringMoves : List Tile -> Board -> List Move
+newEnteringMoves newTiles =
+    emptyCoords >> List.map2 (\tile coord -> Move.move coord (Block.entering tile)) newTiles
 
 
 emptyCoords : Board -> List Coord

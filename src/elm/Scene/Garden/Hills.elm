@@ -42,7 +42,7 @@ toHills context index { world, levels } =
 
 isIncomplete : List Level.Id -> Progress -> Bool
 isIncomplete levels =
-    Progress.worldComplete levels >> not
+    Progress.worldIsCompleted levels >> not
 
 
 getHill : Window -> Seed -> Shape

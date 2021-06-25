@@ -2,14 +2,13 @@ module Scene.Retry exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animation as Animation
 import Element.Animations as Animations
@@ -23,7 +22,7 @@ import Html exposing (..)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
-import Utils.Delay exposing (after)
+import Utils.Update as Update
 import Window exposing (Window, vh)
 
 
@@ -32,7 +31,8 @@ import Window exposing (Window, vh)
 
 
 type alias Model =
-    Context
+    { context : Context
+    }
 
 
 type Msg
@@ -47,27 +47,13 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext =
-    identity
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext =
-    identity
-
-
-
 -- Init
 
 
 init : Context -> ( Model, Cmd Msg )
 init context =
-    ( context
-    , after 1000 DecrementLives
+    ( { context = context }
+    , Delay.after 1000 DecrementLives
     )
 
 
@@ -79,7 +65,7 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         DecrementLives ->
-            continue (updateContext Context.decrementLife model) []
+            continue (Update.withContext Context.decrementLife model) []
 
         RestartLevelClicked ->
             exitWith ToLevel model
@@ -94,19 +80,16 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Layout.fadeIn
-        { duration = 1000
-        , attributes = []
-        }
+    Layout.fadeIn []
         (column
             [ centerX
             , centerY
             , spacing Scale.large
             , moveUp 20
             ]
-            [ el [] (html (Lives.view model.lives))
+            [ el [] (html (Lives.view model.context.lives))
             , tryAgainText
-            , Animated.el (bounceInButton model.window) [ centerX ] tryAgain
+            , Animated.el (bounceInButton model.context.window) [ centerX ] tryAgain
             ]
         )
 
@@ -152,4 +135,4 @@ bounceInButton window =
 
 largeText : String -> Element msg
 largeText =
-    Text.text [ centerX, Text.large ]
+    Text.text [ centerX, Text.f3 ]

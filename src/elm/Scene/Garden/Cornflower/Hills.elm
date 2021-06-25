@@ -20,7 +20,7 @@ shape window =
         |> List.indexedMap toHills
         |> List.concatMap (apply window)
         |> Shape.group
-        |> Shape.moveDown (Window.whenNarrow -250 -80 window)
+        |> Shape.moveUp (Window.whenNarrow 250 150 window)
 
 
 toHills : Int -> ( Color, Color ) -> Window -> List Shape
@@ -39,13 +39,13 @@ cycleColors i =
             ( Palette.yellow7, Palette.yellow6 )
 
         1 ->
-            ( Palette.yellow6, Palette.yellow3 )
+            ( Palette.yellow6, Palette.yellow4 )
 
         2 ->
             ( Palette.yellow7, Palette.yellow8 )
 
         _ ->
-            ( Palette.yellow3, Palette.yellow5 )
+            ( Palette.yellow4, Palette.yellow5 )
 
 
 hillPair : { offset : Float, left : Color, right : Color } -> Window -> List Shape

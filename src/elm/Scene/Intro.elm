@@ -1,14 +1,13 @@
 module Scene.Intro exposing
     ( Model
     , Msg
-    , getContext
     , init
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Background as Background
 import Element.Events exposing (onClick)
@@ -22,7 +21,6 @@ import Html exposing (Html)
 import Scene.Intro.DyingLandscape as DL
 import Scene.Intro.GrowingSeeds as GS
 import Scene.Intro.SunflowerMeadow as SM
-import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Window exposing (vh)
 
@@ -65,20 +63,6 @@ type Msg
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
-
-
-
 -- Init
 
 
@@ -102,7 +86,7 @@ initialState context =
 
 introSequence : Cmd Msg
 introSequence =
-    sequence
+    Delay.sequence
         [ ( 100, SetBackground Palette.green9 )
         , ( 1000, ShowDyingLandscape )
         , ( 4000, SetBackground Palette.lightGreyYellow )
@@ -202,7 +186,7 @@ sceneText model =
         [ Text.color model.textColor
         , Element.visibleIf model.textVisible
         , Transition.alpha 1000
-        , Text.large
+        , Text.f3
         , moveDown (vh model.context.window / 5)
         , centerX
         ]

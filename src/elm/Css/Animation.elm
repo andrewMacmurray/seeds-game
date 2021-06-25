@@ -4,7 +4,6 @@ module Css.Animation exposing
     , Option
     , Property
     , animation
-    , count
     , cubicBezier
     , delay
     , ease
@@ -12,7 +11,6 @@ module Css.Animation exposing
     , frame
     , infinite
     , keyframes
-    , linear
     , opacity
     , transform
     )
@@ -59,11 +57,6 @@ ease =
     option <| animationTimingFunction "ease"
 
 
-linear : Option
-linear =
-    option <| animationTimingFunction "linear"
-
-
 cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
     option <| animationTimingFunction (cubicBezier_ a b c d)
@@ -72,11 +65,6 @@ cubicBezier a b c d =
 infinite : Option
 infinite =
     option <| animationIterationCount "infinite"
-
-
-count : Int -> Option
-count n =
-    option <| animationIterationCount <| String.fromInt n
 
 
 

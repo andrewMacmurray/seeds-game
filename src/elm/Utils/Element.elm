@@ -6,6 +6,7 @@ module Utils.Element exposing
     , id
     , onClickIf
     , originBottom
+    , originPercent
     , preventScroll
     , showIfJust
     , square
@@ -17,6 +18,11 @@ module Utils.Element exposing
 import Element exposing (..)
 import Element.Events exposing (onClick)
 import Html.Attributes
+import Utils.Unit as Unit
+
+
+
+-- Utils
 
 
 showIfJust : (a -> Element msg) -> Maybe a -> Element msg
@@ -65,7 +71,17 @@ preventScroll =
 
 originBottom : Attribute msg
 originBottom =
-    style "transform-origin" "bottom"
+    origin_ "bottom"
+
+
+originPercent : Float -> Float -> Attribute msg
+originPercent x y =
+    origin_ (Unit.pc x ++ " " ++ Unit.pc y)
+
+
+origin_ : String -> Attribute msg
+origin_ =
+    style "transform-origin"
 
 
 onClickIf : Bool -> msg -> Attribute msg

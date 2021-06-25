@@ -1,22 +1,26 @@
 module Element.Seed exposing
     ( Options
     , chrysanthemum
+    , extraSmall
     , fill
     , grey
     , lupin
     , marigold
+    , medium
     , rose
     , size
+    , small
     , sunflower
     , view
     )
 
-import Element exposing (Attribute, Element)
+import Element exposing (Element)
 import Element.Palette as Palette
 import Element.Seed.Circle as Circle
 import Element.Seed.Mono as Mono
 import Element.Seed.Twin as Twin
 import Seed exposing (Seed)
+import Utils.Element as Element
 
 
 
@@ -43,6 +47,21 @@ size : Int -> Options
 size n =
     { size = Pixels n
     }
+
+
+medium : Options
+medium =
+    size 50
+
+
+small : Options
+small =
+    size 35
+
+
+extraSmall : Options
+extraSmall =
+    size 20
 
 
 
@@ -145,14 +164,9 @@ lupin =
 
 sized : Element msg -> Options -> Element msg
 sized el_ options =
-    Element.el [ toWidth options.size ] el_
-
-
-toWidth : Size -> Attribute msg
-toWidth size_ =
-    case size_ of
+    case options.size of
         Fill ->
-            Element.width Element.fill
+            el_
 
         Pixels n ->
-            Element.width (Element.px n)
+            Element.square n [] el_

@@ -1,128 +1,231 @@
 module Scene.Summary.Chrysanthemum exposing
-    ( background
-    , hidden
-    , visible
+    ( flowers
+    , hills
+    , hills_
     )
 
-import Css.Color as Color exposing (Color)
-import Css.Style as Style
-import Css.Transform as Transform
-import Css.Transition as Transition
+import Axis2d exposing (Axis2d)
+import Circle2d exposing (Circle2d)
+import Direction2d
+import Element exposing (..)
+import Element.Animations as Animations
 import Element.Flower.Chrysanthemum as Chrysanthemum
+import Element.Palette as Palette
+import Element.Scale as Scale exposing (edges)
+import Geometry.Shape as Shape exposing (Shape)
+import Pixels exposing (Pixels)
+import Point2d exposing (Point2d)
+import Scene.Garden.Chrysanthemum.Sprites as Bee
+import Simple.Animation as Animation
 import Svg exposing (Svg)
-import Svg.Attributes exposing (..)
-import Utils.Svg exposing (..)
-import View.Landscape.RollingHills as Hills
-import Window exposing (Window)
+import Utils.Geometry exposing (down)
+import Window exposing (Window, vh, vw)
 
 
-visible : Window -> Svg msg
-visible =
-    view Visible
+
+-- Flowers
 
 
-hidden : Window -> Svg msg
-hidden =
-    view Hidden
-
-
-background : Color
-background =
-    Color.purple
-
-
-type Visibility
-    = Visible
-    | Hidden
-
-
-view : Visibility -> Window -> Svg msg
-view visibility window =
-    Svg.svg
-        [ windowViewBox_ window
-        , class "fixed z-1 top-0"
+flowers : Element msg
+flowers =
+    column
+        [ centerX
+        , spacing Scale.small
+        , paddingEach { edges | bottom = Scale.medium }
         ]
-        (List.concat
-            [ [ hills "#E268C4" "#F09AEF" -550 1500 visibility window
-              , hills red "#9665B4" -440 1200 visibility window
-              , hills "#FFA538" "#623D79" -330 900 visibility window
-              , hills "#E268C4" "#F09AEF" -220 600 visibility window
-              , hills darkPink "#9665B4" -110 300 visibility window
-              , hills "#FFA538" "#623D79" 0 0 visibility window
-              ]
-            , flowers visibility window
+        [ el
+            [ centerX
+            , bee { x = 0, y = 15, delay = 0 }
+            , bee { x = -25, y = -5, delay = 500 }
+            , bee { x = 25, y = -25, delay = 700 }
+            ]
+            (flower { size = 125, delay = 0 })
+        , row
+            [ centerX
+            , spacing (Scale.extraLarge + Scale.large)
+            ]
+            [ el
+                [ bee { x = 0, y = -16, delay = 1600 }
+                ]
+                (flower { size = 75, delay = 300 })
+            , el
+                [ bee { x = 0, y = -5, delay = 1200 }
+                , alignRight
+                ]
+                (flower { size = 75, delay = 600 })
+            ]
+        ]
+
+
+type alias BeeOptions =
+    { x : Float
+    , y : Float
+    , delay : Animation.Millis
+    }
+
+
+bee : BeeOptions -> Attribute msg
+bee options =
+    inFront
+        (el
+            [ centerX
+            , centerY
+            , moveRight options.x
+            , moveDown options.y
+            ]
+            (Bee.bee { delay = options.delay + 3000 })
+        )
+
+
+type alias FlowerOptions =
+    { size : Int
+    , delay : Animation.Millis
+    }
+
+
+flower : FlowerOptions -> Element msg
+flower options =
+    el [ width (px options.size) ] (html (Chrysanthemum.animated (1000 + options.delay)))
+
+
+
+-- Hills
+
+
+hills : Window -> Svg msg
+hills window =
+    Shape.window window [] (hills_ window)
+
+
+hills_ : Window -> Shape
+hills_ window =
+    List.range 0 5
+        |> List.map (cycleHills >> hillTrio window)
+        |> Shape.group
+        |> Shape.moveDown (sceneOffset window)
+
+
+sceneOffset : Window -> number
+sceneOffset =
+    Window.whenNarrow 400 350
+
+
+cycleHills : Int -> HillTrio
+cycleHills i =
+    case modBy 4 i of
+        0 ->
+            { order = i
+            , offset = toOffset i
+            , left = Palette.purple5
+            , middle = Palette.purple1
+            , right = Palette.purple5
+            }
+
+        1 ->
+            { order = i
+            , offset = toOffset i
+            , left = Palette.purple6
+            , middle = Palette.purple2
+            , right = Palette.purple6
+            }
+
+        2 ->
+            { order = i
+            , offset = toOffset i
+            , left = Palette.purple8
+            , middle = Palette.purple1
+            , right = Palette.purple8
+            }
+
+        _ ->
+            { order = i
+            , offset = toOffset i
+            , left = Palette.purple9
+            , middle = Palette.purple2
+            , right = Palette.purple9
+            }
+
+
+toOffset : Int -> Float
+toOffset i =
+    -430 + toFloat i * 180
+
+
+type alias HillTrio =
+    { order : Int
+    , offset : Float
+    , left : Color
+    , middle : Color
+    , right : Color
+    }
+
+
+hillTrio : Window -> HillTrio -> Shape
+hillTrio window { offset, right, middle, left, order } =
+    Shape.group
+        [ roundHill offset right window
+            |> animateHill order 400
+        , Shape.mirror (roundHill offset left window)
+            |> animateHill order 400
+        , middleHill offset window middle
+            |> animateHill order 0
+        ]
+
+
+animateHill : Int -> Animation.Millis -> Shape -> Shape
+animateHill order delay =
+    Shape.animate
+        (Animations.fadeIn 600
+            [ Animation.delay (800 + (150 * (5 - order) + delay))
             ]
         )
 
 
-red =
-    Color.rgb 226 64 64
+middleHill : Float -> Window -> Color -> Shape
+middleHill y w c =
+    Shape.circle { fill = c } (middleHill_ y w)
 
 
-darkPink =
-    Color.rgb 218 37 131
+roundHill : Float -> Color -> Window -> Shape
+roundHill y color window =
+    Shape.circle { fill = color } (roundHill_ y window)
 
 
-flowers visibility window =
-    case visibility of
-        Hidden ->
-            []
-
-        Visible ->
-            [ chrysanthemum window 150 1000
-            , chrysanthemum window 75 1500 |> translated -100 60
-            , chrysanthemum window 75 2000 |> translated 100 60
-            ]
+middleHill_ : Float -> Window -> Circle2d Pixels coordinates
+middleHill_ y w =
+    Circle2d.translateBy (down y)
+        (Circle2d.atPoint
+            (Point2d.pixels (vw w / 2) (vh w - 60))
+            (Pixels.pixels 680)
+        )
 
 
-hills : Color -> Color -> Float -> Int -> Visibility -> Window -> Svg msg
-hills left right offset delay visibility window =
-    let
-        curve =
-            ifNarrow window 1.6 1.3
-
-        y =
-            case visibility of
-                Hidden ->
-                    toFloat <| window.height // 2
-
-                Visible ->
-                    offset + 150
-
-        translateStyles d el =
-            Svg.g
-                [ Style.svgStyle
-                    [ Transition.transition "transform"
-                        3000
-                        [ Transition.cubicBezier 0 0 0 1
-                        , Transition.delay d
-                        ]
-                    , Style.transform [ Transform.translateY y ]
-                    ]
-                ]
-                [ el ]
-    in
-    Hills.doubleLayerWithCurve curve window left right |> translateStyles (delay + 500)
+roundHill_ : Float -> Window -> Circle2d Pixels coordinates
+roundHill_ y w =
+    Circle2d.translateBy (down (roundHillOffset y w))
+        (Circle2d.atPoint
+            (point w)
+            (Pixels.pixels (roundHillSize w))
+        )
 
 
-ifNarrow : Window -> a -> a -> a
-ifNarrow window a b =
-    case Window.width window of
-        Window.Narrow ->
-            a
-
-        _ ->
-            b
+roundHillOffset : number -> Window -> number
+roundHillOffset y =
+    Window.whenNarrow (y - 50) y
 
 
-chrysanthemum : Window -> Float -> Int -> Svg msg
-chrysanthemum window size delay =
-    Svg.svg
-        [ viewBox_ 0 0 size size
-        , x_ <| toFloat window.width / 2
-        , y_ <| toFloat window.height / 2 - 50
-        , width_ size
-        , height_ size
-        ]
-        [ Chrysanthemum.animated delay ]
-        |> translated -(size / 2) -(size / 2)
+roundHillSize : Window -> Float
+roundHillSize w =
+    clamp 385 1800 (vw w / 2)
+
+
+point : Window -> Point2d Pixels coordinates
+point w =
+    Point2d.along (axis w) (Pixels.pixels (vw w / 2))
+
+
+axis : Window -> Axis2d Pixels coordinates
+axis w =
+    Axis2d.withDirection
+        (Direction2d.degrees (vw w / 50))
+        (Point2d.pixels (vw w / 2) (vh w / 2))

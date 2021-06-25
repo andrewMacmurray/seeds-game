@@ -2,37 +2,45 @@ module Scene.Summary exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
-import Css.Animation as Animation exposing (animation, linear)
-import Css.Color as Color exposing (Color)
-import Css.Style as Style exposing (..)
-import Css.Transform exposing (translateX, translateY)
-import Css.Transition as Transition exposing (transition, transitionAll)
+import Delay
+import Element exposing (..)
+import Element.Animation as Animation
+import Element.Animations as Animations
+import Element.Background as Background
+import Element.Flower as Flower
+import Element.Font as Font
 import Element.Icon.RainBank as RainBank
 import Element.Icon.SeedBank as SeedBank
 import Element.Icon.SunBank as SunBank
+import Element.Layout as Layout
+import Element.Palette as Palette
+import Element.Scale as Scale
+import Element.Seed as Seed
+import Element.Text as Text
+import Element.Transition as Transition
+import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
-import Game.Board.Tile exposing (Tile(..))
+import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
-import Html exposing (..)
-import Html.Attributes exposing (class)
-import Ports exposing (cacheProgress)
+import Game.Messages as Messages
+import Html exposing (Html)
 import Scene.Summary.Chrysanthemum as Chrysanthemum
 import Scene.Summary.Cornflower as Cornflower
 import Scene.Summary.Sunflower as Sunflower
-import Seed exposing (Seed(..))
-import Svg exposing (Svg)
-import Utils.Delay exposing (after, sequence, trigger)
+import Seed exposing (Seed)
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Utils.Animated as Animated
+import Utils.Element as Element
 import Utils.Sine as Sine
-import View.Seed as Seed
+import Utils.Update as Update
 import Window exposing (Window)
 
 
@@ -42,11 +50,9 @@ import Window exposing (Window)
 
 type alias Model =
     { context : Context
-    , text : TextState
-    , seedBankState : SeedBankState
-    , resourceState : ResourceState
-    , levelSuccessMessageVisible : Bool
-    , fadeOut : Bool
+    , worldText : WorldText
+    , levelTextVisible : TextVisible
+    , sequence : Sequence
     }
 
 
@@ -65,19 +71,15 @@ type Msg
     | ExitToGarden
 
 
-type SeedBankState
+type Sequence
     = Visible
-    | Leaving
-    | Blooming
+    | ResourcesFilling
+    | SeedShaking
+    | FlowersBlooming
+    | FadingOut
 
 
-type ResourceState
-    = Waiting
-    | Filling
-    | Hidden
-
-
-type TextState
+type WorldText
     = First TextVisible
     | Second TextVisible
 
@@ -92,38 +94,22 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
-
-
-
 -- Init
 
 
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-    , after 1500 IncrementProgress
+    , Delay.after 1500 IncrementProgress
     )
 
 
 initialState : Context -> Model
 initialState context =
     { context = context
-    , text = First False
-    , seedBankState = Visible
-    , resourceState = Waiting
-    , levelSuccessMessageVisible = False
-    , fadeOut = False
+    , worldText = First False
+    , sequence = Visible
+    , levelTextVisible = False
     }
 
 
@@ -135,42 +121,37 @@ update : Msg -> Model -> Exit.With Destination ( Model, Cmd Msg )
 update msg model =
     case msg of
         IncrementProgress ->
-            continue (incrementProgress model) [ trigger CacheProgress ]
+            continue (incrementProgress model) [ Update.trigger CacheProgress ]
 
         CacheProgress ->
             continue model
-                [ cacheProgress <| Progress.toCache model.context.progress
-                , handleSuccessMessage model
+                [ Progress.save model.context.progress
+                , successSequence model
                 ]
 
         ShowLevelSuccess ->
-            continue { model | levelSuccessMessageVisible = True } []
+            continue { model | levelTextVisible = True } []
 
         BeginSeedBankTransformation ->
-            continue
-                { model
-                    | seedBankState = Leaving
-                    , resourceState = Hidden
-                }
-                []
+            continue { model | sequence = SeedShaking } []
 
         BloomWorldFlower ->
-            continue { model | seedBankState = Blooming } []
+            continue { model | sequence = FlowersBlooming } []
 
         ShowFirstText ->
-            continue { model | text = First True } []
+            continue { model | worldText = First True } []
 
         HideFirstText ->
-            continue { model | text = First False } []
+            continue { model | worldText = First False } []
 
         ShowSecondText ->
-            continue { model | text = Second True } []
+            continue { model | worldText = Second True } []
 
         HiddenSecondText ->
-            continue { model | text = Second False } []
+            continue { model | worldText = Second False } []
 
         FadeOut ->
-            continue { model | fadeOut = True } []
+            continue { model | sequence = FadingOut } []
 
         ExitToHub ->
             exitWith ToHub model
@@ -179,22 +160,22 @@ update msg model =
             exitWith ToGarden model
 
 
-handleSuccessMessage : Model -> Cmd Msg
-handleSuccessMessage { context } =
+successSequence : Model -> Cmd Msg
+successSequence { context } =
     if Progress.currentWorldComplete Worlds.all context.progress then
-        sequence
+        Delay.sequence
             [ ( 3000, BeginSeedBankTransformation )
             , ( 4000, BloomWorldFlower )
-            , ( 2000, ShowFirstText )
+            , ( 3000, ShowFirstText )
             , ( 3000, HideFirstText )
             , ( 1000, ShowSecondText )
             , ( 3000, HiddenSecondText )
             , ( 2000, FadeOut )
-            , ( 2000, ExitToGarden )
+            , ( 2500, ExitToGarden )
             ]
 
     else
-        sequence
+        Delay.sequence
             [ ( 2000, ShowLevelSuccess )
             , ( 2500, ExitToHub )
             ]
@@ -203,12 +184,14 @@ handleSuccessMessage { context } =
 incrementProgress : Model -> Model
 incrementProgress model =
     { model
-        | resourceState = Filling
-        , context =
-            model.context
-                |> Context.incrementProgress Worlds.all
-                |> Context.nextMessage
+        | sequence = ResourcesFilling
+        , context = incrementProgress_ model.context
     }
+
+
+incrementProgress_ : Context -> Context
+incrementProgress_ =
+    Context.incrementProgress Worlds.all >> Context.nextMessage
 
 
 
@@ -217,382 +200,533 @@ incrementProgress model =
 
 view : Model -> Html msg
 view model =
-    let
-        seed =
-            currentSeedType model.context.progress
-    in
-    div
-        [ style
-            [ height <| toFloat model.context.window.height
-            , backgroundColor seed model.seedBankState
-            , transition "background" 3000 [ Transition.linear ]
-            , animation "fade-in" 1000 [ Animation.linear ]
-            ]
-        , class "fixed z-5 w-100 top-0 left-0"
+    Layout.fadeIn
+        [ Background.color (background model)
+        , inFront (worldSummary model)
+        , inFront (fadeOverlay model)
+        , Transition.background 3000
         ]
-        [ renderFlowerLayer seed model.context.window model.seedBankState
-        , worldCompleteText seed model
-        , renderResourcesLayer model
-        , renderFadeOut model
-        ]
-
-
-currentSeedType : Progress -> Seed
-currentSeedType progress =
-    progress
-        |> Progress.currentLevelSeedType Worlds.all
-        |> Maybe.withDefault Sunflower
-
-
-backgroundColor : Seed -> SeedBankState -> Style
-backgroundColor seed seedBankState =
-    case seedBankState of
-        Visible ->
-            background Color.washedYellow
-
-        Leaving ->
-            background Color.lightGold
-
-        Blooming ->
-            background <| getBackgroundFor seed
-
-
-renderFlowerLayer : Seed -> Window -> SeedBankState -> Html msg
-renderFlowerLayer seed window seedBankState =
-    let
-        ( flowersHidden, flowersVisible ) =
-            getFlowerLayer seed window
-    in
-    case seedBankState of
-        Leaving ->
-            flowersHidden
-
-        Blooming ->
-            flowersVisible
-
-        _ ->
-            span [] []
-
-
-getFlowerLayer : Seed -> Window -> ( Svg msg, Svg msg )
-getFlowerLayer seed window =
-    case seed of
-        Sunflower ->
-            ( Sunflower.hidden window
-            , Sunflower.visible window
-            )
-
-        Chrysanthemum ->
-            ( Chrysanthemum.hidden window
-            , Chrysanthemum.visible window
-            )
-
-        Cornflower ->
-            ( Cornflower.hidden window
-            , Cornflower.visible window
-            )
-
-        _ ->
-            ( Sunflower.hidden window
-            , Sunflower.visible window
-            )
-
-
-getBackgroundFor : Seed -> Color
-getBackgroundFor seed =
-    case seed of
-        Sunflower ->
-            Sunflower.background
-
-        Chrysanthemum ->
-            Chrysanthemum.background
-
-        Cornflower ->
-            Cornflower.background
-
-        _ ->
-            Sunflower.background
+        (resourceSummary model)
 
 
 
--- Fadeout
+-- View Model
 
 
-renderFadeOut : Model -> Html msg
-renderFadeOut model =
-    if model.fadeOut then
-        fadeOverlay model.context.window
-
-    else
-        span [] []
-
-
-fadeOverlay : Window -> Html msg
-fadeOverlay window =
-    div
-        [ style
-            [ height <| toFloat window.height
-            , opacity 0
-            , Animation.animation "fade-in" 2000 [ Animation.linear ]
-            , Style.backgroundColor Color.lightYellow
-            ]
-        , class "fixed top-0 w-100 z-7"
-        ]
-        []
+type alias ViewModel =
+    { window : Window
+    , sequence : Sequence
+    , levelTextVisible : TextVisible
+    , worldTextVisible : TextVisible
+    , worldTextColor : Color
+    , text : String
+    , worldSummary : WorldSummary
+    , resourcesVisible : Bool
+    , mainResource : Resource
+    , otherResources : List Resource
+    }
 
 
-
--- Complete Text
-
-
-worldCompleteText : Seed -> Model -> Html msg
-worldCompleteText seed model =
-    div
-        [ style
-            [ color Color.white
-            , transitionAll 1000 []
-            , top <| toFloat model.context.window.height / 2 + 80
-            , textVisibility model.text
-            ]
-        , class "tc absolute tracked w-100 z-5"
-        ]
-        [ text <| textContent seed model.text ]
+type alias Resource =
+    { icon : Icon
+    , isFilling : Bool
+    , fill : Percent
+    }
 
 
-textVisibility : TextState -> Style
-textVisibility text =
-    case text of
+type Icon
+    = Rain
+    | Sun
+    | Seed Seed
+
+
+type WorldSummary
+    = WorldSummaryHidden
+    | WorldSummaryVisible Seed
+
+
+type alias Percent =
+    Float
+
+
+toViewModel : Model -> ViewModel
+toViewModel model =
+    { window = model.context.window
+    , levelTextVisible = model.levelTextVisible
+    , worldTextVisible = worldTextVisible model
+    , worldTextColor = worldTextColor model
+    , resourcesVisible = otherResourcesVisible model
+    , text = successText model
+    , worldSummary = toWorldSummary model
+    , sequence = model.sequence
+    , mainResource = toMainResource model
+    , otherResources = toOtherResources model
+    }
+
+
+worldTextVisible : Model -> TextVisible
+worldTextVisible model =
+    case model.worldText of
         First visible ->
-            showIf visible
+            visible
 
         Second visible ->
-            showIf visible
+            visible
 
 
-textContent : Seed -> TextState -> String
-textContent seed text =
-    case text of
+successText : Model -> String
+successText model =
+    case toWorldSummary model of
+        WorldSummaryHidden ->
+            levelSuccessText model.context
+
+        WorldSummaryVisible seed ->
+            worldSuccessText seed model
+
+
+levelSuccessText : Context -> String
+levelSuccessText =
+    Messages.pickFrom "We're one step closer..."
+        [ "More seeds for our new home..."
+        , "A triumph for our seeds!"
+        , "You're saving the world, seed by seed!"
+        ]
+
+
+worldSuccessText : Seed -> Model -> String
+worldSuccessText seed model =
+    case model.worldText of
         First _ ->
             "You saved the " ++ Seed.name seed ++ "!"
 
         Second _ ->
-            "It will bloom again on our new world"
+            "It will bloom again on our new world..."
 
 
-
--- Resources
-
-
-renderResourcesLayer : Model -> Html msg
-renderResourcesLayer ({ context } as model) =
-    let
-        levelSeed =
-            Progress.currentLevelSeedType Worlds.all context.progress |> Maybe.withDefault Sunflower
-    in
-    div
-        [ style [ height <| toFloat context.window.height ]
-        , class "flex justify-center items-center w-100"
-        ]
-        [ div [ style [ marginTop -100 ] ]
-            [ div [ style [ width 65, marginBottom 30 ], class "center" ]
-                [ viewBank model levelSeed ]
-            , renderResources model
-            , p
-                [ style
-                    [ color Color.darkYellow
-                    , marginTop 100
-                    , marginBottom -40
-                    , transition "opacity" 1000 []
-                    , showIf model.levelSuccessMessageVisible
-                    ]
-                , class "tc"
-                ]
-                [ text "We're one step closer..." ]
-            ]
-        ]
+worldTextColor : Model -> Color
+worldTextColor =
+    currentSeedType >> Flower.textColor
 
 
-renderResources : Model -> Html msg
-renderResources ({ context } as model) =
-    let
-        resources =
-            Progress.resources Worlds.all context.progress
-                |> Maybe.withDefault []
-                |> List.map (renderResource model.resourceState context.progress)
-    in
-    div
-        [ style
-            [ height 50
-            , resourceVisibility model.resourceState
-            , transition "opacity" 1000 []
-            ]
-        ]
-        resources
+isFilling : Model -> Tile -> Bool
+isFilling model tile =
+    isFilling_ model && pointsGainedFor model tile > 0
 
 
-viewBank : Model -> Seed -> Html msg
-viewBank model seed =
-    let
-        progress =
-            model.context.progress
-
-        fillLevel =
-            Progress.percentComplete Worlds.all (Seed seed) progress
-                |> Maybe.withDefault 0
-    in
-    div []
-        [ div
-            [ style
-                [ transition "opacity" 1000 [ Transition.delay 500 ]
-                , resourceVisibility model.resourceState
-                ]
-            ]
-            [ renderResourceFill model.resourceState progress (Seed seed) ]
-        , innerSeedBank model.seedBankState seed fillLevel
-        ]
-
-
-innerSeedBank : SeedBankState -> Seed -> Float -> Html msg
-innerSeedBank seedBankState seed fillLevel =
-    case seedBankState of
+otherResourcesVisible : Model -> Bool
+otherResourcesVisible model =
+    case model.sequence of
         Visible ->
-            div [ style [ transform [ translateY 0 ], transitionAll 2000 [] ] ]
-                [ SeedBank.icon seed fillLevel ]
+            True
 
-        Leaving ->
-            div
-                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
-                [ div
-                    [ style
-                        [ animation "shake" 500 [ Animation.delay 1000, Animation.linear, Animation.count 6 ]
-                        , transformOrigin "bottom"
-                        ]
-                    ]
-                    [ SeedBank.icon seed fillLevel ]
-                ]
-
-        Blooming ->
-            div
-                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
-                [ div
-                    [ style [ animation "bulge-fade" 500 [] ] ]
-                    [ SeedBank.icon seed fillLevel
-                    ]
-                ]
-
-
-resourceVisibility : ResourceState -> Style
-resourceVisibility resourceState =
-    showIf <| resourceState == Waiting || resourceState == Filling
-
-
-renderResource : ResourceState -> Progress -> Tile -> Html msg
-renderResource resourceState progress tileType =
-    let
-        fillLevel =
-            Progress.percentComplete Worlds.all tileType progress
-                |> Maybe.withDefault 0
-    in
-    case tileType of
-        Rain ->
-            div [ style [ width 40 ], class "dib ph1 mh4" ]
-                [ renderResourceFill resourceState progress tileType
-                , RainBank.icon fillLevel
-                ]
-
-        Sun ->
-            div [ style [ width 40 ], class "dib mh4" ]
-                [ renderResourceFill resourceState progress tileType
-                , SunBank.icon fillLevel
-                ]
-
-        Seed seed ->
-            div [ style [ width 40 ], class "dib ph1 mh4" ]
-                [ renderResourceFill resourceState progress tileType
-                , SeedBank.icon seed fillLevel
-                ]
+        ResourcesFilling ->
+            True
 
         _ ->
-            span [] []
+            False
 
 
-renderResourceFill : ResourceState -> Progress -> Tile -> Html msg
-renderResourceFill resourceState progress tileType =
-    let
-        fill =
-            renderFill resourceState tileType progress
-    in
-    case tileType of
-        Rain ->
-            div [ style [ height 50 ] ]
-                [ div [ style [ width 13 ], class "center" ] [ RainBank.full ]
-                , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.rainBlue) <| List.range 1 50
-                ]
+toWorldSummary : Model -> WorldSummary
+toWorldSummary model =
+    case model.sequence of
+        FlowersBlooming ->
+            WorldSummaryVisible (currentSeedType model)
 
-        Sun ->
-            div [ style [ height 50 ] ]
-                [ div [ style [ width 18 ], class "center" ] [ SunBank.full ]
-                , fill <| div [ class "relative" ] <| List.map (weatherDrop Color.gold) <| List.range 4 54
-                ]
-
-        Seed seed ->
-            div [ style [ height 50 ] ]
-                [ div [ style [ width 12 ], class "center" ] [ Seed.view seed ]
-                , fill <| div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seed) <| List.range 7 57
-                ]
+        FadingOut ->
+            WorldSummaryVisible (currentSeedType model)
 
         _ ->
-            span [] []
+            WorldSummaryHidden
 
 
-renderFill : ResourceState -> Tile -> Progress -> Html msg -> Html msg
-renderFill resourceState tileType progess element =
-    if resourceState == Filling && pointsFromPreviousLevel tileType progess > 0 then
-        element
+pointsGainedFor : Model -> Tile -> Int
+pointsGainedFor model tile =
+    Progress.pointsFromPreviousLevel Worlds.all tile (getProgress model)
+
+
+isFilling_ : Model -> Bool
+isFilling_ model =
+    case model.sequence of
+        ResourcesFilling ->
+            True
+
+        _ ->
+            False
+
+
+toMainResource : Model -> Resource
+toMainResource model =
+    toResource_ model
+        (Tile.Seed (currentSeedType model))
+        (Seed (currentSeedType model))
+
+
+getProgress : Model -> Progress
+getProgress =
+    .context >> .progress
+
+
+toOtherResources : Model -> List Resource
+toOtherResources model =
+    getProgress model
+        |> Progress.resources Worlds.all
+        |> List.filterMap (toResource model)
+
+
+toResource : Model -> Tile -> Maybe Resource
+toResource model tile =
+    case tile of
+        Tile.Sun ->
+            Just (toResource_ model tile Sun)
+
+        Tile.Rain ->
+            Just (toResource_ model tile Rain)
+
+        Tile.Seed seed ->
+            Just (toResource_ model tile (Seed seed))
+
+        _ ->
+            Nothing
+
+
+toResource_ : Model -> Tile -> Icon -> Resource
+toResource_ model tile icon =
+    { icon = icon
+    , isFilling = isFilling model tile
+    , fill = percentFor tile (getProgress model)
+    }
+
+
+percentFor : Tile -> Progress -> Percent
+percentFor tile =
+    Progress.percentComplete Worlds.all tile >> Maybe.withDefault 0
+
+
+currentSeedType : Model -> Seed
+currentSeedType =
+    .context
+        >> .progress
+        >> Progress.currentLevelSeedType Worlds.all
+        >> Maybe.withDefault Seed.Sunflower
+
+
+background : Model -> Color
+background model =
+    case model.sequence of
+        SeedShaking ->
+            Palette.lightGold
+
+        FlowersBlooming ->
+            flowerBackground (currentSeedType model)
+
+        FadingOut ->
+            flowerBackground (currentSeedType model)
+
+        _ ->
+            Palette.background2_
+
+
+flowerBackground : Seed -> Color
+flowerBackground =
+    Flower.background
+
+
+
+-- Fade Overlay
+
+
+fadeOverlay : Model -> Element msg
+fadeOverlay model =
+    case model.sequence of
+        FadingOut ->
+            fadeOverlay_
+
+        _ ->
+            none
+
+
+fadeOverlay_ : Element msg
+fadeOverlay_ =
+    Animated.el (Animations.fadeIn 1800 [ Animation.linear ])
+        [ width fill
+        , height fill
+        , Background.color Palette.background1_
+        ]
+        none
+
+
+
+-- Resource Summary
+
+
+resourceSummary : Model -> Element msg
+resourceSummary =
+    toViewModel >> resourceSummary_
+
+
+resourceSummary_ : ViewModel -> Element msg
+resourceSummary_ model =
+    column
+        [ centerX
+        , centerY
+        , spacing Scale.large
+        ]
+        [ mainResource model
+        , otherResources model
+        , levelEndText model
+        ]
+
+
+
+-- Main Resource
+
+
+mainResource : ViewModel -> Element msg
+mainResource model =
+    el [ centerX ]
+        (viewResource
+            { size = 100
+            , dropperVisible = model.resourcesVisible
+            , order = 0
+            , animation = mainResourceAnimation model
+            }
+            model.mainResource
+        )
+
+
+mainResourceAnimation : ViewModel -> Maybe Animation
+mainResourceAnimation model =
+    case model.sequence of
+        SeedShaking ->
+            Just leaveAndShake
+
+        FlowersBlooming ->
+            Just expandFade
+
+        _ ->
+            Nothing
+
+
+leaveAndShake : Animation
+leaveAndShake =
+    Animation.steps
+        { startAt = [ P.y 0 ]
+        , options = []
+        }
+        (Animation.step 1000 [ P.y leavingOffset ] :: shakeSteps)
+
+
+shakeSteps : List Animation.Step
+shakeSteps =
+    List.map shakeStep (List.range 0 60)
+
+
+shakeStep : Int -> Animation.Step
+shakeStep i =
+    Animation.step 50
+        [ P.y leavingOffset
+        , P.x (shakeOffset i)
+        ]
+
+
+shakeOffset : Int -> number
+shakeOffset i =
+    if modBy 2 i == 0 then
+        1
 
     else
-        span [] []
+        -1
 
 
-pointsFromPreviousLevel : Tile -> Progress -> Int
-pointsFromPreviousLevel tileType progress =
-    Progress.pointsFromPreviousLevel Worlds.all tileType progress
-        |> Maybe.withDefault 0
+expandFade : Animation
+expandFade =
+    Animation.fromTo
+        { duration = 800
+        , options = []
+        }
+        [ P.opacity 1, P.scale 1, P.y leavingOffset ]
+        [ P.opacity 0, P.scale 5, P.y leavingOffset ]
 
 
-seedDrop : Seed -> Int -> Html msg
-seedDrop seed n =
-    div
-        [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
-        [ div
-            [ style
-                [ width 5
-                , height 8
-                , opacity 0
-                , animation "fade-slide-down" 150 [ Animation.delay <| n * dropDelay n, linear ]
-                ]
-            , class "absolute top-0 left-0 right-0 center"
-            ]
-            [ Seed.view seed ]
+leavingOffset : number
+leavingOffset =
+    75
+
+
+
+-- Level End Text
+
+
+levelEndText : ViewModel -> Element msg
+levelEndText model =
+    Text.text
+        [ centerX
+        , Transition.alpha 1000
+        , Element.visibleIf model.levelTextVisible
+        ]
+        model.text
+
+
+
+-- Other Resources
+
+
+otherResources : ViewModel -> Element msg
+otherResources model =
+    row
+        [ spacing Scale.large
+        , Transition.alpha 1500
+        , Element.visibleIf model.resourcesVisible
+        , centerX
+        ]
+        (List.indexedMap otherResource model.otherResources)
+
+
+otherResource : Int -> Resource -> Element msg
+otherResource index =
+    viewResource
+        { size = 50
+        , dropperVisible = True
+        , order = index + 1
+        , animation = Nothing
+        }
+
+
+
+-- Resource
+
+
+type alias ResourceOptions =
+    { size : Int
+    , dropperVisible : Bool
+    , order : Int
+    , animation : Maybe Animation
+    }
+
+
+viewResource : ResourceOptions -> Resource -> Element msg
+viewResource options resource =
+    column
+        [ spacing Scale.large
+        , behindContent (resourceDrops options resource)
+        ]
+        [ resourceDropper options resource
+        , resourceBank options resource
         ]
 
 
-weatherDrop : String -> Int -> Html msg
-weatherDrop bgColor n =
-    div
-        [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
-        [ div
-            [ style
-                [ width 6
-                , height 6
-                , background bgColor
-                , opacity 0
-                , animation "fade-slide-down" 150 [ Animation.delay (n * dropDelay n), linear ]
-                ]
-            , class "br-100 absolute left-0 right-0 center"
-            ]
-            []
+resourceBank : ResourceOptions -> Resource -> Element msg
+resourceBank options resource =
+    Animated.maybe options.animation
+        [ centerX
+        , centerY
+        , Element.originPercent 50 60
         ]
+        (Element.square options.size
+            [ centerX, centerY ]
+            (resourceBank_ options resource)
+        )
+
+
+resourceDropper : ResourceOptions -> Resource -> Element msg
+resourceDropper options resource =
+    Element.square 20
+        [ centerX
+        , Transition.alpha 1000
+        , Element.visibleIf options.dropperVisible
+        ]
+        (fullResource resource.icon)
+
+
+fillDelay : ResourceOptions -> Int
+fillDelay options =
+    options.order * 75
+
+
+resourceDrops : ResourceOptions -> Resource -> Element msg
+resourceDrops options resource =
+    List.range 0 50
+        |> List.map (drop options resource)
+        |> toDrops
+
+
+drop : ResourceOptions -> Resource -> Int -> Element msg
+drop options resource dropNumber =
+    el
+        [ offsetDrop dropNumber
+        , Element.visibleIf resource.isFilling
+        ]
+        (Animated.el
+            (fallDown resource options dropNumber)
+            [ centerX ]
+            (drop_ resource)
+        )
+
+
+drop_ : Resource -> Element msg
+drop_ resource =
+    case resource.icon of
+        Sun ->
+            Weather.sun
+                { size = Weather.small
+                , shade = Weather.bright
+                }
+
+        Rain ->
+            Weather.rain Weather.small
+
+        Seed seed ->
+            Seed.view (Seed.size 10) seed
+
+
+offsetDrop : Int -> Attr decorative msg
+offsetDrop order =
+    Sine.wave
+        { left = moveLeft 2
+        , center = moveLeft 0
+        , right = moveRight 2
+        }
+        (order - 1)
+
+
+toDrops : List (Element msg) -> Element msg
+toDrops drops =
+    column (centerX :: List.map toDrop drops) []
+
+
+toDrop : Element msg -> Attribute msg
+toDrop =
+    behindContent << el [ centerX ]
+
+
+fallDown : Resource -> ResourceOptions -> Int -> Animation
+fallDown resource options dropNumber =
+    if resource.isFilling then
+        fallDown_ options dropNumber
+
+    else
+        Animation.none
+
+
+fallDown_ : ResourceOptions -> Int -> Animation
+fallDown_ options dropNumber =
+    Animation.frames
+        { duration = 150
+        , startAt = [ P.opacity 0, P.y 0 ]
+        , options =
+            [ Animation.linear
+            , Animation.delay (fallDelay options dropNumber)
+            ]
+        }
+        [ Animation.frame 10 [ P.y 5, P.opacity 1 ]
+        , Animation.frame 50 [ P.y 25, P.opacity 1 ]
+        , Animation.frame 100 [ P.y 50, P.opacity 0 ]
+        ]
+
+
+fallDelay : ResourceOptions -> Int -> Animation.Millis
+fallDelay options dropNumber =
+    fillDelay options + dropNumber * dropDelay dropNumber
 
 
 dropDelay : Int -> Int
@@ -605,3 +739,131 @@ dropDelay n =
 
     else
         90
+
+
+resourceBank_ : ResourceOptions -> Resource -> Element msg
+resourceBank_ options resource =
+    case resource.icon of
+        Sun ->
+            SunBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                }
+
+        Rain ->
+            RainBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                }
+
+        Seed seed ->
+            SeedBank.icon
+                { percent = resource.fill
+                , delay = fillDelay options
+                , seed = seed
+                }
+
+
+fullResource : Icon -> Element msg
+fullResource icon =
+    case icon of
+        Sun ->
+            html SunBank.full
+
+        Rain ->
+            html RainBank.full
+
+        Seed seed ->
+            SeedBank.full seed
+
+
+
+-- World Summary
+
+
+worldSummary : Model -> Element msg
+worldSummary =
+    toViewModel >> worldSummary_
+
+
+worldSummary_ : ViewModel -> Element msg
+worldSummary_ model =
+    case model.worldSummary of
+        WorldSummaryVisible seed ->
+            viewWorldSummary seed model
+
+        WorldSummaryHidden ->
+            none
+
+
+viewWorldSummary : Seed -> ViewModel -> Element msg
+viewWorldSummary seed model =
+    case seed of
+        Seed.Sunflower ->
+            viewWorldSummary_
+                { flowers = Sunflower.flowers
+                , hills = Sunflower.hills model.window
+                , model = model
+                }
+
+        Seed.Chrysanthemum ->
+            viewWorldSummary_
+                { flowers = Chrysanthemum.flowers
+                , hills = Chrysanthemum.hills model.window
+                , model = model
+                }
+
+        Seed.Cornflower ->
+            viewWorldSummary_
+                { flowers = Cornflower.flowers
+                , hills = Cornflower.hills model.window
+                , model = model
+                }
+
+        _ ->
+            none
+
+
+type alias WorldSummary_ msg =
+    { flowers : Element msg
+    , model : ViewModel
+    , hills : Html msg
+    }
+
+
+viewWorldSummary_ : WorldSummary_ msg -> Element msg
+viewWorldSummary_ options =
+    el
+        [ width fill
+        , height fill
+        , inFront (flowersWithText options.flowers options.model)
+        ]
+        (html options.hills)
+
+
+flowersWithText : Element msg -> ViewModel -> Element msg
+flowersWithText flowers model =
+    column
+        [ centerY
+        , centerX
+        , moveUp Scale.large
+        , spacing Scale.medium
+        ]
+        [ flowers
+        , worldText model
+        ]
+
+
+worldText : ViewModel -> Element msg
+worldText model =
+    paragraph [ Font.center, spacing Scale.medium ]
+        [ Text.text
+            [ Element.visibleIf model.worldTextVisible
+            , Transition.alpha 1000
+            , Text.color model.worldTextColor
+            , Text.f4
+            , Text.bold
+            , centerX
+            ]
+            model.text
+        ]

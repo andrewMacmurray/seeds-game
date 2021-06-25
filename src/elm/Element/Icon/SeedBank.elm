@@ -1,11 +1,15 @@
-module Element.Icon.SeedBank exposing (icon)
+module Element.Icon.SeedBank exposing (full, icon)
 
-import Css.Style as Style exposing (svgStyle)
+import Css.Style as Style
 import Css.Transform exposing (translateY)
-import Css.Transition exposing (transitionAll)
+import Css.Transition as Transition
+import Element exposing (Element)
+import Element.Icon as Icon
 import Seed exposing (Seed)
-import Svg exposing (Svg)
+import Simple.Animation as Animation
+import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 import View.Seed as Seed
 import View.Seed.Mono exposing (greyedOutSeed)
 
@@ -14,9 +18,16 @@ import View.Seed.Mono exposing (greyedOutSeed)
 -- Seed Bank
 
 
-icon : Seed -> Float -> Svg msg
-icon seed percentFull =
-    Svg.svg
+type alias Options =
+    { seed : Seed
+    , percent : Float
+    , delay : Animation.Millis
+    }
+
+
+icon : Options -> Element msg
+icon options =
+    Icon.view
         [ viewBox "0 0 124.5 193.5"
         , width "100%"
         , height "100%"
@@ -24,29 +35,37 @@ icon seed percentFull =
         [ Svg.defs []
             [ Svg.rect
                 [ height (String.fromFloat fullHeight)
-                , id (fillLevelId seed)
+                , id (fillLevelId options.seed)
                 , width "100%"
+                , height "100%"
                 ]
                 []
             ]
-        , Svg.g []
-            [ greyedOutSeed
-            , Svg.g []
-                [ Svg.mask
-                    [ fill "white"
-                    , id (seedBankId seed)
-                    ]
-                    [ Svg.use
-                        [ xlinkHref ("#" ++ fillLevelId seed)
-                        , offsetLevelStyles percentFull
-                        ]
-                        []
-                    ]
-                , Svg.g
-                    [ mask ("url(#" ++ seedBankId seed ++ ")") ]
-                    [ Seed.view seed ]
-                ]
+        , greyedOutSeed
+        , Svg.mask
+            [ fill "white"
+            , id (seedBankId options.seed)
             ]
+            [ Svg.use
+                [ xlinkHref ("#" ++ fillLevelId options.seed)
+                , offsetLevelStyles options
+                ]
+                []
+            ]
+        , Svg.g_
+            [ mask ("url(#" ++ seedBankId options.seed ++ ")") ]
+            [ Seed.view options.seed ]
+        ]
+
+
+full : Seed -> Element msg
+full seed =
+    Icon.view
+        [ viewBox "0 0 124.5 193.5"
+        , width "100%"
+        , height "100%"
+        ]
+        [ Seed.view seed
         ]
 
 
@@ -70,11 +89,11 @@ fullHeight =
     193.5
 
 
-offsetLevelStyles : Float -> Svg.Attribute msg
-offsetLevelStyles percentFull =
-    svgStyle
-        [ transitionAll 1500 []
-        , Style.transform [ translateY (offset percentFull) ]
+offsetLevelStyles : Options -> Attribute msg
+offsetLevelStyles options =
+    Style.svg
+        [ Style.transform [ translateY (offset options.percent) ]
+        , Transition.transition "transform" 1500 [ Transition.delay options.delay ]
         ]
 
 

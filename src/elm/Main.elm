@@ -5,6 +5,7 @@ import Browser.Events as Browser
 import Context exposing (Context)
 import Css.Color as Color
 import Css.Style exposing (backgroundColor, style)
+import Delay
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
@@ -22,8 +23,7 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
-import Utils.Delay as Delay exposing (trigger)
-import Utils.Update exposing (andCmd, updateModel, updateWith)
+import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -120,8 +120,8 @@ initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
     , loadingScreen = LoadingScreen.hidden
-    , progress = Progress.fromCache flags.level
-    , lives = Lives.fromCache (millisToPosix flags.now) flags.lives
+    , progress = Progress.init flags.level
+    , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
     , menu = Context.Closed
     }
@@ -134,56 +134,56 @@ initialContext flags =
 getContext : Model -> Context
 getContext model =
     case model.scene of
-        Title subModel ->
-            Title.getContext subModel
+        Title model_ ->
+            Update.context model_
 
-        Intro subModel ->
-            Intro.getContext subModel
+        Intro model_ ->
+            Update.context model_
 
-        Hub subModel ->
-            Hub.getContext subModel
+        Hub model_ ->
+            Update.context model_
 
-        Level subModel ->
-            Level.getContext subModel
+        Level model_ ->
+            Update.context model_
 
-        Retry subModel ->
-            Retry.getContext subModel
+        Retry model_ ->
+            Update.context model_
 
-        Summary subModel ->
-            Summary.getContext subModel
+        Summary model_ ->
+            Update.context model_
 
-        Garden subModel ->
-            Garden.getContext subModel
+        Garden model_ ->
+            Update.context model_
 
 
 updateContext : (Context -> Context) -> Model -> Model
 updateContext toContext model =
-    { model | scene = updateSceneContext toContext model.scene }
+    { model | scene = updateContext_ toContext model.scene }
 
 
-updateSceneContext : (Context -> Context) -> Scene -> Scene
-updateSceneContext toContext scene =
+updateContext_ : (Context -> Context) -> Scene -> Scene
+updateContext_ toContext scene =
     case scene of
         Title model ->
-            Title (Title.updateContext toContext model)
+            Title (Update.withContext toContext model)
 
         Intro model ->
-            Intro (Intro.updateContext toContext model)
+            Intro (Update.withContext toContext model)
 
         Hub model ->
-            Hub (Hub.updateContext toContext model)
+            Hub (Update.withContext toContext model)
 
         Level model ->
-            Level (Level.updateContext toContext model)
+            Level (Update.withContext toContext model)
 
         Retry model ->
-            Retry (Retry.updateContext toContext model)
+            Retry (Update.withContext toContext model)
 
         Summary model ->
-            Summary (Summary.updateContext toContext model)
+            Summary (Update.withContext toContext model)
 
         Garden model ->
-            Garden (Garden.updateContext toContext model)
+            Garden (Update.withContext toContext model)
 
 
 
@@ -286,7 +286,7 @@ exitTitle model destination =
             ( model, goToHubReachedLevel model )
 
         Title.ToIntro ->
-            ( model, trigger InitIntro )
+            ( model, Update.trigger InitIntro )
 
         Title.ToGarden ->
             ( model, goToGarden )
@@ -384,7 +384,7 @@ exitLevel model levelStatus =
 levelWin : Model -> ( Model, Cmd Msg )
 levelWin model =
     if shouldIncrement (getContext model) then
-        ( model, trigger InitSummary )
+        ( model, Update.trigger InitSummary )
 
     else
         ( model, goToHubCurrentLevel model )
@@ -396,7 +396,7 @@ levelLose model =
         ( updateContext Context.decrementLife model, goToHubCurrentLevel model )
 
     else
-        ( model, trigger InitRetry )
+        ( model, Update.trigger InitRetry )
 
 
 
@@ -448,7 +448,7 @@ exitSummary model destination =
             ( clearBackdrop model, goToHubReachedLevel model )
 
         Summary.ToGarden ->
-            ( clearBackdrop model, trigger InitGarden )
+            ( clearBackdrop model, Update.trigger InitGarden )
 
 
 
@@ -570,12 +570,12 @@ reloadCurrentLevel =
 
 goToHubCurrentLevel : Model -> Cmd Msg
 goToHubCurrentLevel =
-    trigger << GoToHub << currentLevel
+    Update.trigger << GoToHub << currentLevel
 
 
 goToHubReachedLevel : Model -> Cmd Msg
 goToHubReachedLevel =
-    trigger << GoToHub << reachedLevel
+    Update.trigger << GoToHub << reachedLevel
 
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )

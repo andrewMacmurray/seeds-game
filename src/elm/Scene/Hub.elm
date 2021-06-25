@@ -2,16 +2,15 @@ module Scene.Hub exposing
     ( Destination(..)
     , Model
     , Msg
-    , getContext
     , init
     , menuOptions
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
 import Countdown
+import Delay
 import Element exposing (..)
 import Element.Background as Background
 import Element.Button as Button
@@ -37,7 +36,6 @@ import Game.Lives as Lives exposing (Lives)
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
-import Utils.Delay exposing (sequence)
 import Utils.Element as Element
 import Utils.Sine as Sine
 import View.Menu as Menu
@@ -71,17 +69,7 @@ type Destination
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
+-- Menu
 
 
 menuOptions : List (Menu.Option Msg)
@@ -97,7 +85,7 @@ menuOptions =
 init : Level.Id -> Context -> ( Model, Cmd Msg )
 init level context =
     ( initialState context
-    , sequence
+    , Delay.sequence
         [ ( 1000, ScrollToLevel level )
         , ( 1500, ClearCurrentLevel )
         ]
@@ -126,7 +114,7 @@ update msg model =
 
         DismissInfoClicked ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, SetInfoState (Info.leaving model.info) )
                     , ( 1000, SetInfoState Info.hidden )
                     ]
@@ -143,7 +131,7 @@ update msg model =
 
         PlayLevelClicked level ->
             continue model
-                [ sequence
+                [ Delay.sequence
                     [ ( 0, SetCurrentLevel level )
                     , ( 10, SetInfoState (Info.leaving model.info) )
                     , ( 600, SetInfoState Info.hidden )
@@ -193,12 +181,12 @@ countdown : Lives -> Element msg
 countdown lives =
     case Lives.timeTillNextLife lives of
         Nothing ->
-            Text.text [ Text.small ] "Full Life"
+            Text.text [ Text.f6 ] "Full Life"
 
         Just t ->
             row []
-                [ Text.text [ Text.small ] "Next life in: "
-                , Text.text [ Text.small, Text.color Palette.pinkRed ] (Countdown.view t)
+                [ Text.text [ Text.f6 ] "Next life in: "
+                , Text.text [ Text.f6, Text.color Palette.pinkRed ] (Countdown.view t)
                 ]
 
 
@@ -272,14 +260,14 @@ infoIcons =
 
 infoIconContainer : List (Element msg) -> Element msg
 infoIconContainer =
-    row [ spacing Scale.large, centerX ]
+    row [ spacing (Scale.medium + Scale.small), centerX ]
 
 
 viewIcon : Tile.Setting -> Element msg
 viewIcon setting =
-    column [ spacing Scale.small ]
-        [ el [ height (px 55), centerX ] (el [ alignBottom ] (tileIcon setting))
-        , el [ centerX ] (viewTargetScore setting.targetScore)
+    column [ spacing Scale.small, width (px 50), height fill ]
+        [ el [ centerX, alignBottom ] (tileIcon setting)
+        , el [ centerX, alignBottom ] (viewTargetScore setting.targetScore)
         ]
 
 
@@ -287,10 +275,13 @@ tileIcon : Tile.Setting -> Element msg
 tileIcon setting =
     case setting.tileType of
         Tile.Rain ->
-            Weather.rain
+            Weather.rain Weather.medium
 
         Tile.Sun ->
             Weather.sun
+                { size = Weather.medium
+                , shade = Weather.dark
+                }
 
         Tile.Seed seed ->
             seedIcon seed
@@ -301,7 +292,7 @@ tileIcon setting =
 
 seedIcon : Seed -> Element msg
 seedIcon =
-    Seed.view (Seed.size 35)
+    Seed.view Seed.medium
 
 
 viewTargetScore : Maybe TargetScore -> Element msg

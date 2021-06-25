@@ -1,4 +1,4 @@
-module Utils.Animated exposing (el, g, path)
+module Utils.Animated exposing (el, g, maybe, path)
 
 import Element exposing (Element)
 import Simple.Animation exposing (Animation)
@@ -14,6 +14,11 @@ import Svg.Attributes
 el : Animation -> List (Element.Attribute msg) -> Element msg -> Element msg
 el =
     ui_ Element.el
+
+
+maybe : Maybe Animation -> List (Element.Attribute msg) -> Element msg -> Element msg
+maybe =
+    Maybe.map el >> Maybe.withDefault Element.el
 
 
 ui_ :

@@ -1,19 +1,19 @@
 module Scene.Garden exposing
     ( Model
     , Msg
-    , getContext
     , init
     , menuOptions
     , update
-    , updateContext
     , view
     )
 
 import Context exposing (Context)
+import Delay
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
 import Element.Button as Button
+import Element.Flower as Flower
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
@@ -29,10 +29,9 @@ import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
 import Scene.Garden.Hills as Hills
 import Scene.Garden.Sunflower as Sunflower
-import Seed exposing (Seed(..))
+import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
-import Utils.Delay exposing (after)
 import Utils.Element as Element
 import View.Menu as Menu
 
@@ -52,17 +51,7 @@ type Msg
 
 
 
--- Context
-
-
-getContext : Model -> Context
-getContext model =
-    model.context
-
-
-updateContext : (Context -> Context) -> Model -> Model
-updateContext f model =
-    { model | context = f model.context }
+-- Menu
 
 
 menuOptions : List (Menu.Option Msg)
@@ -78,7 +67,7 @@ menuOptions =
 init : Context -> ( Model, Cmd Msg )
 init context =
     ( initialState context
-    , after 500 ScrollToCurrentCompletedWorld
+    , Delay.after 500 ScrollToCurrentCompletedWorld
     )
 
 
@@ -146,7 +135,7 @@ initialOverlay =
 
 gardenText : Element msg
 gardenText =
-    Text.text [ Text.wideSpaced, Text.large ] "GARDEN"
+    Text.text [ Text.wideSpaced, Text.f3 ] "GARDEN"
 
 
 fadeOut : Animation
@@ -198,7 +187,7 @@ allFlowers context =
 
 worldFlowers : Context -> Level.WorldWithLevels -> Element Msg
 worldFlowers context { world, levels } =
-    if Progress.worldComplete levels context.progress then
+    if Progress.worldIsCompleted levels context.progress then
         el [ width fill, height (px context.window.height) ]
             (column
                 [ centerX
@@ -233,10 +222,10 @@ seedId seed =
 
 unfinishedWorldSeeds : Element msg
 unfinishedWorldSeeds =
-    row [ spacing Scale.small, centerX ]
-        [ el [ alignBottom ] (Seed.grey (Seed.size 20))
-        , el [ moveDown 2 ] (Seed.grey (Seed.size 30))
-        , el [ alignBottom ] (Seed.grey (Seed.size 20))
+    row [ centerX ]
+        [ el [ alignBottom ] (Seed.grey Seed.small)
+        , el [ moveDown 2 ] (Seed.grey Seed.medium)
+        , el [ alignBottom ] (Seed.grey Seed.small)
         ]
 
 
@@ -246,6 +235,7 @@ flowerName seed =
         [ Text.color (textColor seed)
         , Text.wideSpaced
         , Text.bold
+        , Text.f4
         , centerX
         ]
         (String.toUpper (Seed.name seed))
@@ -253,23 +243,23 @@ flowerName seed =
 
 seeds : Seed -> Element msg
 seeds seed =
-    row [ centerX, moveUp 20, spacing Scale.small ]
-        [ el [ alignBottom ] (Seed.view (Seed.size 12) seed)
-        , el [ moveDown 2 ] (Seed.view (Seed.size 20) seed)
-        , el [ alignBottom ] (Seed.view (Seed.size 12) seed)
+    row [ centerX, moveUp 20 ]
+        [ el [ alignBottom ] (Seed.view Seed.extraSmall seed)
+        , el [] (Seed.view Seed.small seed)
+        , el [ alignBottom ] (Seed.view Seed.extraSmall seed)
         ]
 
 
 flowers : Seed -> Element msg
 flowers seed =
     case seed of
-        Sunflower ->
+        Seed.Sunflower ->
             Sunflower.flowers
 
-        Chrysanthemum ->
+        Seed.Chrysanthemum ->
             Chrysanthemum.flowers
 
-        Cornflower ->
+        Seed.Cornflower ->
             Cornflower.flowers
 
         _ ->
@@ -277,16 +267,5 @@ flowers seed =
 
 
 textColor : Seed -> Color
-textColor seed =
-    case seed of
-        Sunflower ->
-            Palette.white
-
-        Chrysanthemum ->
-            Palette.purple9
-
-        Cornflower ->
-            Palette.yellow1
-
-        _ ->
-            Palette.white
+textColor =
+    Flower.textColor

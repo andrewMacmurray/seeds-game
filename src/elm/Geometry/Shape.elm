@@ -1,12 +1,15 @@
 module Geometry.Shape exposing
     ( Shape
+    , animate
     , circle
     , group
     , hideIf
     , mirror
     , moveDown
+    , moveUp
     , polygon
     , view
+    , window
     )
 
 import Circle2d exposing (Circle2d)
@@ -14,7 +17,9 @@ import Element exposing (Color)
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
 import Polygon2d exposing (Polygon2d)
+import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
+import Utils.Animated as Animated
 import Utils.Geometry as Geometry
 import Utils.Svg as Svg
 import Window exposing (Window)
@@ -48,6 +53,12 @@ type alias Attributes =
     { fill : Color
     , mirror : Bool
     , hide : Bool
+    , animation : Maybe Animation
+    }
+
+
+type alias Options =
+    { fill : Color
     }
 
 
@@ -64,37 +75,38 @@ group =
     Group
 
 
-polygon : { fill : Color } -> Polygon2d Pixels Coords -> Shape
-polygon options p =
+polygon : Options -> Polygon2d Pixels Coords -> Shape
+polygon options shape_ =
     Polygon
-        { shape = p
-        , attributes = defaultAttributes options
+        { shape = shape_
+        , attributes = defaults options
         }
 
 
-circle : { fill : Color } -> Circle2d Pixels Coords -> Shape
-circle options c =
+circle : Options -> Circle2d Pixels Coords -> Shape
+circle options shape_ =
     Circle
-        { shape = c
-        , attributes = defaultAttributes options
+        { shape = shape_
+        , attributes = defaults options
         }
 
 
-defaultAttributes : { fill : Color } -> Attributes
-defaultAttributes options =
+defaults : Options -> Attributes
+defaults options =
     { fill = options.fill
     , mirror = False
     , hide = False
+    , animation = Nothing
     }
 
 
 
--- Update
+-- Customise
 
 
 mirror : Shape -> Shape
 mirror =
-    updateAttributes (\a -> { a | mirror = True })
+    update (\a -> { a | mirror = True })
 
 
 hideIf : Bool -> Shape -> Shape
@@ -108,59 +120,76 @@ hideIf condition =
 
 hide : Shape -> Shape
 hide =
-    updateAttributes (\a -> { a | hide = True })
+    update (\a -> { a | hide = True })
+
+
+animate : Animation -> Shape -> Shape
+animate animation =
+    update (\a -> { a | animation = Just animation })
+
+
+moveUp : Float -> Shape -> Shape
+moveUp y =
+    moveDown -y
 
 
 moveDown : Float -> Shape -> Shape
 moveDown y shape =
     case shape of
-        Polygon p ->
-            Polygon { p | shape = Polygon2d.translateBy (Geometry.down y) p.shape }
+        Polygon shape_ ->
+            Polygon { shape_ | shape = Polygon2d.translateBy (Geometry.down y) shape_.shape }
 
-        Circle c ->
-            Circle { c | shape = Circle2d.translateBy (Geometry.down y) c.shape }
+        Circle shape_ ->
+            Circle { shape_ | shape = Circle2d.translateBy (Geometry.down y) shape_.shape }
 
         Group shapes ->
             Group (List.map (moveDown y) shapes)
 
 
-updateAttributes : (Attributes -> Attributes) -> Shape -> Shape
-updateAttributes f shape =
+update : (Attributes -> Attributes) -> Shape -> Shape
+update f shape =
     case shape of
         Polygon p ->
-            Polygon (updateAttributes_ f p)
+            Polygon (update_ f p)
 
         Circle c ->
-            Circle (updateAttributes_ f c)
+            Circle (update_ f c)
 
         Group shapes ->
-            Group (List.map (updateAttributes f) shapes)
+            Group (List.map (update f) shapes)
 
 
-updateAttributes_ : (Attributes -> Attributes) -> Shape_ shape -> Shape_ shape
-updateAttributes_ f shape =
-    { shape | attributes = f shape.attributes }
+update_ : (Attributes -> Attributes) -> Shape_ shape -> Shape_ shape
+update_ f shape_ =
+    { shape_ | attributes = f shape_.attributes }
 
 
 
 -- View
 
 
-view : Window -> Shape -> Svg.Svg msg
-view window shape =
-    case shape of
-        Polygon p ->
-            Svg.polygon2d [ fill p ] p.shape
-                |> withMirror p window
-                |> applyHidden p
+window : Window -> List (Svg.Attribute msg) -> Shape -> Svg msg
+window window_ attrs shape =
+    Svg.window window_ attrs [ view window_ shape ]
 
-        Circle c ->
-            Svg.circle2d [ fill c ] c.shape
-                |> withMirror c window
-                |> applyHidden c
+
+view : Window -> Shape -> Svg msg
+view window_ shape =
+    case shape of
+        Polygon shape_ ->
+            Svg.polygon2d [ fill shape_ ] shape_.shape
+                |> applyMirror shape_ window_
+                |> applyHidden shape_
+                |> applyAnimation shape_
+
+        Circle shape_ ->
+            Svg.circle2d [ fill shape_ ] shape_.shape
+                |> applyMirror shape_ window_
+                |> applyHidden shape_
+                |> applyAnimation shape_
 
         Group shapes ->
-            Svg.g [] (List.map (view window) shapes)
+            Svg.g [] (List.map (view window_) shapes)
 
 
 fill : Shape_ shape -> Svg.Attribute msg
@@ -168,19 +197,29 @@ fill shape =
     Svg.fill_ shape.attributes.fill
 
 
-withMirror : Shape_ shape -> Window -> Svg msg -> Svg msg
-withMirror shape window s =
-    if shape.attributes.mirror then
-        Geometry.mirror window s
+applyMirror : Shape_ shape -> Window -> Svg msg -> Svg msg
+applyMirror shape_ window_ s =
+    if shape_.attributes.mirror then
+        Geometry.mirror window_ s
 
     else
         s
 
 
 applyHidden : Shape_ shape -> Svg msg -> Svg msg
-applyHidden shape s =
-    if shape.attributes.hide then
+applyHidden shape_ s =
+    if shape_.attributes.hide then
         Svg.g [] []
 
     else
         s
+
+
+applyAnimation : Shape_ shape -> Svg msg -> Svg msg
+applyAnimation shape_ s =
+    case shape_.attributes.animation of
+        Just anim ->
+            Animated.g anim [] [ s ]
+
+        Nothing ->
+            s
