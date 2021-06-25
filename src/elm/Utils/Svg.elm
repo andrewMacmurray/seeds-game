@@ -1,6 +1,5 @@
 module Utils.Svg exposing
     ( Point
-    , baseTransform
     , cx_
     , cy_
     , disableTouch

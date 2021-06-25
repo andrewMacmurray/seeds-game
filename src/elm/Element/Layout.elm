@@ -35,12 +35,6 @@ view attrs =
 -- Fade In
 
 
-type alias FadeInOptions msg =
-    { duration : Animation.Millis
-    , attributes : List (Attribute msg)
-    }
-
-
 fadeIn : List (Attribute msg) -> Element msg -> Html msg
 fadeIn attributes el =
     fade

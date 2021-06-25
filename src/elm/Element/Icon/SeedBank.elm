@@ -7,7 +7,7 @@ import Element exposing (Element)
 import Element.Icon as Icon
 import Seed exposing (Seed)
 import Simple.Animation as Animation
-import Svg exposing (Attribute, Svg)
+import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
 import View.Seed as Seed

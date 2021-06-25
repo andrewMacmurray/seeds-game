@@ -14,7 +14,7 @@ module Element.Seed exposing
     , view
     )
 
-import Element exposing (Attribute, Element)
+import Element exposing (Element)
 import Element.Palette as Palette
 import Element.Seed.Circle as Circle
 import Element.Seed.Mono as Mono

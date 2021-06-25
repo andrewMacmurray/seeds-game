@@ -1,7 +1,6 @@
 module View.Landscape.RollingHills exposing
     ( Element
     , doubleLayer
-    , doubleLayerWithCurve
     , element
     )
 
@@ -24,11 +23,6 @@ type alias Element msg =
 doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
 doubleLayer =
     doubleLayerWithCurve_ 1
-
-
-doubleLayerWithCurve : Float -> Window -> Color -> Color -> Svg msg
-doubleLayerWithCurve curve window left right =
-    doubleLayerWithCurve_ curve window ( left, [] ) ( right, [] )
 
 
 doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =

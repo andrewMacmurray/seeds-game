@@ -4,7 +4,6 @@ module Css.Animation exposing
     , Option
     , Property
     , animation
-    , count
     , cubicBezier
     , delay
     , ease
@@ -66,11 +65,6 @@ cubicBezier a b c d =
 infinite : Option
 infinite =
     option <| animationIterationCount "infinite"
-
-
-count : Int -> Option
-count n =
-    option <| animationIterationCount <| String.fromInt n
 
 
 

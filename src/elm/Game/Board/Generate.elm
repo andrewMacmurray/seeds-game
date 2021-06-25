@@ -8,7 +8,7 @@ module Game.Board.Generate exposing
     )
 
 import Game.Board as Board exposing (Board)
-import Game.Board.Block as Block exposing (Block(..))
+import Game.Board.Block as Block
 import Game.Board.Coord exposing (Coord)
 import Game.Board.Move as Move exposing (Move)
 import Game.Board.Tile exposing (State(..), Tile(..))

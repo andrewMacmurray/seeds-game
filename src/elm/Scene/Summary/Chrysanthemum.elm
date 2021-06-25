@@ -1,6 +1,5 @@
 module Scene.Summary.Chrysanthemum exposing
-    ( background
-    , flowers
+    ( flowers
     , hills
     , hills_
     )
@@ -17,19 +16,10 @@ import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Scene.Garden.Chrysanthemum.Sprites as Bee
-import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation as Animation
 import Svg exposing (Svg)
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
-
-
-
--- Background
-
-
-background : Element.Color
-background =
-    Palette.purple10
 
 
 

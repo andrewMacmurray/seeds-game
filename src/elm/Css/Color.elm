@@ -12,18 +12,15 @@ module Css.Color exposing
     , lightGold
     , lightGray
     , lightYellow
-    , meadowGreen
     , midnightBlue
     , orange
     , pinkRed
     , purple
     , rainBlue
-    , rgb
     , seedPodGradient
     , silver
     , transparent
     , transparentGray
-    , washedYellow
     , white
     )
 
@@ -131,11 +128,6 @@ lightYellow =
     rgb 255 251 179
 
 
-washedYellow : Color
-washedYellow =
-    rgb 255 254 224
-
-
 lightBrown : Color
 lightBrown =
     rgb 167 123 82
@@ -159,11 +151,6 @@ green =
 lightGreen : Color
 lightGreen =
     rgb 119 193 66
-
-
-meadowGreen : Color
-meadowGreen =
-    rgb 91 201 120
 
 
 rainBlue : Color

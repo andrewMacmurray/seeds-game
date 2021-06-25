@@ -9,7 +9,6 @@ module Css.Style exposing
     , color
     , compose
     , height
-    , marginBottom
     , marginLeft
     , marginRight
     , marginTop
@@ -17,10 +16,8 @@ module Css.Style exposing
     , opacity
     , property
     , renderStyles_
-    , showIf
     , style
     , svg
-    , top
     , transform
     , transformOrigin
     , width
@@ -138,16 +135,6 @@ marginLeft n =
     property "margin-left" <| px n
 
 
-marginBottom : Float -> Style
-marginBottom n =
-    property "margin-bottom" <| px n
-
-
-top : Float -> Style
-top n =
-    property "top" <| px n
-
-
 color : String -> Style
 color c =
     property "color" c
@@ -186,15 +173,6 @@ height h =
 opacity : Float -> Style
 opacity o =
     property "opacity" <| String.fromFloat o
-
-
-showIf : Bool -> Style
-showIf predicate =
-    if predicate then
-        opacity 1
-
-    else
-        opacity 0
 
 
 applyIf : Bool -> Style -> Style

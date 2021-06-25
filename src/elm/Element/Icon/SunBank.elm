@@ -3,7 +3,7 @@ module Element.Icon.SunBank exposing
     , icon
     )
 
-import Css.Style as Style exposing (Style)
+import Css.Style as Style
 import Css.Transform exposing (translateY)
 import Css.Transition as Transition
 import Element exposing (Element)
