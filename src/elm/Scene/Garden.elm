@@ -13,6 +13,7 @@ import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
 import Element.Button as Button
+import Element.Flower as Flower
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
@@ -134,7 +135,7 @@ initialOverlay =
 
 gardenText : Element msg
 gardenText =
-    Text.text [ Text.wideSpaced, Text.large ] "GARDEN"
+    Text.text [ Text.wideSpaced, Text.f3 ] "GARDEN"
 
 
 fadeOut : Animation
@@ -234,6 +235,7 @@ flowerName seed =
         [ Text.color (textColor seed)
         , Text.wideSpaced
         , Text.bold
+        , Text.f4
         , centerX
         ]
         (String.toUpper (Seed.name seed))
@@ -265,16 +267,5 @@ flowers seed =
 
 
 textColor : Seed -> Color
-textColor seed =
-    case seed of
-        Seed.Sunflower ->
-            Palette.white
-
-        Seed.Chrysanthemum ->
-            Palette.purple9
-
-        Seed.Cornflower ->
-            Palette.yellow1
-
-        _ ->
-            Palette.white
+textColor =
+    Flower.textColor

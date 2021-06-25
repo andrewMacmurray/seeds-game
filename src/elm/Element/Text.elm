@@ -1,10 +1,11 @@
 module Element.Text exposing
     ( bold
     , color
+    , f3
+    , f4
+    , f5
+    , f6
     , fonts
-    , large
-    , medium
-    , small
     , spaced
     , text
     , white
@@ -22,7 +23,7 @@ import Element.Palette as Palette
 
 text : List (Attribute msg) -> String -> Element msg
 text attrs t =
-    Element.el (medium :: darkYellow :: attrs) (Element.text t)
+    Element.el (f5 :: darkYellow :: attrs) (Element.text t)
 
 
 bold : Attribute msg
@@ -48,18 +49,23 @@ spaced =
 -- Size
 
 
-large : Element.Attr decorative msg
-large =
+f3 : Element.Attr decorative msg
+f3 =
     Font.size 22
 
 
-medium : Element.Attr decorative msg
-medium =
+f4 : Element.Attr decorative msg
+f4 =
+    Font.size 18
+
+
+f5 : Element.Attr decorative msg
+f5 =
     Font.size 16
 
 
-small : Element.Attr decorative msg
-small =
+f6 : Element.Attr decorative msg
+f6 =
     Font.size 12
 
 

@@ -135,4 +135,4 @@ bounceInButton window =
 
 largeText : String -> Element msg
 largeText =
-    Text.text [ centerX, Text.large ]
+    Text.text [ centerX, Text.f3 ]

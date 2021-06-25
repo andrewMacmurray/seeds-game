@@ -1,6 +1,5 @@
 module Scene.Summary.Sunflower exposing
-    ( background
-    , flowers
+    ( flowers
     , hills
     )
 
@@ -23,15 +22,6 @@ import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
-
-
-
--- Background
-
-
-background : Element.Color
-background =
-    Palette.green10
 
 
 

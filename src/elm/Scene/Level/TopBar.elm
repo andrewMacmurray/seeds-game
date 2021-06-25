@@ -149,7 +149,7 @@ remainingMoves : ViewModel -> Element msg
 remainingMoves model =
     column [ spacing Scale.extraSmall ]
         [ remainingMoves_ model
-        , Text.text [ Text.small, Text.spaced, centerX ] "moves"
+        , Text.text [ Text.f6, Text.spaced, centerX ] "moves"
         ]
 
 
@@ -157,7 +157,7 @@ remainingMoves_ : ViewModel -> Element msg
 remainingMoves_ model =
     Text.text
         [ Text.color model.color
-        , Text.large
+        , Text.f3
         , centerX
         ]
         (String.fromInt model.remainingMoves)

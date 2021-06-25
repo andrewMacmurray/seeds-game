@@ -937,10 +937,10 @@ infoContent : Context -> LevelEndPrompt -> Element Msg
 infoContent context prompt =
     case prompt of
         Success ->
-            Text.text [ centerX, Text.white, Text.large ] (successMessage context)
+            Text.text [ centerX, Text.white, Text.f3 ] (successMessage context)
 
         NoMovesLeft ->
-            Text.text [ centerX, Text.white, Text.large ] "No more moves!"
+            Text.text [ centerX, Text.white, Text.f3 ] "No more moves!"
 
         RestartAreYouSure ->
             areYouSure "Restart" RestartLevelLoseLife

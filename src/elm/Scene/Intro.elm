@@ -186,7 +186,7 @@ sceneText model =
         [ Text.color model.textColor
         , Element.visibleIf model.textVisible
         , Transition.alpha 1000
-        , Text.large
+        , Text.f3
         , moveDown (vh model.context.window / 5)
         , centerX
         ]

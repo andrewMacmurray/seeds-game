@@ -13,6 +13,8 @@ import Element exposing (..)
 import Element.Animation as Animation
 import Element.Animations as Animations
 import Element.Background as Background
+import Element.Flower as Flower
+import Element.Font as Font
 import Element.Icon.RainBank as RainBank
 import Element.Icon.SeedBank as SeedBank
 import Element.Icon.SunBank as SunBank
@@ -216,6 +218,7 @@ type alias ViewModel =
     , sequence : Sequence
     , levelTextVisible : TextVisible
     , worldTextVisible : TextVisible
+    , worldTextColor : Color
     , text : String
     , worldSummary : WorldSummary
     , resourcesVisible : Bool
@@ -251,6 +254,7 @@ toViewModel model =
     { window = model.context.window
     , levelTextVisible = model.levelTextVisible
     , worldTextVisible = worldTextVisible model
+    , worldTextColor = worldTextColor model
     , resourcesVisible = otherResourcesVisible model
     , text = successText model
     , worldSummary = toWorldSummary model
@@ -297,6 +301,11 @@ worldSuccessText seed model =
 
         Second _ ->
             "It will bloom again on our new world..."
+
+
+worldTextColor : Model -> Color
+worldTextColor =
+    currentSeedType >> Flower.textColor
 
 
 isFilling : Model -> Tile -> Bool
@@ -418,19 +427,8 @@ background model =
 
 
 flowerBackground : Seed -> Color
-flowerBackground seed =
-    case seed of
-        Seed.Sunflower ->
-            Sunflower.background
-
-        Seed.Chrysanthemum ->
-            Chrysanthemum.background
-
-        Seed.Cornflower ->
-            Cornflower.background
-
-        _ ->
-            Sunflower.background
+flowerBackground =
+    Flower.background
 
 
 
@@ -812,6 +810,14 @@ viewWorldSummary seed model =
                 ]
                 (html (Chrysanthemum.hills model.window))
 
+        Seed.Cornflower ->
+            el
+                [ width fill
+                , height fill
+                , inFront (flowersWithText Cornflower.flowers model)
+                ]
+                (html (Cornflower.hills model.window))
+
         _ ->
             none
 
@@ -831,296 +837,14 @@ flowersWithText flowers model =
 
 worldText : ViewModel -> Element msg
 worldText model =
-    Text.text
-        [ Element.visibleIf model.worldTextVisible
-        , Transition.alpha 1000
-        , Text.white
-        , centerX
+    paragraph [ Font.center, spacing Scale.medium ]
+        [ Text.text
+            [ Element.visibleIf model.worldTextVisible
+            , Transition.alpha 1000
+            , Text.color model.worldTextColor
+            , Text.f4
+            , Text.bold
+            , centerX
+            ]
+            model.text
         ]
-        model.text
-
-
-
---    let
---        seed =
---            currentSeedType model.context.progress
---    in
---    div
---        [ style
---            [ height (toFloat model.context.window.height)
---            , backgroundColor seed model.worldSeed
---            , transition "background" 3000 [ Transition.linear ]
---            , animation "fade-in" 1000 [ Animation.linear ]
---            ]
---        , class "fixed z-5 w-100 top-0 left-0"
---        ]
---        [ renderFlowerLayer seed model.context.window model.worldSeed
---        , worldCompleteText seed model
---        , renderResourcesLayer model
---        , renderFadeOut model
---        ]
---
---
---renderFlowerLayer : Seed -> Window -> WorldSeed -> Html msg
---renderFlowerLayer seed window seedBankState =
---    let
---        ( flowersHidden, flowersVisible ) =
---            getFlowerLayer seed window
---    in
---    case seedBankState of
---        Leaving ->
---            flowersHidden
---
---        Blooming ->
---            flowersVisible
---
---        _ ->
---            span [] []
---
---
---getFlowerLayer : Seed -> Window -> ( Svg msg, Svg msg )
---getFlowerLayer seed window =
---    case seed of
---        Sunflower ->
---            ( Sunflower.hidden window
---            , Sunflower.visible window
---            )
---
---        Chrysanthemum ->
---            ( Chrysanthemum.hidden window
---            , Chrysanthemum.visible window
---            )
---
---        Cornflower ->
---            ( Cornflower.hidden window
---            , Cornflower.visible window
---            )
---
---        _ ->
---            ( Sunflower.hidden window
---            , Sunflower.visible window
---            )
---
---
---
---
----- Fadeout
---
---
---renderFadeOut : Model -> Html msg
---renderFadeOut model =
---    if model.fadeOut then
---        fadeOverlay model.context.window
---
---    else
---        span [] []
---
---
---fadeOverlay : Window -> Html msg
---fadeOverlay window =
---    div
---        [ style
---            [ height (toFloat window.height)
---            , opacity 0
---            , Animation.animation "fade-in" 2000 [ Animation.linear ]
---            , Style.backgroundColor Color.lightYellow
---            ]
---        , class "fixed top-0 w-100 z-7"
---        ]
---        []
---
---
---
----- Complete Text
---
---
---worldCompleteText : Seed -> Model -> Html msg
---worldCompleteText seed model =
---    div
---        [ style
---            [ color Color.white
---            , transitionAll 1000 []
---            , top (toFloat model.context.window.height / 2 + 80)
---            , textVisibility model.text
---            ]
---        , class "tc absolute tracked w-100 z-5"
---        ]
---        [ text (textContent seed model.text) ]
---
---
---textVisibility : Text -> Style
---textVisibility text =
---    case text of
---        First visible ->
---            showIf visible
---
---        Second visible ->
---            showIf visible
---
---
---textContent : Seed -> Text -> String
---textContent seed text =
---    case text of
---        First _ ->
---            "You saved the " ++ Seed.name seed ++ "!"
---
---        Second _ ->
---            "It will bloom again on our new world"
---
---
---
---innerSeedBank : WorldSeed -> Seed -> Float -> Html msg
---innerSeedBank seedBankState seed fillLevel =
---    case seedBankState of
---        Visible ->
---            div [ style [ transform [ translateY 0 ], transitionAll 2000 [] ] ]
---                [ SeedBank.icon seed fillLevel ]
---
---        Leaving ->
---            div
---                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
---                [ div
---                    [ style
---                        [ animation "shake" 500 [ Animation.delay 1000, Animation.linear, Animation.count 6 ]
---                        , transformOrigin "bottom"
---                        ]
---                    ]
---                    [ SeedBank.icon seed fillLevel ]
---                ]
---
---        Blooming ->
---            div
---                [ style [ transform [ translateY 100 ], transitionAll 2000 [] ] ]
---                [ div
---                    [ style [ animation "bulge-fade" 500 [] ] ]
---                    [ SeedBank.icon seed fillLevel
---                    ]
---                ]
---
---
---resourceVisibility : ResourceBank -> Style
---resourceVisibility resourceState =
---    showIf (resourceState == Waiting || resourceState == Filling)
---
---
---renderResource : ResourceBank -> Progress -> Tile -> Html msg
---renderResource resourceState progress tileType =
---    let
---        fillLevel =
---            Progress.percentComplete Worlds.all tileType progress
---                |> Maybe.withDefault 0
---    in
---    case tileType of
---        Rain ->
---            div [ style [ width 40 ], class "dib ph1 mh4" ]
---                [ renderResourceFill resourceState progress tileType
---                , RainBank.icon fillLevel
---                ]
---
---        Sun ->
---            div [ style [ width 40 ], class "dib mh4" ]
---                [ renderResourceFill resourceState progress tileType
---                , SunBank.icon fillLevel
---                ]
---
---        Seed seed ->
---            div [ style [ width 40 ], class "dib ph1 mh4" ]
---                [ renderResourceFill resourceState progress tileType
---                , SeedBank.icon seed fillLevel
---                ]
---
---        _ ->
---            span [] []
---
---
---renderResourceFill : ResourceBank -> Progress -> Tile -> Html msg
---renderResourceFill resourceState progress tileType =
---    let
---        fill =
---            renderFill resourceState tileType progress
---    in
---    case tileType of
---        Rain ->
---            div [ style [ height 50 ] ]
---                [ div [ style [ width 13 ], class "center" ] [ RainBank.full ]
---                , fill (div [ class "relative" ] <| List.map (weatherDrop Color.rainBlue) <| List.range 1 50)
---                ]
---
---        Sun ->
---            div [ style [ height 50 ] ]
---                [ div [ style [ width 18 ], class "center" ] [ SunBank.full ]
---                , fill (div [ class "relative" ] <| List.map (weatherDrop Color.gold) <| List.range 4 54)
---                ]
---
---        Seed seed ->
---            div [ style [ height 50 ] ]
---                [ div [ style [ width 12 ], class "center" ] [ Seed.view seed ]
---                , fill (div [ class "relative", style [ transform [ translateY -10 ] ] ] <| List.map (seedDrop seed) <| List.range 7 57)
---                ]
---
---        _ ->
---            span [] []
---
---
---renderFill : ResourceBank -> Tile -> Progress -> Html msg -> Html msg
---renderFill resourceState tileType progess element =
---    if resourceState == Filling && pointsFromPreviousLevel tileType progess > 0 then
---        element
---
---    else
---        span [] []
---
---
---pointsFromPreviousLevel : Tile -> Progress -> Int
---pointsFromPreviousLevel tileType progress =
---    Progress.pointsFromPreviousLevel Worlds.all tileType progress
---        |> Maybe.withDefault 0
---
---
---seedDrop : Seed -> Int -> Html msg
---seedDrop seed n =
---    div
---        [ style
---            [ transform
---                [ translateX
---                    (Sine.wave
---                        { left = -5
---                        , center = 0
---                        , right = 5
---                        }
---                        (n - 1)
---                    )
---                ]
---            ]
---        ]
---        [ div
---            [ style
---                [ width 5
---                , height 8
---                , opacity 0
---                , animation "fade-slide-down" 150 [ Animation.delay (n * dropDelay n), linear ]
---                ]
---            , class "absolute top-0 left-0 right-0 center"
---            ]
---            [ Seed.view seed ]
---        ]
---
---
---weatherDrop : String -> Int -> Html msg
---weatherDrop bgColor n =
---    div
---        [ style [ transform [ translateX <| Sine.wave { left = -5, center = 0, right = 5 } (n - 1) ] ] ]
---        [ div
---            [ style
---                [ width 6
---                , height 6
---                , background bgColor
---                , opacity 0
---                , animation "fade-slide-down" 150 [ Animation.delay (n * dropDelay n), linear ]
---                ]
---            , class "br-100 absolute left-0 right-0 center"
---            ]
---            []
---        ]
---
---

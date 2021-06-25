@@ -181,12 +181,12 @@ countdown : Lives -> Element msg
 countdown lives =
     case Lives.timeTillNextLife lives of
         Nothing ->
-            Text.text [ Text.small ] "Full Life"
+            Text.text [ Text.f6 ] "Full Life"
 
         Just t ->
             row []
-                [ Text.text [ Text.small ] "Next life in: "
-                , Text.text [ Text.small, Text.color Palette.pinkRed ] (Countdown.view t)
+                [ Text.text [ Text.f6 ] "Next life in: "
+                , Text.text [ Text.f6, Text.color Palette.pinkRed ] (Countdown.view t)
                 ]
 
 

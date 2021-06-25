@@ -172,7 +172,7 @@ titleText model =
 titleText_ : Element msg
 titleText_ =
     Text.text
-        [ Text.large
+        [ Text.f3
         , Text.wideSpaced
         , centerX
         ]
