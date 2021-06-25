@@ -2,7 +2,7 @@ module Game.Lives exposing
     ( Cache
     , Lives
     , decrement
-    , fromCache
+    , init
     , remaining
     , timeTillNextLife
     , toCache
@@ -37,8 +37,8 @@ type alias Cache =
 -- Life State
 
 
-fromCache : Time.Posix -> Maybe Cache -> Lives
-fromCache now cache =
+init : Time.Posix -> Maybe Cache -> Lives
+init now cache =
     case cache of
         Just c ->
             fromValidCache now c

@@ -8,13 +8,6 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "Progress"
-        [ currentLevelCompleteSpec
-        ]
-
-
-currentLevelCompleteSpec : Test
-currentLevelCompleteSpec =
     describe "currentLevelComplete"
         [ test "is True if current level is complete" <|
             \_ ->
@@ -43,8 +36,9 @@ level =
 
 progress : Int -> Int -> Progress.Progress
 progress w l =
-    Progress.fromCache <|
-        Just
+    Progress.init
+        (Just
             { worldId = w
             , levelId = l
             }
+        )

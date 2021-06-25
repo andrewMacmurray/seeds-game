@@ -6,9 +6,9 @@ module Game.Level.Progress exposing
     , currentLevelComplete
     , currentLevelSeedType
     , currentWorldComplete
-    , fromCache
     , fromLevel
     , handleIncrement
+    , init
     , isFirstPlay
     , percentComplete
     , pointsFromPreviousLevel
@@ -66,8 +66,8 @@ toCache =
     reachedLevel >> Level.toCache
 
 
-fromCache : Maybe Level.Cache -> Progress
-fromCache =
+init : Maybe Level.Cache -> Progress
+init =
     Maybe.map Level.fromCache
         >> Maybe.withDefault Level.first
         >> fromLevel

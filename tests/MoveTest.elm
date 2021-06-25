@@ -7,13 +7,6 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "Move"
-        [ surroundingCoordinatesSpec
-        ]
-
-
-surroundingCoordinatesSpec : Test
-surroundingCoordinatesSpec =
     describe "surroundingCoordinates"
         [ describe "with a radius of 1"
             [ test "gets correct number of surrounding coordinates" <|

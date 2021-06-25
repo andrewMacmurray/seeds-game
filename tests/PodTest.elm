@@ -13,13 +13,6 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "Pod"
-        [ validMoveSuite
-        ]
-
-
-validMoveSuite : Test
-validMoveSuite =
     describe "Pod.isValidNextMove"
         [ test "isValid if previous and next tiles are pods" <|
             \_ ->
