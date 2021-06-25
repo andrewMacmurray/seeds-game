@@ -39,13 +39,13 @@ cycleColors i =
             ( Palette.yellow7, Palette.yellow6 )
 
         1 ->
-            ( Palette.yellow6, Palette.yellow3 )
+            ( Palette.yellow6, Palette.yellow4 )
 
         2 ->
             ( Palette.yellow7, Palette.yellow8 )
 
         _ ->
-            ( Palette.yellow3, Palette.yellow5 )
+            ( Palette.yellow4, Palette.yellow5 )
 
 
 hillPair : { offset : Float, left : Color, right : Color } -> Window -> List Shape

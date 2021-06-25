@@ -276,7 +276,7 @@ yellow3 =
 
 yellow4 : Color
 yellow4 =
-    rgb255 220 200 18
+    rgb255 198 182 16
 
 
 yellow5 : Color
@@ -286,7 +286,7 @@ yellow5 =
 
 yellow6 : Color
 yellow6 =
-    rgb255 217 210 22
+    rgb255 229 222 25
 
 
 yellow7 : Color

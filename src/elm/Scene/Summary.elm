@@ -691,7 +691,12 @@ offsetDrop order =
 
 toDrops : List (Element msg) -> Element msg
 toDrops drops =
-    column (List.map (behindContent << el [ centerX ]) drops ++ [ centerX ]) []
+    column (centerX :: List.map toDrop drops) []
+
+
+toDrop : Element msg -> Attribute msg
+toDrop =
+    behindContent << el [ centerX ]
 
 
 fallDown : Resource -> ResourceOptions -> Int -> Animation
@@ -795,31 +800,45 @@ viewWorldSummary : Seed -> ViewModel -> Element msg
 viewWorldSummary seed model =
     case seed of
         Seed.Sunflower ->
-            el
-                [ width fill
-                , height fill
-                , inFront (flowersWithText Sunflower.flowers model)
-                ]
-                (html (Sunflower.hills model.window))
+            viewWorldSummary_
+                { flowers = Sunflower.flowers
+                , hills = Sunflower.hills model.window
+                , model = model
+                }
 
         Seed.Chrysanthemum ->
-            el
-                [ width fill
-                , height fill
-                , inFront (flowersWithText Chrysanthemum.flowers model)
-                ]
-                (html (Chrysanthemum.hills model.window))
+            viewWorldSummary_
+                { flowers = Chrysanthemum.flowers
+                , hills = Chrysanthemum.hills model.window
+                , model = model
+                }
 
         Seed.Cornflower ->
-            el
-                [ width fill
-                , height fill
-                , inFront (flowersWithText Cornflower.flowers model)
-                ]
-                (html (Cornflower.hills model.window))
+            viewWorldSummary_
+                { flowers = Cornflower.flowers
+                , hills = Cornflower.hills model.window
+                , model = model
+                }
 
         _ ->
             none
+
+
+type alias WorldSummary_ msg =
+    { flowers : Element msg
+    , model : ViewModel
+    , hills : Html msg
+    }
+
+
+viewWorldSummary_ : WorldSummary_ msg -> Element msg
+viewWorldSummary_ options =
+    el
+        [ width fill
+        , height fill
+        , inFront (flowersWithText options.flowers options.model)
+        ]
+        (html options.hills)
 
 
 flowersWithText : Element msg -> ViewModel -> Element msg
