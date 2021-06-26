@@ -1,7 +1,7 @@
 module Element.Backdrop.SteepHills exposing
     ( Colors
     , animated
-    , green
+    , greens
     , shape_
     , static
     )
@@ -26,16 +26,12 @@ import Window exposing (Window, vh, vw)
 
 type alias AnimatedOptions =
     { window : Window
-    , hills : Int
     , delay : Animation.Millis
-    , colors : Colors
     }
 
 
 type alias StaticOptions =
     { window : Window
-    , hills : Int
-    , colors : Colors
     }
 
 
@@ -52,7 +48,6 @@ type alias Colors_ =
 
 type alias Options_ =
     { window : Window
-    , hills : Int
     , colors : Colors
     , animation : HillsAnimation
     }
@@ -63,12 +58,17 @@ type HillsAnimation
     | Animated Animation.Millis
 
 
+maxHills : number
+maxHills =
+    6
+
+
 
 -- Colors
 
 
-green : Colors
-green =
+greens : Colors
+greens =
     { one = ( Palette.green8, Palette.green3 )
     , two = ( Palette.green4, Palette.green2 )
     , three = ( Palette.green1, Palette.green6 )
@@ -83,8 +83,7 @@ animated : AnimatedOptions -> Shape
 animated options =
     shape_
         { window = options.window
-        , hills = options.hills
-        , colors = options.colors
+        , colors = greens
         , animation = Animated options.delay
         }
 
@@ -93,15 +92,14 @@ static : StaticOptions -> Shape
 static options =
     shape_
         { window = options.window
-        , hills = options.hills
-        , colors = options.colors
+        , colors = greens
         , animation = None
         }
 
 
 shape_ : Options_ -> Shape
 shape_ options =
-    List.range 0 (options.hills - 1)
+    List.range 0 (maxHills - 1)
         |> List.map (cycleColors options)
         |> List.indexedMap toHillConfig
         |> List.map (toHillPair options)

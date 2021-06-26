@@ -148,8 +148,6 @@ hills window =
     Shape.fullScreen window
         (SteepHills.animated
             { window = window
-            , hills = 6
             , delay = delays.hills
-            , colors = SteepHills.green
             }
         )

@@ -12,11 +12,7 @@ import Window exposing (Window)
 
 hills : Window -> Shape
 hills window =
-    SteepHills.static
-        { hills = 6
-        , window = window
-        , colors = SteepHills.green
-        }
+    SteepHills.static { window = window }
 
 
 flowers : Element msg
