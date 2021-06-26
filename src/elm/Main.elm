@@ -23,6 +23,7 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
+import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
@@ -107,6 +108,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
+        |> Debug.trigger InitSummary
 
 
 initialState : Title.Model -> Model
@@ -120,7 +122,7 @@ initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
     , loadingScreen = LoadingScreen.hidden
-    , progress = Progress.init flags.level
+    , progress = Debug.progress 3 3
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
     , menu = Context.Closed

@@ -4,15 +4,19 @@ module Scene.Garden.Sunflower exposing
     )
 
 import Element exposing (Element)
+import Element.Backdrop.SteepHills as SteepHills
 import Geometry.Shape exposing (Shape)
 import Scene.Garden.Sunflower.Flowers as Flowers
-import Scene.Garden.Sunflower.Hills as Hills
 import Window exposing (Window)
 
 
 hills : Window -> Shape
-hills =
-    Hills.shape
+hills window =
+    SteepHills.static
+        { hills = 6
+        , window = window
+        , colors = SteepHills.green
+        }
 
 
 flowers : Element msg

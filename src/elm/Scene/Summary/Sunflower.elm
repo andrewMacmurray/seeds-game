@@ -7,6 +7,7 @@ import Element exposing (..)
 import Element.Backdrop.SteepHills as SteepHills
 import Element.Flower.Sunflower as Sunflower
 import Element.Scale as Scale
+import Geometry.Shape as Shape
 import Scene.Garden.Sunflower.Sprites as Butterfly
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
@@ -144,9 +145,11 @@ butterflyDelay options =
 
 hills : Window -> Svg msg
 hills window =
-    SteepHills.animated
-        { window = window
-        , hills = 6
-        , delay = delays.hills
-        , colors = SteepHills.green
-        }
+    Shape.fullScreen window
+        (SteepHills.animated
+            { window = window
+            , hills = 6
+            , delay = delays.hills
+            , colors = SteepHills.green
+            }
+        )

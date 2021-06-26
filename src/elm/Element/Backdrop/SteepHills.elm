@@ -2,7 +2,8 @@ module Element.Backdrop.SteepHills exposing
     ( Colors
     , animated
     , green
-    , shape
+    , shape_
+    , static
     )
 
 import Axis2d exposing (Axis2d)
@@ -15,7 +16,6 @@ import Pixels exposing (Pixels)
 import Point2d
 import Polygon2d exposing (Polygon2d)
 import Simple.Animation as Animation exposing (Animation)
-import Svg exposing (Svg)
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 
@@ -32,6 +32,13 @@ type alias AnimatedOptions =
     }
 
 
+type alias StaticOptions =
+    { window : Window
+    , hills : Int
+    , colors : Colors
+    }
+
+
 type alias Colors =
     { one : Colors_
     , two : Colors_
@@ -41,6 +48,19 @@ type alias Colors =
 
 type alias Colors_ =
     ( Color, Color )
+
+
+type alias Options_ =
+    { window : Window
+    , hills : Int
+    , colors : Colors
+    , animation : HillsAnimation
+    }
+
+
+type HillsAnimation
+    = None
+    | Animated Animation.Millis
 
 
 
@@ -59,13 +79,28 @@ green =
 -- View
 
 
-animated : AnimatedOptions -> Svg msg
+animated : AnimatedOptions -> Shape
 animated options =
-    Shape.window options.window [] (shape options)
+    shape_
+        { window = options.window
+        , hills = options.hills
+        , colors = options.colors
+        , animation = Animated options.delay
+        }
 
 
-shape : AnimatedOptions -> Shape
-shape options =
+static : StaticOptions -> Shape
+static options =
+    shape_
+        { window = options.window
+        , hills = options.hills
+        , colors = options.colors
+        , animation = None
+        }
+
+
+shape_ : Options_ -> Shape
+shape_ options =
     List.range 0 (options.hills - 1)
         |> List.map (cycleColors options)
         |> List.indexedMap toHillConfig
@@ -93,24 +128,20 @@ toHillConfig i ( left, right ) =
     }
 
 
-toHillPair : AnimatedOptions -> HillConfig -> List Shape
+toHillPair : Options_ -> HillConfig -> List Shape
 toHillPair options config =
-    [ animateHill options
-        config
-        (hill
-            { offset = config.offset
-            , color = config.right
-            }
-            options.window
-        )
-    , animateHill options
-        config
-        (mirrored
-            { offset = config.offset
-            , color = config.left
-            }
-            options.window
-        )
+    [ { offset = config.offset
+      , color = config.right
+      , window = options.window
+      }
+        |> hill
+        |> withAnimation options config
+    , { offset = config.offset
+      , color = config.left
+      , window = options.window
+      }
+        |> mirrored
+        |> withAnimation options config
     ]
 
 
@@ -118,28 +149,33 @@ toHillPair options config =
 -- Animate
 
 
-animateHill : AnimatedOptions -> HillConfig -> Shape -> Shape
-animateHill options =
-    fadeIn options >> Shape.animate
+withAnimation : Options_ -> HillConfig -> Shape -> Shape
+withAnimation options config shape =
+    case options.animation of
+        Animated delay ->
+            Shape.animate (fadeIn delay config) shape
+
+        None ->
+            shape
 
 
-fadeIn : AnimatedOptions -> HillConfig -> Animation
-fadeIn options config =
+fadeIn : Animation.Millis -> HillConfig -> Animation
+fadeIn delay config =
     Animations.fadeIn 500
-        [ Animation.delay (fadeHillDelay options config)
+        [ Animation.delay (fadeHillDelay delay config)
         ]
 
 
-fadeHillDelay : AnimatedOptions -> HillConfig -> Animation.Millis
-fadeHillDelay options config =
-    options.delay + (config.order * 150)
+fadeHillDelay : Animation.Millis -> HillConfig -> Animation.Millis
+fadeHillDelay delay config =
+    delay + (config.order * 150)
 
 
 
 -- Colors
 
 
-cycleColors : AnimatedOptions -> Int -> ( Color, Color )
+cycleColors : Options_ -> Int -> ( Color, Color )
 cycleColors options i =
     case modBy 3 i of
         0 ->
@@ -156,13 +192,13 @@ cycleColors options i =
 -- Shape
 
 
-mirrored : { offset : Float, color : Color } -> Window -> Shape
-mirrored options window =
-    Shape.mirror (hill options window)
+mirrored : { offset : Float, color : Color, window : Window } -> Shape
+mirrored =
+    Shape.mirror << hill
 
 
-hill : { offset : Float, color : Element.Color } -> Window -> Shape
-hill { offset, color } window =
+hill : { offset : Float, color : Element.Color, window : Window } -> Shape
+hill { offset, color, window } =
     Shape.polygon { fill = color } (hill_ offset window)
 
 

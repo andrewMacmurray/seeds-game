@@ -108,7 +108,7 @@ flower options =
 
 hills : Window -> Svg msg
 hills window =
-    Shape.window window [] (hills_ window)
+    Shape.fullScreen window (hills_ window)
 
 
 hills_ : Window -> Shape
