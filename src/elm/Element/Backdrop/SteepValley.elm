@@ -1,8 +1,5 @@
 module Element.Backdrop.SteepValley exposing
-    ( Colors
-    , animated
-    , greens
-    , shape_
+    ( animated
     , static
     )
 

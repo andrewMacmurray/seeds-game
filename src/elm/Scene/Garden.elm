@@ -33,6 +33,7 @@ import Seed exposing (Seed)
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
+import Utils.List as List
 import View.Menu as Menu
 
 
@@ -182,7 +183,13 @@ allFlowers context =
         (Worlds.list
             |> List.map (worldFlowers context)
             |> List.reverse
+            |> List.prepend bottomOffset
         )
+
+
+bottomOffset : Element msg
+bottomOffset =
+    el [ height (px Hills.bottomOffset) ] none
 
 
 worldFlowers : Context -> Level.WorldWithLevels -> Element Msg

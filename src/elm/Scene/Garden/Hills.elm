@@ -1,6 +1,7 @@
-module Scene.Garden.Hills exposing (view)
+module Scene.Garden.Hills exposing (bottomOffset, view)
 
 import Context exposing (Context)
+import Element.Scale as Scale
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
@@ -14,6 +15,19 @@ import Utils.Svg as Svg
 import Window exposing (Window, vh, vw)
 
 
+
+-- Offset
+
+
+bottomOffset : number
+bottomOffset =
+    Scale.large
+
+
+
+-- View
+
+
 view : Context -> Svg msg
 view context =
     Svg.svg [ viewBox context.window ]
@@ -25,11 +39,12 @@ view context =
 
 viewBox : Window -> Svg.Attribute msg
 viewBox window =
-    Svg.viewBox_
-        0
-        0
-        (vw window)
-        (vh window * toFloat (List.length Worlds.list))
+    Svg.viewBox_ 0 0 (vw window) (viewBoxHeight window)
+
+
+viewBoxHeight : Window -> Float
+viewBoxHeight window =
+    vh window * toFloat (List.length Worlds.list) + bottomOffset
 
 
 toHills : Context -> Int -> Level.WorldWithLevels -> Svg msg
