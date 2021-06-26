@@ -4,7 +4,7 @@ module Scene.Garden.Sunflower exposing
     )
 
 import Element exposing (Element)
-import Element.Backdrop.SteepHills as SteepHills
+import Element.Backdrop.SteepValley as SteepValley
 import Geometry.Shape exposing (Shape)
 import Scene.Garden.Sunflower.Flowers as Flowers
 import Window exposing (Window)
@@ -12,7 +12,7 @@ import Window exposing (Window)
 
 hills : Window -> Shape
 hills window =
-    SteepHills.static { window = window }
+    SteepValley.static { window = window }
 
 
 flowers : Element msg

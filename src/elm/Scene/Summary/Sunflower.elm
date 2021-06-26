@@ -4,7 +4,7 @@ module Scene.Summary.Sunflower exposing
     )
 
 import Element exposing (..)
-import Element.Backdrop.SteepHills as SteepHills
+import Element.Backdrop.SteepValley as SteepValley
 import Element.Flower.Sunflower as Sunflower
 import Element.Scale as Scale
 import Geometry.Shape as Shape
@@ -146,7 +146,7 @@ butterflyDelay options =
 hills : Window -> Svg msg
 hills window =
     Shape.fullScreen window
-        (SteepHills.animated
+        (SteepValley.animated
             { window = window
             , delay = delays.hills
             }

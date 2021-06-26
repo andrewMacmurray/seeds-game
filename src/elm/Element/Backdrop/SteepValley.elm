@@ -1,4 +1,4 @@
-module Element.Backdrop.SteepHills exposing
+module Element.Backdrop.SteepValley exposing
     ( Colors
     , animated
     , greens
