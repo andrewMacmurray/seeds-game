@@ -23,7 +23,7 @@ import Utils.Svg as Svg
 
 static : Element msg
 static =
-    Icon.view
+    Icon.el
         [ Svg.viewBox_ 0 0 57 50
         , Svg.width_ size
         , Svg.height_ size
@@ -66,7 +66,7 @@ broken =
 
 heartBreak : Element msg
 heartBreak =
-    Icon.view
+    Icon.el
         [ Svg.viewBox_ -5 0 65 49
         , Svg.height_ size
         , Svg.width_ size

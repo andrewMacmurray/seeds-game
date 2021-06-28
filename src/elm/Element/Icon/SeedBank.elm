@@ -5,13 +5,12 @@ import Css.Transform exposing (translateY)
 import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
+import Element.Seed as Seed
 import Seed exposing (Seed)
 import Simple.Animation as Animation
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
-import View.Seed as Seed
-import View.Seed.Mono exposing (greyedOutSeed)
 
 
 
@@ -27,7 +26,7 @@ type alias Options =
 
 icon : Options -> Element msg
 icon options =
-    Icon.view
+    Icon.el
         [ Svg.viewBox_ 0 0 124.5 193.5
         ]
         [ Svg.defs []
@@ -39,7 +38,7 @@ icon options =
                 ]
                 []
             ]
-        , greyedOutSeed
+        , Seed.grey_
         , Svg.mask
             [ fill "white"
             , id (seedBankId options.seed)
@@ -52,18 +51,18 @@ icon options =
             ]
         , Svg.g_
             [ mask ("url(#" ++ seedBankId options.seed ++ ")") ]
-            [ Seed.view options.seed ]
+            [ Seed.svg options.seed ]
         ]
 
 
 full : Seed -> Element msg
 full seed =
-    Icon.view
+    Icon.el
         [ viewBox "0 0 124.5 193.5"
         , width "100%"
         , height "100%"
         ]
-        [ Seed.view seed
+        [ Seed.svg seed
         ]
 
 

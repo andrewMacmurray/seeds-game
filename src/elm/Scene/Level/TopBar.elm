@@ -10,6 +10,7 @@ import Element.Icon.SunBank as SunBank
 import Element.Icon.Tick as Tick
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Element.Seed as Seed
 import Element.Text as Text
 import Game.Board.Scores as Scores exposing (Scores)
 import Game.Board.Tile as Tile exposing (Tile)
@@ -20,7 +21,6 @@ import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Utils.Animated as Animated
-import View.Seed as Seed
 import Window exposing (Window)
 
 
@@ -216,7 +216,7 @@ resourceIcon_ resource =
             RainBank.full
 
         Seed seed ->
-            Seed.view seed
+            Seed.svg seed
 
 
 viewScore : Score -> Element msg

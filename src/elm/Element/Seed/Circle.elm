@@ -1,6 +1,6 @@
 module Element.Seed.Circle exposing (seed)
 
-import Element exposing (Color, Element)
+import Element exposing (Color)
 import Element.Icon as Icon
 import Svg
 import Svg.Attributes exposing (..)
@@ -18,9 +18,9 @@ type alias Options =
     }
 
 
-seed : Options -> Element msg
+seed : Options -> Icon.Dual msg
 seed options =
-    Icon.view
+    Icon.dual
         [ Svg.viewBox_ 0 0 124.5 193.5
         , Svg.fullWidth
         ]

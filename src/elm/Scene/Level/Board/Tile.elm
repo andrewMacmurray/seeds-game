@@ -9,6 +9,7 @@ import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
 import Element.Icon.Burst as Burst
 import Element.Palette as Palette
+import Element.Seed as Seed
 import Game.Board as Board
 import Game.Board.Block as Block exposing (Block)
 import Game.Board.Move as Move exposing (Move)
@@ -26,7 +27,6 @@ import Simple.Animation.Property as P
 import Simple.Transition as Transition
 import Utils.Html as Html
 import Utils.Html.Style as Style
-import View.Seed as Seed
 import Window exposing (Window)
 
 
@@ -281,7 +281,7 @@ wallSize model =
 
 toSeedElement : Model -> Seed -> Html msg
 toSeedElement model seed =
-    Html.square (innerTileSize model) (Style.center [ Style.absolute ]) [ Seed.view seed ]
+    Html.square (innerTileSize model) (Style.center [ Style.absolute ]) [ Seed.svg seed ]
 
 
 

@@ -26,7 +26,7 @@ type alias Options =
 
 icon : Options -> Element msg
 icon options =
-    Icon.view
+    Icon.el
         [ Svg.viewBox_ 0 0 25 36 ]
         [ Svg.defs []
             [ Svg.rect
