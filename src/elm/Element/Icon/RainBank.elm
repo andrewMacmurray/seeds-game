@@ -11,6 +11,7 @@ import Element.Icon as Icon
 import Simple.Animation as Animation
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 
 
 
@@ -26,10 +27,7 @@ type alias Options =
 icon : Options -> Element msg
 icon options =
     Icon.view
-        [ viewBox "0 0 25 36"
-        , width "100%"
-        , height "100%"
-        ]
+        [ Svg.viewBox_ 0 0 25 36 ]
         [ Svg.defs []
             [ Svg.rect
                 [ height (String.fromFloat fullHeight)

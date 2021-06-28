@@ -1,5 +1,6 @@
 module Utils.Time exposing
     ( minutes
+    , oneMinute
     , oneSecond
     )
 

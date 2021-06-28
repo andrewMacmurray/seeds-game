@@ -28,9 +28,7 @@ type alias Options =
 icon : Options -> Element msg
 icon options =
     Icon.view
-        [ viewBox "0 0 124.5 193.5"
-        , width "100%"
-        , height "100%"
+        [ Svg.viewBox_ 0 0 124.5 193.5
         ]
         [ Svg.defs []
             [ Svg.rect

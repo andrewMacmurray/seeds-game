@@ -32,12 +32,12 @@ import Game.Config.World as Worlds
 import Game.Level.Progress as Progress
 import Game.Level.Tile as Tile exposing (TargetScore)
 import Game.Lives as Lives exposing (Lives)
-import Game.Lives.Countdown as Countdown
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
 import Utils.Element as Element
 import Utils.Sine as Sine
+import Utils.Time.Clock as Clock
 import View.Menu as Menu
 
 
@@ -186,7 +186,7 @@ countdown lives =
         Just t ->
             row []
                 [ Text.text [ Text.f6 ] "Next life in: "
-                , Text.text [ Text.f6, Text.color Palette.pinkRed ] (Countdown.view t)
+                , Text.text [ Text.f6, Text.color Palette.pinkRed ] (Clock.readout t)
                 ]
 
 
@@ -245,7 +245,7 @@ countdown_ : Context -> String
 countdown_ =
     .lives
         >> Lives.timeTillNextLife
-        >> Maybe.map Countdown.view
+        >> Maybe.map Clock.readout
         >> Maybe.withDefault ""
 
 

@@ -13,9 +13,9 @@ module Game.Lives exposing
 import Element exposing (..)
 import Element.Icon.Heart as Heart
 import Element.Scale as Scale
-import Game.Lives.Countdown as Countdown exposing (Countdown)
 import Time
 import Utils.Time as Time
+import Utils.Time.Clock as Clock exposing (Clock)
 
 
 
@@ -78,20 +78,13 @@ max =
 -- Time till next life
 
 
-timeTillNextLife : Lives -> Maybe Countdown
+timeTillNextLife : Lives -> Maybe Clock
 timeTillNextLife (Lives cache) =
-    let
-        minutes =
-            modBy max (cache.timeTillNextLife // Time.oneSecond)
-
-        seconds =
-            modBy 60 (cache.timeTillNextLife // Time.oneSecond)
-    in
     if cache.timeTillNextLife == 0 then
         Nothing
 
     else
-        Just (Countdown.init minutes seconds)
+        Just (Clock.init cache.timeTillNextLife)
 
 
 

@@ -4,6 +4,7 @@ module Utils.Svg exposing
     , cy_
     , disableTouch
     , fill_
+    , full
     , fullHeight
     , fullWidth
     , g_
@@ -64,6 +65,17 @@ window w attrs =
             [ windowViewBox_ w
             , width_ (vw w)
             , height_ (vh w)
+            ]
+            attrs
+        )
+
+
+full : List (Attribute msg) -> List (Svg msg) -> Svg msg
+full attrs =
+    Svg.svg
+        (List.append
+            [ fullHeight
+            , fullWidth
             ]
             attrs
         )

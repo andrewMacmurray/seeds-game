@@ -5,14 +5,15 @@ import Css.Style as Style
 import Css.Transition as Transition
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 
 
 icon : Color.Color -> Svg msg
 icon color =
     Svg.svg
-        [ width "20"
-        , height "20"
-        , viewBox "0 0 20 20"
+        [ Svg.width_ 20
+        , Svg.height_ 20
+        , Svg.viewBox_ 0 0 20 20
         ]
         [ Svg.path
             [ fill color

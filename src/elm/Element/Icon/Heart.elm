@@ -11,7 +11,7 @@ import Element.Icon as Icon
 import Element.Palette as Palette
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
-import Svg exposing (Svg)
+import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg as Svg
