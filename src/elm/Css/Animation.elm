@@ -1,23 +1,16 @@
 module Css.Animation exposing
     ( Frame
     , Keyframes
-    , Option
     , Property
     , animation
-    , cubicBezier
-    , delay
-    , ease
     , embed
     , frame
-    , infinite
     , keyframes
     , opacity
-    , transform
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Transform exposing (Transform)
-import Css.Unit exposing (cubicBezier_, ms, pc)
+import Css.Unit exposing (ms, pc)
 import Html exposing (Html)
 import Html.Attributes
 import Json.Encode
@@ -31,40 +24,13 @@ import Json.Encode
 --         []
 
 
-type Option
-    = Option Style
-
-
-animation : String -> Int -> List Option -> Style
-animation name duration options =
-    [ [ animationName name
-      , animationDuration duration
-      , fillForwards
-      ]
-    , toStyles options
-    ]
-        |> List.concat
-        |> Style.compose
-
-
-delay : Int -> Option
-delay duration =
-    option <| animationDelay duration
-
-
-ease : Option
-ease =
-    option <| animationTimingFunction "ease"
-
-
-cubicBezier : Float -> Float -> Float -> Float -> Option
-cubicBezier a b c d =
-    option <| animationTimingFunction (cubicBezier_ a b c d)
-
-
-infinite : Option
-infinite =
-    option <| animationIterationCount "infinite"
+animation : String -> Int -> Style
+animation name duration =
+    Style.compose
+        [ animationName name
+        , animationDuration duration
+        , fillForwards
+        ]
 
 
 
@@ -81,34 +47,9 @@ animationDuration n =
     Style.property "animation-duration" <| ms <| toFloat n
 
 
-animationDelay : Int -> Style
-animationDelay n =
-    Style.property "animation-delay" <| ms <| toFloat n
-
-
-animationTimingFunction : String -> Style
-animationTimingFunction =
-    Style.property "animation-timing-function"
-
-
-animationIterationCount : String -> Style
-animationIterationCount =
-    Style.property "animation-iteration-count"
-
-
 fillForwards : Style
 fillForwards =
     Style.property "animation-fill-mode" "forwards"
-
-
-option : Style -> Option
-option =
-    Option
-
-
-toStyles : List Option -> List Style
-toStyles =
-    List.map (\(Option s) -> s)
 
 
 
@@ -146,11 +87,6 @@ keyframes =
 frame : Float -> List Property -> Frame
 frame =
     Frame
-
-
-transform : List Transform -> Property
-transform =
-    Property << Style.transform
 
 
 opacity : Float -> Property

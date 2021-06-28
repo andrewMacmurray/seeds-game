@@ -61,7 +61,7 @@ fadeOut =
             [ opacity 1
             , width 20
             , height 20
-            , animation "fade-out" 1000 []
+            , animation "fade-out" 1000
             ]
         , class "absolute top-1 right-1 z-9"
         ]
@@ -74,7 +74,7 @@ view msg context sceneMsg sceneSpecificOptions =
         [ div
             [ class "fixed pointer right-1 top-1 z-9"
             , withDisable context.menu
-            , style [ animation "fade-in" 500 [] ]
+            , style [ animation "fade-in" 500 ]
             ]
             [ menuDrawerButton msg context ]
         , div [ class "fixed z-8 top-0", enableWhenOpen context.menu ]

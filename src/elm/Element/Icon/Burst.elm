@@ -42,15 +42,10 @@ inactiveOptions =
 
 
 active_ : Options -> Svg msg
-active_ =
-    withNode Svg.svg
-
-
-withNode : (List (Svg.Attribute msg) -> List (Svg msg) -> b) -> Options -> b
-withNode node options =
-    node
+active_ options =
+    Svg.svg
         [ Svg.viewBox_ 0 0 11 11
-        , width "100%"
+        , Svg.fullWidth
         , fillRule "evenodd"
         , clipRule "evenodd"
         , strokeLinejoin "round"

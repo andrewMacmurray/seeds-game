@@ -5,6 +5,7 @@ import Element.Icon as Icon
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
+import Utils.Svg as Svg
 
 
 
@@ -20,8 +21,8 @@ type alias Options =
 seed : Options -> Element msg
 seed options =
     Icon.view
-        [ width "100%"
-        , viewBox "0 0 124.5 193.5"
+        [ Svg.viewBox_ 0 0 124.5 193.5
+        , Svg.fullWidth
         ]
         [ Svg.path
             [ fill (Color.toString options.background)

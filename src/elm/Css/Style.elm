@@ -1,6 +1,5 @@
 module Css.Style exposing
     ( Style
-    , applyIf
     , background
     , backgroundColor
     , border
@@ -9,8 +8,6 @@ module Css.Style exposing
     , color
     , compose
     , height
-    , marginLeft
-    , marginRight
     , marginTop
     , none
     , opacity
@@ -120,19 +117,9 @@ transformOrigin =
     property "transform-origin"
 
 
-marginRight : Float -> Style
-marginRight n =
-    property "margin-right" <| px n
-
-
 marginTop : Float -> Style
 marginTop n =
     property "margin-top" <| px n
-
-
-marginLeft : Float -> Style
-marginLeft n =
-    property "margin-left" <| px n
 
 
 color : String -> Style
@@ -173,15 +160,6 @@ height h =
 opacity : Float -> Style
 opacity o =
     property "opacity" <| String.fromFloat o
-
-
-applyIf : Bool -> Style -> Style
-applyIf predicate s =
-    if predicate then
-        s
-
-    else
-        none
 
 
 

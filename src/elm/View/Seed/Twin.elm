@@ -8,6 +8,7 @@ module View.Seed.Twin exposing
 import Css.Color as Color exposing (Color)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Svg as Svg
 
 
 sunflower : Svg msg
@@ -32,11 +33,8 @@ lupin =
 
 twin : ( Color, Color ) -> Svg msg
 twin ( left, right ) =
-    Svg.svg
-        [ width "100%"
-        , height "100%"
-        , viewBox "0 0 124.5 193.5"
-        ]
+    Svg.full
+        [ Svg.viewBox_ 0 0 124.5 193.5 ]
         [ Svg.path
             [ fill left
             , d "M62.33,3.285c0,0-58.047,79.778-58.047,128.616c0,32.059,25.988,58.049,58.047,58.049 c0.057,0,0.113-0.004,0.17-0.004V3.519C62.388,3.365,62.33,3.285,62.33,3.285z"

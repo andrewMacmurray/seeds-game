@@ -10,13 +10,12 @@ module Game.Lives exposing
     , view
     )
 
-import Css.Style as Style exposing (..)
-import Css.Transform exposing (scale)
+import Element exposing (..)
 import Element.Icon.Heart as Heart
-import Game.Lives.Countdown as Countdown exposing (Countdown)
-import Html exposing (..)
-import Html.Attributes exposing (class)
-import Time exposing (posixToMillis)
+import Element.Scale as Scale
+import Time
+import Utils.Time as Time
+import Utils.Time.Clock as Clock exposing (Clock)
 
 
 
@@ -45,7 +44,7 @@ init now cache =
 
         Nothing ->
             Lives
-                { lastPlayed = posixToMillis now
+                { lastPlayed = Time.posixToMillis now
                 , timeTillNextLife = 0
                 }
 
@@ -79,20 +78,13 @@ max =
 -- Time till next life
 
 
-timeTillNextLife : Lives -> Maybe Countdown
+timeTillNextLife : Lives -> Maybe Clock
 timeTillNextLife (Lives cache) =
-    let
-        minutes =
-            modBy max (cache.timeTillNextLife // minute)
-
-        seconds =
-            modBy 60 (cache.timeTillNextLife // second)
-    in
     if cache.timeTillNextLife == 0 then
         Nothing
 
     else
-        Just (Countdown.init minutes seconds)
+        Just (Clock.init cache.timeTillNextLife)
 
 
 
@@ -102,7 +94,7 @@ timeTillNextLife (Lives cache) =
 fromValidCache : Time.Posix -> Cache -> Lives
 fromValidCache now cache =
     Lives
-        { lastPlayed = posixToMillis now
+        { lastPlayed = Time.posixToMillis now
         , timeTillNextLife = diffTimes now cache
         }
 
@@ -110,36 +102,13 @@ fromValidCache now cache =
 diffTimes : Time.Posix -> Cache -> Int
 diffTimes now cache =
     decrementAboveZero
-        (posixToMillis now - cache.lastPlayed)
+        (Time.posixToMillis now - cache.lastPlayed)
         cache.timeTillNextLife
 
 
 recoveryInterval : Int
 recoveryInterval =
-    5 * minute
-
-
-minute : Int
-minute =
-    60 * second
-
-
-second : Int
-second =
-    1000
-
-
-decrementAboveZero : Int -> Int -> Int
-decrementAboveZero n1 n2 =
-    let
-        n3 =
-            n2 - n1
-    in
-    if n3 <= 0 then
-        0
-
-    else
-        n3
+    Time.minutes 5
 
 
 
@@ -153,12 +122,12 @@ type alias ViewModel =
     }
 
 
-view : Lives -> Html msg
+view : Lives -> Element msg
 view lives =
     List.range 1 max
         |> List.map (viewModel (remaining lives))
         |> List.map heart
-        |> div []
+        |> row [ spacing Scale.medium, centerX ]
 
 
 viewModel : Int -> Int -> ViewModel
@@ -169,28 +138,47 @@ viewModel remaining_ life =
     }
 
 
-heart : ViewModel -> Html msg
-heart { active, currentLife, breaking } =
+heart : ViewModel -> Element msg
+heart model =
+    el [ scale (toScale model) ] (visibleHeart model)
+
+
+toScale : ViewModel -> Float
+toScale model =
+    if not model.active then
+        1.11
+
+    else
+        1
+
+
+visibleHeart : ViewModel -> Element msg
+visibleHeart model =
+    if model.currentLife then
+        Heart.beating
+
+    else if model.active then
+        Heart.static
+
+    else if model.breaking then
+        Heart.breaking
+
+    else
+        Heart.broken
+
+
+
+-- Util
+
+
+decrementAboveZero : Int -> Int -> Int
+decrementAboveZero n1 n2 =
     let
-        visibleHeart =
-            if active then
-                Heart.alive
-
-            else if breaking then
-                Heart.breaking
-
-            else
-                Heart.broken
+        n3 =
+            n2 - n1
     in
-    div
-        [ style
-            [ width 35
-            , height 35
-            , marginLeft 10
-            , marginRight 10
-            , Style.applyIf (not active) (transform [ scale 1.11 ])
-            , Style.applyIf currentLife Heart.beatingAnimation
-            ]
-        , class "dib"
-        ]
-        [ visibleHeart ]
+    if n3 <= 0 then
+        0
+
+    else
+        n3

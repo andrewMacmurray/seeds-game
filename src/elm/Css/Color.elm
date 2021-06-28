@@ -10,15 +10,12 @@ module Css.Color exposing
     , gold
     , lightBrown
     , lightGold
-    , lightGray
     , lightYellow
     , midnightBlue
     , orange
-    , pinkRed
     , purple
     , rainBlue
     , seedPodGradient
-    , silver
     , transparent
     , transparentGray
     , white
@@ -98,11 +95,6 @@ crimson =
     rgb 237 31 36
 
 
-pinkRed : Color
-pinkRed =
-    rgb 255 116 116
-
-
 orange : Color
 orange =
     rgb 241 101 34
@@ -171,16 +163,6 @@ midnightBlue =
 purple : Color
 purple =
     rgb 167 29 96
-
-
-silver : Color
-silver =
-    rgb 226 226 226
-
-
-lightGray : Color
-lightGray =
-    rgb 180 180 180
 
 
 transparent : Color

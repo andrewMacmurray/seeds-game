@@ -4,6 +4,8 @@ module Utils.Svg exposing
     , cy_
     , disableTouch
     , fill_
+    , full
+    , fullWidth
     , g_
     , height_
     , originCenter_
@@ -67,6 +69,17 @@ window w attrs =
         )
 
 
+full : List (Attribute msg) -> List (Svg msg) -> Svg msg
+full attrs =
+    Svg.svg
+        (List.append
+            [ fullHeight
+            , fullWidth
+            ]
+            attrs
+        )
+
+
 windowViewBox_ : Window -> Attribute msg
 windowViewBox_ w =
     viewBox_ 0 0 (toFloat w.width) (toFloat w.height)
@@ -113,6 +126,16 @@ cy_ =
 height_ : Float -> Attribute msg
 height_ =
     height << String.fromFloat
+
+
+fullHeight : Attribute msg
+fullHeight =
+    height "100%"
+
+
+fullWidth : Attribute msg
+fullWidth =
+    width "100%"
 
 
 width_ : Float -> Attribute msg
