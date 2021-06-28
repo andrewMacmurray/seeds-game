@@ -1,4 +1,7 @@
-module Scene.Garden.Chrysanthemum exposing (flowers, hills)
+module Scene.Garden.Chrysanthemum exposing
+    ( flowers
+    , hills
+    )
 
 import Element exposing (Element)
 import Element.Backdrop.RollingHills as RollingHills

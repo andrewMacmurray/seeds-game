@@ -1,4 +1,4 @@
-module Scene.Garden.Sunflower.Sprites exposing
+module Element.Sprite.Butterfly exposing
     ( hovering
     , resting
     )
@@ -13,9 +13,18 @@ import Utils.Animated as Animated
 import Utils.Svg as Svg exposing (height_, transformOrigin_, viewBox_, width_)
 
 
-hovering : Animation.Millis -> Element msg
-hovering delay =
-    Animated.el (hoverUpDown delay)
+
+-- Hovering
+
+
+type alias HoveringOptions =
+    { delay : Animation.Millis
+    }
+
+
+hovering : HoveringOptions -> Element msg
+hovering options =
+    Animated.el (hoverUpDown options)
         [ Element.width Element.fill ]
         (butterfly
             { color = Palette.softRed
@@ -26,11 +35,11 @@ hovering delay =
         )
 
 
-hoverUpDown : Animation.Millis -> Animation
-hoverUpDown delay =
+hoverUpDown : HoveringOptions -> Animation
+hoverUpDown options =
     Animation.steps
         { startAt = [ P.x 0, P.y 0 ]
-        , options = [ Animation.loop, Animation.delay delay ]
+        , options = [ Animation.loop, Animation.delay options.delay ]
         }
         [ Animation.step 400 [ P.x 1, P.y -8 ]
         , Animation.step 300 [ P.x 0, P.y 1 ]
@@ -39,13 +48,22 @@ hoverUpDown delay =
         ]
 
 
-resting : Animation.Millis -> Element msg
-resting delay =
+
+-- Resting
+
+
+type alias RestingOptions =
+    { delay : Animation.Millis
+    }
+
+
+resting : RestingOptions -> Element msg
+resting options =
     butterfly
         { color = Palette.crimson
         , size = 20
         , speed = 0.3
-        , delay = delay * 2
+        , delay = options.delay * 2
         }
 
 

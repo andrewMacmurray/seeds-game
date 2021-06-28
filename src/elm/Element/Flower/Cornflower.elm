@@ -12,6 +12,10 @@ import Utils.Animated as Animated
 import Utils.Svg as Svg exposing (..)
 
 
+
+-- Static
+
+
 static : Svg msg
 static =
     Svg.svg [ viewBox_ 0 0 vbWidth vbHeight ]
@@ -22,6 +26,10 @@ static =
         )
 
 
+
+-- Animated
+
+
 animated : Int -> Svg msg
 animated delay =
     Svg.svg [ viewBox_ 0 0 vbWidth vbHeight, width "100%" ]
@@ -30,6 +38,10 @@ animated delay =
             , animatePetals (delay + 750) smallPetals
             ]
         )
+
+
+
+-- Internal
 
 
 staticPetals : List (List (Svg.Attribute msg)) -> List (Svg msg)
@@ -94,6 +106,10 @@ largePetals =
     , [ d "M104.6 97.4c4.2-.9 13.6 2.2 28.3 11.8 13.7 9 24.7 22.8 23 25.6-1.6 2.7-17.5-1-33-9.1-21.1-11-23.7-16.5-24.5-19.8-1.2-5 1.6-7.6 6.2-8.5z", fill "#3b89dd" ]
     , [ d "M106.1 100.1c4.1 1.4 10.6 8.7 18.6 24.4 7.4 14.7 10 32.1 7.2 33.7-2.8 1.5-14.7-9.7-24.2-24.4-12.8-20-12.2-26.1-11.2-29.4 1.5-5 5.2-5.8 9.6-4.3z", fill "#3945a1" ]
     ]
+
+
+
+-- Config
 
 
 vbWidth : number

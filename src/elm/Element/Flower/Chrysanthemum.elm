@@ -3,13 +3,17 @@ module Element.Flower.Chrysanthemum exposing
     , static
     )
 
-import Css.Style as Style exposing (transformOrigin)
+import Css.Style as Style
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg exposing (..)
+
+
+
+-- Static
 
 
 static : Svg msg
@@ -21,6 +25,10 @@ static =
         ]
 
 
+
+-- Animated
+
+
 animated : Int -> Svg msg
 animated delay =
     Svg.svg [ viewBox_ 0 0 vbWidth vbHeight ]
@@ -30,6 +38,10 @@ animated delay =
         ]
 
 
+
+-- Internal
+
+
 animateInnerPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateInnerPetals delay petals =
     Svg.g [] (List.indexedMap (\i p -> Animated.g (fadeIn (List.length petals) delay i) [] [ p ]) petals)
@@ -37,12 +49,12 @@ animateInnerPetals delay petals =
 
 animateLeftOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateLeftOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ Style.svg [ transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.svg [ Style.transformOrigin "bottom center" ] ] petals
 
 
 animateRightOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateRightOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ Style.svg [ transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.svg [ Style.transformOrigin "bottom center" ] ] petals
 
 
 fadeIn : Animation.Millis -> Animation.Millis -> Int -> Animation
@@ -170,6 +182,10 @@ corePetals =
     , Svg.path [ d "M205 243l39 1s8-21 9-29c2-5 2-13 1-18-1-4-5-8-9-10-4-1-9-1-13 1-5 1-10 5-14 10l-6 14-3 7-4 24z", fill "#cb3bbe" ] []
     , Svg.path [ d "M250 226c0-5 8-32-10-36-16-3-26 16-28 23l-4 8 6-20c3-6 7-11 15-14 9-3 17-3 24 6 2 4 3 12 1 22l-4 11z", fill "#ef9dcc" ] []
     ]
+
+
+
+-- Config
 
 
 vbWidth : Float

@@ -2,7 +2,7 @@ module Scene.Garden.Chrysanthemum.Flowers exposing (flowers)
 
 import Element exposing (..)
 import Element.Flower.Chrysanthemum as Chrysanthemum
-import Scene.Garden.Chrysanthemum.Sprites as Bee
+import Element.Sprite.Bee as Bee
 import Simple.Animation as Animation
 
 
@@ -47,7 +47,7 @@ bee options =
             , moveRight options.x
             , moveDown options.y
             ]
-            (Bee.bee { delay = options.delay })
+            (Bee.sprite { delay = options.delay })
         )
 
 

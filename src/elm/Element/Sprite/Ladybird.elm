@@ -1,4 +1,4 @@
-module Scene.Garden.Cornflower.Sprites exposing (ladybird)
+module Element.Sprite.Ladybird exposing (sprite)
 
 import Element exposing (Element)
 import Element.Palette as Palette
@@ -10,16 +10,29 @@ import Utils.Animated as Animated
 import Utils.Svg as Svg exposing (height_, viewBox_, width_)
 
 
-ladybird : Animation.Millis -> Element msg
-ladybird delay =
+
+-- Ladybird
+
+
+type alias Options =
+    { delay : Animation.Millis
+    }
+
+
+
+-- View
+
+
+sprite : Options -> Element msg
+sprite delay =
     Animated.el (backAndForth delay) [] ladybird_
 
 
-backAndForth : Animation.Millis -> Animation
-backAndForth delay =
+backAndForth : Options -> Animation
+backAndForth options =
     Animation.steps
         { startAt = [ P.y 0, P.rotate 0 ]
-        , options = [ Animation.delay delay, Animation.loop ]
+        , options = [ Animation.delay options.delay, Animation.loop ]
         }
         [ Animation.step 1000 [ P.y 50, P.rotate 0 ]
         , Animation.wait 1200

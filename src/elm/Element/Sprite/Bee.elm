@@ -1,4 +1,4 @@
-module Scene.Garden.Chrysanthemum.Sprites exposing (bee)
+module Element.Sprite.Bee exposing (sprite)
 
 import Element exposing (Element)
 import Simple.Animation as Animation exposing (Animation)
@@ -9,13 +9,21 @@ import Utils.Animated as Animated
 import Utils.Svg exposing (..)
 
 
+
+-- Bee
+
+
 type alias Options =
     { delay : Animation.Millis
     }
 
 
-bee : Options -> Element msg
-bee options =
+
+-- View
+
+
+sprite : Options -> Element msg
+sprite options =
     Animated.el (flyToPoint options) [] bee_
 
 

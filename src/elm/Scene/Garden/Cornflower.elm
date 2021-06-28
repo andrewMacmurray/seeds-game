@@ -12,7 +12,9 @@ import Window exposing (Window)
 
 hills : Window -> Shape
 hills window =
-    RollingValley.static { window = window }
+    RollingValley.static
+        { window = window
+        }
 
 
 flowers : Element msg

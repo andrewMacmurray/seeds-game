@@ -8,8 +8,8 @@ import Element.Animations as Animations
 import Element.Backdrop.RollingValley as RollingValley
 import Element.Flower.Cornflower as Cornflower
 import Element.Scale as Scale
+import Element.Sprite.Ladybird as Ladybird
 import Geometry.Shape as Shape exposing (Shape)
-import Scene.Garden.Cornflower.Sprites as Ladybird
 import Simple.Animation as Animation exposing (Animation)
 import Svg exposing (Svg)
 import Utils.Animated as Animated
@@ -73,7 +73,7 @@ ladybird { angle, x, y, delay } =
             , moveRight x
             , moveDown y
             ]
-            (Ladybird.ladybird delay)
+            (Ladybird.sprite { delay = delay })
         )
 
 

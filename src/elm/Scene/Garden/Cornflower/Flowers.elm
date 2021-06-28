@@ -3,7 +3,7 @@ module Scene.Garden.Cornflower.Flowers exposing (flowers)
 import Element exposing (..)
 import Element.Flower.Cornflower as Cornflower
 import Element.Scale as Scale
-import Scene.Garden.Cornflower.Sprites as Ladybird
+import Element.Sprite.Ladybird as Ladybird
 import Simple.Animation as Animation
 
 
@@ -43,7 +43,7 @@ ladybird { angle, x, y, delay } =
             , moveRight x
             , moveDown y
             ]
-            (Ladybird.ladybird delay)
+            (Ladybird.sprite { delay = delay })
         )
 
 

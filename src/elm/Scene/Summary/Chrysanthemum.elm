@@ -8,8 +8,8 @@ import Element exposing (..)
 import Element.Backdrop.RollingHills as RollingHills
 import Element.Flower.Chrysanthemum as Chrysanthemum
 import Element.Scale as Scale exposing (edges)
+import Element.Sprite.Bee as Bee
 import Geometry.Shape as Shape exposing (Shape)
-import Scene.Garden.Chrysanthemum.Sprites as Bee
 import Simple.Animation as Animation
 import Svg exposing (Svg)
 import Window exposing (Window)
@@ -66,7 +66,7 @@ bee options =
             , moveRight options.x
             , moveDown options.y
             ]
-            (Bee.bee { delay = options.delay + 3000 })
+            (Bee.sprite { delay = options.delay + 3000 })
         )
 
 
