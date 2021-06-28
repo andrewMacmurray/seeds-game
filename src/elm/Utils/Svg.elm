@@ -5,7 +5,6 @@ module Utils.Svg exposing
     , disableTouch
     , fill_
     , full
-    , fullHeight
     , fullWidth
     , g_
     , height_
