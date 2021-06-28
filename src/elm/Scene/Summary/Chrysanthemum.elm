@@ -1,7 +1,6 @@
 module Scene.Summary.Chrysanthemum exposing
     ( flowers
     , hills
-    , hills_
     )
 
 import Element exposing (..)

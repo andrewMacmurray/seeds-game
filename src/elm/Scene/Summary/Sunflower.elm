@@ -7,7 +7,7 @@ import Element exposing (..)
 import Element.Backdrop.SteepValley as SteepValley
 import Element.Flower.Arranged.Sunflower as Sunflower
 import Geometry.Shape as Shape exposing (Shape)
-import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation as Animation
 import Svg exposing (Svg)
 import Window exposing (Window)
 
