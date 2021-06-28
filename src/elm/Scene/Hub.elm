@@ -9,7 +9,6 @@ module Scene.Hub exposing
     )
 
 import Context exposing (Context)
-import Countdown
 import Delay
 import Element exposing (..)
 import Element.Background as Background
@@ -33,6 +32,7 @@ import Game.Config.World as Worlds
 import Game.Level.Progress as Progress
 import Game.Level.Tile as Tile exposing (TargetScore)
 import Game.Lives as Lives exposing (Lives)
+import Game.Lives.Countdown as Countdown
 import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)

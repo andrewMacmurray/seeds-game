@@ -10,10 +10,10 @@ module Game.Lives exposing
     , view
     )
 
-import Countdown exposing (Countdown)
 import Css.Style as Style exposing (..)
 import Css.Transform exposing (scale)
 import Element.Icon.Heart as Heart
+import Game.Lives.Countdown as Countdown exposing (Countdown)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Time exposing (posixToMillis)

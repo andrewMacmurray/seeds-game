@@ -32,7 +32,7 @@ export namespace Elm {
     
     export function init(options: {
       node?: HTMLElement | null;
-      flags: { now: number; lives: { lastPlayed: number; timeTillNextLife: number } | null; level: { worldId: number; levelId: number } | null; randomMessageIndex: number; window: { width: number; height: number } };
+      flags: { now: number; lives: { lastPlayed: number; timeTillNextLife: number } | null; progress: { worldId: number; levelId: number } | null; randomMessageIndex: number; window: { width: number; height: number } };
     }): Elm.Main.App;
   }
 }

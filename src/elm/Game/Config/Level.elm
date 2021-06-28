@@ -119,7 +119,7 @@ type alias WorldWithLevels =
 
 fromCache : Cache -> Id
 fromCache { worldId, levelId } =
-    Id <| Cache worldId levelId
+    Id (Cache worldId levelId)
 
 
 toCache : Id -> Cache
@@ -138,9 +138,9 @@ toString : Id -> String
 toString key =
     String.join "-"
         [ "world"
-        , String.fromInt <| worldId_ key
+        , String.fromInt (worldId_ key)
         , "level"
-        , String.fromInt <| levelId_ key
+        , String.fromInt (levelId_ key)
         ]
 
 
@@ -357,7 +357,7 @@ worldsList worlds_ =
 worldWithLevels : ( Int, World ) -> WorldWithLevels
 worldWithLevels ( worldIndex, world_ ) =
     { world = worldConfig world_
-    , levels = levelKeys worldIndex <| unboxLevels_ world_
+    , levels = levelKeys worldIndex (unboxLevels_ world_)
     }
 
 
