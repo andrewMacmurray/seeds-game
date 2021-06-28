@@ -2,6 +2,7 @@ module Geometry.Shape exposing
     ( Shape
     , animate
     , circle
+    , fullScreen
     , group
     , hideIf
     , mirror
@@ -9,7 +10,6 @@ module Geometry.Shape exposing
     , moveUp
     , polygon
     , view
-    , window
     )
 
 import Circle2d exposing (Circle2d)
@@ -168,9 +168,9 @@ update_ f shape_ =
 -- View
 
 
-window : Window -> List (Svg.Attribute msg) -> Shape -> Svg msg
-window window_ attrs shape =
-    Svg.window window_ attrs [ view window_ shape ]
+fullScreen : Window -> Shape -> Svg msg
+fullScreen window_ shape =
+    Svg.window window_ [] [ view window_ shape ]
 
 
 view : Window -> Shape -> Svg msg

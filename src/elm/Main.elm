@@ -51,7 +51,7 @@ main =
 type alias Flags =
     { now : Int
     , lives : Maybe Lives.Cache
-    , level : Maybe Level.Cache
+    , progress : Maybe Level.Cache
     , randomMessageIndex : Int
     , window : Window
     }
@@ -120,7 +120,7 @@ initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
     , loadingScreen = LoadingScreen.hidden
-    , progress = Progress.init flags.level
+    , progress = Progress.init flags.progress
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
     , menu = Context.Closed

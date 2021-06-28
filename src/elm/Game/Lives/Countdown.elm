@@ -1,4 +1,4 @@
-module Countdown exposing
+module Game.Lives.Countdown exposing
     ( Countdown
     , init
     , view

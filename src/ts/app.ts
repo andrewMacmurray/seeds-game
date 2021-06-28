@@ -13,7 +13,7 @@ function createApp() {
     flags: {
       now: Date.now(),
       lives: Cache.getLives(),
-      level: Cache.getProgress(),
+      progress: Cache.getProgress(),
       randomMessageIndex: Math.round(Math.random() * 10),
       window: windowSize()
     }

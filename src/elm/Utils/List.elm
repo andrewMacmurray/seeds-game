@@ -1,6 +1,7 @@
 module Utils.List exposing
     ( groupWhile
     , inverseRange
+    , prepend
     , splitAt
     , unique
     )
@@ -90,3 +91,8 @@ inverseRange from length =
                 from_ :: inverseRange_ xs (from_ - 1) (length_ - 1)
     in
     inverseRange_ [] from length
+
+
+prepend : a -> List a -> List a
+prepend x xs =
+    xs ++ [ x ]
