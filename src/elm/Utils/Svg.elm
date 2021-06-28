@@ -4,6 +4,8 @@ module Utils.Svg exposing
     , cy_
     , disableTouch
     , fill_
+    , fullHeight
+    , fullWidth
     , g_
     , height_
     , originCenter_
@@ -113,6 +115,16 @@ cy_ =
 height_ : Float -> Attribute msg
 height_ =
     height << String.fromFloat
+
+
+fullHeight : Attribute msg
+fullHeight =
+    height "100%"
+
+
+fullWidth : Attribute msg
+fullWidth =
+    width "100%"
 
 
 width_ : Float -> Attribute msg

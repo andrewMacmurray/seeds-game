@@ -172,7 +172,7 @@ topBar model =
         , Palette.background2
         , padding Scale.small
         ]
-        [ el [ centerX, scale 0.5 ] (html (Lives.view model.context.lives))
+        [ el [ centerX, scale 0.5 ] (Lives.view model.context.lives)
         , el [ centerX ] (countdown model.context.lives)
         ]
 
@@ -237,7 +237,7 @@ waitForNextLife context =
     column [ centerX, spacing Scale.medium ]
         [ Text.text [ Text.white, Text.spaced, centerX ] "Next life in "
         , Text.text [ centerX, Text.color Palette.lightGold ] (countdown_ context)
-        , Element.square 40 [ centerX ] (html Heart.beating)
+        , Element.square 40 [ centerX ] Heart.beating
         ]
 
 

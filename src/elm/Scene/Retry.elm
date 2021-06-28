@@ -87,7 +87,7 @@ view model =
             , spacing Scale.large
             , moveUp 20
             ]
-            [ el [] (html (Lives.view model.context.lives))
+            [ Lives.view model.context.lives
             , tryAgainText
             , Animated.el (bounceInButton model.context.window) [ centerX ] tryAgain
             ]
