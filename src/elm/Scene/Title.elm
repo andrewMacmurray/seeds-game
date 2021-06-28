@@ -22,10 +22,10 @@ import Exit exposing (continue, exitWith)
 import Game.Level.Progress as Progress
 import Html exposing (Html)
 import Ports exposing (introMusicPlaying, playIntroMusic)
+import Seed
 import Simple.Animation as Animation
 import Utils.Animated as Animated
 import Utils.Element exposing (verticalGap)
-import Utils.Function exposing (apply)
 import Utils.Update as Update
 import View.Menu as Menu
 
@@ -226,12 +226,12 @@ seeds model =
 
 allSeeds : List (Element msg)
 allSeeds =
-    List.map (apply Seed.fill)
-        [ Seed.chrysanthemum
-        , Seed.marigold
-        , Seed.sunflower
-        , Seed.lupin
-        , Seed.rose
+    List.map (Seed.view Seed.fill)
+        [ Seed.Chrysanthemum
+        , Seed.Marigold
+        , Seed.Sunflower
+        , Seed.Lupin
+        , Seed.Rose
         ]
 
 

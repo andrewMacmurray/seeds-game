@@ -36,7 +36,7 @@ hover =
 
 icon : Element msg
 icon =
-    Icon.view
+    Icon.el
         [ height "18"
         , width "18"
         ]

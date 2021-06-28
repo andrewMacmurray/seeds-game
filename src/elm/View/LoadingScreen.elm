@@ -8,12 +8,12 @@ module View.LoadingScreen exposing
 import Css.Color exposing (gold, rainBlue)
 import Css.Style as Style exposing (Style, classes, style, width)
 import Css.Transition exposing (easeInOut, transitionAll)
+import Element.Seed as Seed
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
 import Html exposing (..)
 import Random
 import Seed exposing (Seed)
-import View.Seed as Seed
 
 
 
@@ -68,7 +68,7 @@ view model =
             ]
         ]
         [ div [ style [ width 50 ] ]
-            [ Seed.view <| seedFromProgress model.progress
+            [ Seed.svg (seedFromProgress model.progress)
             ]
         ]
 

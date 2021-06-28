@@ -1,26 +1,31 @@
 module Element.Seed exposing
     ( Options
-    , chrysanthemum
     , extraSmall
     , fill
     , grey
-    , lupin
-    , marigold
+    , grey_
     , medium
-    , rose
     , size
     , small
-    , sunflower
+    , svg
     , view
     )
 
 import Element exposing (Element)
+import Element.Icon as Icon
 import Element.Palette as Palette
 import Element.Seed.Circle as Circle
 import Element.Seed.Mono as Mono
 import Element.Seed.Twin as Twin
 import Seed exposing (Seed)
+import Svg exposing (Svg)
 import Utils.Element as Element
+
+
+type alias Icon msg =
+    { el : Element msg
+    , svg : Svg msg
+    }
 
 
 
@@ -69,101 +74,117 @@ extraSmall =
 
 
 view : Options -> Seed -> Element msg
-view options seed =
+view options =
+    view_ >> .el >> sized options
+
+
+svg : Seed -> Svg msg
+svg =
+    view_ >> .svg
+
+
+view_ : Seed -> Icon.Dual msg
+view_ seed =
     case seed of
         Seed.Sunflower ->
-            sunflower options
+            sunflower
 
         Seed.Chrysanthemum ->
-            chrysanthemum options
+            chrysanthemum
 
         Seed.Cornflower ->
-            cornflower options
+            cornflower
 
         Seed.Lupin ->
-            lupin options
+            lupin
 
         Seed.Marigold ->
-            marigold options
+            marigold
 
         Seed.Rose ->
-            rose options
+            rose
+
+
+
+-- Greyed Out
+
+
+grey : Options -> Element msg
+grey options =
+    greyIcon
+        |> .el
+        |> sized options
+
+
+grey_ : Svg msg
+grey_ =
+    .svg greyIcon
+
+
+greyIcon : Icon.Dual msg
+greyIcon =
+    Mono.seed
+        { color = Palette.transparentGray
+        }
 
 
 
 -- Individual
 
 
-grey : Options -> Element msg
-grey =
-    sized
-        (Mono.seed
-            { color = Palette.transparentGray
-            }
-        )
-
-
-rose : Options -> Element msg
+rose : Icon.Dual msg
 rose =
-    sized
-        (Mono.seed
-            { color = Palette.mauve4
-            }
-        )
+    Mono.seed
+        { color = Palette.mauve4
+        }
 
 
-chrysanthemum : Options -> Element msg
+chrysanthemum : Icon.Dual msg
 chrysanthemum =
-    sized
-        (Circle.seed
-            { background = Palette.mauve4
-            , center = Palette.orange
-            }
-        )
+    Circle.seed
+        { background = Palette.mauve4
+        , center = Palette.orange
+        }
 
 
-sunflower : Options -> Element msg
+sunflower : Icon.Dual msg
 sunflower =
-    sized
-        (Twin.seed
-            { left = Palette.chocolate
-            , right = Palette.lightBrown
-            }
-        )
+    Twin.seed
+        { left = Palette.chocolate
+        , right = Palette.lightBrown
+        }
 
 
-cornflower : Options -> Element msg
+cornflower : Icon.Dual msg
 cornflower =
-    sized
-        (Twin.seed
-            { left = Palette.midnightBlue
-            , right = Palette.blueGrey
-            }
-        )
+    Twin.seed
+        { left = Palette.midnightBlue
+        , right = Palette.blueGrey
+        }
 
 
-marigold : Options -> Element msg
+marigold : Icon.Dual msg
 marigold =
-    sized
-        (Twin.seed
-            { left = Palette.gold
-            , right = Palette.darkRed
-            }
-        )
+    Twin.seed
+        { left = Palette.gold
+        , right = Palette.darkRed
+        }
 
 
-lupin : Options -> Element msg
+lupin : Icon.Dual msg
 lupin =
-    sized
-        (Twin.seed
-            { left = Palette.crimson
-            , right = Palette.brown
-            }
-        )
+    Twin.seed
+        { left = Palette.crimson
+        , right = Palette.brown
+        }
 
 
-sized : Element msg -> Options -> Element msg
-sized el_ options =
+
+-- Utils
+
+
+sized : Options -> Element msg -> Element msg
+sized options el_ =
     case options.size of
         Fill ->
             el_
