@@ -1,23 +1,13 @@
 module Css.Color exposing
     ( Color
     , black
-    , blueGrey
-    , brown
-    , chocolate
-    , crimson
-    , darkRed
     , darkYellow
     , gold
-    , lightBrown
     , lightGold
     , lightYellow
-    , midnightBlue
-    , orange
-    , purple
     , rainBlue
     , seedPodGradient
     , transparent
-    , transparentGray
     , white
     )
 
@@ -85,21 +75,6 @@ rgb r g b =
 -- Colors
 
 
-darkRed : Color
-darkRed =
-    rgb 191 30 45
-
-
-crimson : Color
-crimson =
-    rgb 237 31 36
-
-
-orange : Color
-orange =
-    rgb 241 101 34
-
-
 gold : Color
 gold =
     rgb 255 160 0
@@ -120,21 +95,6 @@ lightYellow =
     rgb 255 251 179
 
 
-lightBrown : Color
-lightBrown =
-    rgb 167 123 82
-
-
-brown : Color
-brown =
-    rgb 119 76 40
-
-
-chocolate : Color
-chocolate =
-    rgb 57 35 21
-
-
 green : Color
 green =
     rgb 113 175 68
@@ -150,29 +110,9 @@ rainBlue =
     rgb 97 188 255
 
 
-blueGrey : Color
-blueGrey =
-    rgb 192 198 216
-
-
-midnightBlue : Color
-midnightBlue =
-    rgb 6 24 35
-
-
-purple : Color
-purple =
-    rgb 167 29 96
-
-
 transparent : Color
 transparent =
     rgba 0 0 0 0
-
-
-transparentGray : Color
-transparentGray =
-    rgba 149 149 149 0.2
 
 
 white : Color

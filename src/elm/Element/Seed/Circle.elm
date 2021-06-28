@@ -1,8 +1,8 @@
 module Element.Seed.Circle exposing (seed)
 
-import Element exposing (Color, Element)
+import Element exposing (Color)
 import Element.Icon as Icon
-import Svg exposing (Svg)
+import Svg
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
 import Utils.Svg as Svg

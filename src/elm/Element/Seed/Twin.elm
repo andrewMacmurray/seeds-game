@@ -1,6 +1,6 @@
 module Element.Seed.Twin exposing (seed)
 
-import Element exposing (Color, Element)
+import Element exposing (Color)
 import Element.Icon as Icon
 import Svg
 import Svg.Attributes exposing (..)
