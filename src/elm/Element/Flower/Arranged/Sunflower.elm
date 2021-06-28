@@ -1,4 +1,7 @@
-module Element.Flower.Arranged.Sunflower exposing (bloomed, blooming)
+module Element.Flower.Arranged.Sunflower exposing
+    ( bloomed
+    , blooming
+    )
 
 import Element exposing (..)
 import Element.Flower.Sunflower as Sunflower

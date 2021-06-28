@@ -5,8 +5,8 @@ module Scene.Garden.Cornflower exposing
 
 import Element exposing (Element)
 import Element.Backdrop.RollingValley as RollingValley
+import Element.Flower.Arranged.Cornflower as Cornflower
 import Geometry.Shape exposing (Shape)
-import Scene.Garden.Cornflower.Flowers as Flowers
 import Window exposing (Window)
 
 
@@ -19,4 +19,4 @@ hills window =
 
 flowers : Element msg
 flowers =
-    Flowers.flowers
+    Cornflower.bloomed
