@@ -300,7 +300,7 @@ worldSuccessText seed model =
             "You saved the " ++ Seed.name seed ++ "!"
 
         Second _ ->
-            "It will bloom again on our new world..."
+            "It will bloom again on our new world"
 
 
 worldTextColor : Model -> Color
@@ -846,6 +846,7 @@ flowersWithText flowers model =
     column
         [ centerY
         , centerX
+        , width fill
         , moveUp Scale.large
         , spacing Scale.medium
         ]

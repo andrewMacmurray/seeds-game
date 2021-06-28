@@ -5,8 +5,8 @@ module Scene.Garden.Chrysanthemum exposing
 
 import Element exposing (Element)
 import Element.Backdrop.RollingHills as RollingHills
+import Element.Flower.Arranged.Chrysanthemum as Chrysanthemum
 import Geometry.Shape as Shape exposing (Shape)
-import Scene.Garden.Chrysanthemum.Flowers as Flowers
 import Window exposing (Window)
 
 
@@ -21,4 +21,4 @@ hills window =
 
 flowers : Element msg
 flowers =
-    Flowers.flowers
+    Chrysanthemum.bloomed

@@ -122,7 +122,7 @@ initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
     , loadingScreen = LoadingScreen.hidden
-    , progress = Debug.progress 1 9
+    , progress = Debug.progress 2 7
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
     , menu = Context.Closed
