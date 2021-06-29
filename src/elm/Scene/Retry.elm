@@ -78,7 +78,7 @@ update msg model =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
     Layout.fadeIn []
         (column

@@ -155,9 +155,9 @@ scrollToLevel =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view
+    Layout.scene
         [ inFront (topBar model)
         , handleDismiss model
         , inFront (viewInfo model)

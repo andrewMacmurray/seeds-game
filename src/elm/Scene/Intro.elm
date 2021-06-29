@@ -17,7 +17,6 @@ import Element.Scale as Scale
 import Element.Text as Text
 import Element.Transition as Transition
 import Exit exposing (continue, exit)
-import Html exposing (Html)
 import Scene.Intro.DyingLandscape as DL
 import Scene.Intro.GrowingSeeds as GS
 import Scene.Intro.SunflowerMeadow as SM
@@ -163,9 +162,9 @@ update msg model =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view
+    Layout.scene
         [ Background.color model.background
         , Transition.background 1500
         , behindContent (viewScene model)

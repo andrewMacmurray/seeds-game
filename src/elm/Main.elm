@@ -3,17 +3,15 @@ module Main exposing (main)
 import Browser
 import Browser.Events as Browser
 import Context exposing (Context)
-import Css.Color as Color
-import Css.Style exposing (backgroundColor, style)
 import Delay
+import Element exposing (Element)
+import Element.Layout as Layout
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives
-import Html exposing (Html, div)
-import Html.Attributes exposing (class)
-import Html.Keyed as Keyed
+import Html exposing (Html)
 import Ports
 import Scene.Garden as Garden
 import Scene.Hub as Hub
@@ -24,7 +22,6 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
-import View.Animation exposing (animations)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
 import Window exposing (Window)
@@ -89,10 +86,10 @@ type Msg
     | InitGarden
     | ShowLoadingScreen
     | HideLoadingScreen
-    | OpenMenu
-    | CloseMenu
+    | OpenMenuClicked
+    | CloseMenuClicked
     | LoadingScreenGenerated LoadingScreen
-    | ResetData
+    | ResetDataClicked
     | WindowSize Int Int
     | UpdateLives Time.Posix
     | GoToHub Level.Id
@@ -123,7 +120,7 @@ initialContext flags =
     , progress = Progress.init flags.progress
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
-    , menu = Context.Closed
+    , menu = Menu.closed
     }
 
 
@@ -132,8 +129,13 @@ initialContext flags =
 
 
 getContext : Model -> Context
-getContext model =
-    case model.scene of
+getContext =
+    .scene >> getContext_
+
+
+getContext_ : Scene -> Context
+getContext_ scene =
+    case scene of
         Title model_ ->
             Update.context model_
 
@@ -246,16 +248,16 @@ update msg ({ scene, backdrop } as model) =
         ( HideLoadingScreen, _, _ ) ->
             ( updateContext Context.hideLoadingScreen model, Cmd.none )
 
-        ( OpenMenu, _, _ ) ->
+        ( OpenMenuClicked, _, _ ) ->
             ( updateContext Context.openMenu model, Cmd.none )
 
-        ( CloseMenu, _, _ ) ->
+        ( CloseMenuClicked, _, _ ) ->
             ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen (InitHub level) )
 
-        ( ResetData, _, _ ) ->
+        ( ResetDataClicked, _, _ ) ->
             ( model, Ports.clearCache )
 
         ( WindowSize width height, _, _ ) ->
@@ -661,88 +663,92 @@ sceneSubscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ animations
-        , LoadingScreen.view (getContext model)
-        , menu model.scene
-        , stage
-            [ viewBackdrop model.backdrop
-            , viewScene model.scene
-            ]
-        , background
-        ]
+    Layout.view
+        { context = getContext model
+        , menu = menu model.scene
+        , scene = viewScene model.scene
+        , backdrop = viewBackdrop model.backdrop
+        }
 
 
-stage : List (List ( String, Html msg )) -> Html msg
-stage =
-    Keyed.node "div" [] << List.concat
+
+--div []
+--    [ LoadingScreen.view (getContext model)
+--    , menu model.scene
+--    , stage
+--        [ viewBackdrop model.backdrop
+--        , [ viewScene model.scene ]
+--        ]
+--    ]
 
 
-viewBackdrop : Maybe Scene -> List ( String, Html Msg )
+viewBackdrop : Maybe Scene -> Maybe ( String, Layout.Scene Msg )
 viewBackdrop =
-    Maybe.map viewScene >> Maybe.withDefault []
+    Maybe.map viewScene
 
 
-viewScene : Scene -> List ( String, Html Msg )
+viewScene : Scene -> ( String, Layout.Scene Msg )
 viewScene scene =
     case scene of
         Hub model ->
-            [ ( "hub", Hub.view model |> Html.map HubMsg ) ]
+            ( "hub", Layout.map HubMsg (Hub.view model) )
 
         Intro model ->
-            [ ( "intro", Intro.view model |> Html.map IntroMsg ) ]
+            ( "intro", Layout.map IntroMsg (Intro.view model) )
 
         Title model ->
-            [ ( "title", Title.view model |> Html.map TitleMsg ) ]
+            ( "title", Layout.map TitleMsg (Title.view model) )
 
         Level model ->
-            [ ( "level", Level.view model |> Html.map LevelMsg ) ]
+            ( "level", Layout.map LevelMsg (Level.view model) )
 
         Summary model ->
-            [ ( "summary", Summary.view model |> Html.map SummaryMsg ) ]
+            ( "summary", Layout.map SummaryMsg (Summary.view model) )
 
         Retry model ->
-            [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
+            ( "retry", Layout.map RetryMsg (Retry.view model) )
 
         Garden model ->
-            [ ( "garden", Garden.view model |> Html.map GardenMsg ) ]
+            ( "garden", Layout.map GardenMsg (Garden.view model) )
 
 
 
 -- Menu
 
 
-menu : Scene -> Html Msg
+menu : Scene -> Element Msg
 menu scene =
     let
-        renderMenu =
+        menu_ =
             Menu.view
-                { close = CloseMenu
-                , open = OpenMenu
-                , resetData = ResetData
+                { onClose = CloseMenuClicked
+                , onOpen = OpenMenuClicked
+                , onReset = ResetDataClicked
                 }
+                (getContext_ scene)
     in
     case scene of
-        Title model ->
-            renderMenu model.context TitleMsg Title.menuOptions
+        Title _ ->
+            menu_ TitleMsg Title.menuOptions
 
-        Hub model ->
-            renderMenu model.context HubMsg Hub.menuOptions
+        Hub _ ->
+            menu_ HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg (Level.menuOptions model)
+            menu_ LevelMsg (Level.menuOptions model)
 
-        Garden model ->
-            renderMenu model.context GardenMsg Garden.menuOptions
+        Garden _ ->
+            menu_ GardenMsg Garden.menuOptions
 
         _ ->
-            Menu.fadeOut
+            Menu.hidden
 
 
-background : Html msg
-background =
-    div
-        [ style [ backgroundColor Color.lightYellow ]
-        , class "fixed w-100 h-100 top-0 left-0 z-0"
-        ]
-        []
+
+--background : Html msg
+--background =
+--    div
+--        [ style [ backgroundColor Color.lightYellow ]
+--        , class "fixed w-100 h-100 top-0 left-0 z-0"
+--        ]
+--        []

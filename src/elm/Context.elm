@@ -1,6 +1,5 @@
 module Context exposing
     ( Context
-    , Menu(..)
     , cacheCurrentLives
     , clearCurrentLevel
     , closeMenu
@@ -22,7 +21,12 @@ import Game.Lives as Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Time
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
+import View.Menu as Menu
 import Window exposing (Window)
+
+
+
+-- Context
 
 
 type alias Context =
@@ -31,7 +35,7 @@ type alias Context =
     , progress : Progress
     , lives : Lives
     , successMessageIndex : Int
-    , menu : Menu
+    , menu : Menu.State
     }
 
 
@@ -85,29 +89,19 @@ cacheCurrentLives context =
         |> cacheLives
 
 
-
--- Menu
-
-
-type Menu
-    = Open
-    | Closed
-    | Disabled
-
-
 openMenu : Context -> Context
 openMenu context =
-    { context | menu = Open }
+    { context | menu = Menu.open }
 
 
 closeMenu : Context -> Context
 closeMenu context =
-    { context | menu = Closed }
+    { context | menu = Menu.closed }
 
 
 disableMenu : Context -> Context
 disableMenu context =
-    { context | menu = Disabled }
+    { context | menu = Menu.disabled }
 
 
 

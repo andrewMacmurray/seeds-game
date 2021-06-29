@@ -103,9 +103,9 @@ scrollToCurrentCompletedWorld =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view
+    Layout.scene
         [ inFront backToLevelsButton
         , inFront initialOverlay
         ]
