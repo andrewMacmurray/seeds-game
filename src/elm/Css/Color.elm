@@ -11,7 +11,7 @@ module Css.Color exposing
     , white
     )
 
-import Css.Unit exposing (deg, pc)
+import Utils.Unit as Unit
 
 
 type alias Color =
@@ -30,7 +30,7 @@ seedPodGradient =
 seedPodGradient_ : String
 seedPodGradient_ =
     String.join ", "
-        [ deg 90
+        [ Unit.deg 90
         , lightGreen
         , gradientStop lightGreen 50
         , gradientStop green 50
@@ -40,7 +40,7 @@ seedPodGradient_ =
 
 gradientStop : String -> Float -> String
 gradientStop stopColor percent =
-    String.join " " [ stopColor, pc percent ]
+    String.join " " [ stopColor, Unit.pc percent ]
 
 
 linearGradient : String -> String

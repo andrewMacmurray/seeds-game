@@ -22,11 +22,11 @@ module Css.Style exposing
 
 import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
-import Css.Unit exposing (..)
 import Html
 import Html.Attributes
 import Svg
 import Svg.Attributes
+import Utils.Unit as Unit
 
 
 type Style
@@ -109,7 +109,7 @@ none =
 
 transform : List Transform -> Style
 transform transforms =
-    property "transform" <| Transform.render transforms
+    property "transform" (Transform.render transforms)
 
 
 transformOrigin : String -> Style
@@ -119,7 +119,7 @@ transformOrigin =
 
 marginTop : Float -> Style
 marginTop n =
-    property "margin-top" <| px n
+    property "margin-top" (Unit.px (round n))
 
 
 color : String -> Style
@@ -134,7 +134,7 @@ borderNone =
 
 border : Float -> Color.Color -> Style
 border n c =
-    property "border" <| String.join " " [ px n, "solid", c ]
+    property "border" (String.join " " [ Unit.px (round n), "solid", c ])
 
 
 backgroundColor : String -> Style
@@ -149,17 +149,17 @@ background =
 
 width : Float -> Style
 width n =
-    property "width" <| px n
+    property "width" (Unit.px (round n))
 
 
 height : Float -> Style
 height h =
-    property "height" <| px h
+    property "height" (Unit.px (round h))
 
 
 opacity : Float -> Style
 opacity o =
-    property "opacity" <| String.fromFloat o
+    property "opacity" (String.fromFloat o)
 
 
 

@@ -8,7 +8,7 @@ module Css.Transform exposing
     , translateY
     )
 
-import Css.Unit exposing (..)
+import Utils.Unit as Unit
 
 
 type Transform
@@ -16,7 +16,7 @@ type Transform
     | TranslateX Float
     | TranslateY Float
     | Scale Float
-    | RotateZ Float
+    | Rotate Float
 
 
 type alias XY =
@@ -52,14 +52,14 @@ translateY =
 
 rotate : Float -> Transform
 rotate =
-    RotateZ
+    Rotate
 
 
 fromTransform : Transform -> String
 fromTransform ts =
     case ts of
-        RotateZ n ->
-            rotate_ "Z" n
+        Rotate n ->
+            rotate_ n
 
         Scale n ->
             scale_ n
@@ -94,9 +94,14 @@ translateY_ n =
     join [ "translateY(", px n, ")" ]
 
 
-rotate_ : String -> Float -> String
-rotate_ axis n =
-    join [ "rotate", axis, "(", deg n, ")" ]
+rotate_ : Float -> String
+rotate_ n =
+    join [ "rotateZ(", Unit.deg n, ")" ]
+
+
+px : Float -> String
+px =
+    Unit.px << round
 
 
 join : List String -> String

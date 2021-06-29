@@ -9,7 +9,7 @@ module Css.Transition exposing
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Unit exposing (cubicBezier_, ms)
+import Utils.Unit as Unit
 
 
 type Option
@@ -50,7 +50,7 @@ linear =
 
 cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
-    option (transitionTimingFunction (cubicBezier_ a b c d))
+    option (transitionTimingFunction (Unit.cubicBezier_ a b c d))
 
 
 delay : Int -> Option
@@ -64,12 +64,12 @@ delay =
 
 transitionDelay : Int -> Style
 transitionDelay n =
-    Style.property "transition-delay" (ms (toFloat n))
+    Style.property "transition-delay" (Unit.ms (toFloat n))
 
 
 transitionDuration : Int -> Style
 transitionDuration n =
-    Style.property "transition-duration" (ms (toFloat n))
+    Style.property "transition-duration" (Unit.ms (toFloat n))
 
 
 transitionTimingFunction : String -> Style

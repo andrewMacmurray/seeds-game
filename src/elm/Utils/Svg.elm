@@ -29,11 +29,11 @@ module Utils.Svg exposing
 
 import Css.Style as Style exposing (Style)
 import Css.Transform as Transform
-import Css.Unit exposing (px)
 import Element
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
+import Utils.Unit as Unit
 import Window exposing (Window, vh, vw)
 
 
@@ -185,7 +185,7 @@ viewBox_ x y w h =
 
 transformOrigin_ : Float -> Float -> String
 transformOrigin_ x y =
-    "transform-origin: " ++ px x ++ " " ++ px y
+    "transform-origin: " ++ Unit.px_ x ++ " " ++ Unit.px_ y
 
 
 originCenter_ : String

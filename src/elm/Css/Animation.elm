@@ -10,10 +10,10 @@ module Css.Animation exposing
     )
 
 import Css.Style as Style exposing (Style)
-import Css.Unit exposing (ms, pc)
 import Html exposing (Html)
 import Html.Attributes
 import Json.Encode
+import Utils.Unit as Unit
 
 
 
@@ -44,7 +44,7 @@ animationName =
 
 animationDuration : Int -> Style
 animationDuration n =
-    Style.property "animation-duration" <| ms <| toFloat n
+    Style.property "animation-duration" (Unit.ms (toFloat n))
 
 
 fillForwards : Style
@@ -122,7 +122,7 @@ renderFrames =
 
 renderFrame : Frame -> String
 renderFrame (Frame n props) =
-    join [ pc n, "{", renderProperties props, "}" ]
+    join [ Unit.pc n, "{", renderProperties props, "}" ]
 
 
 renderProperties : List Property -> String
