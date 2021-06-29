@@ -11,11 +11,14 @@ import Element.Animations as Animations
 import Element.Keyed as Keyed
 import Element.Palette as Palette
 import Element.Text as Text
+import Game.Level.Progress exposing (Progress)
 import Html exposing (Html)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
+import Utils.Animated as Animated
 import Utils.Element as Element
-import View.LoadingScreen exposing (LoadingScreen)
+import Utils.Html.Style as Style
+import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 
 
 
@@ -34,7 +37,10 @@ type alias Scene_ msg =
 
 
 type alias Context context =
-    { context | loadingScreen : LoadingScreen }
+    { context
+        | loadingScreen : LoadingScreen
+        , progress : Progress
+    }
 
 
 type alias Layout context msg =
@@ -62,34 +68,97 @@ map toMsg (Scene scene_) =
 -- View
 
 
-view : Layout context msg -> Html msg
-view layout =
+view_ : List (Attribute msg) -> Element msg -> Html msg
+view_ attrs =
     Element.layoutWith layoutOptions
         (List.append
             [ width fill
             , height fill
+            , Element.style "position" "absolute"
+            , Element.style "z-index" "2"
             , Element.class "overflow-y-scroll momentum-scroll"
             , Text.fonts
-            , behindContent (viewBackdrop layout.backdrop)
             , Palette.background1
             ]
-            (layout.scene
+            attrs
+        )
+
+
+
+-- Fade In
+
+
+fadeIn_ : List (Attribute msg) -> Element msg -> Html msg
+fadeIn_ attributes el =
+    Animated.div fade_
+        (Style.center
+            [ Style.absolute
+            , Style.zIndex 2
+            ]
+        )
+        [ view_ attributes el ]
+
+
+view : Layout context msg -> Html msg
+view layout =
+    Element.layoutWith layoutOptions
+        (List.concat
+            [ [ width fill
+              , height fill
+              , Element.class "overflow-y-scroll momentum-scroll"
+              , Text.fonts
+              , Palette.background1
+              ]
+            , layout.scene
                 |> Tuple.second
                 |> attributes_
-            )
+            , layout.backdrop
+                |> Maybe.map (Tuple.second >> attributes_)
+                |> Maybe.withDefault []
+            , [ inFront (viewLoadingScreen layout.context)
+              , behindContent (viewBackdrop layout.backdrop)
+              ]
+            ]
         )
         (viewScene layout.scene)
 
 
+viewLoadingScreen : Context context -> Element msg
+viewLoadingScreen context =
+    LoadingScreen.view
+        { progress = context.progress
+        , loadingScreen = context.loadingScreen
+        }
+
+
+viewBackdrop : Maybe ( String, Scene msg ) -> Element msg
 viewBackdrop =
     Element.showIfJust viewScene
 
 
 viewScene : ( String, Scene msg ) -> Element msg
 viewScene ( id, Scene scene_ ) =
+    if scene_.fadeIn then
+        Animated.el fade_
+            [ width fill
+            , centerY
+            , centerX
+            , explain Debug.todo
+            , height fill
+            ]
+            (viewScene_ id scene_)
+
+    else
+        viewScene_ id scene_
+
+
+viewScene_ : String -> Scene_ msg -> Element msg
+viewScene_ id scene_ =
     Keyed.el
         [ width fill
         , height fill
+        , centerY
+        , centerX
         ]
         ( id, scene_.el )
 
@@ -103,6 +172,7 @@ scene attrs el =
         }
 
 
+attributes_ : Scene msg -> List (Attribute msg)
 attributes_ (Scene s) =
     s.attributes
 
@@ -118,11 +188,6 @@ fadeIn attrs el =
         , attributes = attrs
         , fadeIn = False
         }
-
-
-fade : List (Html.Attribute msg) -> List (Html msg) -> Html msg
-fade =
-    Animated.div fade_
 
 
 fade_ : Animation

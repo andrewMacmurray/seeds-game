@@ -21,6 +21,7 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
+import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import View.Menu as Menu
@@ -104,6 +105,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
+        |> Debug.goToLevel 1 1 InitLevel
 
 
 initialState : Title.Model -> Model

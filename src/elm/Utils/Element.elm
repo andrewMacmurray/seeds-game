@@ -1,6 +1,7 @@
 module Utils.Element exposing
     ( applyIf
     , class
+    , disableIf
     , disableTouch
     , empty
     , id
@@ -57,6 +58,15 @@ visibleIf condition =
 
     else
         alpha 0
+
+
+disableIf : Bool -> Attribute msg
+disableIf condition =
+    if condition then
+        disableTouch
+
+    else
+        empty
 
 
 disableTouch : Attribute msg

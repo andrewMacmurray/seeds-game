@@ -5,25 +5,25 @@ module View.LoadingScreen exposing
     , view
     )
 
-import Css.Color exposing (gold, rainBlue)
-import Css.Style as Style exposing (Style, classes, style, width)
-import Css.Transition exposing (easeInOut, transitionAll)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Palette as Palette
 import Element.Seed as Seed
+import Element.Transition as Transition
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
-import Html exposing (..)
 import Random
 import Seed exposing (Seed)
+import Utils.Element as Element
 
 
 
 -- Loading Screen
 
 
-type alias Model model =
-    { model
-        | loadingScreen : LoadingScreen
-        , progress : Progress
+type alias Model =
+    { loadingScreen : LoadingScreen
+    , progress : Progress
     }
 
 
@@ -55,53 +55,64 @@ generate msg =
 -- View
 
 
-view : Model model -> Html msg
+view : Model -> Element msg
 view model =
-    div
-        [ classes
-            [ "w-100 h-100 fixed z-999 top-0 left-0 flex items-center justify-center"
-            , transitionClasses model
-            ]
-        , style
-            [ backgroundStyle model.loadingScreen
-            , transitionAll 500 [ easeInOut ]
-            ]
+    el
+        [ width fill
+        , height fill
+        , Background.color (toBackground model)
+        , Element.disableIf (isHidden model)
+        , Transition.background 500
         ]
-        [ div [ style [ width 50 ] ]
-            [ Seed.svg (seedFromProgress model.progress)
-            ]
+        (viewSeed model)
+
+
+viewSeed : Model -> Element msg
+viewSeed model =
+    el
+        [ centerY
+        , centerX
+        , Transition.alpha 500
+        , Element.visibleIf (isVisible model)
         ]
+        (Seed.view Seed.large (seedFromProgress model.progress))
+
+
+isVisible : Model -> Bool
+isVisible =
+    isHidden >> not
+
+
+isHidden : Model -> Bool
+isHidden model =
+    case model.loadingScreen of
+        Hidden ->
+            True
+
+        _ ->
+            False
+
+
+toBackground : Model -> Color
+toBackground model =
+    case model.loadingScreen of
+        Blue ->
+            Palette.blue5
+
+        Orange ->
+            Palette.gold
+
+        Hidden ->
+            Palette.transparent
 
 
 seedFromProgress : Progress -> Seed
 seedFromProgress progress =
-    Progress.currentLevelSeedType Worlds.all progress
+    progress
+        |> Progress.currentLevelSeedType Worlds.all
         |> Maybe.withDefault (reachedLevelSeedType progress)
 
 
 reachedLevelSeedType : Progress -> Seed
 reachedLevelSeedType =
     Progress.reachedLevelSeedType Worlds.all
-
-
-backgroundStyle : LoadingScreen -> Style
-backgroundStyle screen =
-    case screen of
-        Blue ->
-            Style.backgroundColor rainBlue
-
-        Orange ->
-            Style.backgroundColor gold
-
-        Hidden ->
-            Style.none
-
-
-transitionClasses : Model model -> String
-transitionClasses model =
-    case model.loadingScreen of
-        Hidden ->
-            "o-0 touch-disabled"
-
-        _ ->
-            "o-100"
