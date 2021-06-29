@@ -1,5 +1,5 @@
-module View.LoadingScreen exposing
-    ( LoadingScreen
+module View.Loading exposing
+    ( Screen
     , generate
     , hidden
     , view
@@ -22,12 +22,12 @@ import Utils.Element as Element
 
 
 type alias Model =
-    { loadingScreen : LoadingScreen
+    { loading : Screen
     , progress : Progress
     }
 
 
-type LoadingScreen
+type Screen
     = Hidden
     | Blue
     | Orange
@@ -37,7 +37,7 @@ type LoadingScreen
 -- Construct
 
 
-hidden : LoadingScreen
+hidden : Screen
 hidden =
     Hidden
 
@@ -46,7 +46,7 @@ hidden =
 -- Generate
 
 
-generate : (LoadingScreen -> msg) -> Cmd msg
+generate : (Screen -> msg) -> Cmd msg
 generate msg =
     Random.uniform Blue [ Orange ] |> Random.generate msg
 
@@ -85,7 +85,7 @@ isVisible =
 
 isHidden : Model -> Bool
 isHidden model =
-    case model.loadingScreen of
+    case model.loading of
         Hidden ->
             True
 
@@ -95,7 +95,7 @@ isHidden model =
 
 toBackground : Model -> Color
 toBackground model =
-    case model.loadingScreen of
+    case model.loading of
         Blue ->
             Palette.blue5
 

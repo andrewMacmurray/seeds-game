@@ -20,7 +20,7 @@ import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Time
-import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
+import View.Loading as Loading
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -31,7 +31,7 @@ import Window exposing (Window)
 
 type alias Context =
     { window : Window
-    , loadingScreen : LoadingScreen
+    , loading : Loading.Screen
     , progress : Progress
     , lives : Lives
     , successMessageIndex : Int
@@ -108,11 +108,11 @@ disableMenu context =
 -- Loading Screen
 
 
-showLoadingScreen : LoadingScreen -> Context -> Context
-showLoadingScreen loadingScreen context =
-    { context | loadingScreen = loadingScreen }
+showLoadingScreen : Loading.Screen -> Context -> Context
+showLoadingScreen loading context =
+    { context | loading = loading }
 
 
 hideLoadingScreen : Context -> Context
 hideLoadingScreen context =
-    { context | loadingScreen = LoadingScreen.hidden }
+    { context | loading = Loading.hidden }

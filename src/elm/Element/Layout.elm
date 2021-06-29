@@ -1,5 +1,6 @@
 module Element.Layout exposing
-    ( Scene
+    ( Model
+    , Scene
     , fadeIn
     , map
     , scene
@@ -18,7 +19,7 @@ import Simple.Animation.Animated as Animated
 import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
+import View.Loading as Loading
 
 
 
@@ -36,15 +37,14 @@ type alias Scene_ msg =
     }
 
 
-type alias Context context =
-    { context
-        | loadingScreen : LoadingScreen
-        , progress : Progress
+type alias Model =
+    { loading : Loading.Screen
+    , progress : Progress
     }
 
 
-type alias Layout context msg =
-    { context : Context context
+type alias Layout msg =
+    { model : Model
     , menu : Element msg
     , scene : ( String, Scene msg )
     , backdrop : Maybe ( String, Scene msg )
@@ -99,7 +99,7 @@ fadeIn_ attributes el =
         [ view_ attributes el ]
 
 
-view : Layout context msg -> Html msg
+view : Layout msg -> Html msg
 view layout =
     Element.layoutWith layoutOptions
         (List.concat
@@ -115,7 +115,7 @@ view layout =
             , layout.backdrop
                 |> Maybe.map (Tuple.second >> attributes_)
                 |> Maybe.withDefault []
-            , [ inFront (viewLoadingScreen layout.context)
+            , [ inFront (viewLoadingScreen layout.model)
               , behindContent (viewBackdrop layout.backdrop)
               ]
             ]
@@ -123,11 +123,11 @@ view layout =
         (viewScene layout.scene)
 
 
-viewLoadingScreen : Context context -> Element msg
+viewLoadingScreen : Model -> Element msg
 viewLoadingScreen context =
-    LoadingScreen.view
+    Loading.view
         { progress = context.progress
-        , loadingScreen = context.loadingScreen
+        , loading = context.loading
         }
 
 

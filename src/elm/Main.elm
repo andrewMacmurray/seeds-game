@@ -23,7 +23,7 @@ import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
-import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
+import View.Loading as LoadingScreen exposing (Screen)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -89,7 +89,7 @@ type Msg
     | HideLoadingScreen
     | OpenMenuClicked
     | CloseMenuClicked
-    | LoadingScreenGenerated LoadingScreen
+    | LoadingScreenGenerated Screen
     | ResetDataClicked
     | WindowSize Int Int
     | UpdateLives Time.Posix
@@ -118,7 +118,7 @@ initialState titleModel =
 initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
-    , loadingScreen = LoadingScreen.hidden
+    , loading = LoadingScreen.hidden
     , progress = Progress.init flags.progress
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
@@ -666,22 +666,18 @@ sceneSubscriptions model =
 view : Model -> Html Msg
 view model =
     Layout.view
-        { context = getContext model
+        { model = layoutModel model
         , menu = menu model.scene
         , scene = viewScene model.scene
         , backdrop = viewBackdrop model.backdrop
         }
 
 
-
---div []
---    [ LoadingScreen.view (getContext model)
---    , menu model.scene
---    , stage
---        [ viewBackdrop model.backdrop
---        , [ viewScene model.scene ]
---        ]
---    ]
+layoutModel : Model -> Layout.Model
+layoutModel model =
+    { progress = .progress (getContext model)
+    , loading = .loading (getContext model)
+    }
 
 
 viewBackdrop : Maybe Scene -> Maybe ( String, Layout.Scene Msg )
