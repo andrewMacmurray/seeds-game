@@ -52,6 +52,28 @@ type alias Layout msg =
 
 
 
+-- Construct
+
+
+scene : List (Attribute msg) -> Element msg -> Scene msg
+scene attrs el =
+    Scene
+        { el = el
+        , attributes = attrs
+        , fadeIn = False
+        }
+
+
+fadeIn : List (Attribute msg) -> Element msg -> Scene msg
+fadeIn attrs el =
+    Scene
+        { el = el
+        , attributes = attrs
+        , fadeIn = True
+        }
+
+
+
 -- Update
 
 
@@ -82,10 +104,6 @@ view_ attrs =
             ]
             attrs
         )
-
-
-
--- Fade In
 
 
 fadeIn_ : List (Attribute msg) -> Element msg -> Html msg
@@ -163,31 +181,9 @@ viewScene_ id scene_ =
         ( id, scene_.el )
 
 
-scene : List (Attribute msg) -> Element msg -> Scene msg
-scene attrs el =
-    Scene
-        { el = el
-        , attributes = attrs
-        , fadeIn = False
-        }
-
-
 attributes_ : Scene msg -> List (Attribute msg)
 attributes_ (Scene s) =
     s.attributes
-
-
-
--- Fade In
-
-
-fadeIn : List (Attribute msg) -> Element msg -> Scene msg
-fadeIn attrs el =
-    Scene
-        { el = el
-        , attributes = attrs
-        , fadeIn = False
-        }
 
 
 fade_ : Animation
@@ -196,10 +192,6 @@ fade_ =
         [ Animation.linear
         , Animation.delay 200
         ]
-
-
-
--- Internal
 
 
 layoutOptions : { options : List Option }
