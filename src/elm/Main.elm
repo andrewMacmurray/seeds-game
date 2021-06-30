@@ -105,7 +105,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> Debug.goToLevel 1 1 InitLevel
+        |> Debug.goToHub 1 1 InitHub
 
 
 initialState : Title.Model -> Model

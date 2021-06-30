@@ -9,14 +9,13 @@ module Element.Layout exposing
 
 import Element exposing (..)
 import Element.Animations as Animations
-import Element.Keyed as Keyed
 import Element.Palette as Palette
 import Element.Text as Text
 import Game.Level.Progress exposing (Progress)
-import Html exposing (Html)
+import Html exposing (Html, div)
+import Html.Keyed as Keyed
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
-import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.Html.Style as Style
 import View.Loading as Loading
@@ -90,6 +89,41 @@ map toMsg (Scene scene_) =
 -- View
 
 
+view : Layout msg -> Html msg
+view layout =
+    div []
+        [ loadingScreen layout.model
+        , stage
+            [ viewBackdrop layout.backdrop
+            , viewScene layout.scene
+            ]
+        ]
+
+
+viewScene : ( a, Scene msg ) -> List ( a, Html msg )
+viewScene =
+    Tuple.mapSecond viewScene_ >> List.singleton
+
+
+viewBackdrop : Maybe ( a, Scene msg ) -> List ( a, Html msg )
+viewBackdrop =
+    Maybe.map viewScene >> Maybe.withDefault []
+
+
+viewScene_ : Scene msg -> Html msg
+viewScene_ (Scene scene_) =
+    if scene_.fadeIn then
+        fadeIn_ scene_.attributes scene_.el
+
+    else
+        view_ scene_.attributes scene_.el
+
+
+stage : List (List ( String, Html msg )) -> Html msg
+stage =
+    Keyed.node "div" [] << List.concat
+
+
 view_ : List (Attribute msg) -> Element msg -> Html msg
 view_ attrs =
     Element.layoutWith layoutOptions
@@ -106,6 +140,18 @@ view_ attrs =
         )
 
 
+extra_ order =
+    Element.layoutWith layoutOptions
+        [ width fill
+        , height fill
+        , Element.style "position" "absolute"
+        , Element.style "z-index" (String.fromInt order)
+        , Element.class "overflow-y-scroll momentum-scroll"
+        , Element.disableTouch
+        , Text.fonts
+        ]
+
+
 fadeIn_ : List (Attribute msg) -> Element msg -> Html msg
 fadeIn_ attributes el =
     Animated.div fade_
@@ -117,73 +163,17 @@ fadeIn_ attributes el =
         [ view_ attributes el ]
 
 
-view : Layout msg -> Html msg
-view layout =
-    Element.layoutWith layoutOptions
-        (List.concat
-            [ [ width fill
-              , height fill
-              , Element.class "overflow-y-scroll momentum-scroll"
-              , Text.fonts
-              , Palette.background1
-              ]
-            , layout.scene
-                |> Tuple.second
-                |> attributes_
-            , layout.backdrop
-                |> Maybe.map (Tuple.second >> attributes_)
-                |> Maybe.withDefault []
-            , [ inFront (viewLoadingScreen layout.model)
-              , behindContent (viewBackdrop layout.backdrop)
-              ]
-            ]
-        )
-        (viewScene layout.scene)
+loadingScreen : Model -> Html msg
+loadingScreen model =
+    extra_ 5 (loadingScreen_ model)
 
 
-viewLoadingScreen : Model -> Element msg
-viewLoadingScreen context =
+loadingScreen_ : Model -> Element msg
+loadingScreen_ context =
     Loading.view
         { progress = context.progress
         , loading = context.loading
         }
-
-
-viewBackdrop : Maybe ( String, Scene msg ) -> Element msg
-viewBackdrop =
-    Element.showIfJust viewScene
-
-
-viewScene : ( String, Scene msg ) -> Element msg
-viewScene ( id, Scene scene_ ) =
-    if scene_.fadeIn then
-        Animated.el fade_
-            [ width fill
-            , centerY
-            , centerX
-            , explain Debug.todo
-            , height fill
-            ]
-            (viewScene_ id scene_)
-
-    else
-        viewScene_ id scene_
-
-
-viewScene_ : String -> Scene_ msg -> Element msg
-viewScene_ id scene_ =
-    Keyed.el
-        [ width fill
-        , height fill
-        , centerY
-        , centerX
-        ]
-        ( id, scene_.el )
-
-
-attributes_ : Scene msg -> List (Attribute msg)
-attributes_ (Scene s) =
-    s.attributes
 
 
 fade_ : Animation
