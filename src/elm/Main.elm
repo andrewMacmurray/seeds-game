@@ -6,6 +6,7 @@ import Context exposing (Context)
 import Delay
 import Element exposing (Element)
 import Element.Layout as Layout
+import Element.Loading as LoadingScreen exposing (Screen)
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
@@ -23,7 +24,6 @@ import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
-import View.Loading as LoadingScreen exposing (Screen)
 import View.Menu as Menu
 import Window exposing (Window)
 
@@ -583,10 +583,8 @@ goToHubReachedLevel =
 
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )
-updateLives now model =
-    model
-        |> updateContext (Context.updateLives now)
-        |> andCmd saveCurrentLives
+updateLives now =
+    updateContext (Context.updateLives now) >> andCmd saveCurrentLives
 
 
 closeMenu : ( Model, Cmd msg ) -> ( Model, Cmd msg )
@@ -740,13 +738,3 @@ menu scene =
 
         _ ->
             Menu.hidden
-
-
-
---background : Html msg
---background =
---    div
---        [ style [ backgroundColor Color.lightYellow ]
---        , class "fixed w-100 h-100 top-0 left-0 z-0"
---        ]
---        []

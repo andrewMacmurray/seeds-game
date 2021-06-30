@@ -1,4 +1,4 @@
-module View.Loading exposing
+module Element.Loading exposing
     ( Screen
     , generate
     , hidden

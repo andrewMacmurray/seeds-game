@@ -9,6 +9,7 @@ module Element.Layout exposing
 
 import Element exposing (..)
 import Element.Animations as Animations
+import Element.Loading as Loading
 import Element.Palette as Palette
 import Element.Text as Text
 import Game.Level.Progress exposing (Progress)
@@ -18,11 +19,24 @@ import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import View.Loading as Loading
 
 
 
 -- Layout
+
+
+type alias Layout msg =
+    { model : Model
+    , menu : Element msg
+    , scene : ( String, Scene msg )
+    , backdrop : Maybe ( String, Scene msg )
+    }
+
+
+type alias Model =
+    { loading : Loading.Screen
+    , progress : Progress
+    }
 
 
 type Scene msg
@@ -33,20 +47,6 @@ type alias Scene_ msg =
     { el : Element msg
     , attributes : List (Attribute msg)
     , fadeIn : Bool
-    }
-
-
-type alias Model =
-    { loading : Loading.Screen
-    , progress : Progress
-    }
-
-
-type alias Layout msg =
-    { model : Model
-    , menu : Element msg
-    , scene : ( String, Scene msg )
-    , backdrop : Maybe ( String, Scene msg )
     }
 
 
@@ -77,10 +77,10 @@ fadeIn attrs el =
 
 
 map : (a -> b) -> Scene a -> Scene b
-map toMsg (Scene scene_) =
+map msg (Scene scene_) =
     Scene
-        { el = Element.map toMsg scene_.el
-        , attributes = List.map (Element.mapAttribute toMsg) scene_.attributes
+        { el = Element.map msg scene_.el
+        , attributes = List.map (Element.mapAttribute msg) scene_.attributes
         , fadeIn = scene_.fadeIn
         }
 
@@ -126,7 +126,7 @@ stage =
 
 view_ : List (Attribute msg) -> Element msg -> Html msg
 view_ attrs =
-    Element.layoutWith layoutOptions
+    Element.layoutWith secondary
         (List.append
             [ width fill
             , height fill
@@ -140,8 +140,9 @@ view_ attrs =
         )
 
 
+extra_ : Int -> Element msg -> Html msg
 extra_ order =
-    Element.layoutWith layoutOptions
+    Element.layoutWith primary
         [ width fill
         , height fill
         , Element.style "position" "absolute"
@@ -184,13 +185,27 @@ fade_ =
         ]
 
 
-layoutOptions : { options : List Option }
-layoutOptions =
+primary : { options : List Option }
+primary =
     { options =
-        [ Element.focusStyle
-            { borderColor = Nothing
-            , backgroundColor = Nothing
-            , shadow = Nothing
-            }
+        [ focusStyle
         ]
     }
+
+
+secondary : { options : List Option }
+secondary =
+    { options =
+        [ focusStyle
+        , Element.noStaticStyleSheet
+        ]
+    }
+
+
+focusStyle : Option
+focusStyle =
+    Element.focusStyle
+        { borderColor = Nothing
+        , backgroundColor = Nothing
+        , shadow = Nothing
+        }
