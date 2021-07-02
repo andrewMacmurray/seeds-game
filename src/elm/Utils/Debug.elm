@@ -15,7 +15,6 @@ import Game.Board.Tile as Tile
 import Game.Config.Level as Level exposing (LevelConfig)
 import Game.Config.World as World
 import Game.Level.Progress as Progress exposing (Progress)
-import Ports
 import Ports.Cache as Cache
 import Utils.Update as Update
 
