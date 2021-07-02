@@ -6,7 +6,6 @@ module Scene.Level.Tutorial exposing
 import Element exposing (Element, behindContent)
 import Element.Palette as Palette
 import Element.Text as Text
-import Element.Transition as Transition
 import Game.Board as Board
 import Game.Board.Coord as Coord exposing (Coord)
 import Game.Level.Tile as Tile
@@ -18,6 +17,7 @@ import Svg exposing (Svg)
 import Svg.Attributes exposing (fillOpacity, id, mask)
 import Utils.Element as Element
 import Utils.Svg as Svg exposing (..)
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 

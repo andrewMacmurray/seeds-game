@@ -7,13 +7,13 @@ import Element exposing (..)
 import Element.Animation.Bounce as Bounce
 import Element.Scale as Scale
 import Element.Seed as Seed
-import Element.Transition as Transition
 import Scene.Level.Board.Tile.Scale as Scale
 import Seed exposing (Seed(..))
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
 import Utils.Element as Element
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 

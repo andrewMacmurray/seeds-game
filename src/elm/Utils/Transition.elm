@@ -1,4 +1,4 @@
-module Element.Transition exposing
+module Utils.Transition exposing
     ( alpha
     , background
     , fill_

@@ -22,10 +22,10 @@ import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
 import Element.Touch as Touch
-import Element.Transition as Transition
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 

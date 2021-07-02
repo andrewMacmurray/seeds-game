@@ -6,7 +6,6 @@ module Scene.Intro.SunflowerMeadow exposing
 import Element.Animations as Animations
 import Element.Flower.Sunflower as Sunflower
 import Element.Legacy.Landscape.RollingHills as Hills
-import Element.Transition as Transition
 import Html exposing (Html, div)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Transition as Transition
@@ -15,6 +14,7 @@ import Utils.Animated as Animated
 import Utils.Style as Style
 import Utils.Svg as Svg exposing (..)
 import Utils.Transform as Transform
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 

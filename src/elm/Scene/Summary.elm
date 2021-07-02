@@ -23,7 +23,6 @@ import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
-import Element.Transition as Transition
 import Element.Weather as Weather
 import Exit exposing (continue, exitWith)
 import Game.Board.Tile as Tile exposing (Tile)
@@ -40,6 +39,7 @@ import Simple.Animation.Property as P
 import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.Sine as Sine
+import Utils.Transition as Transition
 import Utils.Update as Update
 import Window exposing (Window)
 

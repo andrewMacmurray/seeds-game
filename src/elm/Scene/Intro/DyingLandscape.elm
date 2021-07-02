@@ -5,13 +5,13 @@ module Scene.Intro.DyingLandscape exposing
     )
 
 import Element.Legacy.Landscape.SteepHills as Hills
-import Element.Transition as Transition
 import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Style as Style
 import Utils.Svg as Svg exposing (..)
 import Utils.Transform as Transform
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 

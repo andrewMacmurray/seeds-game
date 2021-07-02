@@ -3,10 +3,10 @@ module Element.Icon.Cog exposing (active, inactive)
 import Element exposing (Element)
 import Element.Icon as Icon
 import Element.Palette as Palette
-import Element.Transition as Transition
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
+import Utils.Transition as Transition
 
 
 

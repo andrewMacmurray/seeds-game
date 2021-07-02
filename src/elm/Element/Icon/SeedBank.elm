@@ -3,7 +3,6 @@ module Element.Icon.SeedBank exposing (full, icon)
 import Element exposing (Element)
 import Element.Icon as Icon
 import Element.Seed as Seed
-import Element.Transition as Transition
 import Seed exposing (Seed)
 import Simple.Animation as Animation
 import Simple.Transition as Transition
@@ -12,6 +11,7 @@ import Svg.Attributes exposing (..)
 import Utils.Style as Style
 import Utils.Svg as Svg
 import Utils.Transform as Transform
+import Utils.Transition as Transition
 
 
 
