@@ -15,6 +15,7 @@ import Element exposing (..)
 import Element.Animations as Animations
 import Element.Button as Button
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
@@ -26,7 +27,6 @@ import Simple.Animation as Animation
 import Utils.Animated as Animated
 import Utils.Element exposing (verticalGap)
 import Utils.Update as Update
-import View.Menu as Menu
 
 
 

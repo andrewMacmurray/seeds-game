@@ -16,12 +16,12 @@ module Context exposing
     )
 
 import Element.Loading as Loading
+import Element.Menu as Menu
 import Game.Config.Level as Level
 import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Time
-import View.Menu as Menu
 import Window exposing (Window)
 
 

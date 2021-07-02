@@ -1,4 +1,4 @@
-module View.Menu exposing
+module Element.Menu exposing
     ( Model
     , Option
     , Options

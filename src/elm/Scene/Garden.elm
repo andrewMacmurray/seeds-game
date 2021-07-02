@@ -15,6 +15,7 @@ import Element.Background as Background
 import Element.Button as Button
 import Element.Flower as Flower
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Seed as Seed
@@ -33,7 +34,6 @@ import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.List as List
-import View.Menu as Menu
 
 
 

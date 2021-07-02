@@ -6,6 +6,7 @@ import Context exposing (Context)
 import Delay
 import Element.Layout as Layout
 import Element.Loading as LoadingScreen exposing (Screen)
+import Element.Menu as Menu
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
@@ -22,7 +23,6 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
-import View.Menu as Menu
 import Window exposing (Window)
 
 

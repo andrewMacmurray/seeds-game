@@ -15,6 +15,7 @@ import Element.Button.Cancel as Cancel
 import Element.Info as Info
 import Element.Layout as Layout
 import Element.Lazy as Lazy
+import Element.Menu as Menu
 import Element.Text as Text
 import Element.Touch as Touch
 import Exit exposing (continue, exitWith)
@@ -50,7 +51,6 @@ import Utils.Attribute as Attribute
 import Utils.Element as Element
 import Utils.Html.Style as Style
 import Utils.Update as Update exposing (andCmds)
-import View.Menu as Menu
 import Window exposing (Window)
 
 

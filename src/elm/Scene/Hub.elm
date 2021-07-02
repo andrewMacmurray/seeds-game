@@ -19,6 +19,7 @@ import Element.Icon.Heart as Heart
 import Element.Icon.Triangle as Triangle
 import Element.Info as Info
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Seed as Seed
@@ -37,7 +38,6 @@ import Seed exposing (Seed)
 import Utils.Element as Element
 import Utils.Sine as Sine
 import Utils.Time.Clock as Clock
-import View.Menu as Menu
 
 
 
