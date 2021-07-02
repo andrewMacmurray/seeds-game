@@ -30,7 +30,7 @@ import Element
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
-import Utils.Svg.Style as Style exposing (Style)
+import Utils.Style as Style
 import Utils.Transform as Transform
 import Utils.Unit as Unit
 import Window exposing (Window, vh, vw)
@@ -43,15 +43,10 @@ fill_ color =
 
 g_ : List (Attribute msg) -> List (Svg msg) -> Svg msg
 g_ attrs =
-    Svg.g (baseTransform :: attrs)
+    Svg.g (translate0 :: attrs)
 
 
-baseTransform : Attribute msg
-baseTransform =
-    Style.svg [ translate0 ]
-
-
-translate0 : Style
+translate0 : Attribute msg
 translate0 =
     Style.transform [ Transform.translate 0 0 ]
 
@@ -86,12 +81,12 @@ windowViewBox_ w =
 
 translated : Float -> Float -> Svg.Svg msg -> Svg.Svg msg
 translated x y el =
-    Svg.g [ Style.svg [ Style.transform [ Transform.translate x y ] ] ] [ el ]
+    Svg.g [ Style.transform [ Transform.translate x y ] ] [ el ]
 
 
 scaled : Float -> Svg.Svg msg -> Svg.Svg msg
 scaled n el =
-    Svg.g [ Style.svg [ Style.transform [ Transform.scale n ] ] ] [ el ]
+    Svg.g [ Style.transform [ Transform.scale n ] ] [ el ]
 
 
 points_ : List Point -> Attribute msg

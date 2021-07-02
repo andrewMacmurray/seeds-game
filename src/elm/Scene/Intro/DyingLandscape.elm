@@ -5,12 +5,13 @@ module Scene.Intro.DyingLandscape exposing
     )
 
 import Element.Legacy.Landscape.SteepHills as Hills
+import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Style as Style
 import Utils.Svg as Svg exposing (..)
-import Utils.Svg.Style as Style exposing (Style)
-import Utils.Svg.Transition as Transition exposing (delay, linear, transition)
 import Utils.Transform as Transform
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 
@@ -57,25 +58,25 @@ view window env state =
     in
     Svg.window window
         [ preserveAspectRatio "none" ]
-        [ Svg.g [ hillStyles window state (hillOffset -250 -400) 0 ]
+        [ Svg.g (hillStyles window state (hillOffset -250 -400) 0)
             [ Hills.layer window
                 slope
                 ( hillColor "#1D4E34" "#898755", [ transitionFill 0 ], [] )
                 ( hillColor "#19B562" "#866942", [ transitionFill 300 ], [] )
             ]
-        , Svg.g [ hillStyles window state (hillOffset -125 -250) 500 ]
+        , Svg.g (hillStyles window state (hillOffset -125 -250) 500)
             [ Hills.layer window
                 slope
                 ( hillColor "#1D7145" "#7D7E7D", [ transitionFill 600 ], elements2Left )
                 ( hillColor "#1F8D52" "#978A49", [ transitionFill 900 ], elements2Right )
             ]
-        , Svg.g [ hillStyles window state (hillOffset 0 -100) 1000 ]
+        , Svg.g (hillStyles window state (hillOffset 0 -100) 1000)
             [ Hills.layer window
                 slope
                 ( hillColor "#2BA765" "#484848", [ transitionFill 1200 ], elements3Left )
                 ( hillColor "#185F39" "#372c1f", [ transitionFill 1500 ], elements3Right )
             ]
-        , Svg.g [ hillStyles window state (hillOffset 125 50) 1000 ]
+        , Svg.g (hillStyles window state (hillOffset 125 50) 1000)
             [ Hills.layer window
                 slope
                 ( hillColor "#1F8D52" "#6e6e4e", [ transitionFill 1200 ], elements4Left )
@@ -179,47 +180,46 @@ hillElements4 window env =
             ( [], [ Hills.behind 5 6 <| firrTree env 1000 ] )
 
 
-hillStyles : Window -> State -> Float -> Int -> Attribute msg
+hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
 hillStyles window state offset delay =
     let
         transitionTransform =
-            Transition.transition "transform" 3500 [ Transition.delay delay, Transition.easeOut ]
+            Transition.transform_ 3500
+                [ Transition.delay delay
+                , Transition.easeOut
+                ]
 
         translateY n =
             Style.transform [ Transform.translateY n ]
     in
     case state of
         Hidden ->
-            Style.svg
-                [ translateY <| toFloat window.height / 2
-                , transitionTransform
-                ]
+            [ translateY <| toFloat window.height / 2
+            , transitionTransform
+            ]
 
         Entering ->
-            Style.svg
-                [ translateY offset
-                , transitionTransform
-                ]
+            [ translateY offset
+            , transitionTransform
+            ]
 
         Visible ->
-            Style.svg
-                [ Style.opacity 1
-                , translateY offset
-                ]
+            [ Style.opacity 1
+            , translateY offset
+            ]
 
         Leaving ->
-            Style.svg
-                [ Style.opacity 0
-                , Transition.transition "opacity" 400 [ Transition.linear, Transition.delay delay ]
-                , translateY offset
-                ]
+            [ Style.opacity 0
+            , Transition.opacity_ 400 [ Transition.linear, Transition.delay delay ]
+            , translateY offset
+            ]
 
 
 firrTree : Environment -> Int -> Svg msg
 firrTree env delay =
     let
         animateFill =
-            transitionFillStyle delay
+            transitionFill delay
 
         ( leftColor, rightColor ) =
             treeColor "#24AC4B" "#95EDB3" env
@@ -239,7 +239,7 @@ elmTree : Environment -> Int -> Svg msg
 elmTree env delay =
     let
         animateFill staggerDelay =
-            transitionFillStyle <| delay + staggerDelay
+            transitionFill (delay + staggerDelay)
 
         ( leftColor, rightColor ) =
             treeColor "#32B559" "#4CE483" env
@@ -264,7 +264,7 @@ pineTree : Environment -> Int -> Svg msg
 pineTree env delay =
     let
         animateFill staggerDelay =
-            transitionFillStyle <| delay + staggerDelay
+            transitionFill (delay + staggerDelay)
 
         ( leftColor, rightColor ) =
             treeColor "#95EDB3" "#24AC4B" env
@@ -302,14 +302,9 @@ pineTree env delay =
         ]
 
 
-transitionFillStyle : Int -> Attribute msg
-transitionFillStyle delayMs =
-    Style.svg [ transitionFill delayMs ]
-
-
-transitionFill : Int -> Style
+transitionFill : Int -> Attribute msg
 transitionFill delayMs =
-    transition "fill" 500 [ delay delayMs, linear ]
+    Transition.fill_ 500 [ Transition.delay delayMs, Transition.linear ]
 
 
 treeColor left right env =

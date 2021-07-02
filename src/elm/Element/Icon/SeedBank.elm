@@ -5,12 +5,13 @@ import Element.Icon as Icon
 import Element.Seed as Seed
 import Seed exposing (Seed)
 import Simple.Animation as Animation
-import Svg exposing (Attribute)
+import Simple.Transition as Transition
+import Svg
 import Svg.Attributes exposing (..)
+import Utils.Style as Style
 import Utils.Svg as Svg
-import Utils.Svg.Style as Style
-import Utils.Svg.Transition as Transition
-import Utils.Transform exposing (translateY)
+import Utils.Transform as Transform
+import Utils.Transition as Transition
 
 
 
@@ -45,7 +46,8 @@ icon options =
             ]
             [ Svg.use
                 [ xlinkHref ("#" ++ fillLevelId options.seed)
-                , offsetLevelStyles options
+                , Style.transform [ Transform.translateY (offset options.percent) ]
+                , Transition.transform_ 1500 [ Transition.delay options.delay ]
                 ]
                 []
             ]
@@ -84,14 +86,6 @@ seedId =
 fullHeight : Float
 fullHeight =
     193.5
-
-
-offsetLevelStyles : Options -> Attribute msg
-offsetLevelStyles options =
-    Style.svg
-        [ Style.transform [ translateY (offset options.percent) ]
-        , Transition.transition "transform" 1500 [ Transition.delay options.delay ]
-        ]
 
 
 offset : Float -> Float

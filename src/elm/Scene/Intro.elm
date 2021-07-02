@@ -15,12 +15,12 @@ import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
-import Element.Transition as Transition
 import Exit exposing (continue, exit)
 import Scene.Intro.DyingLandscape as DL
 import Scene.Intro.GrowingSeeds as GS
 import Scene.Intro.SunflowerMeadow as SM
 import Utils.Element as Element
+import Utils.Transition as Transition
 import Window exposing (vh)
 
 

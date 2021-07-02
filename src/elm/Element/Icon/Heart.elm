@@ -13,8 +13,8 @@ import Simple.Animation.Property as P
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
+import Utils.Style as Style
 import Utils.Svg as Svg
-import Utils.Svg.Style as Style
 
 
 
@@ -74,13 +74,13 @@ heartBreak =
         [ Animated.path breakLeft
             [ d "M28 4.5a15.5 15.5 0 0 1 22 21.9l-22 22c-.3.2-.7.4-1 .4v-8.9l-5.7-9.8 5.7-8.7-5.7-8.3L27 5.7l1-1.2z"
             , Svg.fill_ Palette.lightGray
-            , Style.svg [ Style.transformOrigin "bottom" ]
+            , Style.originBottom
             ]
             []
         , Animated.path breakRight
             [ d "M26.4 4.5A15.5 15.5 0 0 0 4.5 26.4l22 22c.3.2.6.4 1 .4v-8.9l-5.6-9.8 5.5-8.7-5.5-8.3 5.5-7.4-1-1.2z"
             , Svg.fill_ Palette.silver
-            , Style.svg [ Style.transformOrigin "bottom" ]
+            , Style.originBottom
             ]
             []
         ]

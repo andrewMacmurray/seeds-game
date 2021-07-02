@@ -10,12 +10,12 @@ import Element.Background as Background
 import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Seed as Seed
-import Element.Transition as Transition
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
 import Random
 import Seed exposing (Seed)
 import Utils.Element as Element
+import Utils.Transition as Transition
 
 
 

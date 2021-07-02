@@ -8,8 +8,8 @@ import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
+import Utils.Style as Style
 import Utils.Svg exposing (..)
-import Utils.Svg.Style as Style
 
 
 
@@ -49,12 +49,12 @@ animateInnerPetals delay petals =
 
 animateLeftOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateLeftOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ Style.svg [ Style.transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.originBottom ] petals
 
 
 animateRightOuterPetals : Animation.Millis -> List (Svg msg) -> Svg msg
 animateRightOuterPetals delay petals =
-    Animated.g (scaleIn delay) [ Style.svg [ Style.transformOrigin "bottom center" ] ] petals
+    Animated.g (scaleIn delay) [ Style.originBottom ] petals
 
 
 fadeIn : Animation.Millis -> Animation.Millis -> Int -> Animation

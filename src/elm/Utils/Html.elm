@@ -5,7 +5,7 @@ module Utils.Html exposing
     )
 
 import Html exposing (Attribute, Html, div, text)
-import Utils.Html.Style as Style
+import Utils.Style as Style
 
 
 none : Html msg

@@ -6,12 +6,13 @@ module Element.Icon.RainBank exposing
 import Element exposing (Element)
 import Element.Icon as Icon
 import Simple.Animation as Animation
+import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
+import Utils.Style as Style
 import Utils.Svg as Svg
-import Utils.Svg.Style as Style
-import Utils.Svg.Transition as Transition
-import Utils.Transform exposing (translateY)
+import Utils.Transform as Transform
+import Utils.Transition as Transition
 
 
 
@@ -54,7 +55,8 @@ icon options =
                 ]
                 [ Svg.use
                     [ xlinkHref "#water-level"
-                    , offsetLevelStyles options
+                    , Style.transform [ Transform.translateY (offset options.percent) ]
+                    , Transition.transform_ 1500 [ Transition.delay options.delay ]
                     ]
                     []
                 ]
@@ -71,14 +73,6 @@ icon options =
 fullHeight : Float
 fullHeight =
     35.8
-
-
-offsetLevelStyles : Options -> Attribute msg
-offsetLevelStyles options =
-    Style.svg
-        [ Style.transform [ translateY (offset options.percent) ]
-        , Transition.transition "transform" 1500 [ Transition.delay options.delay ]
-        ]
 
 
 offset : Float -> Float

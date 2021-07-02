@@ -49,7 +49,7 @@ import Scene.Level.Tutorial as Tutorial
 import Seed
 import Utils.Attribute as Attribute
 import Utils.Element as Element
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Update as Update exposing (andCmds)
 import Window exposing (Window)
 
