@@ -32,7 +32,6 @@ import Game.Config.World as Worlds
 import Game.Level.Progress as Progress
 import Game.Level.Tile as Tile exposing (TargetScore)
 import Game.Lives as Lives exposing (Lives)
-import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
 import Utils.Element as Element

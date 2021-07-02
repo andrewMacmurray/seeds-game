@@ -1,18 +1,8 @@
 module Css.Style exposing
     ( Style
-    , background
-    , backgroundColor
-    , border
-    , borderNone
-    , classes
-    , color
     , compose
-    , height
-    , marginTop
-    , none
     , opacity
     , property
-    , renderStyles_
     , style
     , svg
     , transform
@@ -20,7 +10,6 @@ module Css.Style exposing
     , width
     )
 
-import Css.Color as Color
 import Css.Transform as Transform exposing (Transform)
 import Html
 import Html.Attributes
@@ -102,11 +91,6 @@ nonEmpty =
 -- Properties
 
 
-none : Style
-none =
-    property "" ""
-
-
 transform : List Transform -> Style
 transform transforms =
     property "transform" (Transform.render transforms)
@@ -117,44 +101,9 @@ transformOrigin =
     property "transform-origin"
 
 
-marginTop : Float -> Style
-marginTop n =
-    property "margin-top" (Unit.px (round n))
-
-
-color : String -> Style
-color c =
-    property "color" c
-
-
-borderNone : Style
-borderNone =
-    property "border" "none"
-
-
-border : Float -> Color.Color -> Style
-border n c =
-    property "border" (String.join " " [ Unit.px (round n), "solid", c ])
-
-
-backgroundColor : String -> Style
-backgroundColor =
-    property "background-color"
-
-
-background : String -> Style
-background =
-    property "background"
-
-
 width : Float -> Style
 width n =
     property "width" (Unit.px (round n))
-
-
-height : Float -> Style
-height h =
-    property "height" (Unit.px (round h))
 
 
 opacity : Float -> Style
@@ -164,8 +113,3 @@ opacity o =
 
 
 -- Class Helpers
-
-
-classes : List String -> Html.Attribute msg
-classes =
-    Html.Attributes.class << String.join " "

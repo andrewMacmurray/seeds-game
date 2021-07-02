@@ -4,7 +4,6 @@ module Css.Transform exposing
     , rotate
     , scale
     , translate
-    , translateX
     , translateY
     )
 
@@ -13,7 +12,6 @@ import Utils.Unit as Unit
 
 type Transform
     = Translate XY
-    | TranslateX Float
     | TranslateY Float
     | Scale Float
     | Rotate Float
@@ -40,11 +38,6 @@ translate x y =
     Translate <| XY x y
 
 
-translateX : Float -> Transform
-translateX =
-    TranslateX
-
-
 translateY : Float -> Transform
 translateY =
     TranslateY
@@ -67,9 +60,6 @@ fromTransform ts =
         Translate { x, y } ->
             translate_ x y
 
-        TranslateX n ->
-            translateX_ n
-
         TranslateY n ->
             translateY_ n
 
@@ -82,11 +72,6 @@ scale_ n =
 translate_ : Float -> Float -> String
 translate_ x y =
     join [ "translate(", px x, ",", px y, ")" ]
-
-
-translateX_ : Float -> String
-translateX_ n =
-    join [ "translateX(", px n, ")" ]
 
 
 translateY_ : Float -> String

@@ -5,7 +5,7 @@ import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
 import Element.Palette as Palette
-import Svg exposing (Svg)
+import Svg
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
 

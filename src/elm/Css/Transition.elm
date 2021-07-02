@@ -1,11 +1,9 @@
 module Css.Transition exposing
     ( cubicBezier
     , delay
-    , easeInOut
     , easeOut
     , linear
     , transition
-    , transitionAll
     )
 
 import Css.Style as Style exposing (Style)
@@ -26,16 +24,6 @@ transition prop duration options =
     ]
         |> List.concat
         |> Style.compose
-
-
-transitionAll : Int -> List Option -> Style
-transitionAll =
-    transition "all"
-
-
-easeInOut : Option
-easeInOut =
-    option (transitionTimingFunction "ease-in-out")
 
 
 easeOut : Option

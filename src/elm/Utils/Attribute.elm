@@ -1,4 +1,4 @@
-module Utils.Attribute exposing (applyIf, empty)
+module Utils.Attribute exposing (applyIf)
 
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)
