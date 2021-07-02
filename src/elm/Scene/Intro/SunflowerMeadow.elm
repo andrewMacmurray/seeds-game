@@ -6,14 +6,14 @@ module Scene.Intro.SunflowerMeadow exposing
 import Element.Animations as Animations
 import Element.Flower.Sunflower as Sunflower
 import Element.Legacy.Landscape.RollingHills as Hills
+import Element.Transition as Transition
 import Html exposing (Html, div)
 import Simple.Animation as Animation exposing (Animation)
+import Simple.Transition as Transition
 import Svg exposing (Svg)
 import Utils.Animated as Animated
-import Utils.Html.Style as Html
+import Utils.Html.Style as Style
 import Utils.Svg as Svg exposing (..)
-import Utils.Svg.Style as Style
-import Utils.Svg.Transition as Transition
 import Utils.Transform as Transform
 import Window exposing (Window)
 
@@ -28,17 +28,17 @@ view : Window -> State -> Html msg
 view window state =
     div []
         [ div
-            (Html.center
-                [ Html.width 200
-                , Html.zIndex 5
-                , Html.relative
+            (Style.center
+                [ Style.width 200
+                , Style.zIndex 5
+                , Style.relative
                 ]
             )
             [ Sunflower.animated 0 ]
         , div
-            [ Html.fixed
-            , Html.top 0
-            , Html.fullWidth
+            [ Style.fixed
+            , Style.top 0
+            , Style.fullWidth
             ]
             [ hills window state ]
         ]
@@ -63,26 +63,24 @@ hills window state =
 
 offsetBy : Window -> State -> Float -> Int -> Svg msg -> Svg msg
 offsetBy window state offset delay el =
-    Svg.g [ offsetStyles window state offset delay ] [ el ]
+    Svg.g (offsetStyles window state offset delay) [ el ]
 
 
-offsetStyles : Window -> State -> Float -> Int -> Svg.Attribute msg
+offsetStyles : Window -> State -> Float -> Int -> List (Svg.Attribute msg)
 offsetStyles window state offset delay =
     let
         translateY n =
             Style.transform [ Transform.translateY n ]
 
         visibleStyles =
-            Style.svg
-                [ translateY offset
-                , Transition.transition "transform" 2000 [ Transition.cubicBezier 0 0 0 1, Transition.delay delay ]
-                ]
+            [ translateY offset
+            , Transition.transform_ 2000 [ Transition.cubic 0 0 0 1, Transition.delay delay ]
+            ]
     in
     case state of
         Hidden ->
-            Style.svg
-                [ translateY (toFloat (window.height // 2))
-                ]
+            [ translateY (toFloat (window.height // 2))
+            ]
 
         Entering ->
             visibleStyles

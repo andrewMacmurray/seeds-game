@@ -6,8 +6,8 @@ module Element.Legacy.Landscape.RollingHills exposing
 
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
+import Utils.Html.Style as Style
 import Utils.Svg exposing (..)
-import Utils.Svg.Style as Style
 import Utils.Transform as Transform
 import Window exposing (Window)
 
@@ -25,7 +25,7 @@ doubleLayer =
 
 
 doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =
-    Svg.g [ Style.svg [ Style.transform [ Transform.translate 0 0 ] ] ]
+    Svg.g [ Style.transform [ Transform.translate 0 0 ] ]
         [ hillFullScreen window
             { color = leftColor
             , elements = leftElements
@@ -119,6 +119,6 @@ hill color r cx cy =
         , cy_ cy
         , r_ r
         , fill color
-        , Style.svg [ Style.transform [ Transform.translateY r ] ]
+        , Style.transform [ Transform.translateY r ]
         ]
         []
