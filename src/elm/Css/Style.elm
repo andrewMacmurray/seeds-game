@@ -8,9 +8,9 @@ module Css.Style exposing
     , transformOrigin
     )
 
-import Css.Transform as Transform exposing (Transform)
 import Svg
 import Svg.Attributes
+import Utils.Transform as Transform exposing (Transform)
 
 
 type Style
@@ -79,7 +79,7 @@ nonEmpty =
 
 transform : List Transform -> Style
 transform transforms =
-    property "transform" (Transform.render transforms)
+    property "transform" (Transform.toString transforms)
 
 
 transformOrigin : String -> Style

@@ -76,7 +76,7 @@ initialState : Context -> Model
 initialState context =
     { context = context
     , scene = DyingLandscape DL.Alive DL.Hidden
-    , background = Palette.transparent
+    , background = Palette.background1_
     , text = "Our world is dying"
     , textColor = Palette.brownYellow
     , textVisible = False

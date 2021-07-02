@@ -1,13 +1,17 @@
-module Css.Transform exposing
+module Utils.Transform exposing
     ( Transform
-    , render
     , rotate
     , scale
+    , toString
     , translate
     , translateY
     )
 
 import Utils.Unit as Unit
+
+
+
+-- Transform
 
 
 type Transform
@@ -23,9 +27,8 @@ type alias XY =
     }
 
 
-render : List Transform -> String
-render =
-    List.map fromTransform >> String.join " "
+
+-- Construct
 
 
 scale : Float -> Transform
@@ -35,7 +38,7 @@ scale =
 
 translate : Float -> Float -> Transform
 translate x y =
-    Translate <| XY x y
+    Translate (XY x y)
 
 
 translateY : Float -> Transform
@@ -46,6 +49,15 @@ translateY =
 rotate : Float -> Transform
 rotate =
     Rotate
+
+
+
+-- To String
+
+
+toString : List Transform -> String
+toString =
+    List.map fromTransform >> String.join " "
 
 
 fromTransform : Transform -> String

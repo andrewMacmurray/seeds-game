@@ -4,18 +4,16 @@ module Scene.Intro.SunflowerMeadow exposing
     )
 
 import Css.Style as Style
-import Css.Transform as Transform
 import Css.Transition as Transition
 import Element.Animations as Animations
 import Element.Flower.Sunflower as Sunflower
 import Html exposing (Html, div)
-import Html.Attributes
 import Simple.Animation as Animation exposing (Animation)
 import Svg exposing (Svg)
-import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
-import Utils.Svg exposing (..)
-import Utils.Unit as Unit
+import Utils.Html.Style as Html
+import Utils.Svg as Svg exposing (..)
+import Utils.Transform as Transform
 import View.Landscape.RollingHills as Hills
 import Window exposing (Window)
 
@@ -30,16 +28,25 @@ view : Window -> State -> Html msg
 view window state =
     div []
         [ div
-            [ class "z-5 center relative"
-            , Html.Attributes.style "width" (Unit.px 200)
-            ]
+            (Html.center
+                [ Html.width 200
+                , Html.zIndex 5
+                , Html.relative
+                ]
+            )
             [ Sunflower.animated 0 ]
-        , hills window state
+        , div
+            [ Html.fixed
+            , Html.top 0
+            , Html.fullWidth
+            ]
+            [ hills window state ]
         ]
 
 
 hills window state =
-    Svg.svg [ windowViewBox_ window, class "fixed top-0 z-1" ]
+    Svg.window window
+        []
         [ Hills.doubleLayer window ( "#9ae9af", [] ) ( "#46cda2", [] ) |> offsetBy window state -500 1500
         , Hills.doubleLayer window ( "#22c37c", [] ) ( "#225941", [] ) |> offsetBy window state -400 1200
         , Hills.doubleLayer window ( "#27af76", [] ) ( "#339576", [] ) |> offsetBy window state -300 1000
