@@ -4,11 +4,11 @@ module Scene.Intro.DyingLandscape exposing
     , view
     )
 
-import Css.Style as Style exposing (Style)
-import Css.Transition as Transition exposing (delay, linear, transition)
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg exposing (..)
+import Utils.Svg.Style as Style exposing (Style)
+import Utils.Svg.Transition as Transition exposing (delay, linear, transition)
 import Utils.Transform as Transform
 import View.Landscape.SteepHills as Hills
 import Window exposing (Window)

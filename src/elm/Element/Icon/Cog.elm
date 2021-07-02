@@ -1,13 +1,13 @@
 module Element.Icon.Cog exposing (active, inactive)
 
-import Css.Style as Style
-import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
 import Element.Palette as Palette
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
+import Utils.Svg.Style as Style
+import Utils.Svg.Transition as Transition
 
 
 

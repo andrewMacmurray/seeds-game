@@ -45,6 +45,7 @@ width =
     px_ "width"
 
 
+fullWidth : Attribute msg
 fullWidth =
     style "width" "100%"
 

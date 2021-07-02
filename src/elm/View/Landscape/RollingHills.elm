@@ -4,10 +4,10 @@ module View.Landscape.RollingHills exposing
     , element
     )
 
-import Css.Style as Style
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
+import Utils.Svg.Style as Style
 import Utils.Transform as Transform
 import Window exposing (Window)
 

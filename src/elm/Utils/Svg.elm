@@ -27,11 +27,11 @@ module Utils.Svg exposing
     , y_
     )
 
-import Css.Style as Style exposing (Style)
 import Element
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
+import Utils.Svg.Style as Style exposing (Style)
 import Utils.Transform as Transform
 import Utils.Unit as Unit
 import Window exposing (Window, vh, vw)

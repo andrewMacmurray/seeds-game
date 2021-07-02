@@ -1,4 +1,4 @@
-module Css.Transition exposing
+module Utils.Svg.Transition exposing
     ( cubicBezier
     , delay
     , easeOut
@@ -6,7 +6,7 @@ module Css.Transition exposing
     , transition
     )
 
-import Css.Style as Style exposing (Style)
+import Utils.Svg.Style as Style exposing (Style)
 import Utils.Unit as Unit
 
 

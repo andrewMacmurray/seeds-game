@@ -1,4 +1,4 @@
-module Css.Style exposing
+module Utils.Svg.Style exposing
     ( Style
     , concat
     , opacity

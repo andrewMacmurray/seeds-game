@@ -3,8 +3,6 @@ module Scene.Intro.SunflowerMeadow exposing
     , view
     )
 
-import Css.Style as Style
-import Css.Transition as Transition
 import Element.Animations as Animations
 import Element.Flower.Sunflower as Sunflower
 import Html exposing (Html, div)
@@ -13,6 +11,8 @@ import Svg exposing (Svg)
 import Utils.Animated as Animated
 import Utils.Html.Style as Html
 import Utils.Svg as Svg exposing (..)
+import Utils.Svg.Style as Style
+import Utils.Svg.Transition as Transition
 import Utils.Transform as Transform
 import View.Landscape.RollingHills as Hills
 import Window exposing (Window)

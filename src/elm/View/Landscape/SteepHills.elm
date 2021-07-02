@@ -6,13 +6,13 @@ module View.Landscape.SteepHills exposing
     )
 
 import Axis2d
-import Css.Style as Style exposing (Style)
 import Direction2d
 import Geometry.Svg
 import Point2d
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
+import Utils.Svg.Style as Style exposing (Style)
 import Utils.Transform as Transform
 import Window exposing (Window)
 
