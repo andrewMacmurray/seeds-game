@@ -221,13 +221,37 @@ drawer options msg sceneOptions model =
         , paddingXY Scale.large Scale.extraSmall
         , Palette.seedPodBackground
         ]
-        [ buttons msg sceneOptions
+        [ buttons options msg sceneOptions
         , attribution
         ]
 
 
-buttons : (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg
-buttons msg sceneOptions =
+buttons : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg
+buttons options msg sceneOptions =
+    column
+        [ centerX
+        , centerY
+        , width fill
+        , spacing Scale.extraLarge
+        ]
+        [ sceneButtons msg sceneOptions
+        , resetButton options
+        ]
+
+
+resetButton : Options msg -> Element msg
+resetButton options =
+    Button.button
+        [ Button.hollow
+        , Button.fill
+        ]
+        { label = "Reset"
+        , onClick = options.onReset
+        }
+
+
+sceneButtons : (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg
+sceneButtons msg sceneOptions =
     column
         [ centerY
         , centerX
