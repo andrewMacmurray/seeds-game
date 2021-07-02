@@ -5,7 +5,6 @@ module Element.Icon.Heart exposing
     , static
     )
 
-import Css.Style as Style
 import Element exposing (..)
 import Element.Icon as Icon
 import Element.Palette as Palette
@@ -15,6 +14,7 @@ import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg as Svg
+import Utils.Svg.Style as Style
 
 
 

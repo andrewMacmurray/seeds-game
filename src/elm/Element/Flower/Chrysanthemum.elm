@@ -3,13 +3,13 @@ module Element.Flower.Chrysanthemum exposing
     , static
     )
 
-import Css.Style as Style
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg exposing (..)
+import Utils.Svg.Style as Style
 
 
 

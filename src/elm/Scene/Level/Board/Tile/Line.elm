@@ -4,7 +4,6 @@ module Scene.Level.Board.Tile.Line exposing
     , view
     )
 
-import Css.Transform as Transform
 import Element exposing (Color)
 import Game.Board.Move as Move exposing (Move)
 import Game.Board.Tile as Tile exposing (State(..), Tile(..))
@@ -15,6 +14,7 @@ import Scene.Level.Board.Tile.Stroke as Stroke
 import Seed exposing (Seed)
 import Utils.Html as Html
 import Utils.Html.Style as Style
+import Utils.Transform as Transform
 import Window exposing (Window)
 
 

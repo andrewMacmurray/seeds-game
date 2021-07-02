@@ -15,6 +15,7 @@ import Element.Background as Background
 import Element.Button as Button
 import Element.Flower as Flower
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Seed as Seed
@@ -23,7 +24,6 @@ import Exit exposing (continue, exit)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
-import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
@@ -34,7 +34,6 @@ import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
 import Utils.List as List
-import View.Menu as Menu
 
 
 
@@ -103,9 +102,9 @@ scrollToCurrentCompletedWorld =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view
+    Layout.scrollable
         [ inFront backToLevelsButton
         , inFront initialOverlay
         ]

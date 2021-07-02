@@ -1,4 +1,4 @@
-module View.Landscape.SteepHills exposing
+module Element.Legacy.Landscape.SteepHills exposing
     ( Element
     , behind
     , inFront
@@ -6,20 +6,19 @@ module View.Landscape.SteepHills exposing
     )
 
 import Axis2d
-import Css.Color exposing (Color)
-import Css.Style as Style exposing (Style)
-import Css.Transform as Transform
 import Direction2d
 import Geometry.Svg
 import Point2d
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
+import Utils.Svg.Style as Style exposing (Style)
+import Utils.Transform as Transform
 import Window exposing (Window)
 
 
 type alias Hill msg =
-    ( Color, List Style, List (Element msg) )
+    ( String, List Style, List (Element msg) )
 
 
 type alias Element msg =
@@ -67,7 +66,7 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
         ]
 
 
-hillFullScreen : Window -> Float -> Color -> List Style -> List (Element msg) -> Svg msg
+hillFullScreen : Window -> Float -> String -> List Style -> List (Element msg) -> Svg msg
 hillFullScreen window slope color hillStyles elements =
     Svg.svg
         [ y_ <| toFloat window.height / 2
@@ -97,7 +96,7 @@ renderHillElement slope el =
     translated el.distanceX ((el.distanceX * slope) - el.adjustY) el.element
 
 
-hill : Color -> List Style -> Float -> Svg msg
+hill : String -> List Style -> Float -> Svg msg
 hill color styles slope =
     Svg.polygon
         [ fill color

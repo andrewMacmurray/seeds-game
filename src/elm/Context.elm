@@ -1,6 +1,5 @@
 module Context exposing
     ( Context
-    , Menu(..)
     , cacheCurrentLives
     , clearCurrentLevel
     , closeMenu
@@ -16,22 +15,27 @@ module Context exposing
     , updateLives
     )
 
+import Element.Loading as Loading
+import Element.Menu as Menu
 import Game.Config.Level as Level
 import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives exposing (Lives)
 import Ports exposing (cacheLives)
 import Time
-import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
 import Window exposing (Window)
+
+
+
+-- Context
 
 
 type alias Context =
     { window : Window
-    , loadingScreen : LoadingScreen
+    , loading : Loading.Screen
     , progress : Progress
     , lives : Lives
     , successMessageIndex : Int
-    , menu : Menu
+    , menu : Menu.State
     }
 
 
@@ -85,40 +89,30 @@ cacheCurrentLives context =
         |> cacheLives
 
 
-
--- Menu
-
-
-type Menu
-    = Open
-    | Closed
-    | Disabled
-
-
 openMenu : Context -> Context
 openMenu context =
-    { context | menu = Open }
+    { context | menu = Menu.open }
 
 
 closeMenu : Context -> Context
 closeMenu context =
-    { context | menu = Closed }
+    { context | menu = Menu.closed }
 
 
 disableMenu : Context -> Context
 disableMenu context =
-    { context | menu = Disabled }
+    { context | menu = Menu.disabled }
 
 
 
 -- Loading Screen
 
 
-showLoadingScreen : LoadingScreen -> Context -> Context
-showLoadingScreen loadingScreen context =
-    { context | loadingScreen = loadingScreen }
+showLoadingScreen : Loading.Screen -> Context -> Context
+showLoadingScreen loading context =
+    { context | loading = loading }
 
 
 hideLoadingScreen : Context -> Context
 hideLoadingScreen context =
-    { context | loadingScreen = LoadingScreen.hidden }
+    { context | loading = Loading.hidden }

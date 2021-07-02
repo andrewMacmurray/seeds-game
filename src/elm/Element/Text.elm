@@ -6,6 +6,7 @@ module Element.Text exposing
     , f5
     , f6
     , fonts
+    , mediumSpaced
     , spaced
     , text
     , white
@@ -38,6 +39,11 @@ bold =
 wideSpaced : Attribute msg
 wideSpaced =
     Font.letterSpacing 5
+
+
+mediumSpaced : Attribute msg
+mediumSpaced =
+    Font.letterSpacing 4
 
 
 spaced : Attribute msg

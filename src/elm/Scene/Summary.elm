@@ -198,7 +198,7 @@ incrementProgress_ =
 -- View
 
 
-view : Model -> Html msg
+view : Model -> Layout.Scene msg
 view model =
     Layout.fadeIn
         [ Background.color (background model)

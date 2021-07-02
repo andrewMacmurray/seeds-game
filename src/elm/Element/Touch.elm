@@ -2,7 +2,6 @@ module Element.Touch exposing
     ( Point
     , onMove
     , onRelease
-    , onRelease_
     , onStart_
     , origin
     )

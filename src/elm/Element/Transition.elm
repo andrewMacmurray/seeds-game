@@ -1,6 +1,7 @@
 module Element.Transition exposing
     ( alpha
     , background
+    , transform
     )
 
 import Element exposing (htmlAttribute)
@@ -22,4 +23,12 @@ alpha duration =
         (Transition.properties
             [ Transition.opacity duration []
             ]
+        )
+
+
+transform : Transition.Millis -> Element.Attribute msg
+transform duration =
+    htmlAttribute
+        (Transition.properties
+            [ Transition.transform duration [] ]
         )

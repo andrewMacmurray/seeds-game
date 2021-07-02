@@ -19,6 +19,7 @@ import Element.Icon.Heart as Heart
 import Element.Icon.Triangle as Triangle
 import Element.Info as Info
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Seed as Seed
@@ -32,13 +33,11 @@ import Game.Config.World as Worlds
 import Game.Level.Progress as Progress
 import Game.Level.Tile as Tile exposing (TargetScore)
 import Game.Lives as Lives exposing (Lives)
-import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Seed exposing (Seed)
 import Utils.Element as Element
 import Utils.Sine as Sine
 import Utils.Time.Clock as Clock
-import View.Menu as Menu
 
 
 
@@ -155,9 +154,9 @@ scrollToLevel =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view
+    Layout.scrollable
         [ inFront (topBar model)
         , handleDismiss model
         , inFront (viewInfo model)

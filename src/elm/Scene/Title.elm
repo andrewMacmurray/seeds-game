@@ -15,19 +15,18 @@ import Element exposing (..)
 import Element.Animations as Animations
 import Element.Button as Button
 import Element.Layout as Layout
+import Element.Menu as Menu
 import Element.Scale as Scale
 import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Game.Level.Progress as Progress
-import Html exposing (Html)
 import Ports exposing (introMusicPlaying, playIntroMusic)
 import Seed
 import Simple.Animation as Animation
 import Utils.Animated as Animated
 import Utils.Element exposing (verticalGap)
 import Utils.Update as Update
-import View.Menu as Menu
 
 
 
@@ -131,9 +130,9 @@ subscriptions _ =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
-    Layout.view []
+    Layout.scene []
         (column [ height fill, width fill ]
             [ titleBanner model
             , verticalGap 1
@@ -192,7 +191,10 @@ playButton model =
 playButton_ : Model -> Element Msg
 playButton_ model =
     el [ centerX ]
-        (Button.button [ Button.orange ]
+        (Button.button
+            [ Button.orange
+            , Button.large
+            ]
             { label = "Play"
             , onClick = action model
             }

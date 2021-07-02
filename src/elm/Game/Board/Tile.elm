@@ -340,7 +340,7 @@ setDraggingBurstType : Tile -> State -> State
 setDraggingBurstType tileType tileState =
     case tileState of
         Dragging (Burst _) moveOrder_ bearing ->
-            Dragging (Burst <| Just tileType) moveOrder_ bearing
+            Dragging (Burst (Just tileType)) moveOrder_ bearing
 
         x ->
             x
@@ -406,7 +406,7 @@ setDraggingToStatic : State -> State
 setDraggingToStatic tileState =
     case tileState of
         Dragging tile _ _ ->
-            Static <| resetBurstType tile
+            Static (resetBurstType tile)
 
         x ->
             x

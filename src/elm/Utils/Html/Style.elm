@@ -2,22 +2,26 @@ module Utils.Html.Style exposing
     ( absolute
     , background
     , center
+    , fixed
+    , fullWidth
     , height
     , opacity
     , pointer
+    , relative
     , rounded
     , splitBackground
+    , top
     , transform
     , width
     , zIndex
     )
 
-import Css.Transform as Transform exposing (Transform)
 import Element
 import Html exposing (Attribute)
 import Html.Attributes exposing (style)
 import Utils.Background as Background
 import Utils.Color as Color
+import Utils.Transform as Transform exposing (Transform)
 import Utils.Unit as Unit
 
 
@@ -26,19 +30,34 @@ absolute =
     position_ "absolute"
 
 
+relative : Attribute msg
+relative =
+    position_ "relative"
+
+
+fixed : Attribute msg
+fixed =
+    position_ "fixed"
+
+
 width : Int -> Attribute msg
 width =
-    pixels_ "width"
+    px_ "width"
+
+
+fullWidth : Attribute msg
+fullWidth =
+    style "width" "100%"
 
 
 height : Int -> Attribute msg
 height =
-    pixels_ "height"
+    px_ "height"
 
 
 rounded : Int -> Attribute msg
 rounded =
-    pixels_ "border-radius"
+    px_ "border-radius"
 
 
 opacity : Float -> Attribute msg
@@ -53,7 +72,7 @@ pointer =
 
 transform : List Transform -> Attribute msg
 transform xs =
-    style "transform" (Transform.render xs)
+    style "transform" (Transform.toString xs)
 
 
 background : Element.Color -> Attribute msg
@@ -79,22 +98,22 @@ center =
 
 top : Int -> Attribute msg
 top =
-    pixels_ "top"
+    px_ "top"
 
 
 bottom : Int -> Attribute msg
 bottom =
-    pixels_ "bottom"
+    px_ "bottom"
 
 
 left : Int -> Attribute msg
 left =
-    pixels_ "left"
+    px_ "left"
 
 
 right : Int -> Attribute msg
 right =
-    pixels_ "right"
+    px_ "right"
 
 
 marginAuto : Attribute msg
@@ -116,6 +135,6 @@ position_ =
     style "position"
 
 
-pixels_ : String -> Int -> Attribute msg
-pixels_ prop n =
+px_ : String -> Int -> Attribute msg
+px_ prop n =
     style prop (Unit.px n)

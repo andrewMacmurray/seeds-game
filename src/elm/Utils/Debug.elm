@@ -1,5 +1,6 @@
 module Utils.Debug exposing
-    ( goToLevel
+    ( goToHub
+    , goToLevel
     , move
     , progress
     , setProgress
@@ -34,6 +35,11 @@ trigger msg ( model, cmd ) =
 goToLevel : Int -> Int -> (LevelConfig -> msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
 goToLevel world level msg ( model, cmd ) =
     ( model, Cmd.batch [ goToLevel_ world level msg, cmd ] )
+
+
+goToHub : Int -> Int -> (Level.Id -> msg) -> ( model, Cmd msg ) -> ( model, Cmd msg )
+goToHub world level msg ( model, cmd ) =
+    ( model, Cmd.batch [ Update.trigger (msg (Level.build_ world level)), cmd ] )
 
 
 goToLevel_ : Int -> Int -> (LevelConfig -> msg) -> Cmd msg

@@ -4,6 +4,7 @@ module Element.Seed exposing
     , fill
     , grey
     , grey_
+    , large
     , medium
     , size
     , small
@@ -52,6 +53,11 @@ size : Int -> Options
 size n =
     { size = Pixels n
     }
+
+
+large : Options
+large =
+    size 75
 
 
 medium : Options

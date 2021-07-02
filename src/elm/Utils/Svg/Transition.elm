@@ -1,15 +1,13 @@
-module Css.Transition exposing
+module Utils.Svg.Transition exposing
     ( cubicBezier
     , delay
-    , easeInOut
     , easeOut
     , linear
     , transition
-    , transitionAll
     )
 
-import Css.Style as Style exposing (Style)
-import Css.Unit exposing (cubicBezier_, ms)
+import Utils.Svg.Style as Style exposing (Style)
+import Utils.Unit as Unit
 
 
 type Option
@@ -25,17 +23,7 @@ transition prop duration options =
     , toStyles options
     ]
         |> List.concat
-        |> Style.compose
-
-
-transitionAll : Int -> List Option -> Style
-transitionAll =
-    transition "all"
-
-
-easeInOut : Option
-easeInOut =
-    option (transitionTimingFunction "ease-in-out")
+        |> Style.concat
 
 
 easeOut : Option
@@ -50,7 +38,7 @@ linear =
 
 cubicBezier : Float -> Float -> Float -> Float -> Option
 cubicBezier a b c d =
-    option (transitionTimingFunction (cubicBezier_ a b c d))
+    option (transitionTimingFunction (Unit.cubicBezier_ a b c d))
 
 
 delay : Int -> Option
@@ -64,12 +52,12 @@ delay =
 
 transitionDelay : Int -> Style
 transitionDelay n =
-    Style.property "transition-delay" (ms (toFloat n))
+    Style.property "transition-delay" (Unit.ms (toFloat n))
 
 
 transitionDuration : Int -> Style
 transitionDuration n =
-    Style.property "transition-duration" (ms (toFloat n))
+    Style.property "transition-duration" (Unit.ms (toFloat n))
 
 
 transitionTimingFunction : String -> Style

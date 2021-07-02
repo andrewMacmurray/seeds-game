@@ -1,22 +1,24 @@
-module Css.Transform exposing
+module Utils.Transform exposing
     ( Transform
-    , render
     , rotate
     , scale
+    , toString
     , translate
-    , translateX
     , translateY
     )
 
-import Css.Unit exposing (..)
+import Utils.Unit as Unit
+
+
+
+-- Transform
 
 
 type Transform
     = Translate XY
-    | TranslateX Float
     | TranslateY Float
     | Scale Float
-    | RotateZ Float
+    | Rotate Float
 
 
 type alias XY =
@@ -25,9 +27,8 @@ type alias XY =
     }
 
 
-render : List Transform -> String
-render =
-    List.map fromTransform >> String.join " "
+
+-- Construct
 
 
 scale : Float -> Transform
@@ -37,12 +38,7 @@ scale =
 
 translate : Float -> Float -> Transform
 translate x y =
-    Translate <| XY x y
-
-
-translateX : Float -> Transform
-translateX =
-    TranslateX
+    Translate (XY x y)
 
 
 translateY : Float -> Transform
@@ -52,23 +48,29 @@ translateY =
 
 rotate : Float -> Transform
 rotate =
-    RotateZ
+    Rotate
+
+
+
+-- To String
+
+
+toString : List Transform -> String
+toString =
+    List.map fromTransform >> String.join " "
 
 
 fromTransform : Transform -> String
 fromTransform ts =
     case ts of
-        RotateZ n ->
-            rotate_ "Z" n
+        Rotate n ->
+            rotate_ n
 
         Scale n ->
             scale_ n
 
         Translate { x, y } ->
             translate_ x y
-
-        TranslateX n ->
-            translateX_ n
 
         TranslateY n ->
             translateY_ n
@@ -84,19 +86,19 @@ translate_ x y =
     join [ "translate(", px x, ",", px y, ")" ]
 
 
-translateX_ : Float -> String
-translateX_ n =
-    join [ "translateX(", px n, ")" ]
-
-
 translateY_ : Float -> String
 translateY_ n =
     join [ "translateY(", px n, ")" ]
 
 
-rotate_ : String -> Float -> String
-rotate_ axis n =
-    join [ "rotate", axis, "(", deg n, ")" ]
+rotate_ : Float -> String
+rotate_ n =
+    join [ "rotateZ(", Unit.deg n, ")" ]
+
+
+px : Float -> String
+px =
+    Unit.px << round
 
 
 join : List String -> String

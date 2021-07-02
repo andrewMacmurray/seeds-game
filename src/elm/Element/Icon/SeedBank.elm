@@ -1,8 +1,5 @@
 module Element.Icon.SeedBank exposing (full, icon)
 
-import Css.Style as Style
-import Css.Transform exposing (translateY)
-import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
 import Element.Seed as Seed
@@ -11,6 +8,9 @@ import Simple.Animation as Animation
 import Svg exposing (Attribute)
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
+import Utils.Svg.Style as Style
+import Utils.Svg.Transition as Transition
+import Utils.Transform exposing (translateY)
 
 
 

@@ -6,9 +6,8 @@
     "deploy-production": "npm run build && firebase deploy -P production --token $FIREBASE_TOKEN",
     "deploy-staging:ci": "npm run build && firebase deploy -P staging --token $FIREBASE_TOKEN",
     "deploy-staging": "npm run build && firebase deploy -P staging",
-    "dev": "npm run css-build && parcel src/index.html",
-    "build": "npm run css-build && parcel build src/index.html",
-    "css-build": "postcss src/css/main.css --output assets/style.min.css",
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html",
     "review": "elm-review --fix-all",
     "review:check": "elm-review",
     "test": "elm-test"
@@ -25,7 +24,6 @@
   "homepage": "https://github.com/andrewMacmurray/seeds-game#readme",
   "devDependencies": {
     "@types/howler": "^2.2.2",
-    "autoprefixer": "^9.8.6",
     "elm": "^0.19.1-5",
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
@@ -35,14 +33,8 @@
     "firebase-tools": "^9.11.0",
     "howler": "^2.2.1",
     "node-elm-compiler": "^5.0.6",
-    "parcel-bundler": "^1.12.5",
+    "parcel-bundler": "^1.9.4",
     "pepjs": "^0.5.3",
-    "postcss-clean": "^1.2.2",
-    "postcss-cli": "^7.1.2",
-    "postcss-custom-media": "^7.0.8",
-    "postcss-custom-properties": "^9.2.0",
-    "postcss-import": "^12.0.1",
-    "tachyons-custom": "^4.9.8",
     "typescript": "^3.9.9"
   }
 }

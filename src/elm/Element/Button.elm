@@ -2,7 +2,10 @@ module Element.Button exposing
     ( Option
     , button
     , decorative
+    , fill
     , gold
+    , hollow
+    , large
     , orange
     , small
     , white
@@ -22,8 +25,14 @@ import Element.Text as Text
 
 
 type Option
-    = Color Color
-    | Size Size
+    = Size Size
+    | Sizing Sizing
+    | Background Background
+
+
+type Background
+    = Solid Color
+    | Hollow
 
 
 type Color
@@ -32,13 +41,15 @@ type Color
     | White
 
 
-type Fill
-    = Solid
-
-
 type Size
-    = Regular
+    = Large
+    | Regular
     | Small
+
+
+type Sizing
+    = Fit
+    | Fill
 
 
 
@@ -47,22 +58,42 @@ type Size
 
 orange : Option
 orange =
-    Color Orange
+    solid_ Orange
 
 
 gold : Option
 gold =
-    Color Gold
+    solid_ Gold
 
 
 white : Option
 white =
-    Color White
+    solid_ White
 
 
 small : Option
 small =
     Size Small
+
+
+large : Option
+large =
+    Size Large
+
+
+fill : Option
+fill =
+    Sizing Fill
+
+
+hollow : Option
+hollow =
+    Background Hollow
+
+
+solid_ : Color -> Option
+solid_ =
+    Background << Solid
 
 
 
@@ -78,9 +109,9 @@ type alias Combined_ msg =
 type alias Button_ msg =
     { label : String
     , onClick : Maybe msg
-    , color : Color
-    , fill : Fill
+    , background : Background
     , size : Size
+    , sizing : Sizing
     }
 
 
@@ -88,9 +119,9 @@ defaults : String -> Maybe msg -> Button_ msg
 defaults label msg =
     { label = label
     , onClick = msg
-    , color = Orange
-    , fill = Solid
+    , background = Solid Orange
     , size = Regular
+    , sizing = Fit
     }
 
 
@@ -102,11 +133,14 @@ combineOptions options btn =
 combineOption : Option -> Button_ msg -> Button_ msg
 combineOption option options =
     case option of
-        Color color ->
-            { options | color = color }
-
         Size size ->
             { options | size = size }
+
+        Sizing sizing ->
+            { options | sizing = sizing }
+
+        Background background ->
+            { options | background = background }
 
 
 
@@ -161,15 +195,61 @@ toElement button_ =
 
 attributes : Button_ msg -> List (Attribute msg)
 attributes button_ =
-    [ paddingXY Scale.medium Scale.small
+    [ toPadding button_
+    , toSizing button_
     , Background.color (toBackground button_)
+    , Border.color (toBorder button_)
+    , Border.width 2
     , Border.rounded 40
     ]
 
 
+toPadding : Button_ msg -> Attribute msg
+toPadding button_ =
+    case button_.size of
+        Large ->
+            paddingXY (Scale.medium + Scale.extraSmall) Scale.small
+
+        Regular ->
+            paddingXY Scale.medium Scale.small
+
+        Small ->
+            paddingXY Scale.small Scale.small
+
+
+toSizing : Button_ msg -> Attribute msg
+toSizing button_ =
+    case button_.sizing of
+        Fit ->
+            Element.width Element.shrink
+
+        Fill ->
+            Element.width Element.fill
+
+
+toBorder : Button_ msg -> Element.Color
+toBorder button_ =
+    case button_.background of
+        Hollow ->
+            Palette.white
+
+        Solid color_ ->
+            backgroundColor color_
+
+
 toBackground : Button_ msg -> Element.Color
 toBackground button_ =
-    case button_.color of
+    case button_.background of
+        Hollow ->
+            Palette.transparent
+
+        Solid color_ ->
+            backgroundColor color_
+
+
+backgroundColor : Color -> Element.Color
+backgroundColor color =
+    case color of
         Orange ->
             Palette.lightOrange
 
@@ -182,8 +262,11 @@ toBackground button_ =
 
 toColor : Button_ msg -> Element.Color
 toColor button_ =
-    case button_.color of
-        White ->
+    case button_.background of
+        Hollow ->
+            Palette.white
+
+        Solid White ->
             Palette.black
 
         _ ->
@@ -193,9 +276,14 @@ toColor button_ =
 toFontSize : Button_ msg -> List (Attribute msg)
 toFontSize button_ =
     case button_.size of
+        Large ->
+            [ Text.f4
+            , Text.wideSpaced
+            ]
+
         Regular ->
             [ Text.f5
-            , Text.wideSpaced
+            , Text.mediumSpaced
             ]
 
         Small ->
@@ -209,6 +297,7 @@ toLabel button_ =
     Text.text
         (List.append (toFontSize button_)
             [ Text.color (toColor button_)
+            , Element.centerX
             ]
         )
         (String.toUpper button_.label)

@@ -3,7 +3,6 @@ module Scene.Level.Board.Tile exposing
     , view
     )
 
-import Css.Transform as Transform
 import Element exposing (Color)
 import Element.Animation.Bounce as Bounce
 import Element.Dot as Dot
@@ -27,6 +26,7 @@ import Simple.Animation.Property as P
 import Simple.Transition as Transition
 import Utils.Html as Html
 import Utils.Html.Style as Style
+import Utils.Transform as Transform
 import Window exposing (Window)
 
 

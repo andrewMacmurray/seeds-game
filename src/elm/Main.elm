@@ -3,17 +3,16 @@ module Main exposing (main)
 import Browser
 import Browser.Events as Browser
 import Context exposing (Context)
-import Css.Color as Color
-import Css.Style exposing (backgroundColor, style)
 import Delay
+import Element.Layout as Layout
+import Element.Loading as LoadingScreen exposing (Screen)
+import Element.Menu as Menu
 import Exit
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives
-import Html exposing (Html, div)
-import Html.Attributes exposing (class)
-import Html.Keyed as Keyed
+import Html exposing (Html)
 import Ports
 import Scene.Garden as Garden
 import Scene.Hub as Hub
@@ -24,9 +23,6 @@ import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
-import View.Animation exposing (animations)
-import View.LoadingScreen as LoadingScreen exposing (LoadingScreen)
-import View.Menu as Menu
 import Window exposing (Window)
 
 
@@ -89,10 +85,10 @@ type Msg
     | InitGarden
     | ShowLoadingScreen
     | HideLoadingScreen
-    | OpenMenu
-    | CloseMenu
-    | LoadingScreenGenerated LoadingScreen
-    | ResetData
+    | OpenMenuClicked
+    | CloseMenuClicked
+    | LoadingScreenGenerated Screen
+    | ResetDataClicked
     | WindowSize Int Int
     | UpdateLives Time.Posix
     | GoToHub Level.Id
@@ -119,11 +115,11 @@ initialState titleModel =
 initialContext : Flags -> Context
 initialContext flags =
     { window = flags.window
-    , loadingScreen = LoadingScreen.hidden
+    , loading = LoadingScreen.hidden
     , progress = Progress.init flags.progress
     , lives = Lives.init (millisToPosix flags.now) flags.lives
     , successMessageIndex = flags.randomMessageIndex
-    , menu = Context.Closed
+    , menu = Menu.closed
     }
 
 
@@ -132,8 +128,13 @@ initialContext flags =
 
 
 getContext : Model -> Context
-getContext model =
-    case model.scene of
+getContext =
+    .scene >> getContext_
+
+
+getContext_ : Scene -> Context
+getContext_ scene =
+    case scene of
         Title model_ ->
             Update.context model_
 
@@ -246,16 +247,16 @@ update msg ({ scene, backdrop } as model) =
         ( HideLoadingScreen, _, _ ) ->
             ( updateContext Context.hideLoadingScreen model, Cmd.none )
 
-        ( OpenMenu, _, _ ) ->
+        ( OpenMenuClicked, _, _ ) ->
             ( updateContext Context.openMenu model, Cmd.none )
 
-        ( CloseMenu, _, _ ) ->
+        ( CloseMenuClicked, _, _ ) ->
             ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
             ( model, withLoadingScreen (InitHub level) )
 
-        ( ResetData, _, _ ) ->
+        ( ResetDataClicked, _, _ ) ->
             ( model, Ports.clearCache )
 
         ( WindowSize width height, _, _ ) ->
@@ -579,10 +580,8 @@ goToHubReachedLevel =
 
 
 updateLives : Time.Posix -> Model -> ( Model, Cmd Msg )
-updateLives now model =
-    model
-        |> updateContext (Context.updateLives now)
-        |> andCmd saveCurrentLives
+updateLives now =
+    updateContext (Context.updateLives now) >> andCmd saveCurrentLives
 
 
 closeMenu : ( Model, Cmd msg ) -> ( Model, Cmd msg )
@@ -661,88 +660,93 @@ sceneSubscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ animations
-        , LoadingScreen.view (getContext model)
-        , menu model.scene
-        , stage
-            [ viewBackdrop model.backdrop
-            , viewScene model.scene
-            ]
-        , background
-        ]
+    Layout.view
+        { menu = viewMenu model
+        , loading = viewLoading model
+        , scene = viewScene model.scene
+        , backdrop = viewBackdrop model.backdrop
+        }
 
 
-stage : List (List ( String, Html msg )) -> Html msg
-stage =
-    Keyed.node "div" [] << List.concat
-
-
-viewBackdrop : Maybe Scene -> List ( String, Html Msg )
+viewBackdrop : Maybe Scene -> Maybe ( String, Layout.Scene Msg )
 viewBackdrop =
-    Maybe.map viewScene >> Maybe.withDefault []
+    Maybe.map viewScene
 
 
-viewScene : Scene -> List ( String, Html Msg )
+viewScene : Scene -> ( String, Layout.Scene Msg )
 viewScene scene =
     case scene of
         Hub model ->
-            [ ( "hub", Hub.view model |> Html.map HubMsg ) ]
+            ( "hub", Layout.map HubMsg (Hub.view model) )
 
         Intro model ->
-            [ ( "intro", Intro.view model |> Html.map IntroMsg ) ]
+            ( "intro", Layout.map IntroMsg (Intro.view model) )
 
         Title model ->
-            [ ( "title", Title.view model |> Html.map TitleMsg ) ]
+            ( "title", Layout.map TitleMsg (Title.view model) )
 
         Level model ->
-            [ ( "level", Level.view model |> Html.map LevelMsg ) ]
+            ( "level", Layout.map LevelMsg (Level.view model) )
 
         Summary model ->
-            [ ( "summary", Summary.view model |> Html.map SummaryMsg ) ]
+            ( "summary", Layout.map SummaryMsg (Summary.view model) )
 
         Retry model ->
-            [ ( "retry", Retry.view model |> Html.map RetryMsg ) ]
+            ( "retry", Layout.map RetryMsg (Retry.view model) )
 
         Garden model ->
-            [ ( "garden", Garden.view model |> Html.map GardenMsg ) ]
+            ( "garden", Layout.map GardenMsg (Garden.view model) )
+
+
+
+-- Loading
+
+
+viewLoading : Model -> Layout.Overlay msg
+viewLoading model =
+    loading (getContext model)
+
+
+loading : Context -> Layout.Overlay msg
+loading context =
+    LoadingScreen.view
+        { progress = context.progress
+        , loading = context.loading
+        }
 
 
 
 -- Menu
 
 
-menu : Scene -> Html Msg
-menu scene =
-    let
-        renderMenu =
-            Menu.view
-                { close = CloseMenu
-                , open = OpenMenu
-                , resetData = ResetData
-                }
-    in
-    case scene of
-        Title model ->
-            renderMenu model.context TitleMsg Title.menuOptions
+viewMenu : Model -> Layout.Overlay Msg
+viewMenu model =
+    sceneMenu model.scene (getContext model)
 
-        Hub model ->
-            renderMenu model.context HubMsg Hub.menuOptions
+
+sceneMenu : Scene -> Menu.Model model -> Layout.Overlay Msg
+sceneMenu scene =
+    case scene of
+        Title _ ->
+            menu_ TitleMsg Title.menuOptions
+
+        Hub _ ->
+            menu_ HubMsg Hub.menuOptions
 
         Level model ->
-            renderMenu model.context LevelMsg (Level.menuOptions model)
+            menu_ LevelMsg (Level.menuOptions model)
 
-        Garden model ->
-            renderMenu model.context GardenMsg Garden.menuOptions
+        Garden _ ->
+            menu_ GardenMsg Garden.menuOptions
 
         _ ->
-            Menu.fadeOut
+            always Menu.hidden
 
 
-background : Html msg
-background =
-    div
-        [ style [ backgroundColor Color.lightYellow ]
-        , class "fixed w-100 h-100 top-0 left-0 z-0"
-        ]
-        []
+menu_ : (sceneMsg -> Msg) -> List (Menu.Option sceneMsg) -> Menu.Model model -> Layout.Overlay Msg
+menu_ =
+    Menu.view
+        { onClose = CloseMenuClicked
+        , onOpen = OpenMenuClicked
+        , onReset = ResetDataClicked
+        }

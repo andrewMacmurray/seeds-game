@@ -18,7 +18,6 @@ import Element.Scale as Scale
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Game.Lives as Lives
-import Html exposing (..)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Utils.Animated as Animated
@@ -78,7 +77,7 @@ update msg model =
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Layout.Scene Msg
 view model =
     Layout.fadeIn []
         (column
