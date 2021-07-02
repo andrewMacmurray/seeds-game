@@ -22,7 +22,6 @@ module Utils.Svg exposing
     , viewBox_
     , width_
     , window
-    , windowViewBox_
     , x_
     , y_
     )
