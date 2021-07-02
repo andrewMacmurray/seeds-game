@@ -3,8 +3,8 @@ module Scene.Level.Tutorial exposing
     , view
     )
 
-import Css.Color as Color
 import Element exposing (Element, behindContent)
+import Element.Palette as Palette
 import Element.Text as Text
 import Element.Transition as Transition
 import Game.Board as Board
@@ -15,7 +15,7 @@ import Scene.Level.Board as Board
 import Scene.Level.Board.Tile.Position as Position
 import Scene.Level.Board.Tile.Scale as Scale
 import Svg exposing (Svg)
-import Svg.Attributes exposing (fill, fillOpacity, id, mask)
+import Svg.Attributes exposing (fillOpacity, id, mask)
 import Utils.Element as Element
 import Utils.Svg as Svg exposing (..)
 import Window exposing (Window)
@@ -141,7 +141,7 @@ remainingMovesHighlight model =
     case model.highlight of
         Tutorial.RemainingMoves ->
             [ Svg.circle
-                [ fill Color.black
+                [ fill_ Palette.black
                 , cx_ left
                 , cy_ (Board.scoreIconSize + 12)
                 , r_ (Board.scoreIconSize + 5)
@@ -158,7 +158,7 @@ highlightCenterSeedBank model =
     case model.highlight of
         Tutorial.SeedBank ->
             [ Svg.circle
-                [ fill Color.black
+                [ fill_ Palette.black
                 , cx_ (toFloat model.window.width / 2)
                 , cy_ (Board.scoreIconSize + 10)
                 , r_ (Board.scoreIconSize + 3)
@@ -175,7 +175,7 @@ maskBackground model =
     Svg.rect
         [ width_ (toFloat model.window.width)
         , height_ (toFloat model.window.height)
-        , fill Color.white
+        , Svg.fill_ Palette.white
         ]
         []
 
@@ -218,7 +218,7 @@ connectingBlock model =
                     tileSize model
             in
             [ Svg.rect
-                [ fill Color.black
+                [ fill_ Palette.black
                 , x_ (p1.x + left - (width / 2))
                 , y_ (p1.y + top - height)
                 , width_ (p2.x - p1.x + width)
@@ -242,7 +242,7 @@ connectingBlock model =
                     tileSize model
             in
             [ Svg.rect
-                [ fill Color.black
+                [ fill_ Palette.black
                 , x_ (p1.x + left - width)
                 , y_ (p1.y + top - (height / 2))
                 , height_ (p2.y - p1.y + height)
@@ -271,7 +271,7 @@ moveHighlight model coord =
             tileSize model
     in
     Svg.ellipse
-        [ fill Color.black
+        [ fill_ Palette.black
         , rx_ (width / 2)
         , ry_ (height / 2)
         , cx_ (x + left - (width / 2))

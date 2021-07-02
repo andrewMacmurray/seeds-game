@@ -1,13 +1,14 @@
 module Element.Icon.Triangle exposing (hovering)
 
-import Css.Color exposing (lightGold)
 import Element exposing (Element)
 import Element.Icon as Icon
+import Element.Palette as Palette
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
+import Utils.Svg as Svg
 
 
 
@@ -42,7 +43,7 @@ icon =
         ]
         [ Svg.path
             [ d "M9 18l9-18H0z"
-            , fill lightGold
+            , Svg.fill_ Palette.lightGold
             , fillRule "evenodd"
             ]
             []

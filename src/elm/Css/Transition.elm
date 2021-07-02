@@ -23,7 +23,7 @@ transition prop duration options =
     , toStyles options
     ]
         |> List.concat
-        |> Style.compose
+        |> Style.concat
 
 
 easeOut : Option

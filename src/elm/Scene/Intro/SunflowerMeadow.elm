@@ -9,11 +9,13 @@ import Css.Transition as Transition
 import Element.Animations as Animations
 import Element.Flower.Sunflower as Sunflower
 import Html exposing (Html, div)
+import Html.Attributes
 import Simple.Animation as Animation exposing (Animation)
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
 import Utils.Svg exposing (..)
+import Utils.Unit as Unit
 import View.Landscape.RollingHills as Hills
 import Window exposing (Window)
 
@@ -29,7 +31,7 @@ view window state =
     div []
         [ div
             [ class "z-5 center relative"
-            , Style.style [ Style.width 200 ]
+            , Html.Attributes.style "width" (Unit.px 200)
             ]
             [ Sunflower.animated 0 ]
         , hills window state

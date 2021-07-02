@@ -4,7 +4,6 @@ module View.Landscape.RollingHills exposing
     , element
     )
 
-import Css.Color exposing (Color)
 import Css.Style as Style
 import Css.Transform as Transform
 import Svg exposing (Svg)
@@ -20,7 +19,7 @@ type alias Element msg =
     }
 
 
-doubleLayer : Window -> ( Color, List (Element msg) ) -> ( Color, List (Element msg) ) -> Svg msg
+doubleLayer : Window -> ( String, List (Element msg) ) -> ( String, List (Element msg) ) -> Svg msg
 doubleLayer =
     doubleLayerWithCurve_ 1
 
@@ -48,7 +47,7 @@ element =
 
 
 type alias Hill msg =
-    { color : Color
+    { color : String
     , elements : List (Element msg)
     , side : Side
     , curve : Float
@@ -113,7 +112,7 @@ sideToCx window side =
             toFloat window.width
 
 
-hill : Color -> Float -> Float -> Float -> Svg msg
+hill : String -> Float -> Float -> Float -> Svg msg
 hill color r cx cy =
     Svg.circle
         [ cx_ cx

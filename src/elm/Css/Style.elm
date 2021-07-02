@@ -1,21 +1,16 @@
 module Css.Style exposing
     ( Style
-    , compose
+    , concat
     , opacity
     , property
-    , style
     , svg
     , transform
     , transformOrigin
-    , width
     )
 
 import Css.Transform as Transform exposing (Transform)
-import Html
-import Html.Attributes
 import Svg
 import Svg.Attributes
-import Utils.Unit as Unit
 
 
 type Style
@@ -28,18 +23,9 @@ property =
     Property
 
 
-compose : List Style -> Style
-compose =
+concat : List Style -> Style
+concat =
     Raw << renderStyles_
-
-
-
--- Html
-
-
-style : List Style -> Html.Attribute msg
-style =
-    Html.Attributes.attribute "style" << renderStyles_
 
 
 
@@ -101,15 +87,6 @@ transformOrigin =
     property "transform-origin"
 
 
-width : Float -> Style
-width n =
-    property "width" (Unit.px (round n))
-
-
 opacity : Float -> Style
 opacity o =
     property "opacity" (String.fromFloat o)
-
-
-
--- Class Helpers
