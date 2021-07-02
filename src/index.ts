@@ -14,8 +14,8 @@ function init() {
       playIntroMusic,
       introMusicPlaying,
       fadeMusic,
-      cacheProgress,
-      cacheLives,
+      saveProgress,
+      saveLives,
       clearCache_,
       scrollToCenter,
     }
@@ -31,8 +31,8 @@ function init() {
     Audio.longFade(introMusic);
   });
   
-  cacheProgress.subscribe((progress) => {
-    Cache.setProgress(progress);
+  saveProgress.subscribe((progress) => {
+    Cache.saveProgress(progress);
   });
   
   clearCache_.subscribe(() => {
@@ -40,8 +40,8 @@ function init() {
     window.location.reload();
   });
   
-  cacheLives.subscribe((times) => {
-    Cache.setLives(times);
+  saveLives.subscribe((times) => {
+    Cache.saveLives(times);
   });
   
   scrollToCenter.subscribe((id) => {

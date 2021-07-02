@@ -26,7 +26,7 @@ import Game.Board.Tile as Tile exposing (Tile)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Tile as Tile exposing (TargetScore(..))
-import Ports
+import Ports.Cache as Cache
 import Seed exposing (Seed)
 import Utils.Dict as Dict
 import Utils.List
@@ -58,7 +58,7 @@ type Position
 
 save : Progress -> Cmd msg
 save =
-    toCache >> Ports.cacheProgress
+    toCache >> Cache.saveProgress
 
 
 toCache : Progress -> Level.Cache

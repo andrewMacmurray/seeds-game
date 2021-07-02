@@ -21,7 +21,7 @@ import Element.Seed as Seed
 import Element.Text as Text
 import Exit exposing (continue, exitWith)
 import Game.Level.Progress as Progress
-import Ports exposing (introMusicPlaying, playIntroMusic)
+import Ports.Audio as Audio
 import Seed
 import Simple.Animation as Animation
 import Utils.Animated as Animated
@@ -97,7 +97,7 @@ update msg model =
             continue { model | fade = Disappearing } []
 
         PlayIntro ->
-            continue (Update.withContext Context.disableMenu model) [ playIntroMusic () ]
+            continue (Update.withContext Context.disableMenu model) [ Audio.playIntro ]
 
         IntroMusicPlaying ->
             continue model
@@ -123,7 +123,7 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    introMusicPlaying (always IntroMusicPlaying)
+    Audio.onIntroStarted IntroMusicPlaying
 
 
 

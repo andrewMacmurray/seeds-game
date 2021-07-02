@@ -4,8 +4,8 @@ module Game.Lives exposing
     , decrement
     , init
     , remaining
+    , save
     , timeTillNextLife
-    , toCache
     , update
     , view
     )
@@ -13,6 +13,7 @@ module Game.Lives exposing
 import Element exposing (..)
 import Element.Icon.Heart as Heart
 import Element.Scale as Scale
+import Ports.Cache as Cache
 import Time
 import Utils.Time as Time
 import Utils.Time.Clock as Clock exposing (Clock)
@@ -33,6 +34,15 @@ type alias Cache =
 
 
 
+-- Save
+
+
+save : Lives -> Cmd msg
+save (Lives cache) =
+    Cache.saveLives cache
+
+
+
 -- Life State
 
 
@@ -47,11 +57,6 @@ init now cache =
                 { lastPlayed = Time.posixToMillis now
                 , timeTillNextLife = 0
                 }
-
-
-toCache : Lives -> Cache
-toCache (Lives cache) =
-    cache
 
 
 update : Time.Posix -> Lives -> Lives

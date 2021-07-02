@@ -1,6 +1,5 @@
 module Context exposing
     ( Context
-    , cacheCurrentLives
     , clearCurrentLevel
     , closeMenu
     , decrementLife
@@ -9,6 +8,7 @@ module Context exposing
     , incrementProgress
     , nextMessage
     , openMenu
+    , saveCurrentLives
     , setCurrentLevel
     , setWindow
     , showLoadingScreen
@@ -20,7 +20,6 @@ import Element.Menu as Menu
 import Game.Config.Level as Level
 import Game.Level.Progress as Progress exposing (Progress)
 import Game.Lives as Lives exposing (Lives)
-import Ports exposing (cacheLives)
 import Time
 import Window exposing (Window)
 
@@ -82,11 +81,9 @@ decrementLife context =
     { context | lives = Lives.decrement context.lives }
 
 
-cacheCurrentLives : Context -> Cmd msg
-cacheCurrentLives context =
-    context.lives
-        |> Lives.toCache
-        |> cacheLives
+saveCurrentLives : Context -> Cmd msg
+saveCurrentLives context =
+    Lives.save context.lives
 
 
 openMenu : Context -> Context
