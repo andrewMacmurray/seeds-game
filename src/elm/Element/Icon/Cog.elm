@@ -1,9 +1,10 @@
-module Element.Icon.Cog exposing (icon)
+module Element.Icon.Cog exposing (active, inactive)
 
 import Css.Style as Style
 import Css.Transition as Transition
 import Element exposing (Element)
 import Element.Icon as Icon
+import Element.Palette as Palette
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Svg as Svg
@@ -11,6 +12,16 @@ import Utils.Svg as Svg
 
 
 -- Cog
+
+
+active : Element msg
+active =
+    icon Palette.white
+
+
+inactive : Element msg
+inactive =
+    icon Palette.darkYellow
 
 
 icon : Element.Color -> Element msg

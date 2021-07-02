@@ -1,5 +1,6 @@
 module View.Menu exposing
-    ( Option
+    ( Model
+    , Option
     , Options
     , State
     , closed
@@ -12,10 +13,16 @@ module View.Menu exposing
 
 import Element exposing (..)
 import Element.Animations as Animations
+import Element.Background as Background
+import Element.Events exposing (onClick)
 import Element.Icon.Cog as Cog
 import Element.Palette as Palette
 import Element.Scale as Scale
+import Element.Text as Text
+import Element.Transition as Transition
+import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
+import Utils.Element as Element
 import Window exposing (Window)
 
 
@@ -95,203 +102,160 @@ hidden =
         , alignRight
         , padding Scale.medium
         ]
-        (Cog.icon Palette.darkYellow)
+        Cog.inactive
 
 
+fadeOut : Animation.Millis -> Animation
 fadeOut duration =
     Animations.fadeOut duration []
 
 
-view : Options msg -> Model model -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg
-view options model sceneMsg sceneSpecificOptions =
-    --Debug.todo ""
-    none
+view : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Element msg
+view options msg sceneOptions model =
+    el
+        [ width fill
+        , height fill
+        , behindContent (overlay options model)
+        ]
+        (el
+            [ alignTop
+            , alignRight
+            , height fill
+            , inFront (cog options model)
+            ]
+            (drawer options msg sceneOptions model)
+        )
+
+
+overlay : Options msg -> Model model -> Element msg
+overlay options model =
+    el
+        [ width fill
+        , height fill
+        , Background.color Palette.black
+        , Transition.alpha 300
+        , handleOverlayClick options model
+        , overlayAlpha model
+        ]
+        none
+
+
+handleOverlayClick : Options msg -> Model model -> Attribute msg
+handleOverlayClick options model =
+    case model.menu of
+        Open ->
+            onClick options.onClose
+
+        _ ->
+            Element.disableTouch
+
+
+overlayAlpha : Model model -> Attribute msg
+overlayAlpha model =
+    case model.menu of
+        Open ->
+            alpha 0.6
+
+        _ ->
+            alpha 0
+
+
+cog : Options msg -> Model model -> Element msg
+cog options model =
+    el
+        [ alignRight
+        , pointer
+        , handleCogClick options model
+        , cogRotation model
+        , Transition.transform 300
+        , padding Scale.medium
+        ]
+        (cog_ model)
+
+
+cogRotation : Model model -> Attribute msg
+cogRotation model =
+    case model.menu of
+        Open ->
+            rotate (degrees 180)
+
+        _ ->
+            rotate 0
+
+
+cog_ : Model model -> Element msg
+cog_ model =
+    case model.menu of
+        Open ->
+            Cog.active
+
+        _ ->
+            Cog.inactive
+
+
+handleCogClick : Options msg -> Model model -> Attribute msg
+handleCogClick options model =
+    case model.menu of
+        Open ->
+            onClick options.onClose
+
+        Closed ->
+            onClick options.onOpen
+
+        Disabled ->
+            Element.empty
+
+
+drawer : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Element msg
+drawer options msg sceneOptions model =
+    column
+        [ width (px drawerWidth)
+        , drawerOffset model
+        , onClick options.onOpen
+        , Transition.transform 300
+        , height fill
+        , alignRight
+        , Palette.seedPodBackground
+        ]
+        [ attribution
+        ]
+
+
+drawerOffset : Model model -> Attribute msg
+drawerOffset model =
+    case model.menu of
+        Open ->
+            moveRight 0
+
+        _ ->
+            moveRight drawerWidth
+
+
+drawerWidth : number
+drawerWidth =
+    240
 
 
 
---    div []
---        [ div
---            [ class "fixed pointer right-1 top-1 z-9"
---            , withDisable model.menu
---            , style [ animation "fade-in" 500 ]
---            ]
---            [ menuDrawerButton options model ]
---        , div [ class "fixed z-8 top-0", enableWhenOpen model.menu ]
---            [ overlay options model
---            , drawer options model sceneMsg sceneSpecificOptions
---            ]
---        ]
---
---
---overlay : Options msg -> Model model -> Html msg
---overlay msg model =
---    let
---        visibility =
---            case model.menu of
---                Open ->
---                    opacity 0.6
---
---                _ ->
---                    opacity 0
---    in
---    div
---        [ style
---            [ height (toFloat model.window.height)
---            , width (toFloat model.window.width)
---            , backgroundColor Color.black
---            , visibility
---            , transitionAll 300 []
---            ]
---        , enableWhenOpen model.menu
---        , onClick msg.onClose
---        ]
---        []
---
---
---drawer : Options msg -> Model model -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Html msg
---drawer options model sceneMsg sceneMenuOptions =
---    let
---        drawerWidth =
---            240
---
---        renderSceneButton =
---            renderOption >> Html.map sceneMsg
---
---        drawerOffset =
---            case model.menu of
---                Open ->
---                    transform [ translateX 0 ]
---
---                _ ->
---                    transform [ translateX drawerWidth ]
---
---        resetButtonMargin =
---            if List.length sceneMenuOptions == 0 then
---                0
---
---            else
---                75
---    in
---    div
---        [ style
---            [ Style.background Color.seedPodGradient
---            , height (toFloat model.window.height)
---            , color Color.white
---            , width drawerWidth
---            , drawerOffset
---            , transitionAll 300 []
---            ]
---        , attribute "touch-action" "none"
---        , class "absolute right-0 top-0 flex flex-column items-center justify-center"
---        ]
---        (List.concat
---            [ List.map renderSceneButton sceneMenuOptions
---            , [ div [ style [ marginTop resetButtonMargin ] ] [ menuButtonBorder options.onReset "Reset Data" ]
---              , attributionLink
---              , closeMenuCaptureArea options
---              ]
---            ]
---        )
---
---
---closeMenuCaptureArea : Options msg -> Html msg
---closeMenuCaptureArea msg =
---    div
---        [ class "w-100 h-100 z-6 absolute top-0 left-0"
---        , Touch.onRelease_ msg.onClose
---        ]
---        []
---
---
---attributionLink : Html msg
---attributionLink =
---    a
---        [ style [ color Color.white ]
---        , class "absolute db bottom-1 z-9 left-1 f7 ma0 no-underline"
---        , href "https://github.com/andrewMacmurray/seeds-game"
---        , target "_blank"
---        ]
---        [ text "A game by Andrew MacMurray" ]
---
---
---withDisable : State -> Attribute msg
---withDisable menu =
---    case menu of
---        Disabled ->
---            class "touch-disabled"
---
---        _ ->
---            Attribute.empty
---
---
---renderOption : Option msg -> Html msg
---renderOption (Option { msg, text }) =
---    menuButtonSolid msg Color.white Color.lightGold text
---
---
---enableWhenOpen : State -> Attribute msg
---enableWhenOpen menu =
---    case menu of
---        Open ->
---            Attribute.empty
---
---        _ ->
---            class "touch-disabled"
---
---
---menuButtonSolid : msg -> Color.Color -> Color.Color -> String -> Html msg
---menuButtonSolid msg textColor bgColor content =
---    button
---        [ style
---            [ borderNone
---            , backgroundColor bgColor
---            , width 150
---            , color textColor
---            ]
---        , class "outline-0 relative z-9 br4 f6 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
---        , onClick msg
---        ]
---        [ text content ]
---
---
---menuButtonBorder : msg -> String -> Html msg
---menuButtonBorder msg content =
---    button
---        [ style
---            [ border 2 Color.white
---            , width 150
---            , backgroundColor Color.transparent
---            , color Color.white
---            ]
---        , class "outline-0 relative z-9 br4 pv2 ph3 mv2 ttu pointer sans-serif tracked-mega"
---        , onClick msg
---        ]
---        [ text content ]
---
---
---menuDrawerButton : Options msg -> Model model -> Html msg
---menuDrawerButton { onOpen, onClose } model =
---    case model.menu of
---        Open ->
---            div
---                [ onClick onClose
---                , style
---                    [ transform [ Transform.rotate 0 ]
---                    , width 20
---                    , height 20
---                    , transitionAll 300 []
---                    ]
---                ]
---                [ Cog.icon Color.white ]
---
---        _ ->
---            div
---                [ onClick onOpen
---                , style
---                    [ transform [ Transform.rotate 180 ]
---                    , width 20
---                    , height 20
---                    , transitionAll 300 []
---                    ]
---                ]
---                [ Cog.icon Color.darkYellow ]
+-- Attribution
+
+
+attribution : Element msg
+attribution =
+    newTabLink
+        [ centerY
+        , alignRight
+        ]
+        { url = "https://github.com/andrewMacmurray/seeds-game"
+        , label = attribution_
+        }
+
+
+attribution_ : Element msg
+attribution_ =
+    Text.text
+        [ Text.white
+        , padding Scale.medium
+        , Text.f6
+        ]
+        "A game by Andrew MacMurray"

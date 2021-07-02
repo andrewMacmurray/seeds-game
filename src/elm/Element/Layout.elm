@@ -19,6 +19,8 @@ import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Utils.Element as Element
 import Utils.Html.Style as Style
+import View.Menu as Menu
+import Window exposing (Window)
 
 
 
@@ -27,7 +29,7 @@ import Utils.Html.Style as Style
 
 type alias Layout msg =
     { model : Model
-    , menu : Element msg
+    , menu : Menu.Model Model -> Element msg
     , scene : ( String, Scene msg )
     , backdrop : Maybe ( String, Scene msg )
     }
@@ -36,6 +38,8 @@ type alias Layout msg =
 type alias Model =
     { loading : Loading.Screen
     , progress : Progress
+    , menu : Menu.State
+    , window : Window
     }
 
 
@@ -93,11 +97,52 @@ view : Layout msg -> Html msg
 view layout =
     div []
         [ loadingScreen layout.model
+        , menu layout
         , stage
             [ viewBackdrop layout.backdrop
             , viewScene layout.scene
             ]
         ]
+
+
+
+-- Loading Screen
+
+
+loadingScreen : Model -> Html msg
+loadingScreen model =
+    floating { index = 5 } (loadingScreen_ model)
+
+
+loadingScreen_ : Model -> Element msg
+loadingScreen_ context =
+    Loading.view
+        { progress = context.progress
+        , loading = context.loading
+        }
+
+
+
+-- Menu
+
+
+menu : Layout msg -> Html msg
+menu layout =
+    floating { index = 4 } (menu_ layout)
+
+
+menu_ : Layout msg -> Element msg
+menu_ layout =
+    layout.menu layout.model
+
+
+
+-- Scene
+
+
+stage : List (List ( String, Html msg )) -> Html msg
+stage =
+    Keyed.node "div" [] << List.concat
 
 
 viewScene : ( a, Scene msg ) -> List ( a, Html msg )
@@ -119,11 +164,6 @@ viewScene_ (Scene scene_) =
         view_ scene_.attributes scene_.el
 
 
-stage : List (List ( String, Html msg )) -> Html msg
-stage =
-    Keyed.node "div" [] << List.concat
-
-
 view_ : List (Attribute msg) -> Element msg -> Html msg
 view_ attrs =
     Element.layoutWith secondary
@@ -140,13 +180,13 @@ view_ attrs =
         )
 
 
-extra_ : Int -> Element msg -> Html msg
-extra_ order =
+floating : { index : Int } -> Element msg -> Html msg
+floating { index } =
     Element.layoutWith primary
         [ width fill
         , height fill
         , Element.style "position" "absolute"
-        , Element.style "z-index" (String.fromInt order)
+        , Element.style "z-index" (String.fromInt index)
         , Element.class "overflow-y-scroll momentum-scroll"
         , Element.disableTouch
         , Text.fonts
@@ -164,25 +204,16 @@ fadeIn_ attributes el =
         [ view_ attributes el ]
 
 
-loadingScreen : Model -> Html msg
-loadingScreen model =
-    extra_ 5 (loadingScreen_ model)
-
-
-loadingScreen_ : Model -> Element msg
-loadingScreen_ context =
-    Loading.view
-        { progress = context.progress
-        , loading = context.loading
-        }
-
-
 fade_ : Animation
 fade_ =
     Animations.fadeIn 1000
         [ Animation.linear
         , Animation.delay 200
         ]
+
+
+
+-- Layout Options
 
 
 primary : { options : List Option }

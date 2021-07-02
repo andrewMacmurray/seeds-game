@@ -22,7 +22,6 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
-import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import View.Menu as Menu
 import Window exposing (Window)
@@ -105,7 +104,6 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
-        |> Debug.goToHub 1 1 InitHub
 
 
 initialState : Title.Model -> Model
@@ -675,6 +673,8 @@ layoutModel : Model -> Layout.Model
 layoutModel model =
     { progress = .progress (getContext model)
     , loading = .loading (getContext model)
+    , menu = .menu (getContext model)
+    , window = .window (getContext model)
     }
 
 
@@ -712,17 +712,8 @@ viewScene scene =
 -- Menu
 
 
-menu : Scene -> Element Msg
+menu : Scene -> Menu.Model model -> Element Msg
 menu scene =
-    let
-        menu_ =
-            Menu.view
-                { onClose = CloseMenuClicked
-                , onOpen = OpenMenuClicked
-                , onReset = ResetDataClicked
-                }
-                (getContext_ scene)
-    in
     case scene of
         Title _ ->
             menu_ TitleMsg Title.menuOptions
@@ -737,4 +728,13 @@ menu scene =
             menu_ GardenMsg Garden.menuOptions
 
         _ ->
-            Menu.hidden
+            always Menu.hidden
+
+
+menu_ : (msg -> Msg) -> List (Menu.Option msg) -> Menu.Model model -> Element Msg
+menu_ =
+    Menu.view
+        { onClose = CloseMenuClicked
+        , onOpen = OpenMenuClicked
+        , onReset = ResetDataClicked
+        }
