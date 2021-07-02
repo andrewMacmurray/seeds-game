@@ -9,7 +9,7 @@ import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Html exposing (Html)
-import Utils.Html.Style as Style
+import Utils.Style as Style
 
 
 

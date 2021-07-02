@@ -12,7 +12,7 @@ import Simple.Animation as Animation exposing (Animation)
 import Simple.Transition as Transition
 import Svg exposing (Svg)
 import Utils.Animated as Animated
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Svg as Svg exposing (..)
 import Utils.Transform as Transform
 import Window exposing (Window)

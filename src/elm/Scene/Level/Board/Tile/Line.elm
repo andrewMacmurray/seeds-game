@@ -13,7 +13,7 @@ import Scene.Level.Board.Tile.Scale as Scale
 import Scene.Level.Board.Tile.Stroke as Stroke
 import Seed exposing (Seed)
 import Utils.Html as Html
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Transform as Transform
 import Window exposing (Window)
 

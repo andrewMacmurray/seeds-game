@@ -13,7 +13,7 @@ import Simple.Animation.Property as P
 import Svg
 import Svg.Attributes exposing (..)
 import Utils.Animated as Animated
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Svg as Svg
 
 

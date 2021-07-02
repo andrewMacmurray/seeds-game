@@ -18,7 +18,7 @@ import Html.Keyed as Keyed
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Utils.Element as Element
-import Utils.Html.Style as Style
+import Utils.Style as Style
 
 
 

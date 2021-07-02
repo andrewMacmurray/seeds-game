@@ -9,7 +9,7 @@ import Element.Transition as Transition
 import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Svg as Svg exposing (..)
 import Utils.Transform as Transform
 import Window exposing (Window)

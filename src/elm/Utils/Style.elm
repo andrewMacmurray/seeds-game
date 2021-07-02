@@ -1,4 +1,4 @@
-module Utils.Html.Style exposing
+module Utils.Style exposing
     ( absolute
     , background
     , center

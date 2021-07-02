@@ -10,7 +10,7 @@ import Simple.Animation as Animation
 import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Svg as Svg
 import Utils.Transform as Transform
 

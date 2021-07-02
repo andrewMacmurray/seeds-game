@@ -12,7 +12,7 @@ import Html
 import Point2d
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Svg exposing (..)
 import Utils.Transform as Transform
 import Window exposing (Window)

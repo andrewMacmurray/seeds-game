@@ -30,7 +30,7 @@ import Element
 import Svg exposing (Attribute, Svg)
 import Svg.Attributes exposing (..)
 import Utils.Color as Color
-import Utils.Html.Style as Style
+import Utils.Style as Style
 import Utils.Transform as Transform
 import Utils.Unit as Unit
 import Window exposing (Window, vh, vw)
