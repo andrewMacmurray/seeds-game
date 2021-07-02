@@ -713,7 +713,6 @@ view model =
     Layout.scene
         [ handleStop model
         , handleCheck model
-        , disableWhenLevelOver model
         , behindContent (topBar model)
         , inFront (renderBoard model)
         , inFront (lineDrag model)

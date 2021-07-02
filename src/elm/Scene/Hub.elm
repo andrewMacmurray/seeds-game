@@ -157,7 +157,7 @@ scrollToLevel =
 
 view : Model -> Layout.Scene Msg
 view model =
-    Layout.scene
+    Layout.scrollable
         [ inFront (topBar model)
         , handleDismiss model
         , inFront (viewInfo model)

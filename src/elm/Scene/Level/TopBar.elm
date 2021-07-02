@@ -21,6 +21,7 @@ import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Utils.Animated as Animated
+import Utils.Element as Element
 import Window exposing (Window)
 
 
@@ -128,6 +129,7 @@ view_ model =
         [ width fill
         , height (px Board.topBarHeight)
         , Palette.background2
+        , Element.preventScroll
         ]
         (row
             [ centerX

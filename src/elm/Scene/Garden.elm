@@ -23,7 +23,6 @@ import Exit exposing (continue, exit)
 import Game.Config.Level as Level
 import Game.Config.World as Worlds
 import Game.Level.Progress as Progress exposing (Progress)
-import Html exposing (Html)
 import Ports.Scroll as Scroll
 import Scene.Garden.Chrysanthemum as Chrysanthemum
 import Scene.Garden.Cornflower as Cornflower
@@ -105,7 +104,7 @@ scrollToCurrentCompletedWorld =
 
 view : Model -> Layout.Scene Msg
 view model =
-    Layout.scene
+    Layout.scrollable
         [ inFront backToLevelsButton
         , inFront initialOverlay
         ]

@@ -5,6 +5,7 @@ module Element.Layout exposing
     , map
     , overlay
     , scene
+    , scrollable
     , view
     )
 
@@ -40,6 +41,7 @@ type alias Scene_ msg =
     { el : Element msg
     , attributes : List (Attribute msg)
     , fadeIn : Bool
+    , scrollable : Bool
     }
 
 
@@ -63,6 +65,17 @@ scene attrs el =
         { el = el
         , attributes = attrs
         , fadeIn = False
+        , scrollable = False
+        }
+
+
+scrollable : List (Attribute msg) -> Element msg -> Scene msg
+scrollable attrs el =
+    Scene
+        { el = el
+        , attributes = attrs
+        , fadeIn = False
+        , scrollable = True
         }
 
 
@@ -72,6 +85,7 @@ fadeIn attrs el =
         { el = el
         , attributes = attrs
         , fadeIn = True
+        , scrollable = False
         }
 
 
@@ -93,6 +107,7 @@ map msg (Scene scene_) =
         { el = Element.map msg scene_.el
         , attributes = List.map (Element.mapAttribute msg) scene_.attributes
         , fadeIn = scene_.fadeIn
+        , scrollable = scene_.scrollable
         }
 
 
@@ -152,26 +167,36 @@ viewBackdrop =
 viewScene_ : Scene msg -> Html msg
 viewScene_ (Scene scene_) =
     if scene_.fadeIn then
-        fadeIn_ scene_.attributes scene_.el
+        fadeIn_ scene_
 
     else
-        view_ scene_.attributes scene_.el
+        view_ scene_
 
 
-view_ : List (Attribute msg) -> Element msg -> Html msg
-view_ attrs =
+view_ : Scene_ msg -> Html msg
+view_ scene_ =
     Element.layoutWith secondary
         (List.append
             [ width fill
             , height fill
             , Element.style "position" "absolute"
             , Element.style "z-index" "2"
-            , Element.class "overflow-y-scroll momentum-scroll"
+            , handleScroll scene_
             , Text.fonts
             , Palette.background1
             ]
-            attrs
+            scene_.attributes
         )
+        scene_.el
+
+
+handleScroll : Scene_ msg -> Attribute msg
+handleScroll scene_ =
+    if scene_.scrollable then
+        Element.class "overflow-y-scroll momentum-scroll"
+
+    else
+        Element.preventScroll
 
 
 viewOverlay : { index : Int } -> Overlay msg -> Html msg
@@ -190,15 +215,15 @@ viewOverlay { index } (Overlay o) =
         o.el
 
 
-fadeIn_ : List (Attribute msg) -> Element msg -> Html msg
-fadeIn_ attributes el =
+fadeIn_ : Scene_ msg -> Html msg
+fadeIn_ scene_ =
     Animated.div fade_
         (Style.center
             [ Style.absolute
             , Style.zIndex 2
             ]
         )
-        [ view_ attributes el ]
+        [ view_ scene_ ]
 
 
 fade_ : Animation
