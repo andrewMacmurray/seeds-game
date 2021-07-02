@@ -182,7 +182,7 @@ viewOverlay { index } (Overlay o) =
             , height fill
             , Element.style "position" "absolute"
             , Element.style "z-index" (String.fromInt index)
-            , Element.class "overflow-y-scroll momentum-scroll"
+            , Element.preventScroll
             , Text.fonts
             ]
             o.attributes
