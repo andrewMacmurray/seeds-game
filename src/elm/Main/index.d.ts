@@ -26,6 +26,9 @@ export namespace Elm {
         },
         scrollToCenter: {
           subscribe(callback: (data: string) => void): void
+        },
+        onRightSwipe: {
+          send(data: null): void
         }
       };
     }

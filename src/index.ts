@@ -4,6 +4,7 @@ import { Elm } from "./elm/Main";
 import * as Cache from "./ts/cache";
 import * as Audio from "./ts/audio";
 import * as Scroll from "./ts/scroll";
+import * as Swipe from "./ts/swipe";
 
 Cheats.activate();
 init();
@@ -18,6 +19,7 @@ function init() {
       saveLives,
       clearCache_,
       scrollToCenter,
+      onRightSwipe
     }
   } = createApp();
   const { introMusic } = Audio.preload();
@@ -46,6 +48,10 @@ function init() {
   
   scrollToCenter.subscribe((id) => {
     Scroll.toCenter(id);
+  });
+  
+  Swipe.onRight(() => {
+    onRightSwipe.send(null);
   });
 }
 

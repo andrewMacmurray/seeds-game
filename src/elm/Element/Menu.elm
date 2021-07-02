@@ -21,7 +21,6 @@ import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
-import Element.Touch as Touch
 import Simple.Animation as Animation exposing (Animation)
 import Utils.Animated as Animated
 import Utils.Element as Element
@@ -215,7 +214,6 @@ drawer options msg sceneOptions model =
     column
         [ width (px drawerWidth)
         , drawerOffset model
-        , handleDrawerClick options model
         , Transition.transform 300
         , height fill
         , alignRight
@@ -226,16 +224,6 @@ drawer options msg sceneOptions model =
         [ buttons options msg sceneOptions
         , attribution
         ]
-
-
-handleDrawerClick : Options msg -> Model model -> Attribute msg
-handleDrawerClick options model =
-    case model.menu of
-        Open ->
-            Touch.onRelease options.onClose
-
-        _ ->
-            Element.empty
 
 
 buttons : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg

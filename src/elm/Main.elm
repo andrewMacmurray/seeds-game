@@ -15,6 +15,7 @@ import Game.Lives as Lives
 import Html exposing (Html)
 import Ports.Audio as Audio
 import Ports.Cache as Cache
+import Ports.Swipe as Swipe
 import Scene.Garden as Garden
 import Scene.Hub as Hub
 import Scene.Intro as Intro
@@ -88,6 +89,7 @@ type Msg
     | HideLoadingScreen
     | OpenMenuClicked
     | CloseMenuClicked
+    | ScreenSwipedRight
     | LoadingScreenGenerated Screen
     | ResetDataClicked
     | WindowSize Int Int
@@ -252,6 +254,9 @@ update msg ({ scene, backdrop } as model) =
             ( updateContext Context.openMenu model, Cmd.none )
 
         ( CloseMenuClicked, _, _ ) ->
+            ( updateContext Context.closeMenu model, Cmd.none )
+
+        ( ScreenSwipedRight, _, _ ) ->
             ( updateContext Context.closeMenu model, Cmd.none )
 
         ( GoToHub level, _, _ ) ->
@@ -635,6 +640,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Browser.onResize WindowSize
+        , handleSwipeRight
         , updateLivesSubscription model
         , sceneSubscriptions model
         ]
@@ -658,6 +664,11 @@ sceneSubscriptions model =
 
         _ ->
             Sub.none
+
+
+handleSwipeRight : Sub Msg
+handleSwipeRight =
+    Swipe.onRight ScreenSwipedRight
 
 
 
