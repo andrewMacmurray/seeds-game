@@ -6,6 +6,7 @@ module Utils.Html.Style exposing
     , fullWidth
     , height
     , opacity
+    , originBottom
     , pointer
     , relative
     , rounded
@@ -126,8 +127,18 @@ splitBackground split =
     style "background" (Background.splitGradient split)
 
 
+originBottom : Attribute msg
+originBottom =
+    transformOrigin "bottom" "center"
+
+
 
 -- Internal
+
+
+transformOrigin : String -> String -> Attribute msg
+transformOrigin v h =
+    style "transform-origin" (v ++ " " ++ h)
 
 
 position_ : String -> Attribute msg

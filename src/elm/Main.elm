@@ -105,6 +105,10 @@ init flags =
         |> updateWith TitleMsg initialState
 
 
+
+--|> Debug.trigger InitSummary
+
+
 initialState : Title.Model -> Model
 initialState titleModel =
     { scene = Title titleModel

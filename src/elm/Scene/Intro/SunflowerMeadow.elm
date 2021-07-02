@@ -81,7 +81,7 @@ offsetStyles window state offset delay =
     case state of
         Hidden ->
             Style.svg
-                [ translateY <| toFloat <| window.height // 2
+                [ translateY (toFloat (window.height // 2))
                 ]
 
         Entering ->

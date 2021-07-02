@@ -8,6 +8,7 @@ module Element.Legacy.Landscape.SteepHills exposing
 import Axis2d
 import Direction2d
 import Geometry.Svg
+import Html
 import Point2d
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
@@ -18,7 +19,7 @@ import Window exposing (Window)
 
 
 type alias Hill msg =
-    ( String, List Style, List (Element msg) )
+    ( String, List (Html.Attribute msg), List (Element msg) )
 
 
 type alias Element msg =
@@ -66,10 +67,10 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
         ]
 
 
-hillFullScreen : Window -> Float -> String -> List Style -> List (Element msg) -> Svg msg
+hillFullScreen : Window -> Float -> String -> List (Html.Attribute msg) -> List (Element msg) -> Svg msg
 hillFullScreen window slope color hillStyles elements =
     Svg.svg
-        [ y_ <| toFloat window.height / 2
+        [ y_ (toFloat window.height / 2)
         , x_ 0
         , width_ 1000
         , height_ 1200
@@ -96,15 +97,16 @@ renderHillElement slope el =
     translated el.distanceX ((el.distanceX * slope) - el.adjustY) el.element
 
 
-hill : String -> List Style -> Float -> Svg msg
+hill : String -> List (Html.Attribute msg) -> Float -> Svg msg
 hill color styles slope =
     Svg.polygon
-        [ fill color
-        , Style.svg styles
-        , points_
-            [ point 0 0
-            , point 0 100
-            , point (100 / slope) 100
+        (List.append styles
+            [ fill color
+            , points_
+                [ point 0 0
+                , point 0 100
+                , point (100 / slope) 100
+                ]
             ]
-        ]
+        )
         []
