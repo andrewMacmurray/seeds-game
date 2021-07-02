@@ -98,7 +98,7 @@ option msg text =
 
 hidden : Layout.Overlay msg
 hidden =
-    Layout.overlay []
+    Layout.overlay [ Element.disableTouch ]
         (Animated.el (fadeOut 1000)
             [ alignTop
             , alignRight
@@ -113,13 +113,18 @@ fadeOut duration =
     Animations.fadeOut duration []
 
 
-view : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Layout.Overlay msg
+view :
+    Options msg
+    -> (sceneMsg -> msg)
+    -> List (Option sceneMsg)
+    -> Model model
+    -> Layout.Overlay msg
 view options msg sceneOptions model =
     Layout.overlay
         [ width fill
         , height fill
         , behindContent (overlay options model)
-        , Element.disableTouch
+        , disableWhenHidden model
         ]
         (el
             [ alignTop
@@ -129,6 +134,16 @@ view options msg sceneOptions model =
             ]
             (drawer options msg sceneOptions model)
         )
+
+
+disableWhenHidden : Model model -> Attribute msg
+disableWhenHidden model =
+    case model.menu of
+        Open ->
+            Element.empty
+
+        _ ->
+            Element.disableTouch
 
 
 overlay : Options msg -> Model model -> Element msg
