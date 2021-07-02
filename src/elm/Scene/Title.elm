@@ -191,7 +191,7 @@ playButton model =
 playButton_ : Model -> Element Msg
 playButton_ model =
     el [ centerX ]
-        (Button.button [ Button.orange ]
+        (Button.button [ Button.orange, Button.large ]
             { label = "Play"
             , onClick = action model
             }

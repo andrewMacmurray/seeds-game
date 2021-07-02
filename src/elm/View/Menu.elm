@@ -14,6 +14,7 @@ module View.Menu exposing
 import Element exposing (..)
 import Element.Animations as Animations
 import Element.Background as Background
+import Element.Button as Button
 import Element.Events exposing (onClick)
 import Element.Icon.Cog as Cog
 import Element.Layout as Layout
@@ -94,23 +95,6 @@ option msg text =
 
 
 -- View
-
-
-hidden : Layout.Overlay msg
-hidden =
-    Layout.overlay [ Element.disableTouch ]
-        (Animated.el (fadeOut 1000)
-            [ alignTop
-            , alignRight
-            , padding Scale.medium
-            ]
-            Cog.inactive
-        )
-
-
-fadeOut : Animation.Millis -> Animation
-fadeOut duration =
-    Animations.fadeOut duration []
 
 
 view :
@@ -234,10 +218,34 @@ drawer options msg sceneOptions model =
         , Transition.transform 300
         , height fill
         , alignRight
+        , paddingXY Scale.large Scale.extraSmall
         , Palette.seedPodBackground
         ]
-        [ attribution
+        [ buttons msg sceneOptions
+        , attribution
         ]
+
+
+buttons : (sceneMsg -> msg) -> List (Option sceneMsg) -> Element msg
+buttons msg sceneOptions =
+    column
+        [ centerY
+        , centerX
+        , width fill
+        , spacing Scale.small
+        ]
+        (List.map (toOption msg) sceneOptions)
+
+
+toOption : (sceneMsg -> msg) -> Option sceneMsg -> Element msg
+toOption msg (Option opt) =
+    Button.button
+        [ Button.gold
+        , Button.fill
+        ]
+        { label = opt.text
+        , onClick = msg opt.msg
+        }
 
 
 drawerOffset : Model model -> Attribute msg
@@ -256,14 +264,38 @@ drawerWidth =
 
 
 
+-- Hidden
+
+
+hidden : Layout.Overlay msg
+hidden =
+    Layout.overlay [ Element.disableTouch ] hidden_
+
+
+hidden_ : Element msg
+hidden_ =
+    Animated.el (fadeOut 1000)
+        [ alignTop
+        , alignRight
+        , padding Scale.medium
+        ]
+        Cog.inactive
+
+
+fadeOut : Animation.Millis -> Animation
+fadeOut duration =
+    Animations.fadeOut duration []
+
+
+
 -- Attribution
 
 
 attribution : Element msg
 attribution =
     newTabLink
-        [ centerY
-        , alignRight
+        [ alignBottom
+        , alignLeft
         ]
         { url = "https://github.com/andrewMacmurray/seeds-game"
         , label = attribution_
