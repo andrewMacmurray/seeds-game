@@ -7,6 +7,7 @@ module Element.Loading exposing
 
 import Element exposing (..)
 import Element.Background as Background
+import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Seed as Seed
 import Element.Transition as Transition
@@ -55,9 +56,9 @@ generate msg =
 -- View
 
 
-view : Model -> Element msg
+view : Model -> Layout.Overlay msg
 view model =
-    el
+    Layout.overlay
         [ width fill
         , height fill
         , Background.color (toBackground model)

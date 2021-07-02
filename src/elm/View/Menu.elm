@@ -16,6 +16,7 @@ import Element.Animations as Animations
 import Element.Background as Background
 import Element.Events exposing (onClick)
 import Element.Icon.Cog as Cog
+import Element.Layout as Layout
 import Element.Palette as Palette
 import Element.Scale as Scale
 import Element.Text as Text
@@ -95,14 +96,16 @@ option msg text =
 -- View
 
 
-hidden : Element msg
+hidden : Layout.Overlay msg
 hidden =
-    Animated.el (fadeOut 1000)
-        [ alignTop
-        , alignRight
-        , padding Scale.medium
-        ]
-        Cog.inactive
+    Layout.overlay []
+        (Animated.el (fadeOut 1000)
+            [ alignTop
+            , alignRight
+            , padding Scale.medium
+            ]
+            Cog.inactive
+        )
 
 
 fadeOut : Animation.Millis -> Animation
@@ -110,12 +113,13 @@ fadeOut duration =
     Animations.fadeOut duration []
 
 
-view : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Element msg
+view : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Layout.Overlay msg
 view options msg sceneOptions model =
-    el
+    Layout.overlay
         [ width fill
         , height fill
         , behindContent (overlay options model)
+        , Element.disableTouch
         ]
         (el
             [ alignTop
@@ -203,7 +207,7 @@ handleCogClick options model =
             onClick options.onOpen
 
         Disabled ->
-            Element.empty
+            Element.disableTouch
 
 
 drawer : Options msg -> (sceneMsg -> msg) -> List (Option sceneMsg) -> Model model -> Element msg

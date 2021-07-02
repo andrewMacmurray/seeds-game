@@ -4,7 +4,6 @@ import Browser
 import Browser.Events as Browser
 import Context exposing (Context)
 import Delay
-import Element exposing (Element)
 import Element.Layout as Layout
 import Element.Loading as LoadingScreen exposing (Screen)
 import Exit
@@ -662,20 +661,11 @@ sceneSubscriptions model =
 view : Model -> Html Msg
 view model =
     Layout.view
-        { model = layoutModel model
-        , menu = menu model.scene
+        { menu = viewMenu model
+        , loading = viewLoading model
         , scene = viewScene model.scene
         , backdrop = viewBackdrop model.backdrop
         }
-
-
-layoutModel : Model -> Layout.Model
-layoutModel model =
-    { progress = .progress (getContext model)
-    , loading = .loading (getContext model)
-    , menu = .menu (getContext model)
-    , window = .window (getContext model)
-    }
 
 
 viewBackdrop : Maybe Scene -> Maybe ( String, Layout.Scene Msg )
@@ -709,11 +699,33 @@ viewScene scene =
 
 
 
+-- Loading
+
+
+viewLoading : Model -> Layout.Overlay msg
+viewLoading model =
+    loading (getContext model)
+
+
+loading : Context -> Layout.Overlay msg
+loading context =
+    LoadingScreen.view
+        { progress = context.progress
+        , loading = context.loading
+        }
+
+
+
 -- Menu
 
 
-menu : Scene -> Menu.Model model -> Element Msg
-menu scene =
+viewMenu : Model -> Layout.Overlay Msg
+viewMenu model =
+    sceneMenu model.scene (getContext model)
+
+
+sceneMenu : Scene -> Menu.Model model -> Layout.Overlay Msg
+sceneMenu scene =
     case scene of
         Title _ ->
             menu_ TitleMsg Title.menuOptions
@@ -731,7 +743,7 @@ menu scene =
             always Menu.hidden
 
 
-menu_ : (msg -> Msg) -> List (Menu.Option msg) -> Menu.Model model -> Element Msg
+menu_ : (sceneMsg -> Msg) -> List (Menu.Option sceneMsg) -> Menu.Model model -> Layout.Overlay Msg
 menu_ =
     Menu.view
         { onClose = CloseMenuClicked

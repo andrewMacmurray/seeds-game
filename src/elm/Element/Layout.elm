@@ -1,26 +1,23 @@
 module Element.Layout exposing
-    ( Model
+    ( Overlay
     , Scene
     , fadeIn
     , map
+    , overlay
     , scene
     , view
     )
 
 import Element exposing (..)
 import Element.Animations as Animations
-import Element.Loading as Loading
 import Element.Palette as Palette
 import Element.Text as Text
-import Game.Level.Progress exposing (Progress)
 import Html exposing (Html, div)
 import Html.Keyed as Keyed
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Utils.Element as Element
 import Utils.Html.Style as Style
-import View.Menu as Menu
-import Window exposing (Window)
 
 
 
@@ -28,18 +25,10 @@ import Window exposing (Window)
 
 
 type alias Layout msg =
-    { model : Model
-    , menu : Menu.Model Model -> Element msg
+    { menu : Overlay msg
+    , loading : Overlay msg
     , scene : ( String, Scene msg )
     , backdrop : Maybe ( String, Scene msg )
-    }
-
-
-type alias Model =
-    { loading : Loading.Screen
-    , progress : Progress
-    , menu : Menu.State
-    , window : Window
     }
 
 
@@ -51,6 +40,16 @@ type alias Scene_ msg =
     { el : Element msg
     , attributes : List (Attribute msg)
     , fadeIn : Bool
+    }
+
+
+type Overlay msg
+    = Overlay (Overlay_ msg)
+
+
+type alias Overlay_ msg =
+    { el : Element msg
+    , attributes : List (Attribute msg)
     }
 
 
@@ -76,6 +75,14 @@ fadeIn attrs el =
         }
 
 
+overlay : List (Attribute msg) -> Element msg -> Overlay msg
+overlay attrs el =
+    Overlay
+        { el = el
+        , attributes = attrs
+        }
+
+
 
 -- Update
 
@@ -96,8 +103,8 @@ map msg (Scene scene_) =
 view : Layout msg -> Html msg
 view layout =
     div []
-        [ loadingScreen layout.model
-        , menu layout
+        [ loadingScreen layout.loading
+        , menu layout.menu
         , stage
             [ viewBackdrop layout.backdrop
             , viewScene layout.scene
@@ -109,31 +116,18 @@ view layout =
 -- Loading Screen
 
 
-loadingScreen : Model -> Html msg
-loadingScreen model =
-    floating { index = 5 } (loadingScreen_ model)
-
-
-loadingScreen_ : Model -> Element msg
-loadingScreen_ context =
-    Loading.view
-        { progress = context.progress
-        , loading = context.loading
-        }
+loadingScreen : Overlay msg -> Html msg
+loadingScreen =
+    viewOverlay { index = 5 }
 
 
 
 -- Menu
 
 
-menu : Layout msg -> Html msg
-menu layout =
-    floating { index = 4 } (menu_ layout)
-
-
-menu_ : Layout msg -> Element msg
-menu_ layout =
-    layout.menu layout.model
+menu : Overlay msg -> Html msg
+menu =
+    viewOverlay { index = 4 }
 
 
 
@@ -180,17 +174,20 @@ view_ attrs =
         )
 
 
-floating : { index : Int } -> Element msg -> Html msg
-floating { index } =
+viewOverlay : { index : Int } -> Overlay msg -> Html msg
+viewOverlay { index } (Overlay o) =
     Element.layoutWith primary
-        [ width fill
-        , height fill
-        , Element.style "position" "absolute"
-        , Element.style "z-index" (String.fromInt index)
-        , Element.class "overflow-y-scroll momentum-scroll"
-        , Element.disableTouch
-        , Text.fonts
-        ]
+        (List.append
+            [ width fill
+            , height fill
+            , Element.style "position" "absolute"
+            , Element.style "z-index" (String.fromInt index)
+            , Element.class "overflow-y-scroll momentum-scroll"
+            , Text.fonts
+            ]
+            o.attributes
+        )
+        o.el
 
 
 fadeIn_ : List (Attribute msg) -> Element msg -> Html msg
