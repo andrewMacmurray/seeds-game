@@ -179,7 +179,7 @@ view_ scene_ =
         (List.append
             [ width fill
             , height fill
-            , Element.style "position" "absolute"
+            , Element.style "position" "fixed"
             , Element.style "z-index" "2"
             , handleScroll scene_
             , Text.fonts
@@ -193,7 +193,7 @@ view_ scene_ =
 handleScroll : Scene_ msg -> Attribute msg
 handleScroll scene_ =
     if scene_.scrollable then
-        Element.class "overflow-y-scroll momentum-scroll"
+        Element.class "scrollable"
 
     else
         Element.preventScroll
@@ -205,7 +205,7 @@ viewOverlay { index } (Overlay o) =
         (List.append
             [ width fill
             , height fill
-            , Element.style "position" "absolute"
+            , Element.style "position" "fixed"
             , Element.style "z-index" (String.fromInt index)
             , Element.preventScroll
             , Text.fonts

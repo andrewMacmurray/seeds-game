@@ -1,0 +1,17 @@
+body {
+  margin: 0;
+}
+
+div {
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+.touch-disabled {
+  pointer-events: none !important;
+}
+
+.scrollable {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
