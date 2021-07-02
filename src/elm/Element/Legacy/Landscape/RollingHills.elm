@@ -1,4 +1,4 @@
-module View.Landscape.RollingHills exposing
+module Element.Legacy.Landscape.RollingHills exposing
     ( Element
     , doubleLayer
     , element

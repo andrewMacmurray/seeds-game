@@ -1,4 +1,4 @@
-module View.Landscape.SteepHills exposing
+module Element.Legacy.Landscape.SteepHills exposing
     ( Element
     , behind
     , inFront
