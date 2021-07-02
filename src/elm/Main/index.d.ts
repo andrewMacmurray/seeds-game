@@ -6,10 +6,10 @@ export namespace Elm {
   namespace Main {
     export interface App {
       ports: {
-        cacheProgress: {
+        saveProgress: {
           subscribe(callback: (data: { worldId: number; levelId: number }) => void): void
         }
-        cacheLives: {
+        saveLives: {
           subscribe(callback: (data: { lastPlayed: number; timeTillNextLife: number }) => void): void
         }
         clearCache_: {
@@ -26,6 +26,9 @@ export namespace Elm {
         },
         scrollToCenter: {
           subscribe(callback: (data: string) => void): void
+        },
+        onRightSwipe: {
+          send(data: null): void
         }
       };
     }

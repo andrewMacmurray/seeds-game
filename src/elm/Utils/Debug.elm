@@ -15,7 +15,7 @@ import Game.Board.Tile as Tile
 import Game.Config.Level as Level exposing (LevelConfig)
 import Game.Config.World as World
 import Game.Level.Progress as Progress exposing (Progress)
-import Ports
+import Ports.Cache as Cache
 import Utils.Update as Update
 
 
@@ -59,7 +59,7 @@ setProgress : Int -> Int -> Cmd msg
 setProgress world level =
     Level.build_ world level
         |> Level.toCache
-        |> Ports.cacheProgress
+        |> Cache.saveProgress
 
 
 progress : Int -> Int -> Progress

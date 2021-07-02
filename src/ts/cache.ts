@@ -14,7 +14,7 @@ export function getLives(): Lives | null {
   return safeParse(localStorage.getItem("lives"));
 }
 
-export function setLives(lives: Lives) {
+export function saveLives(lives: Lives) {
   return localStorage.setItem("lives", JSON.stringify(lives));
 }
 
@@ -22,7 +22,7 @@ export function getProgress(): Progress | null {
   return safeParse(localStorage.getItem("progress"));
 }
 
-export function setProgress(progress: Progress) {
+export function saveProgress(progress: Progress) {
   return localStorage.setItem("progress", JSON.stringify(progress));
 }
 
