@@ -4,15 +4,21 @@ module Scene.Intro.DyingLandscape exposing
     , view
     )
 
-import Element.Legacy.Landscape.SteepHills as Hills
-import Simple.Transition as Transition
-import Svg exposing (Attribute, Svg)
-import Svg.Attributes exposing (..)
-import Utils.Style as Style
-import Utils.Svg as Svg exposing (..)
-import Utils.Transform as Transform
-import Utils.Transition as Transition
-import Window exposing (Window)
+import Axis2d exposing (Axis2d)
+import Direction2d
+import Element exposing (..)
+import Element.Icon.Tree.Firr as Firr
+import Element.Palette as Palette
+import Geometry.Shape as Shape exposing (Shape)
+import Pixels exposing (Pixels)
+import Point2d
+import Polygon2d exposing (Polygon2d)
+import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation.Property as P
+import Svg exposing (Svg)
+import Utils.Cycle as Cycle
+import Utils.Geometry exposing (down)
+import Window exposing (Window, vh, vw)
 
 
 
@@ -37,280 +43,464 @@ type State
 
 view : Window -> Environment -> State -> Svg msg
 view window env state =
-    let
-        hillColor aliveColor deadColor =
-            ifAlive env aliveColor deadColor
+    Shape.fullScreen window
+        (shape_
+            { animation = Animated 0
+            , colors = greens
+            , window = window
+            }
+        )
 
-        slope =
-            getSlope window
 
-        hillOffset small large =
-            ifNarrow window small large
 
-        ( elements2Left, elements2Right ) =
-            hillElements2 window env
+-- Hills
 
-        ( elements3Left, elements3Right ) =
-            hillElements3 window env
 
-        ( elements4Left, elements4Right ) =
-            hillElements4 window env
-    in
-    Svg.window window
-        [ preserveAspectRatio "none" ]
-        [ Svg.g (hillStyles window state (hillOffset -250 -400) 0)
-            [ Hills.layer window
-                slope
-                ( hillColor "#1D4E34" "#898755", [ transitionFill 0 ], [] )
-                ( hillColor "#19B562" "#866942", [ transitionFill 300 ], [] )
+type alias Colors =
+    Cycle.Three Colors_
+
+
+type alias Colors_ =
+    ( Color, Color )
+
+
+type alias Options_ =
+    { window : Window
+    , colors : Colors
+    , animation : HillsAnimation
+    }
+
+
+type HillsAnimation
+    = None
+    | Animated Animation.Millis
+
+
+maxHills : number
+maxHills =
+    4
+
+
+
+-- Colors
+
+
+greens : Colors
+greens =
+    { one = ( Palette.green8, Palette.green3 )
+    , two = ( Palette.green4, Palette.green2 )
+    , three = ( Palette.green1, Palette.green6 )
+    }
+
+
+
+-- View
+
+
+shape_ : Options_ -> Shape msg
+shape_ options =
+    List.range 0 (maxHills - 1)
+        |> List.map (cycleColors options)
+        |> List.indexedMap toHillConfig
+        |> List.map (toHillPair options)
+        |> List.concat
+        |> List.reverse
+        |> Shape.group
+        |> Shape.moveUp 200
+
+
+cycleColors : Options_ -> Int -> ( Color, Color )
+cycleColors options =
+    Cycle.three options.colors
+
+
+type alias HillConfig =
+    { order : Int
+    , offset : Float
+    , left : Color
+    , right : Color
+    }
+
+
+toHillConfig : Int -> ( Color, Color ) -> HillConfig
+toHillConfig i ( left, right ) =
+    { order = i
+    , offset = 750 - toFloat (i * 180)
+    , left = left
+    , right = right
+    }
+
+
+toHillPair : Options_ -> HillConfig -> List (Shape msg)
+toHillPair options config =
+    [ { offset = config.offset
+      , color = config.right
+      , window = options.window
+      }
+        |> hill
+        |> withAnimation options config
+    , { offset = config.offset
+      , color = config.left
+      , window = options.window
+      }
+        |> mirrored
+        |> withAnimation options config
+    ]
+
+
+
+-- Animate
+
+
+withAnimation : Options_ -> HillConfig -> Shape msg -> Shape msg
+withAnimation options config shape =
+    case options.animation of
+        Animated _ ->
+            Shape.animate (appear options config) shape
+
+        None ->
+            shape
+
+
+appear : Options_ -> HillConfig -> Animation
+appear options config =
+    Animation.fromTo
+        { duration = 5000
+        , options =
+            [ Animation.easeOut
+            , Animation.delay (maxHills - (config.order + 1) * 150)
             ]
-        , Svg.g (hillStyles window state (hillOffset -125 -250) 500)
-            [ Hills.layer window
-                slope
-                ( hillColor "#1D7145" "#7D7E7D", [ transitionFill 600 ], elements2Left )
-                ( hillColor "#1F8D52" "#978A49", [ transitionFill 900 ], elements2Right )
-            ]
-        , Svg.g (hillStyles window state (hillOffset 0 -100) 1000)
-            [ Hills.layer window
-                slope
-                ( hillColor "#2BA765" "#484848", [ transitionFill 1200 ], elements3Left )
-                ( hillColor "#185F39" "#372c1f", [ transitionFill 1500 ], elements3Right )
-            ]
-        , Svg.g (hillStyles window state (hillOffset 125 50) 1000)
-            [ Hills.layer window
-                slope
-                ( hillColor "#1F8D52" "#6e6e4e", [ transitionFill 1200 ], elements4Left )
-                ( hillColor "#19B562" "#817d75", [ transitionFill 1500 ], elements4Right )
-            ]
+        }
+        [ P.y ((vh options.window / 2) + vh options.window / (maxHills - toFloat config.order)) ]
+        [ P.y 0 ]
+
+
+
+-- Shape
+
+
+mirrored : { offset : Float, color : Color, window : Window } -> Shape msg
+mirrored =
+    Shape.mirror << hill
+
+
+hill : { offset : Float, color : Element.Color, window : Window } -> Shape msg
+hill { offset, color, window } =
+    Shape.group
+        [ Shape.moveDown (offset - 75)
+            (Shape.placedAt
+                (Point2d.along (axis window) (Pixels.pixels 200))
+                (Firr.alive 100)
+            )
+        , Shape.polygon { fill = color } (hill_ offset window)
         ]
 
 
-ifAlive : Environment -> a -> a -> a
-ifAlive env a b =
-    case env of
-        Alive ->
-            a
-
-        Dead ->
-            b
-
-
-ifNarrow : Window -> a -> a -> a
-ifNarrow window a b =
-    case Window.width window of
-        Window.Narrow ->
-            a
-
-        _ ->
-            b
-
-
-getSlope : Window -> Float
-getSlope window =
-    case Window.width window of
-        Window.Narrow ->
-            0.65
-
-        _ ->
-            0.5
-
-
-hillElements2 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
-hillElements2 window env =
-    case Window.width window of
-        Window.Narrow ->
-            ( []
-            , [ Hills.behind 6 4.5 <| scaled 0.9 <| firrTree env 500
-              , Hills.behind 9 4.5 <| scaled 0.9 <| firrTree env 600
-              ]
-            )
-
-        Window.MediumWidth ->
-            ( []
-            , [ Hills.behind 6 6 <| firrTree env 500
-              , Hills.behind 10 6 <| firrTree env 600
-              ]
-            )
-
-        Window.Wide ->
-            ( [ Hills.behind 25 6 <| firrTree env 300
-              , Hills.behind 30 6 <| firrTree env 400
-              ]
-            , [ Hills.behind 20 6 <| firrTree env 500
-              , Hills.behind 25 6 <| firrTree env 600
-              ]
-            )
-
-
-hillElements3 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
-hillElements3 window env =
-    case Window.width window of
-        Window.Narrow ->
-            ( [ Hills.inFront 4 5 <| scaled 0.8 <| pineTree env 800 ]
-            , [ Hills.inFront 8 2 <| scaled 0.8 <| elmTree env 900 ]
-            )
-
-        Window.MediumWidth ->
-            ( [ Hills.behind 6 8 <| pineTree env 800 ]
-            , [ Hills.inFront 18 5 <| elmTree env 900 ]
-            )
-
-        Window.Wide ->
-            ( [ Hills.behind 6 8 <| pineTree env 800
-              , Hills.inFront 30 7 <| elmTree env 900
-              ]
-            , [ Hills.inFront 35 6 <| pineTree env 600 ]
-            )
-
-
-hillElements4 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
-hillElements4 window env =
-    case Window.width window of
-        Window.Narrow ->
-            ( [], [] )
-
-        Window.MediumWidth ->
-            ( [ Hills.behind 16 6 <| firrTree env 1000
-              , Hills.behind 20 6 <| firrTree env 1000
-              ]
-            , []
-            )
-
-        Window.Wide ->
-            ( [], [ Hills.behind 5 6 <| firrTree env 1000 ] )
-
-
-hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
-hillStyles window state offset delay =
+hill_ : Float -> Window -> Polygon2d Pixels coordinates
+hill_ y window =
     let
-        transitionTransform =
-            Transition.transform_ 3500
-                [ Transition.delay delay
-                , Transition.easeOut
-                ]
+        p1 =
+            Point2d.along (axis window) (Pixels.pixels (vw window))
 
-        translateY n =
-            Style.transform [ Transform.translateY n ]
+        p2 =
+            Point2d.along (axis window) (Pixels.pixels -(vw window))
     in
-    case state of
-        Hidden ->
-            [ translateY <| toFloat window.height / 2
-            , transitionTransform
+    Polygon2d.translateBy (down y)
+        (Polygon2d.singleLoop
+            [ p1
+            , p2
+            , Point2d.translateBy (down hillHeight) p2
+            , Point2d.translateBy (down hillHeight) p1
             ]
-
-        Entering ->
-            [ translateY offset
-            , transitionTransform
-            ]
-
-        Visible ->
-            [ Style.opacity 1
-            , translateY offset
-            ]
-
-        Leaving ->
-            [ Style.opacity 0
-            , Transition.opacity_ 400 [ Transition.linear, Transition.delay delay ]
-            , translateY offset
-            ]
+        )
 
 
-firrTree : Environment -> Int -> Svg msg
-firrTree env delay =
-    let
-        animateFill =
-            transitionFill delay
-
-        ( leftColor, rightColor ) =
-            treeColor "#24AC4B" "#95EDB3" env
-    in
-    Svg.svg [ width_ 4, height_ 10, viewBox_ 0 0 40 100 ]
-        [ Svg.g [ fill "none", fillRule "evenodd" ]
-            [ Svg.path [ fill "#6D4D2D", d "M12.2 41h6.6V75h-6.6z" ] []
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill, d "M15.6.3s14.8 20.4 14.8 32.9c0 8.2-6.6 14.8-14.8 14.8V.4z", fill leftColor ] []
-                , Svg.path [ animateFill, d "M.8 33.2C.8 21 14.7 1.6 15.5.4V48C7.4 48 .8 41.4.8 33.2z", fill rightColor ] []
-                ]
-            ]
-        ]
+hillHeight : number
+hillHeight =
+    300
 
 
-elmTree : Environment -> Int -> Svg msg
-elmTree env delay =
-    let
-        animateFill staggerDelay =
-            transitionFill (delay + staggerDelay)
-
-        ( leftColor, rightColor ) =
-            treeColor "#32B559" "#4CE483" env
-    in
-    Svg.svg [ width_ 11, height_ 17, viewBox_ 0 0 80 150 ]
-        [ Svg.g [ fill "none", fillRule "evenodd" ]
-            [ Svg.path [ fill "#6D4D2D", d "M28.3 78.4h6.2v35.5h-6.2z" ] []
-            , Svg.path [ fill "#6D4D2D", d "M9.6 61.2l3.4-3.5 21.3 20.6-3.4 3.5z" ] []
-            , Svg.path [ fill "#6D4D2D", d "M67.3 47.3L64 44 28 78.5l3.4 3.4z" ] []
-            , Svg.path [ fill "#6D4D2D", d "M15.6 24.6l3.5-3.6 35.8 34.6-3.4 3.6z" ] []
-            , Svg.path [ animateFill 50, d "M65 25v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
-            , Svg.path [ animateFill 50, d "M64 25v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
-            , Svg.path [ animateFill 100, d "M19 0v25h-.5A12.5 12.5 0 1 1 19 0z", fill leftColor ] []
-            , Svg.path [ animateFill 100, d "M18 0v25h.5A12.5 12.5 0 1 0 18 0z", fill rightColor ] []
-            , Svg.path [ animateFill 150, d "M13 38v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
-            , Svg.path [ animateFill 150, d "M12 38v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
-            ]
-        ]
+axis : Window -> Axis2d Pixels coordinates
+axis w =
+    Axis2d.withDirection
+        (Direction2d.degrees -26)
+        (Point2d.pixels (vw w / 2) (vh w - 450))
 
 
-pineTree : Environment -> Int -> Svg msg
-pineTree env delay =
-    let
-        animateFill staggerDelay =
-            transitionFill (delay + staggerDelay)
 
-        ( leftColor, rightColor ) =
-            treeColor "#95EDB3" "#24AC4B" env
-    in
-    Svg.svg [ width_ 11, height_ 13, viewBox_ 0 0 80 100 ]
-        [ Svg.g [ fill "none", fillRule "evenodd" ]
-            [ Svg.path [ fill "#453321", d "M34.1 51.8h6.8v36.7h-6.8z" ] []
-            , Svg.path [ fill "#453321", d "M12.7 33.2l4.8-4.8L41 52l-4.8 4.8z" ] []
-            , Svg.path [ fill "#453321", d "M62.5 33.2l-4.9-4.8L34 52l4.8 4.8z" ] []
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 0, d "M10.4 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
-                , Svg.path [ animateFill 0, d "M.7 26.3c0-8 9.1-20.8 9.7-21.6V36a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-                ]
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 150, d "M37.5 18s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7V18.1z", fill leftColor ] []
-                , Svg.path [ animateFill 150, d "M27.8 39.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-                ]
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 300, d "M37.5 0s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V0z", fill leftColor ] []
-                , Svg.path [ animateFill 300, d "M27.8 21.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z", fill rightColor ] []
-                ]
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 450, d "M51.3 11.9S61 25.3 61 33.5c0 5.4-4.3 9.7-9.7 9.7V12z", fill leftColor ] []
-                , Svg.path [ animateFill 450, d "M41.7 33.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
-                ]
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 550, d "M22.7 11.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V12z", fill leftColor ] []
-                , Svg.path [ animateFill 550, d "M13 33.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-                ]
-            , Svg.g [ fillRule "nonzero" ]
-                [ Svg.path [ animateFill 650, d "M64.6 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
-                , Svg.path [ animateFill 650, d "M55 26.3c0-8 9-20.8 9.6-21.6V36a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
-                ]
-            ]
-        ]
-
-
-transitionFill : Int -> Attribute msg
-transitionFill delayMs =
-    Transition.fill_ 500 [ Transition.delay delayMs, Transition.linear ]
-
-
-treeColor left right env =
-    ifAlive env ( left, right ) deadTreeColors
-
-
-deadTreeColors : ( String, String )
-deadTreeColors =
-    ( "#C09E73", "#FFCD93" )
+--let
+--    hillColor aliveColor deadColor =
+--        ifAlive env aliveColor deadColor
+--
+--    slope =
+--        getSlope window
+--
+--    hillOffset small large =
+--        ifNarrow window small large
+--
+--    ( elements2Left, elements2Right ) =
+--        hillElements2 window env
+--
+--    ( elements3Left, elements3Right ) =
+--        hillElements3 window env
+--
+--    ( elements4Left, elements4Right ) =
+--        hillElements4 window env
+--in
+--Svg.window window
+--    [ preserveAspectRatio "none" ]
+--    [ Svg.g (hillStyles window state (hillOffset -250 -400) 0)
+--        [ Hills.layer window
+--            slope
+--            ( hillColor "#1D4E34" "#898755", [ transitionFill 0 ], [] )
+--            ( hillColor "#19B562" "#866942", [ transitionFill 300 ], [] )
+--        ]
+--    , Svg.g (hillStyles window state (hillOffset -125 -250) 500)
+--        [ Hills.layer window
+--            slope
+--            ( hillColor "#1D7145" "#7D7E7D", [ transitionFill 600 ], elements2Left )
+--            ( hillColor "#1F8D52" "#978A49", [ transitionFill 900 ], elements2Right )
+--        ]
+--    , Svg.g (hillStyles window state (hillOffset 0 -100) 1000)
+--        [ Hills.layer window
+--            slope
+--            ( hillColor "#2BA765" "#484848", [ transitionFill 1200 ], elements3Left )
+--            ( hillColor "#185F39" "#372c1f", [ transitionFill 1500 ], elements3Right )
+--        ]
+--    , Svg.g (hillStyles window state (hillOffset 125 50) 1000)
+--        [ Hills.layer window
+--            slope
+--            ( hillColor "#1F8D52" "#6e6e4e", [ transitionFill 1200 ], elements4Left )
+--            ( hillColor "#19B562" "#817d75", [ transitionFill 1500 ], elements4Right )
+--        ]
+--    ]
+--
+--ifAlive : Environment -> a -> a -> a
+--ifAlive env a b =
+--    case env of
+--        Alive ->
+--            a
+--
+--        Dead ->
+--            b
+--
+--
+--ifNarrow : Window -> a -> a -> a
+--ifNarrow window a b =
+--    case Window.width window of
+--        Window.Narrow ->
+--            a
+--
+--        _ ->
+--            b
+--
+--
+--getSlope : Window -> Float
+--getSlope window =
+--    case Window.width window of
+--        Window.Narrow ->
+--            0.65
+--
+--        _ ->
+--            0.5
+--
+--
+--hillElements2 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
+--hillElements2 window env =
+--    case Window.width window of
+--        Window.Narrow ->
+--            ( []
+--            , [ Hills.behind 6 4.5 <| scaled 0.9 <| firrTree env 500
+--              , Hills.behind 9 4.5 <| scaled 0.9 <| firrTree env 600
+--              ]
+--            )
+--
+--        Window.MediumWidth ->
+--            ( []
+--            , [ Hills.behind 6 6 <| firrTree env 500
+--              , Hills.behind 10 6 <| firrTree env 600
+--              ]
+--            )
+--
+--        Window.Wide ->
+--            ( [ Hills.behind 25 6 <| firrTree env 300
+--              , Hills.behind 30 6 <| firrTree env 400
+--              ]
+--            , [ Hills.behind 20 6 <| firrTree env 500
+--              , Hills.behind 25 6 <| firrTree env 600
+--              ]
+--            )
+--
+--
+--hillElements3 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
+--hillElements3 window env =
+--    case Window.width window of
+--        Window.Narrow ->
+--            ( [ Hills.inFront 4 5 <| scaled 0.8 <| pineTree env 800 ]
+--            , [ Hills.inFront 8 2 <| scaled 0.8 <| elmTree env 900 ]
+--            )
+--
+--        Window.MediumWidth ->
+--            ( [ Hills.behind 6 8 <| pineTree env 800 ]
+--            , [ Hills.inFront 18 5 <| elmTree env 900 ]
+--            )
+--
+--        Window.Wide ->
+--            ( [ Hills.behind 6 8 <| pineTree env 800
+--              , Hills.inFront 30 7 <| elmTree env 900
+--              ]
+--            , [ Hills.inFront 35 6 <| pineTree env 600 ]
+--            )
+--
+--
+--hillElements4 : Window -> Environment -> ( List (Hills.Element msg), List (Hills.Element msg) )
+--hillElements4 window env =
+--    case Window.width window of
+--        Window.Narrow ->
+--            ( [], [] )
+--
+--        Window.MediumWidth ->
+--            ( [ Hills.behind 16 6 <| firrTree env 1000
+--              , Hills.behind 20 6 <| firrTree env 1000
+--              ]
+--            , []
+--            )
+--
+--        Window.Wide ->
+--            ( [], [ Hills.behind 5 6 <| firrTree env 1000 ] )
+--
+--
+--hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
+--hillStyles window state offset delay =
+--    let
+--        transitionTransform =
+--            Transition.transform_ 3500
+--                [ Transition.delay delay
+--                , Transition.easeOut
+--                ]
+--
+--        translateY n =
+--            Style.transform [ Transform.translateY n ]
+--    in
+--    case state of
+--        Hidden ->
+--            [ translateY <| toFloat window.height / 2
+--            , transitionTransform
+--            ]
+--
+--        Entering ->
+--            [ translateY offset
+--            , transitionTransform
+--            ]
+--
+--        Visible ->
+--            [ Style.opacity 1
+--            , translateY offset
+--            ]
+--
+--        Leaving ->
+--            [ Style.opacity 0
+--            , Transition.opacity_ 400 [ Transition.linear, Transition.delay delay ]
+--            , translateY offset
+--            ]
+--
+--
+--firrTree : Environment -> Int -> Svg msg
+--firrTree env delay =
+--    let
+--        animateFill =
+--            transitionFill delay
+--
+--        ( leftColor, rightColor ) =
+--            treeColor "#24AC4B" "#95EDB3" env
+--    in
+--    Svg.svg [ width_ 4, height_ 10, viewBox_ 0 0 40 100 ]
+--        [ Svg.g [ fill "none", fillRule "evenodd" ]
+--            [ Svg.path [ fill "#6D4D2D", d "M12.2 41h6.6V75h-6.6z" ] []
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill, d "M15.6.3s14.8 20.4 14.8 32.9c0 8.2-6.6 14.8-14.8 14.8V.4z", fill leftColor ] []
+--                , Svg.path [ animateFill, d "M.8 33.2C.8 21 14.7 1.6 15.5.4V48C7.4 48 .8 41.4.8 33.2z", fill rightColor ] []
+--                ]
+--            ]
+--        ]
+--
+--
+--elmTree : Environment -> Int -> Svg msg
+--elmTree env delay =
+--    let
+--        animateFill staggerDelay =
+--            transitionFill (delay + staggerDelay)
+--
+--        ( leftColor, rightColor ) =
+--            treeColor "#32B559" "#4CE483" env
+--    in
+--    Svg.svg [ width_ 11, height_ 17, viewBox_ 0 0 80 150 ]
+--        [ Svg.g [ fill "none", fillRule "evenodd" ]
+--            [ Svg.path [ fill "#6D4D2D", d "M28.3 78.4h6.2v35.5h-6.2z" ] []
+--            , Svg.path [ fill "#6D4D2D", d "M9.6 61.2l3.4-3.5 21.3 20.6-3.4 3.5z" ] []
+--            , Svg.path [ fill "#6D4D2D", d "M67.3 47.3L64 44 28 78.5l3.4 3.4z" ] []
+--            , Svg.path [ fill "#6D4D2D", d "M15.6 24.6l3.5-3.6 35.8 34.6-3.4 3.6z" ] []
+--            , Svg.path [ animateFill 50, d "M65 25v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
+--            , Svg.path [ animateFill 50, d "M64 25v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
+--            , Svg.path [ animateFill 100, d "M19 0v25h-.5A12.5 12.5 0 1 1 19 0z", fill leftColor ] []
+--            , Svg.path [ animateFill 100, d "M18 0v25h.5A12.5 12.5 0 1 0 18 0z", fill rightColor ] []
+--            , Svg.path [ animateFill 150, d "M13 38v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
+--            , Svg.path [ animateFill 150, d "M12 38v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
+--            ]
+--        ]
+--
+--
+--pineTree : Environment -> Int -> Svg msg
+--pineTree env delay =
+--    let
+--        animateFill staggerDelay =
+--            transitionFill (delay + staggerDelay)
+--
+--        ( leftColor, rightColor ) =
+--            treeColor "#95EDB3" "#24AC4B" env
+--    in
+--    Svg.svg [ width_ 11, height_ 13, viewBox_ 0 0 80 100 ]
+--        [ Svg.g [ fill "none", fillRule "evenodd" ]
+--            [ Svg.path [ fill "#453321", d "M34.1 51.8h6.8v36.7h-6.8z" ] []
+--            , Svg.path [ fill "#453321", d "M12.7 33.2l4.8-4.8L41 52l-4.8 4.8z" ] []
+--            , Svg.path [ fill "#453321", d "M62.5 33.2l-4.9-4.8L34 52l4.8 4.8z" ] []
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 0, d "M10.4 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
+--                , Svg.path [ animateFill 0, d "M.7 26.3c0-8 9.1-20.8 9.7-21.6V36a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
+--                ]
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 150, d "M37.5 18s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7V18.1z", fill leftColor ] []
+--                , Svg.path [ animateFill 150, d "M27.8 39.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
+--                ]
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 300, d "M37.5 0s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V0z", fill leftColor ] []
+--                , Svg.path [ animateFill 300, d "M27.8 21.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z", fill rightColor ] []
+--                ]
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 450, d "M51.3 11.9S61 25.3 61 33.5c0 5.4-4.3 9.7-9.7 9.7V12z", fill leftColor ] []
+--                , Svg.path [ animateFill 450, d "M41.7 33.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
+--                ]
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 550, d "M22.7 11.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V12z", fill leftColor ] []
+--                , Svg.path [ animateFill 550, d "M13 33.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
+--                ]
+--            , Svg.g [ fillRule "nonzero" ]
+--                [ Svg.path [ animateFill 650, d "M64.6 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
+--                , Svg.path [ animateFill 650, d "M55 26.3c0-8 9-20.8 9.6-21.6V36a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
+--                ]
+--            ]
+--        ]
+--
+--
+--transitionFill : Int -> Attribute msg
+--transitionFill delayMs =
+--    Transition.fill_ 500 [ Transition.delay delayMs, Transition.linear ]
+--
+--
+--treeColor left right env =
+--    ifAlive env ( left, right ) deadTreeColors
+--
+--
+--deadTreeColors : ( String, String )
+--deadTreeColors =
+--    ( "#C09E73", "#FFCD93" )

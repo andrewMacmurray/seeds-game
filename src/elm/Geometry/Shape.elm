@@ -8,14 +8,17 @@ module Geometry.Shape exposing
     , mirror
     , moveDown
     , moveUp
+    , placedAt
     , polygon
     , view
     )
 
 import Circle2d exposing (Circle2d)
 import Element exposing (Color)
+import Frame2d
 import Geometry.Svg as Svg
 import Pixels exposing (Pixels)
+import Point2d exposing (Point2d)
 import Polygon2d exposing (Polygon2d)
 import Simple.Animation exposing (Animation)
 import Svg exposing (Svg)
@@ -29,10 +32,18 @@ import Window exposing (Window)
 -- Shape
 
 
-type Shape
+type Shape msg
     = Polygon Polygon_
     | Circle Circle_
-    | Group (List Shape)
+    | Placed (Placed_ msg)
+    | Group (List (Shape msg))
+
+
+type alias Placed_ msg =
+    { svg : Svg msg
+    , point : Point2d Pixels Coords
+    , attributes : Attributes
+    }
 
 
 type alias Polygon_ =
@@ -50,7 +61,7 @@ type alias Shape_ shape =
 
 
 type alias Attributes =
-    { fill : Color
+    { fill : Maybe Color
     , mirror : Bool
     , hide : Bool
     , animation : Maybe Animation
@@ -70,12 +81,12 @@ type alias Coords =
 -- Construct
 
 
-group : List Shape -> Shape
+group : List (Shape msg) -> Shape msg
 group =
     Group
 
 
-polygon : Options -> Polygon2d Pixels Coords -> Shape
+polygon : Options -> Polygon2d Pixels Coords -> Shape msg
 polygon options shape_ =
     Polygon
         { shape = shape_
@@ -83,7 +94,7 @@ polygon options shape_ =
         }
 
 
-circle : Options -> Circle2d Pixels Coords -> Shape
+circle : Options -> Circle2d Pixels Coords -> Shape msg
 circle options shape_ =
     Circle
         { shape = shape_
@@ -91,9 +102,22 @@ circle options shape_ =
         }
 
 
+placedAt : Point2d Pixels Coords -> Svg msg -> Shape msg
+placedAt point svg =
+    Placed
+        { point = point
+        , svg = svg
+        , attributes = defaults_
+        }
+
+
 defaults : Options -> Attributes
 defaults options =
-    { fill = options.fill
+    { defaults_ | fill = Just options.fill }
+
+
+defaults_ =
+    { fill = Nothing
     , mirror = False
     , hide = False
     , animation = Nothing
@@ -104,12 +128,12 @@ defaults options =
 -- Customise
 
 
-mirror : Shape -> Shape
+mirror : Shape msg -> Shape msg
 mirror =
     update (\a -> { a | mirror = True })
 
 
-hideIf : Bool -> Shape -> Shape
+hideIf : Bool -> Shape msg -> Shape msg
 hideIf condition =
     if condition then
         hide
@@ -118,22 +142,22 @@ hideIf condition =
         identity
 
 
-hide : Shape -> Shape
+hide : Shape msg -> Shape msg
 hide =
     update (\a -> { a | hide = True })
 
 
-animate : Animation -> Shape -> Shape
+animate : Animation -> Shape msg -> Shape msg
 animate animation =
     update (\a -> { a | animation = Just animation })
 
 
-moveUp : Float -> Shape -> Shape
+moveUp : Float -> Shape msg -> Shape msg
 moveUp y =
     moveDown -y
 
 
-moveDown : Float -> Shape -> Shape
+moveDown : Float -> Shape msg -> Shape msg
 moveDown y shape =
     case shape of
         Polygon shape_ ->
@@ -145,8 +169,10 @@ moveDown y shape =
         Group shapes ->
             Group (List.map (moveDown y) shapes)
 
+        Placed shape_ ->
+            Placed { shape_ | point = Point2d.translateBy (Geometry.down y) shape_.point }
 
-update : (Attributes -> Attributes) -> Shape -> Shape
+
 update f shape =
     case shape of
         Polygon p ->
@@ -158,8 +184,10 @@ update f shape =
         Group shapes ->
             Group (List.map (update f) shapes)
 
+        Placed x ->
+            Placed (update_ f x)
 
-update_ : (Attributes -> Attributes) -> Shape_ shape -> Shape_ shape
+
 update_ f shape_ =
     { shape_ | attributes = f shape_.attributes }
 
@@ -168,12 +196,12 @@ update_ f shape_ =
 -- View
 
 
-fullScreen : Window -> Shape -> Svg msg
+fullScreen : Window -> Shape msg -> Svg msg
 fullScreen window_ shape =
     Svg.window window_ [] [ view window_ shape ]
 
 
-view : Window -> Shape -> Svg msg
+view : Window -> Shape msg -> Svg msg
 view window_ shape =
     case shape of
         Polygon shape_ ->
@@ -189,15 +217,23 @@ view window_ shape =
                 |> applyAnimation shape_
 
         Group shapes ->
-            Svg.g [] (List.map (view window_) shapes)
+            Svg.g_ [] (List.map (view window_) shapes)
+
+        Placed placed_ ->
+            Svg.placeIn (Frame2d.atPoint placed_.point) placed_.svg
+                |> applyMirror placed_ window_
+                |> applyHidden placed_
+                |> applyAnimation placed_
 
 
 fill : Shape_ shape -> Svg.Attribute msg
 fill shape =
-    Svg.fill_ shape.attributes.fill
+    shape.attributes.fill
+        |> Maybe.map Svg.fill_
+        |> Maybe.withDefault Svg.empty
 
 
-applyMirror : Shape_ shape -> Window -> Svg msg -> Svg msg
+applyMirror : { shape | attributes : Attributes } -> Window -> Svg msg -> Svg msg
 applyMirror shape_ window_ s =
     if shape_.attributes.mirror then
         Geometry.mirror window_ s
@@ -206,16 +242,16 @@ applyMirror shape_ window_ s =
         s
 
 
-applyHidden : Shape_ shape -> Svg msg -> Svg msg
+applyHidden : { shape | attributes : Attributes } -> Svg msg -> Svg msg
 applyHidden shape_ s =
     if shape_.attributes.hide then
-        Svg.g [] []
+        Svg.g_ [] []
 
     else
         s
 
 
-applyAnimation : Shape_ shape -> Svg msg -> Svg msg
+applyAnimation : { shape | attributes : Attributes } -> Svg msg -> Svg msg
 applyAnimation shape_ s =
     case shape_.attributes.animation of
         Just anim ->

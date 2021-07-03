@@ -10,7 +10,7 @@ import Geometry.Shape as Shape exposing (Shape)
 import Window exposing (Window)
 
 
-hills : Window -> Shape
+hills : Window -> Shape msg
 hills window =
     Shape.moveDown 75
         (RollingHills.static

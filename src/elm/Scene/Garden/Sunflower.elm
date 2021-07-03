@@ -10,7 +10,7 @@ import Geometry.Shape exposing (Shape)
 import Window exposing (Window)
 
 
-hills : Window -> Shape
+hills : Window -> Shape msg
 hills window =
     SteepValley.static
         { window = window

@@ -60,7 +60,7 @@ isIncomplete levels =
     Progress.worldIsCompleted levels >> not
 
 
-getHill : Window -> Seed -> Shape
+getHill : Window -> Seed -> Shape msg
 getHill window seed =
     case seed of
         Seed.Sunflower ->

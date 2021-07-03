@@ -31,7 +31,7 @@ hills window =
     Shape.fullScreen window (hills_ window)
 
 
-hills_ : Window -> Shape
+hills_ : Window -> Shape msg
 hills_ window =
     RollingHills.animated
         { window = window

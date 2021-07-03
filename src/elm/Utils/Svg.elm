@@ -3,6 +3,7 @@ module Utils.Svg exposing
     , cx_
     , cy_
     , disableTouch
+    , empty
     , fill_
     , full
     , fullWidth
@@ -190,3 +191,8 @@ originCenter_ =
 disableTouch : Attribute msg
 disableTouch =
     Svg.Attributes.class "touch-disabled"
+
+
+empty : Attribute msg
+empty =
+    Svg.Attributes.class ""

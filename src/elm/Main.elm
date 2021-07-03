@@ -24,6 +24,7 @@ import Scene.Retry as Retry
 import Scene.Summary as Summary
 import Scene.Title as Title
 import Time exposing (millisToPosix)
+import Utils.Debug as Debug
 import Utils.Update as Update exposing (andCmd, updateModel, updateWith)
 import Window exposing (Window)
 
@@ -106,6 +107,7 @@ init flags =
     initialContext flags
         |> Title.init
         |> updateWith TitleMsg initialState
+        |> Debug.trigger InitIntro
 
 
 initialState : Title.Model -> Model
