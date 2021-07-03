@@ -13,6 +13,7 @@ import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Simple.Animation as Animation exposing (Animation)
+import Utils.Cycle as Cycle
 import Utils.Geometry as Geometry
 import Window exposing (Window, vh, vw)
 
@@ -33,11 +34,7 @@ type alias StaticOptions =
 
 
 type alias Colors =
-    { one : Colors_
-    , two : Colors_
-    , three : Colors_
-    , four : Colors_
-    }
+    Cycle.Four Colors_
 
 
 type alias Colors_ =
@@ -78,7 +75,7 @@ yellows =
 -- View
 
 
-animated : AnimatedOptions -> Shape
+animated : AnimatedOptions -> Shape msg
 animated options =
     shape
         { window = options.window
@@ -87,7 +84,7 @@ animated options =
         }
 
 
-static : StaticOptions -> Shape
+static : StaticOptions -> Shape msg
 static options =
     shape
         { window = options.window
@@ -96,7 +93,7 @@ static options =
         }
 
 
-shape : Options_ -> Shape
+shape : Options_ -> Shape msg
 shape options =
     List.range 0 (maxHills - 1)
         |> List.map (cycleColors options)
@@ -106,7 +103,7 @@ shape options =
         |> Shape.moveUp (Window.whenNarrow 250 200 options.window)
 
 
-toHills : Options_ -> Int -> ( Color, Color ) -> List Shape
+toHills : Options_ -> Int -> ( Color, Color ) -> List (Shape msg)
 toHills options i ( l, r ) =
     hillPair options
         { order = i
@@ -125,22 +122,11 @@ type alias Hill =
 
 
 cycleColors : Options_ -> Int -> Colors_
-cycleColors options i =
-    case modBy 4 i of
-        0 ->
-            options.colors.one
-
-        1 ->
-            options.colors.two
-
-        2 ->
-            options.colors.three
-
-        _ ->
-            options.colors.four
+cycleColors options =
+    Cycle.four options.colors
 
 
-hillPair : Options_ -> Hill -> List Shape
+hillPair : Options_ -> Hill -> List (Shape msg)
 hillPair options hillOptions =
     [ { fill = hillOptions.right
       , offset = hillOptions.offset
@@ -158,7 +144,7 @@ hillPair options hillOptions =
     ]
 
 
-animateHill : Options_ -> Hill -> Shape -> Shape
+animateHill : Options_ -> Hill -> Shape msg -> Shape msg
 animateHill options hillOptions shape_ =
     case options.animation of
         Animated delay ->
@@ -175,7 +161,7 @@ fadeIn delay options =
         ]
 
 
-hill : { fill : Color, offset : Float, window : Window } -> Shape
+hill : { fill : Color, offset : Float, window : Window } -> Shape msg
 hill { fill, offset, window } =
     Shape.circle { fill = fill } (hill_ offset window)
 

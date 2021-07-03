@@ -13,6 +13,7 @@ import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Simple.Animation as Animation
+import Utils.Cycle as Cycle
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 
@@ -33,11 +34,7 @@ type alias StaticOptions =
 
 
 type alias Colors =
-    { one : Colors_
-    , two : Colors_
-    , three : Colors_
-    , four : Colors_
-    }
+    Cycle.Four Colors_
 
 
 type alias Colors_ =
@@ -97,7 +94,7 @@ purples =
 -- View
 
 
-animated : AnimatedOptions -> Shape
+animated : AnimatedOptions -> Shape msg
 animated options =
     shape_
         { window = options.window
@@ -106,7 +103,7 @@ animated options =
         }
 
 
-static : StaticOptions -> Shape
+static : StaticOptions -> Shape msg
 static options =
     shape_
         { window = options.window
@@ -115,10 +112,12 @@ static options =
         }
 
 
-shape_ : Options_ -> Shape
+shape_ : Options_ -> Shape msg
 shape_ options =
     List.range 0 (maxHills - 1)
-        |> List.map (cycleHills options.colors >> hillTrio options)
+        |> List.map (cycleColors options.colors)
+        |> List.indexedMap toHillTrio
+        |> List.map (hillTrio options)
         |> Shape.group
         |> Shape.moveDown (sceneOffset options.window)
 
@@ -128,40 +127,9 @@ sceneOffset =
     Window.whenNarrow 400 350
 
 
-cycleHills : Colors -> Int -> HillTrio
-cycleHills colors i =
-    case modBy 4 i of
-        0 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.one.left
-            , middle = colors.one.middle
-            , right = colors.one.right
-            }
-
-        1 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.two.left
-            , middle = colors.two.middle
-            , right = colors.two.right
-            }
-
-        2 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.three.left
-            , middle = colors.three.middle
-            , right = colors.three.right
-            }
-
-        _ ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.four.left
-            , middle = colors.four.middle
-            , right = colors.four.right
-            }
+cycleColors : Colors -> Int -> Colors_
+cycleColors =
+    Cycle.four
 
 
 toOffset : Int -> Float
@@ -178,7 +146,17 @@ type alias HillTrio =
     }
 
 
-hillTrio : Options_ -> HillTrio -> Shape
+toHillTrio : Int -> Colors_ -> HillTrio
+toHillTrio i colors =
+    { order = i
+    , offset = toOffset i
+    , left = colors.left
+    , middle = colors.middle
+    , right = colors.right
+    }
+
+
+hillTrio : Options_ -> HillTrio -> Shape msg
 hillTrio options { offset, right, middle, left, order } =
     Shape.group
         [ roundHill offset right options
@@ -194,7 +172,7 @@ hillTrio options { offset, right, middle, left, order } =
 -- Animation
 
 
-animateHill : Options_ -> Int -> Animation.Millis -> Shape -> Shape
+animateHill : Options_ -> Int -> Animation.Millis -> Shape msg -> Shape msg
 animateHill options order offset shape =
     case options.animation of
         Animated delay ->
@@ -213,12 +191,12 @@ animateHill options order offset shape =
 -- Shapes
 
 
-middleHill : Float -> Options_ -> Color -> Shape
+middleHill : Float -> Options_ -> Color -> Shape msg
 middleHill y options c =
     Shape.circle { fill = c } (middleHill_ y options.window)
 
 
-roundHill : Float -> Color -> Options_ -> Shape
+roundHill : Float -> Color -> Options_ -> Shape msg
 roundHill y color options =
     Shape.circle { fill = color } (roundHill_ y options.window)
 
