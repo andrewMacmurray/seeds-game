@@ -5,6 +5,8 @@ module Scene.Intro.DyingLandscape exposing
     )
 
 import Element exposing (..)
+import Element.Icon.Tree.Elm as Elm
+import Element.Icon.Tree.Fir as Fir
 import Element.Palette as Palette
 import Geometry.Hill.Steep as Steep
 import Geometry.Shape as Shape exposing (Shape)
@@ -55,7 +57,9 @@ type alias Colors =
 
 
 type alias Colors_ =
-    ( Color, Color )
+    { left : Color
+    , right : Color
+    }
 
 
 type alias Options_ =
@@ -70,9 +74,9 @@ type HillsAnimation
     | Animated Animation.Millis
 
 
-maxHills : number
+maxHills : Int
 maxHills =
-    4
+    List.length sprites
 
 
 
@@ -81,9 +85,9 @@ maxHills =
 
 greens : Colors
 greens =
-    { one = ( Palette.green8, Palette.green3 )
-    , two = ( Palette.green4, Palette.green2 )
-    , three = ( Palette.green1, Palette.green6 )
+    { one = { left = Palette.green8, right = Palette.green3 }
+    , two = { left = Palette.green4, right = Palette.green2 }
+    , three = { left = Palette.green1, right = Palette.green6 }
     }
 
 
@@ -93,9 +97,8 @@ greens =
 
 shape_ : Options_ -> Shape msg
 shape_ options =
-    List.range 0 (maxHills - 1)
-        |> List.map (cycleColors options)
-        |> List.indexedMap toHillConfig
+    sprites
+        |> List.indexedMap (toHillConfig options)
         |> List.map (toHillPair options)
         |> List.concat
         |> List.reverse
@@ -103,35 +106,69 @@ shape_ options =
         |> Shape.moveUp 200
 
 
-cycleColors : Options_ -> Int -> ( Color, Color )
+sprites : List (Steep.SpriteLayer msg)
+sprites =
+    List.reverse
+        [ { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
+          , right = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
+          }
+        , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
+          , right = Steep.sprites { inner = Just fir, middle = Just fir, outer = Just fir }
+          }
+        , { left = Steep.sprites { inner = Nothing, middle = Just elm, outer = Just fir }
+          , right = Steep.sprites { inner = Just fir, middle = Just elm, outer = Just fir }
+          }
+        , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
+          , right = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just fir }
+          }
+        ]
+
+
+fir : Steep.Sprite msg
+fir =
+    Steep.behind Fir.alive
+
+
+elm : Steep.Sprite msg
+elm =
+    Steep.inFront Elm.alive
+
+
+cycleColors : Options_ -> Int -> Colors_
 cycleColors options =
     Cycle.three options.colors
 
 
-type alias HillConfig =
+type alias HillConfig msg =
     { order : Int
     , offset : Float
-    , left : Color
-    , right : Color
+    , left : Steep.Side msg
+    , right : Steep.Side msg
     }
 
 
-toHillConfig : Int -> ( Color, Color ) -> HillConfig
-toHillConfig i ( left, right ) =
+toHillConfig : Options_ -> Int -> Steep.SpriteLayer msg -> HillConfig msg
+toHillConfig options i { left, right } =
     { order = i
     , offset = 750 - toFloat (i * 180)
-    , left = left
-    , right = right
+    , left =
+        { sprites = left
+        , color = .left (cycleColors options (i + 1))
+        }
+    , right =
+        { sprites = right
+        , color = .right (cycleColors options (i + 1))
+        }
     }
 
 
-toHillPair : Options_ -> HillConfig -> List (Shape msg)
+toHillPair : Options_ -> HillConfig msg -> List (Shape msg)
 toHillPair options config =
     Steep.hillPair
         { window = options.window
         , offset = config.offset
-        , left = { color = config.left }
-        , right = { color = config.right }
+        , left = config.left
+        , right = config.right
         , animation = animation options config
         }
 
@@ -140,7 +177,7 @@ toHillPair options config =
 -- Animate
 
 
-animation : Options_ -> HillConfig -> Maybe Animation
+animation : Options_ -> HillConfig msg -> Maybe Animation
 animation options config =
     case options.animation of
         Animated _ ->
@@ -150,7 +187,7 @@ animation options config =
             Nothing
 
 
-appear : Options_ -> HillConfig -> Animation
+appear : Options_ -> HillConfig msg -> Animation
 appear options config =
     Animation.fromTo
         { duration = 5000
@@ -159,7 +196,7 @@ appear options config =
             , Animation.delay (maxHills - (config.order + 1) * 150)
             ]
         }
-        [ P.y ((vh options.window / 2) + vh options.window / (maxHills - toFloat config.order)) ]
+        [ P.y ((vh options.window / 2) + vh options.window / toFloat (maxHills - config.order)) ]
         [ P.y 0 ]
 
 

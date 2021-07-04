@@ -1,5 +1,6 @@
 module Utils.List exposing
-    ( groupWhile
+    ( flattenMaybes
+    , groupWhile
     , inverseRange
     , prepend
     , splitAt
@@ -96,3 +97,8 @@ inverseRange from length =
 prepend : a -> List a -> List a
 prepend x xs =
     xs ++ [ x ]
+
+
+flattenMaybes : List (Maybe a) -> List a
+flattenMaybes =
+    List.filterMap identity

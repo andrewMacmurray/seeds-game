@@ -126,8 +126,8 @@ toHillPair options config =
     Steep.hillPair
         { window = options.window
         , offset = config.offset
-        , left = { color = config.left }
-        , right = { color = config.right }
+        , left = Steep.plainSide config.left
+        , right = Steep.plainSide config.right
         , animation = animation options config
         }
 
