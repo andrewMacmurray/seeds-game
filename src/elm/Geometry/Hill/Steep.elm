@@ -8,6 +8,7 @@ module Geometry.Hill.Steep exposing
     , inFront
     , noSprites
     , plainSide
+    , spriteLayers
     , sprites
     )
 
@@ -79,6 +80,11 @@ type alias Hill msg =
 
 
 -- Sprites
+
+
+spriteLayers : List (SpriteLayer msg) -> List (SpriteLayer msg)
+spriteLayers =
+    List.reverse
 
 
 sprites : Sprites msg -> Sprites msg

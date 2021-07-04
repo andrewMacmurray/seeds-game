@@ -108,7 +108,7 @@ shape_ options =
 
 sprites : List (Steep.SpriteLayer msg)
 sprites =
-    List.reverse
+    Steep.spriteLayers
         [ { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
           , right = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
           }
