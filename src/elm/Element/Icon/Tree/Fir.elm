@@ -1,4 +1,4 @@
-module Element.Icon.Tree.Firr exposing (alive)
+module Element.Icon.Tree.Fir exposing (alive)
 
 import Element.Palette as Palette
 import Simple.Transition as Transition
@@ -8,8 +8,8 @@ import Utils.Svg as Svg exposing (..)
 import Utils.Transition as Transition
 
 
-alive : Int -> Svg msg
-alive size =
+alive : Svg msg
+alive =
     Svg.svg
         [ viewBox_ 0 0 40 100
         , Svg.width_ 40

@@ -8,7 +8,7 @@ module Geometry.Shape exposing
     , mirror
     , moveDown
     , moveUp
-    , placedAt
+    , placeAt
     , polygon
     , view
     )
@@ -102,8 +102,8 @@ circle options shape_ =
         }
 
 
-placedAt : Point2d Pixels Coords -> Svg msg -> Shape msg
-placedAt point svg =
+placeAt : Point2d Pixels Coords -> Svg msg -> Shape msg
+placeAt point svg =
     Placed
         { point = point
         , svg = svg
@@ -116,6 +116,7 @@ defaults options =
     { defaults_ | fill = Just options.fill }
 
 
+defaults_ : Attributes
 defaults_ =
     { fill = Nothing
     , mirror = False

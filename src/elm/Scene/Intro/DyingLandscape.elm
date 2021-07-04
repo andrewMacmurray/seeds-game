@@ -4,21 +4,15 @@ module Scene.Intro.DyingLandscape exposing
     , view
     )
 
-import Axis2d exposing (Axis2d)
-import Direction2d
 import Element exposing (..)
-import Element.Icon.Tree.Firr as Firr
 import Element.Palette as Palette
+import Geometry.Hill.Steep as Steep
 import Geometry.Shape as Shape exposing (Shape)
-import Pixels exposing (Pixels)
-import Point2d
-import Polygon2d exposing (Polygon2d)
 import Simple.Animation as Animation exposing (Animation)
 import Simple.Animation.Property as P
 import Svg exposing (Svg)
 import Utils.Cycle as Cycle
-import Utils.Geometry exposing (down)
-import Window exposing (Window, vh, vw)
+import Window exposing (Window, vh)
 
 
 
@@ -133,33 +127,27 @@ toHillConfig i ( left, right ) =
 
 toHillPair : Options_ -> HillConfig -> List (Shape msg)
 toHillPair options config =
-    [ { offset = config.offset
-      , color = config.right
-      , window = options.window
-      }
-        |> hill
-        |> withAnimation options config
-    , { offset = config.offset
-      , color = config.left
-      , window = options.window
-      }
-        |> mirrored
-        |> withAnimation options config
-    ]
+    Steep.hillPair
+        { window = options.window
+        , offset = config.offset
+        , left = { color = config.left }
+        , right = { color = config.right }
+        , animation = animation options config
+        }
 
 
 
 -- Animate
 
 
-withAnimation : Options_ -> HillConfig -> Shape msg -> Shape msg
-withAnimation options config shape =
+animation : Options_ -> HillConfig -> Maybe Animation
+animation options config =
     case options.animation of
         Animated _ ->
-            Shape.animate (appear options config) shape
+            Just (appear options config)
 
         None ->
-            shape
+            Nothing
 
 
 appear : Options_ -> HillConfig -> Animation
@@ -177,57 +165,6 @@ appear options config =
 
 
 -- Shape
-
-
-mirrored : { offset : Float, color : Color, window : Window } -> Shape msg
-mirrored =
-    Shape.mirror << hill
-
-
-hill : { offset : Float, color : Element.Color, window : Window } -> Shape msg
-hill { offset, color, window } =
-    Shape.group
-        [ Shape.moveDown (offset - 75)
-            (Shape.placedAt
-                (Point2d.along (axis window) (Pixels.pixels 200))
-                (Firr.alive 100)
-            )
-        , Shape.polygon { fill = color } (hill_ offset window)
-        ]
-
-
-hill_ : Float -> Window -> Polygon2d Pixels coordinates
-hill_ y window =
-    let
-        p1 =
-            Point2d.along (axis window) (Pixels.pixels (vw window))
-
-        p2 =
-            Point2d.along (axis window) (Pixels.pixels -(vw window))
-    in
-    Polygon2d.translateBy (down y)
-        (Polygon2d.singleLoop
-            [ p1
-            , p2
-            , Point2d.translateBy (down hillHeight) p2
-            , Point2d.translateBy (down hillHeight) p1
-            ]
-        )
-
-
-hillHeight : number
-hillHeight =
-    300
-
-
-axis : Window -> Axis2d Pixels coordinates
-axis w =
-    Axis2d.withDirection
-        (Direction2d.degrees -26)
-        (Point2d.pixels (vw w / 2) (vh w - 450))
-
-
-
 --let
 --    hillColor aliveColor deadColor =
 --        ifAlive env aliveColor deadColor
