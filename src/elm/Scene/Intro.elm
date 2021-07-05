@@ -86,7 +86,7 @@ initialState context =
 introSequence : Cmd Msg
 introSequence =
     Delay.sequence
-        [ ( 100, SetBackground Palette.green9 )
+        [ ( 100, SetBackground Palette.green10 )
         , ( 1000, ShowDyingLandscape )
         , ( 4000, SetBackground Palette.lightGreyYellow )
         , ( 1000, ShowText )

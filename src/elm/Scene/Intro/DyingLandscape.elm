@@ -141,8 +141,8 @@ pine =
 
 
 cycleColors : Options_ -> Int -> Colors_
-cycleColors options i =
-    Cycle.three options.colors (i + 0)
+cycleColors options =
+    Cycle.three options.colors
 
 
 type alias HillConfig msg =

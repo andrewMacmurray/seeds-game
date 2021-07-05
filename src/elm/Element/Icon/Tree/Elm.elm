@@ -7,12 +7,21 @@ import Svg.Attributes exposing (..)
 import Utils.Svg exposing (..)
 
 
+
+-- Elm Tree
+
+
+scale : Float
+scale =
+    1.2
+
+
 alive : Svg msg
 alive =
     Svg.svg
-        [ width_ 96
-        , height_ 180
-        , viewBox_ 0 0 80 150
+        [ width_ (vw * scale)
+        , height_ (vh * scale)
+        , viewBox_ 0 0 vw vh
         ]
         [ Svg.path [ fill_ trunkColor, d "M28.3 78.4h6.2v35.5h-6.2z" ] []
         , Svg.path [ fill_ trunkColor, d "M9.6 61.2l3.4-3.5 21.3 20.6-3.4 3.5z" ] []
@@ -27,6 +36,20 @@ alive =
         ]
 
 
+
+-- Config
+
+
+vw : number
+vw =
+    80
+
+
+vh : number
+vh =
+    150
+
+
 trunkColor : Color
 trunkColor =
     Palette.darkBrown
@@ -34,7 +57,7 @@ trunkColor =
 
 leftColor : Color
 leftColor =
-    Palette.green7
+    Palette.green4
 
 
 rightColor : Color
