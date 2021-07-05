@@ -7,6 +7,7 @@ module Scene.Intro.DyingLandscape exposing
 import Element exposing (..)
 import Element.Icon.Tree.Elm as Elm
 import Element.Icon.Tree.Fir as Fir
+import Element.Icon.Tree.Pine as Pine
 import Element.Palette as Palette
 import Geometry.Hill.Steep as Steep
 import Geometry.Shape as Shape exposing (Shape)
@@ -41,7 +42,7 @@ view : Window -> Environment -> State -> Svg msg
 view window env state =
     Shape.fullScreen window
         (shape_
-            { animation = Animated 0
+            { animation = None
             , colors = greens
             , window = window
             }
@@ -115,7 +116,7 @@ sprites =
         , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
           , right = Steep.sprites { inner = Just fir, middle = Just fir, outer = Just fir }
           }
-        , { left = Steep.sprites { inner = Nothing, middle = Just elm, outer = Just fir }
+        , { left = Steep.sprites { inner = Just fir, middle = Just pine, outer = Just fir }
           , right = Steep.sprites { inner = Just fir, middle = Just elm, outer = Just fir }
           }
         , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
@@ -134,9 +135,14 @@ elm =
     Steep.inFront Elm.alive
 
 
+pine : Steep.Sprite msg
+pine =
+    Steep.inFront Pine.alive
+
+
 cycleColors : Options_ -> Int -> Colors_
-cycleColors options =
-    Cycle.three options.colors
+cycleColors options i =
+    Cycle.three options.colors (i + 0)
 
 
 type alias HillConfig msg =
@@ -153,11 +159,11 @@ toHillConfig options i { left, right } =
     , offset = 750 - toFloat (i * 180)
     , left =
         { sprites = left
-        , color = .left (cycleColors options (i + 1))
+        , color = .left (cycleColors options i)
         }
     , right =
         { sprites = right
-        , color = .right (cycleColors options (i + 1))
+        , color = .right (cycleColors options i)
         }
     }
 
@@ -377,94 +383,6 @@ appear options config =
 --            , Transition.opacity_ 400 [ Transition.linear, Transition.delay delay ]
 --            , translateY offset
 --            ]
---
---
---firrTree : Environment -> Int -> Svg msg
---firrTree env delay =
---    let
---        animateFill =
---            transitionFill delay
---
---        ( leftColor, rightColor ) =
---            treeColor "#24AC4B" "#95EDB3" env
---    in
---    Svg.svg [ width_ 4, height_ 10, viewBox_ 0 0 40 100 ]
---        [ Svg.g [ fill "none", fillRule "evenodd" ]
---            [ Svg.path [ fill "#6D4D2D", d "M12.2 41h6.6V75h-6.6z" ] []
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill, d "M15.6.3s14.8 20.4 14.8 32.9c0 8.2-6.6 14.8-14.8 14.8V.4z", fill leftColor ] []
---                , Svg.path [ animateFill, d "M.8 33.2C.8 21 14.7 1.6 15.5.4V48C7.4 48 .8 41.4.8 33.2z", fill rightColor ] []
---                ]
---            ]
---        ]
---
---
---elmTree : Environment -> Int -> Svg msg
---elmTree env delay =
---    let
---        animateFill staggerDelay =
---            transitionFill (delay + staggerDelay)
---
---        ( leftColor, rightColor ) =
---            treeColor "#32B559" "#4CE483" env
---    in
---    Svg.svg [ width_ 11, height_ 17, viewBox_ 0 0 80 150 ]
---        [ Svg.g [ fill "none", fillRule "evenodd" ]
---            [ Svg.path [ fill "#6D4D2D", d "M28.3 78.4h6.2v35.5h-6.2z" ] []
---            , Svg.path [ fill "#6D4D2D", d "M9.6 61.2l3.4-3.5 21.3 20.6-3.4 3.5z" ] []
---            , Svg.path [ fill "#6D4D2D", d "M67.3 47.3L64 44 28 78.5l3.4 3.4z" ] []
---            , Svg.path [ fill "#6D4D2D", d "M15.6 24.6l3.5-3.6 35.8 34.6-3.4 3.6z" ] []
---            , Svg.path [ animateFill 50, d "M65 25v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
---            , Svg.path [ animateFill 50, d "M64 25v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
---            , Svg.path [ animateFill 100, d "M19 0v25h-.5A12.5 12.5 0 1 1 19 0z", fill leftColor ] []
---            , Svg.path [ animateFill 100, d "M18 0v25h.5A12.5 12.5 0 1 0 18 0z", fill rightColor ] []
---            , Svg.path [ animateFill 150, d "M13 38v25h-.5a12.5 12.5 0 1 1 .5-25z", fill leftColor ] []
---            , Svg.path [ animateFill 150, d "M12 38v25h.5a12.5 12.5 0 1 0-.5-25z", fill rightColor ] []
---            ]
---        ]
---
---
---pineTree : Environment -> Int -> Svg msg
---pineTree env delay =
---    let
---        animateFill staggerDelay =
---            transitionFill (delay + staggerDelay)
---
---        ( leftColor, rightColor ) =
---            treeColor "#95EDB3" "#24AC4B" env
---    in
---    Svg.svg [ width_ 11, height_ 13, viewBox_ 0 0 80 100 ]
---        [ Svg.g [ fill "none", fillRule "evenodd" ]
---            [ Svg.path [ fill "#453321", d "M34.1 51.8h6.8v36.7h-6.8z" ] []
---            , Svg.path [ fill "#453321", d "M12.7 33.2l4.8-4.8L41 52l-4.8 4.8z" ] []
---            , Svg.path [ fill "#453321", d "M62.5 33.2l-4.9-4.8L34 52l4.8 4.8z" ] []
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 0, d "M10.4 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
---                , Svg.path [ animateFill 0, d "M.7 26.3c0-8 9.1-20.8 9.7-21.6V36a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
---                ]
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 150, d "M37.5 18s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7V18.1z", fill leftColor ] []
---                , Svg.path [ animateFill 150, d "M27.8 39.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
---                ]
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 300, d "M37.5 0s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V0z", fill leftColor ] []
---                , Svg.path [ animateFill 300, d "M27.8 21.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z", fill rightColor ] []
---                ]
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 450, d "M51.3 11.9S61 25.3 61 33.5c0 5.4-4.3 9.7-9.7 9.7V12z", fill leftColor ] []
---                , Svg.path [ animateFill 450, d "M41.7 33.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
---                ]
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 550, d "M22.7 11.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V12z", fill leftColor ] []
---                , Svg.path [ animateFill 550, d "M13 33.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
---                ]
---            , Svg.g [ fillRule "nonzero" ]
---                [ Svg.path [ animateFill 650, d "M64.6 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
---                , Svg.path [ animateFill 650, d "M55 26.3c0-8 9-20.8 9.6-21.6V36a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
---                ]
---            ]
---        ]
---
 --
 --transitionFill : Int -> Attribute msg
 --transitionFill delayMs =
