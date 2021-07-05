@@ -110,18 +110,18 @@ shape_ options =
 sprites : List (Steep.SpriteLayer msg)
 sprites =
     Steep.spriteLayers
-        [ { left = Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
-          , right = Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
-          }
-        , { left = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just doubleFir }
-          , right = Steep.sprites { inner = Just singleFir, middle = Just singleFir, outer = Just singleFir }
-          }
-        , { left = Steep.sprites { inner = Just doubleFir, middle = Just pine, outer = Just doubleFir }
-          , right = Steep.sprites { inner = Just doubleFir, middle = Just elm, outer = Nothing }
-          }
-        , { left = Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
-          , right = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just singleFir }
-          }
+        [ ( Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
+          , Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
+          )
+        , ( Steep.sprites { inner = Nothing, middle = Nothing, outer = Just doubleFir }
+          , Steep.sprites { inner = Just singleFir, middle = Just singleFir, outer = Just singleFir }
+          )
+        , ( Steep.sprites { inner = Just doubleFir, middle = Just pine, outer = Just doubleFir }
+          , Steep.sprites { inner = Just doubleFir, middle = Just elm, outer = Nothing }
+          )
+        , ( Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
+          , Steep.sprites { inner = Nothing, middle = Nothing, outer = Just singleFir }
+          )
         ]
 
 
@@ -159,7 +159,7 @@ type alias HillConfig msg =
 
 
 toHillConfig : Options_ -> Int -> Steep.SpriteLayer msg -> HillConfig msg
-toHillConfig options i { left, right } =
+toHillConfig options i ( left, right ) =
     { order = i
     , offset = 750 - toFloat (i * 180)
     , left =

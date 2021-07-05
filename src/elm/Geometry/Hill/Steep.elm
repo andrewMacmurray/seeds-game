@@ -46,9 +46,7 @@ type alias Side msg =
 
 
 type alias SpriteLayer msg =
-    { left : Sprites msg
-    , right : Sprites msg
-    }
+    ( Sprites msg, Sprites msg )
 
 
 type alias Sprites msg =
