@@ -59,7 +59,7 @@ type alias Sprites msg =
 
 
 type alias Sprite msg =
-    { svg : Svg msg
+    { sprites : List (Svg msg)
     , position : Position
     }
 
@@ -107,16 +107,16 @@ noSprites =
     }
 
 
-inFront : Svg msg -> Sprite msg
+inFront : List (Svg msg) -> Sprite msg
 inFront svg =
-    { svg = svg
+    { sprites = svg
     , position = InFront
     }
 
 
-behind : Svg msg -> Sprite msg
+behind : List (Svg msg) -> Sprite msg
 behind svg =
-    { svg = svg
+    { sprites = svg
     , position = Behind
     }
 
@@ -157,27 +157,27 @@ hill options =
         |> animate options
 
 
-arrangeAroundHill : Hill msg -> List ( Position, Shape msg ) -> List (Shape msg)
+arrangeAroundHill : Hill msg -> List ( Position, List (Shape msg) ) -> List (Shape msg)
 arrangeAroundHill options =
     List.foldl arrange [ hill_ options ]
 
 
-arrange : ( Position, Shape msg ) -> List (Shape msg) -> List (Shape msg)
-arrange ( position, h ) xs =
+arrange : ( Position, List (Shape msg) ) -> List (Shape msg) -> List (Shape msg)
+arrange ( position, h ) sx =
     case position of
         InFront ->
-            xs ++ [ h ]
+            sx ++ h
 
         Behind ->
-            h :: xs
+            h ++ sx
 
 
-sprites_ : Hill msg -> List ( Position, Shape msg )
+sprites_ : Hill msg -> List ( Position, List (Shape msg) )
 sprites_ options =
     List.flattenMaybes
-        [ Maybe.map (sprite options 500) options.sprites.outer
-        , Maybe.map (sprite options 300) options.sprites.middle
-        , Maybe.map (sprite options 150) options.sprites.inner
+        [ Maybe.map (spritesWithPosition options 500) options.sprites.outer
+        , Maybe.map (spritesWithPosition options 320) options.sprites.middle
+        , Maybe.map (spritesWithPosition options 100) options.sprites.inner
         ]
 
 
@@ -193,18 +193,23 @@ animate options shape =
         |> Maybe.withDefault shape
 
 
-sprite : Hill msg -> Float -> Sprite msg -> ( Position, Shape msg )
-sprite options offset sprite_ =
+spritesWithPosition : Hill msg -> Float -> Sprite msg -> ( Position, List (Shape msg) )
+spritesWithPosition options offset sprite_ =
     ( sprite_.position
-    , Shape.moveDown (options.offset - 75)
+    , List.indexedMap (toSprite options offset) sprite_.sprites
+    )
+
+
+toSprite : Hill msg -> Float -> Int -> Svg msg -> Shape msg
+toSprite options offset i sprite_ =
+    Shape.moveDown (options.offset - 75)
         (Shape.placeAt
             (Point2d.along
                 (axis options.window)
-                (Pixels.pixels offset)
+                (Pixels.pixels (offset + (toFloat i * 40)))
             )
-            sprite_.svg
+            sprite_
         )
-    )
 
 
 hillPolygon : Hill msg -> Polygon2d Pixels coordinates

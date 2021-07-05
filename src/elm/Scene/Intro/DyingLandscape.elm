@@ -110,34 +110,39 @@ shape_ options =
 sprites : List (Steep.SpriteLayer msg)
 sprites =
     Steep.spriteLayers
-        [ { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
-          , right = Steep.sprites { inner = Nothing, middle = Just fir, outer = Nothing }
+        [ { left = Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
+          , right = Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
           }
-        , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
-          , right = Steep.sprites { inner = Just fir, middle = Just fir, outer = Just fir }
+        , { left = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just doubleFir }
+          , right = Steep.sprites { inner = Just singleFir, middle = Just singleFir, outer = Just singleFir }
           }
-        , { left = Steep.sprites { inner = Just fir, middle = Just pine, outer = Just fir }
-          , right = Steep.sprites { inner = Just fir, middle = Just elm, outer = Just fir }
+        , { left = Steep.sprites { inner = Just doubleFir, middle = Just pine, outer = Just doubleFir }
+          , right = Steep.sprites { inner = Just doubleFir, middle = Just elm, outer = Nothing }
           }
-        , { left = Steep.sprites { inner = Nothing, middle = Just fir, outer = Just fir }
-          , right = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just fir }
+        , { left = Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
+          , right = Steep.sprites { inner = Nothing, middle = Nothing, outer = Just singleFir }
           }
         ]
 
 
-fir : Steep.Sprite msg
-fir =
-    Steep.behind Fir.alive
+doubleFir : Steep.Sprite msg
+doubleFir =
+    Steep.behind [ Fir.alive, Fir.alive ]
+
+
+singleFir : Steep.Sprite msg
+singleFir =
+    Steep.behind [ Fir.alive ]
 
 
 elm : Steep.Sprite msg
 elm =
-    Steep.inFront Elm.alive
+    Steep.inFront [ Elm.alive ]
 
 
 pine : Steep.Sprite msg
 pine =
-    Steep.inFront Pine.alive
+    Steep.inFront [ Pine.alive ]
 
 
 cycleColors : Options_ -> Int -> Colors_
