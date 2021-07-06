@@ -34,6 +34,7 @@ view context =
         (Worlds.list
             |> List.reverse
             |> List.indexedMap (toHills context)
+            |> List.concat
         )
 
 
@@ -47,7 +48,7 @@ viewBoxHeight window =
     vh window * toFloat (List.length Worlds.list) + bottomOffset
 
 
-toHills : Context -> Int -> Level.WorldWithLevels -> Svg msg
+toHills : Context -> Int -> Level.WorldWithLevels -> List (Svg msg)
 toHills context index { world, levels } =
     getHill context.window world.seed
         |> Shape.moveDown (toFloat index * vh context.window)

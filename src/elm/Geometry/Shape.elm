@@ -174,6 +174,7 @@ moveDown y shape =
             Placed { shape_ | point = Point2d.translateBy (Geometry.down y) shape_.point }
 
 
+update : (Attributes -> Attributes) -> Shape msg -> Shape msg
 update f shape =
     case shape of
         Polygon p ->
@@ -189,6 +190,7 @@ update f shape =
             Placed (update_ f x)
 
 
+update_ : (Attributes -> Attributes) -> { a | attributes : Attributes } -> { a | attributes : Attributes }
 update_ f shape_ =
     { shape_ | attributes = f shape_.attributes }
 
@@ -199,32 +201,35 @@ update_ f shape_ =
 
 fullScreen : Window -> Shape msg -> Svg msg
 fullScreen window_ shape =
-    Svg.window window_ [] [ view window_ shape ]
+    Svg.window window_ [ Svg.translate0 ] (view window_ shape)
 
 
-view : Window -> Shape msg -> Svg msg
+view : Window -> Shape msg -> List (Svg msg)
 view window_ shape =
     case shape of
         Polygon shape_ ->
-            Svg.polygon2d [ fill shape_ ] shape_.shape
+            [ Svg.polygon2d [ fill shape_ ] shape_.shape
                 |> applyMirror shape_ window_
                 |> applyHidden shape_
                 |> applyAnimation shape_
+            ]
 
         Circle shape_ ->
-            Svg.circle2d [ fill shape_ ] shape_.shape
+            [ Svg.circle2d [ fill shape_ ] shape_.shape
                 |> applyMirror shape_ window_
                 |> applyHidden shape_
                 |> applyAnimation shape_
+            ]
 
         Group shapes ->
-            Svg.g_ [] (List.map (view window_) shapes)
+            List.concatMap (view window_) shapes
 
         Placed placed_ ->
-            Svg.placeIn (Frame2d.atPoint placed_.point) placed_.svg
+            [ Svg.placeIn (Frame2d.atPoint placed_.point) placed_.svg
                 |> applyMirror placed_ window_
                 |> applyHidden placed_
                 |> applyAnimation placed_
+            ]
 
 
 fill : Shape_ shape -> Svg.Attribute msg

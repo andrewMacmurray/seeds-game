@@ -22,6 +22,7 @@ alive =
         [ width_ (vw * scale)
         , height_ (vh * scale)
         , viewBox_ 0 0 vw vh
+        , translate0
         ]
         [ Svg.path [ fill_ trunkColor, d "M34.1 51.8h6.8v36.7h-6.8z" ] []
         , Svg.path [ fill_ trunkColor, d "M12.7 33.2l4.8-4.8L41 52l-4.8 4.8z" ] []

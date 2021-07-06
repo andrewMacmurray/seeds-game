@@ -78,7 +78,7 @@ initialState context =
     , scene = DyingLandscape DL.Alive DL.Hidden
     , background = Palette.background1_
     , text = "Our world is dying"
-    , textColor = Palette.brownYellow
+    , textColor = Palette.yellow1
     , textVisible = False
     }
 

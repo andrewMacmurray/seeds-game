@@ -19,6 +19,7 @@ module Utils.Svg exposing
     , strokeWidth_
     , stroke_
     , transformOrigin_
+    , translate0
     , translated
     , viewBox_
     , width_

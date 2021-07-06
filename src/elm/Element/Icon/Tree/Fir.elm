@@ -15,6 +15,7 @@ alive =
         [ viewBox_ 0 0 40 100
         , Svg.width_ 40
         , Svg.height_ 100
+        , translate0
         ]
         [ Svg.path [ fill_ trunkColor, d "M12.2 41h6.6V75h-6.6z" ] []
         , Svg.path
@@ -39,9 +40,9 @@ trunkColor =
 
 leftColor : Color
 leftColor =
-    Palette.green6
+    Palette.green8
 
 
 rightColor : Color
 rightColor =
-    Palette.green9
+    Palette.green10

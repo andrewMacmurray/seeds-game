@@ -25,16 +25,6 @@ pinkRed =
     rgb255 255 116 116
 
 
-fadedOrange : Color
-fadedOrange =
-    rgb255 247 179 113
-
-
-petalOrange : Color
-petalOrange =
-    rgb255 255 204 71
-
-
 lightOrange : Color
 lightOrange =
     rgb255 238 124 51
@@ -60,26 +50,6 @@ lightGreyYellow =
     rgb255 255 223 119
 
 
-darkYellow : Color
-darkYellow =
-    rgb255 201 153 6
-
-
-brownYellow : Color
-brownYellow =
-    rgb255 105 88 35
-
-
-sunflowerYellow : Color
-sunflowerYellow =
-    rgb255 255 241 0
-
-
-sunflowerOffYellow : Color
-sunflowerOffYellow =
-    rgb255 226 227 24
-
-
 yellow : Color
 yellow =
     rgb255 255 234 124
@@ -93,6 +63,10 @@ blockYellow =
 greyYellow : Color
 greyYellow =
     rgba255 195 167 82 0.65
+
+
+
+-- Brown
 
 
 lightBrown : Color
@@ -257,6 +231,11 @@ mauve4 =
 
 
 -- Yellow
+
+
+textYellow : Color
+textYellow =
+    rgb255 201 153 6
 
 
 yellow1 : Color

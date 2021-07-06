@@ -81,7 +81,7 @@ f6 =
 
 darkYellow : Element.Attr decorative msg
 darkYellow =
-    Font.color Palette.darkYellow
+    Font.color Palette.textYellow
 
 
 color : Element.Color -> Element.Attr decorative msg

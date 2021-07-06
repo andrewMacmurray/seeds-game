@@ -42,7 +42,7 @@ view : Window -> Environment -> State -> Svg msg
 view window env state =
     Shape.fullScreen window
         (shape_
-            { animation = None
+            { animation = Animated 0
             , colors = greens
             , window = window
             }
@@ -92,6 +92,14 @@ greens =
     }
 
 
+browns : Colors
+browns =
+    { one = { left = Palette.green8, right = Palette.green3 }
+    , two = { left = Palette.green4, right = Palette.green2 }
+    , three = { left = Palette.green1, right = Palette.green6 }
+    }
+
+
 
 -- View
 
@@ -110,18 +118,14 @@ shape_ options =
 sprites : List (Steep.SpriteLayer msg)
 sprites =
     Steep.spriteLayers
-        [ ( Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
+        [ ( Steep.noSprites, Steep.noSprites )
+        , ( Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
           , Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
           )
-        , ( Steep.sprites { inner = Nothing, middle = Nothing, outer = Just doubleFir }
-          , Steep.sprites { inner = Just singleFir, middle = Just singleFir, outer = Just singleFir }
-          )
         , ( Steep.sprites { inner = Just doubleFir, middle = Just pine, outer = Just doubleFir }
-          , Steep.sprites { inner = Just doubleFir, middle = Just elm, outer = Nothing }
+          , Steep.sprites { inner = Just singleFir, middle = Just elm, outer = Just doubleFir }
           )
-        , ( Steep.sprites { inner = Nothing, middle = Just singleFir, outer = Nothing }
-          , Steep.sprites { inner = Nothing, middle = Nothing, outer = Just singleFir }
-          )
+        , ( Steep.noSprites, Steep.noSprites )
         ]
 
 
