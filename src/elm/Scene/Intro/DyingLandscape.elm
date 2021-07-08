@@ -62,10 +62,26 @@ view window state =
     Shape.fullScreen window
         (shape_
             { state = state
-            , colors = greens
+            , colors = toColors state
             , window = window
             }
         )
+
+
+toColors : State -> Colors
+toColors state =
+    case state of
+        Hidden ->
+            greens
+
+        Alive ->
+            greens
+
+        Dead ->
+            browns
+
+        Leaving ->
+            browns
 
 
 
@@ -108,9 +124,9 @@ greens =
 
 browns : Colors
 browns =
-    { one = { left = Palette.green8, right = Palette.green3 }
-    , two = { left = Palette.green4, right = Palette.green2 }
-    , three = { left = Palette.green1, right = Palette.green6 }
+    { one = { left = Palette.slate5, right = Palette.brown7 }
+    , two = { left = Palette.grey5, right = Palette.slate6 }
+    , three = { left = Palette.grey4, right = Palette.chocolate }
     }
 
 

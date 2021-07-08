@@ -5,6 +5,10 @@ import Element.Background as Background
 import Utils.Background as Background
 
 
+
+-- Red
+
+
 darkRed : Color
 darkRed =
     rgb255 191 30 45
@@ -25,6 +29,10 @@ pinkRed =
     rgb255 255 116 116
 
 
+
+-- Orange
+
+
 lightOrange : Color
 lightOrange =
     rgb255 238 124 51
@@ -35,6 +43,10 @@ orange =
     rgb255 241 101 34
 
 
+
+-- Gold
+
+
 gold : Color
 gold =
     rgb255 255 160 0
@@ -43,6 +55,11 @@ gold =
 lightGold : Color
 lightGold =
     rgb255 255 199 19
+
+
+textYellow : Color
+textYellow =
+    rgb255 201 153 6
 
 
 lightGreyYellow : Color
@@ -233,11 +250,6 @@ mauve4 =
 -- Yellow
 
 
-textYellow : Color
-textYellow =
-    rgb255 201 153 6
-
-
 yellow1 : Color
 yellow1 =
     rgb255 82 79 3
@@ -346,6 +358,16 @@ blue10 =
 -- Brown
 
 
+brown3 : Color
+brown3 =
+    rgb255 55 44 31
+
+
+brown7 : Color
+brown7 =
+    rgb255 151 104 39
+
+
 brown8 : Color
 brown8 =
     rgb255 192 158 115
@@ -354,6 +376,39 @@ brown8 =
 brown9 : Color
 brown9 =
     rgb255 225 205 147
+
+
+
+-- Slate
+
+
+slate5 : Color
+slate5 =
+    rgb255 158 154 75
+
+
+slate4 : Color
+slate4 =
+    rgb255 110 110 78
+
+
+slate6 : Color
+slate6 =
+    rgb255 151 140 94
+
+
+
+-- Grey
+
+
+grey5 : Color
+grey5 =
+    rgb255 125 125 125
+
+
+grey4 : Color
+grey4 =
+    rgb255 72 72 72
 
 
 
