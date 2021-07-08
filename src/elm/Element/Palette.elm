@@ -343,6 +343,20 @@ blue10 =
 
 
 
+-- Brown
+
+
+brown8 : Color
+brown8 =
+    rgb255 192 158 115
+
+
+brown9 : Color
+brown9 =
+    rgb255 225 205 147
+
+
+
 -- Background
 
 

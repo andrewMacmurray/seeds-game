@@ -1,10 +1,14 @@
 module Scene.Intro.DyingLandscape exposing
-    ( Environment(..)
-    , State(..)
+    ( State(..)
+    , alive
+    , dead
+    , hidden
+    , leaving
     , view
     )
 
 import Element exposing (..)
+import Element.Animations as Animations
 import Element.Icon.Tree.Elm as Elm
 import Element.Icon.Tree.Fir as Fir
 import Element.Icon.Tree.Pine as Pine
@@ -22,27 +26,42 @@ import Window exposing (Window, vh)
 -- Landscape State
 
 
-type Environment
-    = Alive
-    | Dead
-
-
 type State
-    = Entering
-    | Visible
+    = Hidden
+    | Alive
+    | Dead
     | Leaving
-    | Hidden
+
+
+hidden : State
+hidden =
+    Hidden
+
+
+alive : State
+alive =
+    Alive
+
+
+dead : State
+dead =
+    Dead
+
+
+leaving : State
+leaving =
+    Leaving
 
 
 
 -- View
 
 
-view : Window -> Environment -> State -> Svg msg
-view window env state =
+view : Window -> State -> Svg msg
+view window state =
     Shape.fullScreen window
         (shape_
-            { animation = Animated 0
+            { state = state
             , colors = greens
             , window = window
             }
@@ -66,18 +85,13 @@ type alias Colors_ =
 type alias Options_ =
     { window : Window
     , colors : Colors
-    , animation : HillsAnimation
+    , state : State
     }
-
-
-type HillsAnimation
-    = None
-    | Animated Animation.Millis
 
 
 maxHills : Int
 maxHills =
-    List.length sprites
+    List.length (sprites Alive)
 
 
 
@@ -106,7 +120,7 @@ browns =
 
 shape_ : Options_ -> Shape msg
 shape_ options =
-    sprites
+    sprites options.state
         |> List.indexedMap (toHillConfig options)
         |> List.map (toHillPair options)
         |> List.concat
@@ -115,38 +129,70 @@ shape_ options =
         |> Shape.moveUp 200
 
 
-sprites : List (Steep.SpriteLayer msg)
-sprites =
+sprites : State -> List (Steep.SpriteLayer msg)
+sprites state =
     Steep.spriteLayers
-        [ ( Steep.noSprites, Steep.noSprites )
-        , ( Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
-          , Steep.sprites { inner = Nothing, middle = Just doubleFir, outer = Nothing }
+        [ Steep.blankLayer
+        , ( Steep.sprites
+                { inner = Nothing
+                , middle = Just (doubleFir 0 state)
+                , outer = Nothing
+                }
+          , Steep.sprites
+                { inner = Nothing
+                , middle = Just (doubleFir 200 state)
+                , outer = Nothing
+                }
           )
-        , ( Steep.sprites { inner = Just doubleFir, middle = Just pine, outer = Just doubleFir }
-          , Steep.sprites { inner = Just singleFir, middle = Just elm, outer = Just doubleFir }
+        , ( Steep.sprites
+                { inner = Just (doubleFir 100 state)
+                , middle = Just (pine state)
+                , outer = Just (singleFir 400 state)
+                }
+          , Steep.sprites
+                { inner = Just (singleFir 500 state)
+                , middle = Just (elm state)
+                , outer = Just (singleFir 300 state)
+                }
           )
-        , ( Steep.noSprites, Steep.noSprites )
+        , Steep.blankLayer
         ]
 
 
-doubleFir : Steep.Sprite msg
-doubleFir =
-    Steep.behind [ Fir.alive, Fir.alive ]
+doubleFir : Animation.Millis -> State -> Steep.Sprite msg
+doubleFir delay state =
+    Steep.behind [ fir_ delay state, fir_ delay state ]
 
 
-singleFir : Steep.Sprite msg
-singleFir =
-    Steep.behind [ Fir.alive ]
+singleFir : Animation.Millis -> State -> Steep.Sprite msg
+singleFir delay state =
+    Steep.behind [ fir_ delay state ]
 
 
-elm : Steep.Sprite msg
-elm =
+elm : State -> Steep.Sprite msg
+elm state =
     Steep.inFront [ Elm.alive ]
 
 
-pine : Steep.Sprite msg
-pine =
+pine : State -> Steep.Sprite msg
+pine state =
     Steep.inFront [ Pine.alive ]
+
+
+fir_ : Animation.Millis -> State -> Svg msg
+fir_ delay state =
+    case state of
+        Hidden ->
+            Fir.alive
+
+        Alive ->
+            Fir.alive
+
+        Dead ->
+            Fir.dying delay
+
+        Leaving ->
+            Fir.dead
 
 
 cycleColors : Options_ -> Int -> Colors_
@@ -181,11 +227,21 @@ toHillPair : Options_ -> HillConfig msg -> List (Shape msg)
 toHillPair options config =
     Steep.hillPair
         { window = options.window
-        , offset = config.offset
+        , offset = toOffset options config
         , left = config.left
         , right = config.right
         , animation = animation options config
         }
+
+
+toOffset : Options_ -> HillConfig msg -> Float
+toOffset options config =
+    case options.state of
+        Hidden ->
+            10000
+
+        _ ->
+            config.offset
 
 
 
@@ -194,12 +250,18 @@ toHillPair options config =
 
 animation : Options_ -> HillConfig msg -> Maybe Animation
 animation options config =
-    case options.animation of
-        Animated _ ->
+    case options.state of
+        Hidden ->
+            Nothing
+
+        Alive ->
             Just (appear options config)
 
-        None ->
+        Dead ->
             Nothing
+
+        Leaving ->
+            Just (fadeOut config)
 
 
 appear : Options_ -> HillConfig msg -> Animation
@@ -213,6 +275,12 @@ appear options config =
         }
         [ P.y ((vh options.window / 2) + vh options.window / toFloat (maxHills - config.order)) ]
         [ P.y 0 ]
+
+
+fadeOut config =
+    Animations.fadeOut 500
+        [ Animation.delay ((maxHills - config.order) * 350)
+        ]
 
 
 

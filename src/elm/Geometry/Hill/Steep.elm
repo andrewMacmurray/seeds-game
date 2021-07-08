@@ -4,6 +4,7 @@ module Geometry.Hill.Steep exposing
     , SpriteLayer
     , Sprites
     , behind
+    , blankLayer
     , hillPair
     , inFront
     , noSprites
@@ -95,6 +96,11 @@ plainSide color =
     { color = color
     , sprites = noSprites
     }
+
+
+blankLayer : SpriteLayer msg
+blankLayer =
+    ( noSprites, noSprites )
 
 
 noSprites : Sprites msg
