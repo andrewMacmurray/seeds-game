@@ -124,9 +124,9 @@ greens =
 
 browns : Colors
 browns =
-    { one = { left = Palette.slate5, right = Palette.brown7 }
+    { one = { left = Palette.slate5, right = Palette.brown6 }
     , two = { left = Palette.grey5, right = Palette.slate6 }
-    , three = { left = Palette.grey4, right = Palette.chocolate }
+    , three = { left = Palette.grey4, right = Palette.brown1 }
     }
 
 

@@ -21,7 +21,7 @@ world =
         , backdropColor = Palette.yellow
         , textColor = Palette.textYellow
         , textCompleteColor = Palette.white
-        , textBackgroundColor = Palette.darkBrown
+        , textBackgroundColor = Palette.brown3
         }
         levels
 

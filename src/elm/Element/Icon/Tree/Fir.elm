@@ -102,7 +102,7 @@ fir_ { left, leftPath, right, rightPath } =
 
 trunkColor : Color
 trunkColor =
-    Palette.darkBrown
+    Palette.brown3
 
 
 leftColor : Color

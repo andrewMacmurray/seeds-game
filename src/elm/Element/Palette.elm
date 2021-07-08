@@ -83,30 +83,6 @@ greyYellow =
 
 
 
--- Brown
-
-
-lightBrown : Color
-lightBrown =
-    rgb255 167 123 82
-
-
-brown : Color
-brown =
-    rgb255 119 76 40
-
-
-darkBrown : Color
-darkBrown =
-    rgb255 97 62 16
-
-
-chocolate : Color
-chocolate =
-    rgb255 57 35 21
-
-
-
 -- Green
 
 
@@ -358,14 +334,34 @@ blue10 =
 -- Brown
 
 
+brown1 : Color
+brown1 =
+    rgb255 57 35 21
+
+
+brown2 : Color
+brown2 =
+    rgb255 55 44 31
+
+
 brown3 : Color
 brown3 =
-    rgb255 55 44 31
+    rgb255 97 62 16
+
+
+brown5 : Color
+brown5 =
+    rgb255 119 76 40
+
+
+brown6 : Color
+brown6 =
+    rgb255 141 103 52
 
 
 brown7 : Color
 brown7 =
-    rgb255 141 103 52
+    rgb255 167 123 82
 
 
 brown8 : Color

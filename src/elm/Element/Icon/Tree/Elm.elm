@@ -53,7 +53,7 @@ vh =
 
 trunkColor : Color
 trunkColor =
-    Palette.darkBrown
+    Palette.brown3
 
 
 leftColor : Color

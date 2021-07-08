@@ -48,7 +48,7 @@ darkerSeed : Seed -> Color
 darkerSeed seed =
     case seed of
         Seed.Sunflower ->
-            Color.darkBrown
+            Color.brown3
 
         Seed.Chrysanthemum ->
             Color.mauve4
@@ -60,7 +60,7 @@ darkerSeed seed =
             Color.crimson
 
         _ ->
-            Color.darkBrown
+            Color.brown3
 
 
 darkerBurst : Maybe Tile -> Color
@@ -100,7 +100,7 @@ lighterSeed : Seed -> Color
 lighterSeed seed =
     case seed of
         Seed.Sunflower ->
-            Color.lightBrown
+            Color.brown7
 
         Seed.Chrysanthemum ->
             Color.orange
@@ -109,7 +109,7 @@ lighterSeed seed =
             Color.blueGrey
 
         Seed.Lupin ->
-            Color.brown
+            Color.brown5
 
         _ ->
-            Color.lightBrown
+            Color.brown7

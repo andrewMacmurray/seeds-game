@@ -68,4 +68,4 @@ rightColor =
 
 trunkColor : Color
 trunkColor =
-    Palette.chocolate
+    Palette.brown1
