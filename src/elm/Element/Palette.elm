@@ -365,7 +365,7 @@ brown3 =
 
 brown7 : Color
 brown7 =
-    rgb255 151 104 39
+    rgb255 141 103 52
 
 
 brown8 : Color
@@ -384,7 +384,7 @@ brown9 =
 
 slate5 : Color
 slate5 =
-    rgb255 158 154 75
+    rgb255 172 169 105
 
 
 slate4 : Color
