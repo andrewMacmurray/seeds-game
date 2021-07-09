@@ -4,6 +4,7 @@ module Scene.Intro.DyingLandscape exposing
     , view
     )
 
+import Element.Icon.Tree.Fir as Fir
 import Element.Legacy.Landscape.SteepHills as Hills
 import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
@@ -105,24 +106,24 @@ hillSprites2 window env =
     case Window.width window of
         Window.Narrow ->
             ( []
-            , [ Hills.behind 6 4.5 (scaled 0.9 (firrTree env 500))
-              , Hills.behind 9 4.5 (scaled 0.9 (firrTree env 600))
+            , [ Hills.behind 6 4.5 (scaled 0.9 (firTree env 500))
+              , Hills.behind 9 4.5 (scaled 0.9 (firTree env 600))
               ]
             )
 
         Window.MediumWidth ->
             ( []
-            , [ Hills.behind 6 6 (firrTree env 500)
-              , Hills.behind 10 6 (firrTree env 600)
+            , [ Hills.behind 6 6 (firTree env 500)
+              , Hills.behind 10 6 (firTree env 600)
               ]
             )
 
         Window.Wide ->
-            ( [ Hills.behind 25 6 (firrTree env 300)
-              , Hills.behind 30 6 (firrTree env 400)
+            ( [ Hills.behind 25 6 (firTree env 300)
+              , Hills.behind 30 6 (firTree env 400)
               ]
-            , [ Hills.behind 20 6 (firrTree env 500)
-              , Hills.behind 25 6 (firrTree env 600)
+            , [ Hills.behind 20 6 (firTree env 500)
+              , Hills.behind 25 6 (firTree env 600)
               ]
             )
 
@@ -155,14 +156,14 @@ hillSprites4 window env =
             ( [], [] )
 
         Window.MediumWidth ->
-            ( [ Hills.behind 16 6 (firrTree env 1000)
-              , Hills.behind 20 6 (firrTree env 1000)
+            ( [ Hills.behind 16 6 (firTree env 1000)
+              , Hills.behind 20 6 (firTree env 1000)
               ]
             , []
             )
 
         Window.Wide ->
-            ( [], [ Hills.behind 5 6 (firrTree env 1000) ] )
+            ( [], [ Hills.behind 5 6 (firTree env 1000) ] )
 
 
 hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
@@ -200,20 +201,17 @@ hillStyles window state offset delay =
             ]
 
 
-firrTree : Environment -> Int -> Svg msg
-firrTree env delay =
-    let
-        animateFill =
-            transitionFill delay
+firTree : Environment -> Int -> Svg msg
+firTree env delay =
+    Fir.tree
+        { colors = firColors env
+        , delay = delay
+        }
 
-        ( leftColor, rightColor ) =
-            treeColor "#24AC4B" "#95EDB3" env
-    in
-    Svg.svg [ width_ 4, height_ 10, viewBox_ 0 0 40 100 ]
-        [ Svg.path [ fill "#6D4D2D", d "M12.2 41h6.6V75h-6.6z" ] []
-        , Svg.path [ animateFill, d "M15.6.3s14.8 20.4 14.8 32.9c0 8.2-6.6 14.8-14.8 14.8V.4z", fill leftColor ] []
-        , Svg.path [ animateFill, d "M.8 33.2C.8 21 14.7 1.6 15.5.4V48C7.4 48 .8 41.4.8 33.2z", fill rightColor ] []
-        ]
+
+firColors : Environment -> Fir.Colors
+firColors env =
+    ifAlive env Fir.alive Fir.dead
 
 
 elmTree : Environment -> Int -> Svg msg
