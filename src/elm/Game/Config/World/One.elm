@@ -19,9 +19,9 @@ world =
     Level.world
         { seed = Sunflower
         , backdropColor = Palette.yellow
-        , textColor = Palette.darkYellow
+        , textColor = Palette.textYellow
         , textCompleteColor = Palette.white
-        , textBackgroundColor = Palette.darkBrown
+        , textBackgroundColor = Palette.brown3
         }
         levels
 

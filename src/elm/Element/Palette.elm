@@ -5,6 +5,10 @@ import Element.Background as Background
 import Utils.Background as Background
 
 
+
+-- Red
+
+
 darkRed : Color
 darkRed =
     rgb255 191 30 45
@@ -25,14 +29,8 @@ pinkRed =
     rgb255 255 116 116
 
 
-fadedOrange : Color
-fadedOrange =
-    rgb255 247 179 113
 
-
-petalOrange : Color
-petalOrange =
-    rgb255 255 204 71
+-- Orange
 
 
 lightOrange : Color
@@ -45,6 +43,10 @@ orange =
     rgb255 241 101 34
 
 
+
+-- Gold
+
+
 gold : Color
 gold =
     rgb255 255 160 0
@@ -55,29 +57,14 @@ lightGold =
     rgb255 255 199 19
 
 
-lightGreyYellow : Color
-lightGreyYellow =
-    rgb255 255 223 119
-
-
-darkYellow : Color
-darkYellow =
+textYellow : Color
+textYellow =
     rgb255 201 153 6
 
 
-brownYellow : Color
-brownYellow =
-    rgb255 105 88 35
-
-
-sunflowerYellow : Color
-sunflowerYellow =
-    rgb255 255 241 0
-
-
-sunflowerOffYellow : Color
-sunflowerOffYellow =
-    rgb255 226 227 24
+lightGreyYellow : Color
+lightGreyYellow =
+    rgb255 255 223 119
 
 
 yellow : Color
@@ -93,26 +80,6 @@ blockYellow =
 greyYellow : Color
 greyYellow =
     rgba255 195 167 82 0.65
-
-
-lightBrown : Color
-lightBrown =
-    rgb255 167 123 82
-
-
-brown : Color
-brown =
-    rgb255 119 76 40
-
-
-darkBrown : Color
-darkBrown =
-    rgb255 97 62 16
-
-
-chocolate : Color
-chocolate =
-    rgb255 57 35 21
 
 
 
@@ -361,6 +328,83 @@ blue9 =
 blue10 : Color
 blue10 =
     rgb255 160 230 250
+
+
+
+-- Brown
+
+
+brown1 : Color
+brown1 =
+    rgb255 57 35 21
+
+
+brown2 : Color
+brown2 =
+    rgb255 55 44 31
+
+
+brown3 : Color
+brown3 =
+    rgb255 97 62 16
+
+
+brown5 : Color
+brown5 =
+    rgb255 119 76 40
+
+
+brown6 : Color
+brown6 =
+    rgb255 141 103 52
+
+
+brown7 : Color
+brown7 =
+    rgb255 167 123 82
+
+
+brown8 : Color
+brown8 =
+    rgb255 192 158 115
+
+
+brown9 : Color
+brown9 =
+    rgb255 225 205 147
+
+
+
+-- Slate
+
+
+slate5 : Color
+slate5 =
+    rgb255 172 169 105
+
+
+slate4 : Color
+slate4 =
+    rgb255 110 110 78
+
+
+slate6 : Color
+slate6 =
+    rgb255 151 140 94
+
+
+
+-- Grey
+
+
+grey5 : Color
+grey5 =
+    rgb255 125 125 125
+
+
+grey4 : Color
+grey4 =
+    rgb255 72 72 72
 
 
 
