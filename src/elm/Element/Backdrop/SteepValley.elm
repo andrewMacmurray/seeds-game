@@ -74,7 +74,7 @@ greens =
 -- View
 
 
-animated : AnimatedOptions -> Shape msg
+animated : AnimatedOptions -> Shape
 animated options =
     shape_
         { window = options.window
@@ -83,7 +83,7 @@ animated options =
         }
 
 
-static : StaticOptions -> Shape msg
+static : StaticOptions -> Shape
 static options =
     shape_
         { window = options.window
@@ -92,7 +92,7 @@ static options =
         }
 
 
-shape_ : Options_ -> Shape msg
+shape_ : Options_ -> Shape
 shape_ options =
     List.range 0 (maxHills - 1)
         |> List.map (cycleColors options)
@@ -121,7 +121,7 @@ toHillConfig i ( left, right ) =
     }
 
 
-toHillPair : Options_ -> HillConfig -> List (Shape msg)
+toHillPair : Options_ -> HillConfig -> List Shape
 toHillPair options config =
     [ { offset = config.offset
       , color = config.right
@@ -142,7 +142,7 @@ toHillPair options config =
 -- Animate
 
 
-withAnimation : Options_ -> HillConfig -> Shape msg -> Shape msg
+withAnimation : Options_ -> HillConfig -> Shape -> Shape
 withAnimation options config shape =
     case options.animation of
         Animated delay ->
@@ -177,12 +177,12 @@ cycleColors options =
 -- Shape
 
 
-mirrored : { offset : Float, color : Color, window : Window } -> Shape msg
+mirrored : { offset : Float, color : Color, window : Window } -> Shape
 mirrored =
     Shape.mirror << hill
 
 
-hill : { offset : Float, color : Element.Color, window : Window } -> Shape msg
+hill : { offset : Float, color : Element.Color, window : Window } -> Shape
 hill { offset, color, window } =
     Shape.polygon { fill = color } (hill_ offset window)
 

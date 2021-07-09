@@ -75,7 +75,7 @@ yellows =
 -- View
 
 
-animated : AnimatedOptions -> Shape msg
+animated : AnimatedOptions -> Shape
 animated options =
     shape
         { window = options.window
@@ -84,7 +84,7 @@ animated options =
         }
 
 
-static : StaticOptions -> Shape msg
+static : StaticOptions -> Shape
 static options =
     shape
         { window = options.window
@@ -93,7 +93,7 @@ static options =
         }
 
 
-shape : Options_ -> Shape msg
+shape : Options_ -> Shape
 shape options =
     List.range 0 (maxHills - 1)
         |> List.map (cycleColors options)
@@ -103,7 +103,7 @@ shape options =
         |> Shape.moveUp (Window.whenNarrow 250 200 options.window)
 
 
-toHills : Options_ -> Int -> ( Color, Color ) -> List (Shape msg)
+toHills : Options_ -> Int -> ( Color, Color ) -> List Shape
 toHills options i ( l, r ) =
     hillPair options
         { order = i
@@ -126,7 +126,7 @@ cycleColors options =
     Cycle.four options.colors
 
 
-hillPair : Options_ -> Hill -> List (Shape msg)
+hillPair : Options_ -> Hill -> List Shape
 hillPair options hillOptions =
     [ { fill = hillOptions.right
       , offset = hillOptions.offset
@@ -144,7 +144,7 @@ hillPair options hillOptions =
     ]
 
 
-animateHill : Options_ -> Hill -> Shape msg -> Shape msg
+animateHill : Options_ -> Hill -> Shape -> Shape
 animateHill options hillOptions shape_ =
     case options.animation of
         Animated delay ->
@@ -161,7 +161,7 @@ fadeIn delay options =
         ]
 
 
-hill : { fill : Color, offset : Float, window : Window } -> Shape msg
+hill : { fill : Color, offset : Float, window : Window } -> Shape
 hill { fill, offset, window } =
     Shape.circle { fill = fill } (hill_ offset window)
 

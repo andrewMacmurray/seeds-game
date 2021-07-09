@@ -94,7 +94,7 @@ purples =
 -- View
 
 
-animated : AnimatedOptions -> Shape msg
+animated : AnimatedOptions -> Shape
 animated options =
     shape_
         { window = options.window
@@ -103,7 +103,7 @@ animated options =
         }
 
 
-static : StaticOptions -> Shape msg
+static : StaticOptions -> Shape
 static options =
     shape_
         { window = options.window
@@ -112,7 +112,7 @@ static options =
         }
 
 
-shape_ : Options_ -> Shape msg
+shape_ : Options_ -> Shape
 shape_ options =
     List.range 0 (maxHills - 1)
         |> List.map (cycleColors options.colors)
@@ -156,7 +156,7 @@ toHillTrio i colors =
     }
 
 
-hillTrio : Options_ -> HillTrio -> Shape msg
+hillTrio : Options_ -> HillTrio -> Shape
 hillTrio options { offset, right, middle, left, order } =
     Shape.group
         [ roundHill offset right options
@@ -172,7 +172,7 @@ hillTrio options { offset, right, middle, left, order } =
 -- Animation
 
 
-animateHill : Options_ -> Int -> Animation.Millis -> Shape msg -> Shape msg
+animateHill : Options_ -> Int -> Animation.Millis -> Shape -> Shape
 animateHill options order offset shape =
     case options.animation of
         Animated delay ->
@@ -191,12 +191,12 @@ animateHill options order offset shape =
 -- Shapes
 
 
-middleHill : Float -> Options_ -> Color -> Shape msg
+middleHill : Float -> Options_ -> Color -> Shape
 middleHill y options c =
     Shape.circle { fill = c } (middleHill_ y options.window)
 
 
-roundHill : Float -> Color -> Options_ -> Shape msg
+roundHill : Float -> Color -> Options_ -> Shape
 roundHill y color options =
     Shape.circle { fill = color } (roundHill_ y options.window)
 
