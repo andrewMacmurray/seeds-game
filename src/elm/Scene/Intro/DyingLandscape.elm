@@ -120,24 +120,24 @@ hillElements2 window env =
     case Window.width window of
         Window.Narrow ->
             ( []
-            , [ Hills.behind 6 4.5 <| scaled 0.9 <| firrTree env 500
-              , Hills.behind 9 4.5 <| scaled 0.9 <| firrTree env 600
+            , [ Hills.behind 6 4.5 (scaled 0.9 (firrTree env 500))
+              , Hills.behind 9 4.5 (scaled 0.9 (firrTree env 600))
               ]
             )
 
         Window.MediumWidth ->
             ( []
-            , [ Hills.behind 6 6 <| firrTree env 500
-              , Hills.behind 10 6 <| firrTree env 600
+            , [ Hills.behind 6 6 (firrTree env 500)
+              , Hills.behind 10 6 (firrTree env 600)
               ]
             )
 
         Window.Wide ->
-            ( [ Hills.behind 25 6 <| firrTree env 300
-              , Hills.behind 30 6 <| firrTree env 400
+            ( [ Hills.behind 25 6 (firrTree env 300)
+              , Hills.behind 30 6 (firrTree env 400)
               ]
-            , [ Hills.behind 20 6 <| firrTree env 500
-              , Hills.behind 25 6 <| firrTree env 600
+            , [ Hills.behind 20 6 (firrTree env 500)
+              , Hills.behind 25 6 (firrTree env 600)
               ]
             )
 
@@ -146,20 +146,20 @@ hillElements3 : Window -> Environment -> ( List (Hills.Element msg), List (Hills
 hillElements3 window env =
     case Window.width window of
         Window.Narrow ->
-            ( [ Hills.inFront 4 5 <| scaled 0.8 <| pineTree env 800 ]
-            , [ Hills.inFront 8 2 <| scaled 0.8 <| elmTree env 900 ]
+            ( [ Hills.inFront 4 5 (scaled 0.8 (pineTree env 800)) ]
+            , [ Hills.inFront 8 2 (scaled 0.8 (elmTree env 900)) ]
             )
 
         Window.MediumWidth ->
-            ( [ Hills.behind 6 8 <| pineTree env 800 ]
-            , [ Hills.inFront 18 5 <| elmTree env 900 ]
+            ( [ Hills.behind 6 8 (pineTree env 800) ]
+            , [ Hills.inFront 18 5 (elmTree env 900) ]
             )
 
         Window.Wide ->
-            ( [ Hills.behind 6 8 <| pineTree env 800
-              , Hills.inFront 30 7 <| elmTree env 900
+            ( [ Hills.behind 6 8 (pineTree env 800)
+              , Hills.inFront 30 7 (elmTree env 900)
               ]
-            , [ Hills.inFront 35 6 <| pineTree env 600 ]
+            , [ Hills.inFront 35 6 (pineTree env 600) ]
             )
 
 
@@ -170,14 +170,14 @@ hillElements4 window env =
             ( [], [] )
 
         Window.MediumWidth ->
-            ( [ Hills.behind 16 6 <| firrTree env 1000
-              , Hills.behind 20 6 <| firrTree env 1000
+            ( [ Hills.behind 16 6 (firrTree env 1000)
+              , Hills.behind 20 6 (firrTree env 1000)
               ]
             , []
             )
 
         Window.Wide ->
-            ( [], [ Hills.behind 5 6 <| firrTree env 1000 ] )
+            ( [], [ Hills.behind 5 6 (firrTree env 1000) ] )
 
 
 hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
@@ -194,7 +194,7 @@ hillStyles window state offset delay =
     in
     case state of
         Hidden ->
-            [ translateY <| toFloat window.height / 2
+            [ translateY (toFloat window.height / 2)
             , transitionTransform
             ]
 
