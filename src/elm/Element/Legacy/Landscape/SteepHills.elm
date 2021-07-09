@@ -1,5 +1,5 @@
 module Element.Legacy.Landscape.SteepHills exposing
-    ( Element
+    ( Sprite
     , behind
     , inFront
     , layer
@@ -19,10 +19,10 @@ import Window exposing (Window)
 
 
 type alias Hill msg =
-    ( String, List (Html.Attribute msg), List (Element msg) )
+    ( String, List (Html.Attribute msg), List (Sprite msg) )
 
 
-type alias Element msg =
+type alias Sprite msg =
     { placement : Placement
     , distanceX : Float
     , adjustY : Float
@@ -35,19 +35,19 @@ type Placement
     | Behind
 
 
-behind : Float -> Float -> Svg msg -> Element msg
+behind : Float -> Float -> Svg msg -> Sprite msg
 behind =
-    element Behind
+    sprite Behind
 
 
-inFront : Float -> Float -> Svg msg -> Element msg
+inFront : Float -> Float -> Svg msg -> Sprite msg
 inFront =
-    element InFront
+    sprite InFront
 
 
-element : Placement -> Float -> Float -> Svg msg -> Element msg
-element =
-    Element
+sprite : Placement -> Float -> Float -> Svg msg -> Sprite msg
+sprite =
+    Sprite
 
 
 layer : Window -> Float -> Hill msg -> Hill msg -> Svg msg
@@ -63,11 +63,11 @@ layer window slope ( leftColor, leftStyles, leftElements ) ( rightColor, rightSt
     in
     Svg.g [ Style.transform [ Transform.translate 0 0 ] ]
         [ hillFullScreen window slope leftColor leftStyles leftElements
-        , Geometry.Svg.mirrorAcross yAxis <| hillFullScreen window slope rightColor rightStyles rightElements
+        , Geometry.Svg.mirrorAcross yAxis (hillFullScreen window slope rightColor rightStyles rightElements)
         ]
 
 
-hillFullScreen : Window -> Float -> String -> List (Html.Attribute msg) -> List (Element msg) -> Svg msg
+hillFullScreen : Window -> Float -> String -> List (Html.Attribute msg) -> List (Sprite msg) -> Svg msg
 hillFullScreen window slope color hillStyles elements =
     Svg.svg
         [ y_ (toFloat window.height / 2)
@@ -79,7 +79,7 @@ hillFullScreen window slope color hillStyles elements =
         (renderHill slope elements (hill color hillStyles))
 
 
-renderHill : Float -> List (Element msg) -> (Float -> Svg msg) -> List (Svg msg)
+renderHill : Float -> List (Sprite msg) -> (Float -> Svg msg) -> List (Svg msg)
 renderHill slope elements hill_ =
     elements
         |> List.partition (\{ placement } -> placement == Behind)
@@ -92,7 +92,7 @@ renderHill slope elements hill_ =
            )
 
 
-renderHillElement : Float -> Element msg -> Svg msg
+renderHillElement : Float -> Sprite msg -> Svg msg
 renderHillElement slope el =
     translated el.distanceX ((el.distanceX * slope) - el.adjustY) el.element
 
