@@ -17,9 +17,17 @@ import Utils.Transition as Transition
 import Window exposing (Window)
 
 
+
+-- Growing Seeds
+
+
 type State
     = Entering
     | Leaving
+
+
+
+-- View
 
 
 view : Window -> State -> Element msg

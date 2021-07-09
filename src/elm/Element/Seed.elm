@@ -156,8 +156,8 @@ chrysanthemum =
 sunflower : Icon.Dual msg
 sunflower =
     Twin.seed
-        { left = Palette.chocolate
-        , right = Palette.lightBrown
+        { left = Palette.brown1
+        , right = Palette.brown7
         }
 
 
@@ -181,7 +181,7 @@ lupin : Icon.Dual msg
 lupin =
     Twin.seed
         { left = Palette.crimson
-        , right = Palette.brown
+        , right = Palette.brown5
         }
 
 

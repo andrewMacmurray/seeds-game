@@ -13,6 +13,7 @@ import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Simple.Animation as Animation exposing (Animation)
+import Utils.Cycle as Cycle
 import Utils.Geometry as Geometry
 import Window exposing (Window, vh, vw)
 
@@ -33,11 +34,7 @@ type alias StaticOptions =
 
 
 type alias Colors =
-    { one : Colors_
-    , two : Colors_
-    , three : Colors_
-    , four : Colors_
-    }
+    Cycle.Four Colors_
 
 
 type alias Colors_ =
@@ -125,19 +122,8 @@ type alias Hill =
 
 
 cycleColors : Options_ -> Int -> Colors_
-cycleColors options i =
-    case modBy 4 i of
-        0 ->
-            options.colors.one
-
-        1 ->
-            options.colors.two
-
-        2 ->
-            options.colors.three
-
-        _ ->
-            options.colors.four
+cycleColors options =
+    Cycle.four options.colors
 
 
 hillPair : Options_ -> Hill -> List Shape

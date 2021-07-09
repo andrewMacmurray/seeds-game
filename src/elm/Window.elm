@@ -79,7 +79,6 @@ whenNarrow a b window =
 
 
 
--- Config
 -- Helpers
 
 

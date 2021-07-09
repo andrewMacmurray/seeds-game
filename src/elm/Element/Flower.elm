@@ -44,7 +44,7 @@ colors seed =
 
         Seed.Cornflower ->
             { background = Palette.yellow10
-            , text = Palette.chocolate
+            , text = Palette.brown1
             }
 
         _ ->

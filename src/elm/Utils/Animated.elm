@@ -5,6 +5,7 @@ import Simple.Animation exposing (Animation)
 import Simple.Animation.Animated as Animated
 import Svg exposing (Svg)
 import Svg.Attributes
+import Utils.Svg as Svg
 
 
 
@@ -41,7 +42,7 @@ ui_ =
 
 g : Animation -> List (Svg.Attribute msg) -> List (Svg msg) -> Svg msg
 g =
-    svg_ Svg.g
+    svg_ Svg.g_
 
 
 path =

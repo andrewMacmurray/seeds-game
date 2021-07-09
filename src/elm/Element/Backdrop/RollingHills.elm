@@ -13,6 +13,7 @@ import Geometry.Shape as Shape exposing (Shape)
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Simple.Animation as Animation
+import Utils.Cycle as Cycle
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 
@@ -33,11 +34,7 @@ type alias StaticOptions =
 
 
 type alias Colors =
-    { one : Colors_
-    , two : Colors_
-    , three : Colors_
-    , four : Colors_
-    }
+    Cycle.Four Colors_
 
 
 type alias Colors_ =
@@ -118,7 +115,9 @@ static options =
 shape_ : Options_ -> Shape
 shape_ options =
     List.range 0 (maxHills - 1)
-        |> List.map (cycleHills options.colors >> hillTrio options)
+        |> List.map (cycleColors options.colors)
+        |> List.indexedMap toHillTrio
+        |> List.map (hillTrio options)
         |> Shape.group
         |> Shape.moveDown (sceneOffset options.window)
 
@@ -128,40 +127,9 @@ sceneOffset =
     Window.whenNarrow 400 350
 
 
-cycleHills : Colors -> Int -> HillTrio
-cycleHills colors i =
-    case modBy 4 i of
-        0 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.one.left
-            , middle = colors.one.middle
-            , right = colors.one.right
-            }
-
-        1 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.two.left
-            , middle = colors.two.middle
-            , right = colors.two.right
-            }
-
-        2 ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.three.left
-            , middle = colors.three.middle
-            , right = colors.three.right
-            }
-
-        _ ->
-            { order = i
-            , offset = toOffset i
-            , left = colors.four.left
-            , middle = colors.four.middle
-            , right = colors.four.right
-            }
+cycleColors : Colors -> Int -> Colors_
+cycleColors =
+    Cycle.four
 
 
 toOffset : Int -> Float
@@ -175,6 +143,16 @@ type alias HillTrio =
     , left : Color
     , middle : Color
     , right : Color
+    }
+
+
+toHillTrio : Int -> Colors_ -> HillTrio
+toHillTrio i colors =
+    { order = i
+    , offset = toOffset i
+    , left = colors.left
+    , middle = colors.middle
+    , right = colors.right
     }
 
 

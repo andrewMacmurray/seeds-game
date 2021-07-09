@@ -24,7 +24,7 @@ import Element.Palette as Palette
 
 text : List (Attribute msg) -> String -> Element msg
 text attrs t =
-    Element.el (f5 :: darkYellow :: attrs) (Element.text t)
+    Element.el (f5 :: textYellow :: attrs) (Element.text t)
 
 
 bold : Attribute msg
@@ -79,9 +79,9 @@ f6 =
 -- Color
 
 
-darkYellow : Element.Attr decorative msg
-darkYellow =
-    Font.color Palette.darkYellow
+textYellow : Element.Attr decorative msg
+textYellow =
+    Font.color Palette.textYellow
 
 
 color : Element.Color -> Element.Attr decorative msg

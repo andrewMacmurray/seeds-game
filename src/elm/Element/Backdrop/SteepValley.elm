@@ -13,6 +13,7 @@ import Pixels exposing (Pixels)
 import Point2d
 import Polygon2d exposing (Polygon2d)
 import Simple.Animation as Animation exposing (Animation)
+import Utils.Cycle as Cycle
 import Utils.Geometry exposing (down)
 import Window exposing (Window, vh, vw)
 
@@ -33,10 +34,7 @@ type alias StaticOptions =
 
 
 type alias Colors =
-    { one : Colors_
-    , two : Colors_
-    , three : Colors_
-    }
+    Cycle.Three Colors_
 
 
 type alias Colors_ =
@@ -171,16 +169,8 @@ fadeHillDelay delay config =
 
 
 cycleColors : Options_ -> Int -> ( Color, Color )
-cycleColors options i =
-    case modBy 3 i of
-        0 ->
-            options.colors.one
-
-        1 ->
-            options.colors.two
-
-        _ ->
-            options.colors.three
+cycleColors options =
+    Cycle.three options.colors
 
 
 

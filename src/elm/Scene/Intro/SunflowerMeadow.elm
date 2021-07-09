@@ -18,10 +18,18 @@ import Utils.Transition as Transition
 import Window exposing (Window)
 
 
+
+-- Sunflower Meadow
+
+
 type State
     = Blooming
     | Entering
     | Hidden
+
+
+
+-- View
 
 
 view : Window -> State -> Html msg
@@ -44,6 +52,7 @@ view window state =
         ]
 
 
+hills : Window -> State -> Svg msg
 hills window state =
     Svg.window window
         []
@@ -89,30 +98,31 @@ offsetStyles window state offset delay =
             visibleStyles
 
 
-flowersLeft : Window -> State -> Int -> List (Hills.Element msg)
+flowersLeft : Window -> State -> Int -> List (Hills.Sprite msg)
 flowersLeft window state delay =
     let
         range =
             windowRange window
     in
-    [ Hills.element (range 14 18 23) 0 <| scaled (range 0.6 1 1.2) <| sunflower window state delay
-    , Hills.element (range 9 13.5 18) 0 <| scaled (range 0.5 0.8 1) <| sunflower window state (delay + 150)
-    , Hills.element (range 5 9.5 13) 0 <| scaled (range 0.4 0.6 0.8) <| sunflower window state (delay + 300)
+    [ Hills.sprite (range 14 18 23) 0 (scaled (range 0.6 1 1.2) (sunflower state delay))
+    , Hills.sprite (range 9 13.5 18) 0 (scaled (range 0.5 0.8 1) (sunflower state (delay + 150)))
+    , Hills.sprite (range 5 9.5 13) 0 (scaled (range 0.4 0.6 0.8) (sunflower state (delay + 300)))
     ]
 
 
-flowersRight : Window -> State -> Int -> List (Hills.Element msg)
+flowersRight : Window -> State -> Int -> List (Hills.Sprite msg)
 flowersRight window state delay =
     let
         range =
             windowRange window
     in
-    [ Hills.element (range -14 -18 -23) 0 <| scaled (range 0.6 1 1.2) <| sunflower window state delay
-    , Hills.element (range -9 -13.5 -18) 0 <| scaled (range 0.5 0.8 1) <| sunflower window state (delay + 150)
-    , Hills.element (range -5 -9.5 -13) 0 <| scaled (range 0.4 0.6 0.8) <| sunflower window state (delay + 300)
+    [ Hills.sprite (range -14 -18 -23) 0 (scaled (range 0.6 1 1.2) (sunflower state delay))
+    , Hills.sprite (range -9 -13.5 -18) 0 (scaled (range 0.5 0.8 1) (sunflower state (delay + 150)))
+    , Hills.sprite (range -5 -9.5 -13) 0 (scaled (range 0.4 0.6 0.8) (sunflower state (delay + 300)))
     ]
 
 
+windowRange : Window -> a -> a -> a -> a
 windowRange window narrow medium wide =
     case Window.width window of
         Window.Narrow ->
@@ -125,8 +135,8 @@ windowRange window narrow medium wide =
             wide
 
 
-sunflower : Window -> State -> Int -> Svg msg
-sunflower window state delay =
+sunflower : State -> Int -> Svg msg
+sunflower state delay =
     case state of
         Blooming ->
             Svg.svg
@@ -134,24 +144,19 @@ sunflower window state delay =
                 , width_ 60
                 , height_ 60
                 ]
-                [ animateSunflower window delay ]
+                [ animateSunflower delay ]
                 |> translated -30 -30
 
         _ ->
             Svg.g [] []
 
 
-animateSunflower : Window -> Int -> Svg msg
-animateSunflower window delay =
-    case Window.size window of
-        Window.Small ->
-            Animated.g (fadeIn delay) [] [ Sunflower.static ]
-
-        _ ->
-            Sunflower.animated delay
+animateSunflower : Animation.Millis -> Svg msg
+animateSunflower delay =
+    Animated.g (fadeIn delay) [] [ Sunflower.static ]
 
 
-fadeIn : Int -> Animation
+fadeIn : Animation.Millis -> Animation
 fadeIn delay =
     Animations.fadeIn 1000
         [ Animation.linear

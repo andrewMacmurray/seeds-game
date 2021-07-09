@@ -20,7 +20,7 @@ active =
 
 inactive : Element msg
 inactive =
-    icon Palette.darkYellow
+    icon Palette.textYellow
 
 
 icon : Element.Color -> Element msg

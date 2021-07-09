@@ -1,54 +1,55 @@
 module Element.Legacy.Landscape.RollingHills exposing
-    ( Element
+    ( Sprite
     , doubleLayer
-    , element
+    , sprite
     )
 
 import Svg exposing (Svg)
 import Svg.Attributes exposing (..)
 import Utils.Style as Style
-import Utils.Svg exposing (..)
+import Utils.Svg as Svg exposing (..)
 import Utils.Transform as Transform
 import Window exposing (Window)
 
 
-type alias Element msg =
+type alias Sprite msg =
     { angle : Float
     , adjustY : Float
     , element : Svg msg
     }
 
 
-doubleLayer : Window -> ( String, List (Element msg) ) -> ( String, List (Element msg) ) -> Svg msg
+doubleLayer : Window -> ( String, List (Sprite msg) ) -> ( String, List (Sprite msg) ) -> Svg msg
 doubleLayer =
     doubleLayerWithCurve_ 1
 
 
-doubleLayerWithCurve_ curve window ( leftColor, leftElements ) ( rightColor, rightElements ) =
-    Svg.g [ Style.transform [ Transform.translate 0 0 ] ]
+doubleLayerWithCurve_ : Float -> Window -> ( String, List (Sprite msg) ) -> ( String, List (Sprite msg) ) -> Svg msg
+doubleLayerWithCurve_ curve window ( leftColor, leftSprites ) ( rightColor, rightSprites ) =
+    Svg.g_ []
         [ hillFullScreen window
             { color = leftColor
-            , elements = leftElements
+            , sprites = leftSprites
             , side = Left
             , curve = curve
             }
         , hillFullScreen window
             { color = rightColor
-            , elements = rightElements
+            , sprites = rightSprites
             , side = Right
             , curve = curve
             }
         ]
 
 
-element : Float -> Float -> Svg msg -> Element msg
-element =
-    Element
+sprite : Float -> Float -> Svg msg -> Sprite msg
+sprite =
+    Sprite
 
 
 type alias Hill msg =
     { color : String
-    , elements : List (Element msg)
+    , sprites : List (Sprite msg)
     , side : Side
     , curve : Float
     }
@@ -78,7 +79,7 @@ hillFullScreen window hillConfig =
             w / hillConfig.curve
 
         elements =
-            List.map (renderElement cx cy r) hillConfig.elements
+            List.map (renderElement cx cy r) hillConfig.sprites
     in
     Svg.svg
         [ viewBox_ 0 0 w 3000
@@ -88,7 +89,7 @@ hillFullScreen window hillConfig =
         (hill hillConfig.color r cx cy :: elements)
 
 
-renderElement : Float -> Float -> Float -> Element msg -> Svg msg
+renderElement : Float -> Float -> Float -> Sprite msg -> Svg msg
 renderElement cx cy r elementConfig =
     let
         a =
