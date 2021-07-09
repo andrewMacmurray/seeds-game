@@ -39,7 +39,7 @@ type alias Model =
 
 
 type Scene
-    = DyingLandscape DL.Environment DL.State
+    = DyingLandscape DL.State
     | GrowingSeeds GS.State
     | SunflowerMeadow SM.State
 
@@ -75,7 +75,7 @@ init context =
 initialState : Context -> Model
 initialState context =
     { context = context
-    , scene = DyingLandscape DL.Alive DL.Hidden
+    , scene = DyingLandscape DL.hidden
     , background = Palette.background1_
     , text = "Our world is dying"
     , textColor = Palette.yellow1
@@ -116,13 +116,13 @@ update : Msg -> Model -> Exit.Status ( Model, Cmd Msg )
 update msg model =
     case msg of
         ShowDyingLandscape ->
-            continue { model | scene = DyingLandscape DL.Alive DL.Entering } []
+            continue { model | scene = DyingLandscape DL.visible } []
 
         KillEnvironment ->
-            continue { model | scene = DyingLandscape DL.Dead DL.Visible } []
+            continue { model | scene = DyingLandscape DL.dead } []
 
         HideDyingLandscape ->
-            continue { model | scene = DyingLandscape DL.Dead DL.Leaving } []
+            continue { model | scene = DyingLandscape DL.leaving } []
 
         ShowGrowingSeeds ->
             continue { model | scene = GrowingSeeds GS.Entering } []
@@ -219,11 +219,11 @@ viewScene model =
 viewScene_ : Model -> Element Msg
 viewScene_ model =
     case model.scene of
-        DyingLandscape environment vis ->
-            html (DL.view model.context.window environment vis)
+        DyingLandscape state ->
+            html (DL.view model.context.window state)
 
-        GrowingSeeds vis ->
-            GS.view model.context.window vis
+        GrowingSeeds state ->
+            GS.view model.context.window state
 
-        SunflowerMeadow vis ->
-            html (SM.view model.context.window vis)
+        SunflowerMeadow state ->
+            html (SM.view model.context.window state)

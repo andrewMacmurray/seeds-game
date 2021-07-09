@@ -1,7 +1,12 @@
 module Scene.Intro.DyingLandscape exposing
     ( Environment(..)
-    , State(..)
+    , State
+    , Visibility(..)
+    , dead
+    , hidden
+    , leaving
     , view
+    , visible
     )
 
 import Element.Icon.Tree.Elm as Elm
@@ -19,7 +24,13 @@ import Window exposing (Window)
 
 
 
--- Landscape State
+-- Dying Landscape
+
+
+type alias State =
+    { environment : Environment
+    , visibility : Visibility
+    }
 
 
 type Environment
@@ -27,7 +38,7 @@ type Environment
     | Dead
 
 
-type State
+type Visibility
     = Entering
     | Visible
     | Leaving
@@ -35,14 +46,46 @@ type State
 
 
 
+-- States
+
+
+hidden : State
+hidden =
+    { environment = Alive
+    , visibility = Hidden
+    }
+
+
+visible : State
+visible =
+    { environment = Alive
+    , visibility = Entering
+    }
+
+
+dead : State
+dead =
+    { environment = Dead
+    , visibility = Visible
+    }
+
+
+leaving : State
+leaving =
+    { environment = Dead
+    , visibility = Leaving
+    }
+
+
+
 -- View
 
 
-view : Window -> Environment -> State -> Svg msg
-view window env state =
+view : Window -> State -> Svg msg
+view window { environment, visibility } =
     let
         hillColor aliveColor deadColor =
-            ifAlive aliveColor deadColor env
+            ifAlive aliveColor deadColor environment
 
         slope =
             getSlope window
@@ -51,35 +94,35 @@ view window env state =
             Window.whenNarrow small large window
 
         ( sprites2Left, sprites2Right ) =
-            hillSprites2 window env
+            hillSprites2 window environment
 
         ( sprites3Left, sprites3Right ) =
-            hillSprites3 window env
+            hillSprites3 window environment
 
         ( sprites4Left, sprites4Right ) =
-            hillSprites4 window env
+            hillSprites4 window environment
     in
     Svg.window window
         [ preserveAspectRatio "none" ]
-        [ Svg.g (hillStyles window state (hillOffset -250 -400) 0)
+        [ Svg.g (hillStyles window visibility (hillOffset -250 -400) 0)
             [ Hills.layer window
                 slope
                 ( hillColor "#1D4E34" "#898755", [ transitionFill 0 ], [] )
                 ( hillColor "#19B562" "#866942", [ transitionFill 300 ], [] )
             ]
-        , Svg.g (hillStyles window state (hillOffset -125 -250) 500)
+        , Svg.g (hillStyles window visibility (hillOffset -125 -250) 500)
             [ Hills.layer window
                 slope
                 ( hillColor "#1D7145" "#7D7E7D", [ transitionFill 600 ], sprites2Left )
                 ( hillColor "#1F8D52" "#978A49", [ transitionFill 900 ], sprites2Right )
             ]
-        , Svg.g (hillStyles window state (hillOffset 0 -100) 1000)
+        , Svg.g (hillStyles window visibility (hillOffset 0 -100) 1000)
             [ Hills.layer window
                 slope
                 ( hillColor "#2BA765" "#484848", [ transitionFill 1200 ], sprites3Left )
                 ( hillColor "#185F39" "#372c1f", [ transitionFill 1500 ], sprites3Right )
             ]
-        , Svg.g (hillStyles window state (hillOffset 125 50) 1000)
+        , Svg.g (hillStyles window visibility (hillOffset 125 50) 1000)
             [ Hills.layer window
                 slope
                 ( hillColor "#1F8D52" "#6e6e4e", [ transitionFill 1200 ], sprites4Left )
@@ -168,8 +211,8 @@ hillSprites4 window env =
             ( [], [ Hills.behind 5 6 (firTree env 1000) ] )
 
 
-hillStyles : Window -> State -> Float -> Int -> List (Attribute msg)
-hillStyles window state offset delay =
+hillStyles : Window -> Visibility -> Float -> Int -> List (Attribute msg)
+hillStyles window visibility offset delay =
     let
         transitionTransform =
             Transition.transform_ 3500
@@ -180,7 +223,7 @@ hillStyles window state offset delay =
         translateY n =
             Style.transform [ Transform.translateY n ]
     in
-    case state of
+    case visibility of
         Hidden ->
             [ translateY (toFloat window.height / 2)
             , transitionTransform
