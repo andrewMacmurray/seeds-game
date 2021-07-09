@@ -1,4 +1,9 @@
-module Element.Icon.Tree.Elm exposing (Colors, alive, dead, tree)
+module Element.Icon.Tree.Elm exposing
+    ( Colors
+    , alive
+    , dead
+    , tree
+    )
 
 import Element exposing (Color)
 import Element.Palette as Palette

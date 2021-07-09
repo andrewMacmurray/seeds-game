@@ -6,6 +6,7 @@ module Scene.Intro.DyingLandscape exposing
 
 import Element.Icon.Tree.Elm as Elm
 import Element.Icon.Tree.Fir as Fir
+import Element.Icon.Tree.Pine as Pine
 import Element.Legacy.Landscape.SteepHills as Hills
 import Simple.Transition as Transition
 import Svg exposing (Attribute, Svg)
@@ -202,70 +203,37 @@ hillStyles window state offset delay =
             ]
 
 
-firTree : Environment -> Int -> Svg msg
+
+-- Sprites
+
+
+firTree : Environment -> Transition.Millis -> Svg msg
 firTree env delay =
     Fir.tree
-        { colors = firColors env
+        { colors = ifAlive Fir.alive Fir.dead env
         , delay = delay
         }
 
 
-firColors : Environment -> Fir.Colors
-firColors =
-    ifAlive Fir.alive Fir.dead
-
-
-elmTree : Environment -> Int -> Svg msg
+elmTree : Environment -> Transition.Millis -> Svg msg
 elmTree env delay =
     Elm.tree
-        { colors = elmColors env
+        { colors = ifAlive Elm.alive Elm.dead env
         , delay = delay
         }
 
 
-elmColors : Environment -> Elm.Colors
-elmColors =
-    ifAlive Elm.alive Elm.dead
-
-
-pineTree : Environment -> Int -> Svg msg
+pineTree : Environment -> Transition.Millis -> Svg msg
 pineTree env delay =
-    let
-        animateFill staggerDelay =
-            transitionFill (delay + staggerDelay)
-
-        ( leftColor, rightColor ) =
-            treeColor "#95EDB3" "#24AC4B" env
-    in
-    Svg.svg [ width_ 11, height_ 13, viewBox_ 0 0 80 100 ]
-        [ Svg.path [ fill "#453321", d "M34.1 51.8h6.8v36.7h-6.8z" ] []
-        , Svg.path [ fill "#453321", d "M12.7 33.2l4.8-4.8L41 52l-4.8 4.8z" ] []
-        , Svg.path [ fill "#453321", d "M62.5 33.2l-4.9-4.8L34 52l4.8 4.8z" ] []
-        , Svg.path [ animateFill 0, d "M10.4 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
-        , Svg.path [ animateFill 0, d "M.7 26.3c0-8 9.1-20.8 9.7-21.6V36a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-        , Svg.path [ animateFill 150, d "M37.5 18s9.7 13.5 9.7 21.7c0 5.4-4.3 9.7-9.7 9.7V18.1z", fill leftColor ] []
-        , Svg.path [ animateFill 150, d "M27.8 39.7c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-        , Svg.path [ animateFill 300, d "M37.5 0s9.7 13.4 9.7 21.6c0 5.4-4.3 9.8-9.7 9.8V0z", fill leftColor ] []
-        , Svg.path [ animateFill 300, d "M27.8 21.6c0-8 9.1-20.7 9.7-21.5v31.3a9.7 9.7 0 0 1-9.7-9.8z", fill rightColor ] []
-        , Svg.path [ animateFill 450, d "M51.3 11.9S61 25.3 61 33.5c0 5.4-4.3 9.7-9.7 9.7V12z", fill leftColor ] []
-        , Svg.path [ animateFill 450, d "M41.7 33.5c0-8 9-20.8 9.6-21.6v31.3a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
-        , Svg.path [ animateFill 550, d "M22.7 11.9s9.7 13.4 9.7 21.6c0 5.4-4.4 9.7-9.7 9.7V12z", fill leftColor ] []
-        , Svg.path [ animateFill 550, d "M13 33.5c0-8 9.1-20.8 9.7-21.6v31.3a9.7 9.7 0 0 1-9.7-9.7z", fill rightColor ] []
-        , Svg.path [ animateFill 650, d "M64.6 4.7s9.7 13.4 9.7 21.6c0 5.4-4.3 9.7-9.7 9.7V4.7z", fill leftColor ] []
-        , Svg.path [ animateFill 650, d "M55 26.3c0-8 9-20.8 9.6-21.6V36a9.7 9.7 0 0 1-9.6-9.7z", fill rightColor ] []
-        ]
+    Pine.tree
+        { colors = ifAlive Pine.alive Pine.dead env
+        , delay = delay
+        }
 
 
-transitionFill : Int -> Attribute msg
+transitionFill : Transition.Millis -> Attribute msg
 transitionFill delayMs =
-    Transition.fill_ 500 [ Transition.delay delayMs, Transition.linear ]
-
-
-treeColor : String -> String -> Environment -> ( String, String )
-treeColor left right =
-    ifAlive ( left, right ) deadTreeColors
-
-
-deadTreeColors : ( String, String )
-deadTreeColors =
-    ( "#C09E73", "#FFCD93" )
+    Transition.fill_ 500
+        [ Transition.delay delayMs
+        , Transition.linear
+        ]
