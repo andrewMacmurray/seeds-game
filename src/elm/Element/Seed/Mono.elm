@@ -20,7 +20,7 @@ type alias Options =
 seed : Options -> Icon.Dual msg
 seed options =
     Icon.dual
-        [ Svg.viewBox_ 0 0 124.5 193.5
+        [ Svg.viewBox_ 0 0 124 193
         , Svg.fullWidth
         ]
         [ Svg.path

@@ -45,12 +45,15 @@ init =
 
 
 initScore : Tile.Setting -> ( String, Score )
-initScore { tileType, targetScore } =
-    let
-        (Tile.TargetScore t) =
-            Maybe.withDefault (Tile.TargetScore 0) targetScore
-    in
-    ( Tile.toString tileType, Score t 0 )
+initScore setting =
+    ( Tile.toString setting.tileType
+    , Score (targetValue setting.targetScore) 0
+    )
+
+
+targetValue : Maybe Tile.TargetScore -> Int
+targetValue =
+    Maybe.map Tile.targetScore >> Maybe.withDefault 0
 
 
 

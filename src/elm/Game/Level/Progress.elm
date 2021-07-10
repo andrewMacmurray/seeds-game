@@ -364,8 +364,8 @@ totalScoresDict =
 accumSettings : Tile.Setting -> Dict String Int -> Dict String Int
 accumSettings setting acc =
     case setting.targetScore of
-        Just (TargetScore n) ->
-            Dict.insertWith (+) (Tile.toString setting.tileType) n acc
+        Just score ->
+            Dict.insertWith (+) (Tile.toString setting.tileType) (Tile.targetScore score) acc
 
         Nothing ->
             acc
