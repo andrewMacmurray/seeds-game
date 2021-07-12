@@ -133,10 +133,10 @@ corner : Tile -> { size : Int, facing : Facing } -> List Tile
 corner tile { size, facing } =
     let
         flippedY =
-            adjustY (-size + 1) tile
+            moveDown (-size + 1) tile
 
         flippedX =
-            adjustX (-size + 1) tile
+            moveRight (-size + 1) tile
 
         vertical =
             { length = size, direction = Vertical }
@@ -197,13 +197,13 @@ seed seed_ x y =
 -- Helpers
 
 
-adjustX : Int -> Tile -> Tile
-adjustX n (Tile tileType coord) =
+moveRight : Int -> Tile -> Tile
+moveRight n (Tile tileType coord) =
     Tile tileType (Coord.translateX n coord)
 
 
-adjustY : Int -> Tile -> Tile
-adjustY n (Tile tileType coord) =
+moveDown : Int -> Tile -> Tile
+moveDown n (Tile tileType coord) =
     Tile tileType (Coord.translateY n coord)
 
 

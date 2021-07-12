@@ -15,6 +15,7 @@ import Seed exposing (Seed)
 import Utils.Html as Html
 import Utils.Style as Style
 import Utils.Transform as Transform
+import Utils.Transition as Transition
 import Window exposing (Window)
 
 
@@ -150,6 +151,7 @@ view_ model =
         [ Style.width model.width
         , Style.height model.height
         , Style.background model.color
+        , Transition.background_ 300 []
         , Style.absolute
         , Style.transform
             [ Transform.translate model.offsetX model.offsetY

@@ -1,14 +1,16 @@
 module Game.Level.Tile exposing
-    ( Probability(..)
+    ( Probability
     , Setting
-    , TargetScore(..)
+    , TargetScore
     , burst
+    , probability
     , rain
     , seed
     , seedPod
     , seedSettings
     , sortByProbability
     , sun
+    , targetScore
     )
 
 import Game.Board.Tile as Tile exposing (Tile(..))
@@ -108,6 +110,11 @@ seedSettings =
 sortByProbability : List Setting -> List Setting
 sortByProbability =
     List.sortBy (.probability >> probability)
+
+
+targetScore : TargetScore -> Int
+targetScore (TargetScore t) =
+    t
 
 
 probability : Probability -> Int

@@ -148,7 +148,7 @@ tileGenerator tileSettings =
 totalProbability : List Tile.Setting -> Int
 totalProbability =
     List.map .probability
-        >> List.map (\(Probability p) -> p)
+        >> List.map Tile.probability
         >> List.sum
 
 
@@ -163,8 +163,8 @@ tileProbability tileSettings n =
 evalProbability : Int -> Tile.Setting -> ( Maybe Tile, Int ) -> ( Maybe Tile, Int )
 evalProbability n { tileType, probability } ( val, accProb ) =
     let
-        (Probability p) =
-            probability
+        p =
+            Tile.probability probability
     in
     case val of
         Nothing ->

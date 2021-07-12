@@ -297,8 +297,8 @@ seedIcon =
 viewTargetScore : Maybe TargetScore -> Element msg
 viewTargetScore ts =
     case ts of
-        Just (Tile.TargetScore t) ->
-            Text.text [ Text.white ] (String.fromInt t)
+        Just target ->
+            Text.text [ Text.white ] (String.fromInt (Tile.targetScore target))
 
         Nothing ->
             none

@@ -1,6 +1,7 @@
 module Utils.Transition exposing
     ( alpha
     , background
+    , background_
     , fill_
     , opacity_
     , transform
@@ -18,11 +19,7 @@ import Simple.Transition as Transition
 
 background : Transition.Millis -> Element.Attribute msg
 background duration =
-    htmlAttribute
-        (Transition.properties
-            [ Transition.backgroundColor duration []
-            ]
-        )
+    htmlAttribute (background_ duration [])
 
 
 alpha : Transition.Millis -> Element.Attribute msg
@@ -37,6 +34,13 @@ transform duration =
 
 
 -- Html
+
+
+background_ : Transition.Millis -> List Transition.Option -> Html.Attribute msg
+background_ duration options =
+    Transition.properties
+        [ Transition.backgroundColor duration options
+        ]
 
 
 transform_ : Transition.Millis -> List Transition.Option -> Html.Attribute msg
