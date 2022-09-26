@@ -30,7 +30,7 @@
     "elm-live": "^4.0.2",
     "elm-review": "^2.5.1",
     "elm-test": "^0.19.1-revision7",
-    "firebase-tools": "^9.11.0",
+    "firebase-tools": "^9.23.3",
     "howler": "^2.2.1",
     "node-elm-compiler": "^5.0.6",
     "parcel-bundler": "^1.9.4",
