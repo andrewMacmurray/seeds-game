@@ -33,7 +33,7 @@
     "firebase-tools": "^9.11.0",
     "howler": "^2.2.1",
     "node-elm-compiler": "^5.0.6",
-    "parcel-bundler": "^1.9.4",
+    "parcel-bundler": "^1.12.5",
     "pepjs": "^0.5.3",
     "typescript": "^3.9.9"
   }
